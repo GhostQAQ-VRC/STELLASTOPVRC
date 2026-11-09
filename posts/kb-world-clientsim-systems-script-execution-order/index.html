@@ -1,0 +1,389 @@
+<!DOCTYPE html><html lang="zh-CN"> <head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="generator" content="Astro v5.18.2"><meta name="description" content="ClientSim 在 Unity 中预设了严格的 Script Execution Order,确保 11 个核心系统在 Play Mode 中以正确顺序执行。"><meta name="theme-color" content="#070a1c"><meta property="og:title" content="Script Execution Order · 星之驿站 StellaStop"><meta property="og:description" content="ClientSim 在 Unity 中预设了严格的 Script Execution Order,确保 11 个核心系统在 Play Mode 中以正确顺序执行。"><meta property="og:type" content="website"><meta name="twitter:card" content="summary"><link rel="icon" type="image/svg+xml" href="/STELLASTOPVRC/favicon.svg"><script>
+      // 在渲染前恢复主题与特效档位，避免闪一下默认状态
+      try {
+        document.documentElement.dataset.theme =
+          localStorage.getItem('stella-theme') || 'nebula';
+        document.documentElement.dataset.fx =
+          localStorage.getItem('stella-fx') || 'standard';
+      } catch {
+        /* 隐私模式读不到就算了 */
+      }
+    </script><link rel="stylesheet" href="/STELLASTOPVRC/custom-vars.css"><title>Script Execution Order · 星之驿站 StellaStop</title><link rel="stylesheet" href="/STELLASTOPVRC/_astro/about.Bgh6wcGl.css">
+<style>.post-head__meta[data-astro-cid-lvjzyg5v]{color:var(--ink-faint);font-family:var(--font-mono);font-size:.82rem}.post-head[data-astro-cid-lvjzyg5v] .chip-row[data-astro-cid-lvjzyg5v]{margin-top:1rem}.kb-source-note[data-astro-cid-lvjzyg5v]{max-width:760px;margin:2.2rem auto 0;font-size:.82rem;color:var(--ink-faint);border-top:1px dashed var(--line);padding-top:1rem}
+</style></head> <body> <div class="site-notice" id="siteNotice"> <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> <span class="site-notice__text">欢迎来到星之驿站！</span> <button class="site-notice__close" id="noticeClose" type="button" aria-label="关闭公告">
+×
+</button> </div> <a class="skip-link" href="#main">跳到主要内容</a> <canvas id="starfield" aria-hidden="true" data-astro-cid-ra7sfcwn></canvas> <div class="fx-aurora fx-aurora--a" aria-hidden="true" data-astro-cid-ra7sfcwn></div> <div class="fx-aurora fx-aurora--b" aria-hidden="true" data-astro-cid-ra7sfcwn></div>  <script type="module">const u=document.getElementById("starfield");if(u){let F=function(){const n=Math.random();return n<.1?"gold":n<.42?"blue":"white"},v=function(){const n=Math.min(window.devicePixelRatio||1,2);s=window.innerWidth,d=window.innerHeight,u.width=s*n,u.height=d*n,u.style.width=`${s}px`,u.style.height=`${d}px`,t.setTransform(n,0,0,n,0,0);const e=Math.min(190,Math.round(s*d/8500));l=Array.from({length:e},()=>({x:Math.random()*s,y:Math.random()*d,r:r(.4,1.7),base:r(.25,.8),amp:r(.12,.4),speed:r(6e-4,.0022),phase:r(0,Math.PI*2),c:F()})),C=Array.from({length:26},()=>({x:Math.random()*s,y:Math.random()*d,r:r(.9,2.4),vx:r(-.006,.006),vy:r(-.02,-.006),base:r(.2,.5),speed:r(8e-4,.002),phase:r(0,Math.PI*2),c:Math.random()<.5?"gold":"violet"})),c==="off"&&m(0,!0)},D=function(n){const e=Math.random()<.5?1:-1,o=r(Math.PI/7,Math.PI/5),a=r(.45,.75);y.push({x:r(s*.15,s*.85),y:r(-20,d*.3),vx:Math.cos(o)*a*e,vy:Math.sin(o)*a,born:n,life:r(750,1050),len:r(100,170)})},S=function(n){y=y.filter(e=>n-e.born<e.life);for(const e of y){const o=(n-e.born)/e.life,a=e.x+e.vx*(n-e.born),i=e.y+e.vy*(n-e.born),f=o<.15?o/.15:o>.7?(1-o)/.3:1,h=Math.hypot(e.vx,e.vy),x=e.vx/h,g=e.vy/h,b=t.createLinearGradient(a,i,a-x*e.len,i-g*e.len);b.addColorStop(0,`rgba(236,242,255,${(.85*f).toFixed(3)})`),b.addColorStop(1,"rgba(236,242,255,0)"),t.strokeStyle=b,t.lineWidth=1.6,t.lineCap="round",t.beginPath(),t.moveTo(a,i),t.lineTo(a-x*e.len,i-g*e.len),t.stroke()}},B=function(){let o=0;t.lineWidth=.7;for(let a=0;a<l.length&&o<26;a++)for(let i=a+1;i<l.length&&o<26;i++){const f=l[a].x-l[i].x,h=l[a].y-l[i].y,x=f*f+h*h;if(x<16900){const g=(1-Math.sqrt(x)/130)*.17;t.strokeStyle=`rgba(178,170,255,${g.toFixed(3)})`,t.beginPath(),t.moveTo(l[a].x,l[a].y),t.lineTo(l[i].x,l[i].y),t.stroke(),o++}}},X=function(n){for(const e of C){e.x+=e.vx*16,e.y+=e.vy*16,e.y<-12&&(e.y=d+10),e.x<-12&&(e.x=s+10),e.x>s+12&&(e.x=-10);const o=Math.max(.05,e.base+.25*Math.sin(n*e.speed+e.phase)),[a,i,f]=A[e.c];t.beginPath(),t.arc(e.x,e.y,e.r,0,7),t.shadowBlur=9,t.shadowColor=`rgba(${a},${i},${f},0.9)`,t.fillStyle=`rgba(${a},${i},${f},${o.toFixed(3)})`,t.fill()}t.shadowBlur=0},m=function(n,e=!1){t.clearRect(0,0,s,d);for(const o of l){const a=c==="off"?o.base:Math.max(.05,o.base+o.amp*Math.sin(n*o.speed+o.phase)),[i,f,h]=A[o.c];t.beginPath(),t.arc(o.x,o.y,o.r,0,7),o.r>1.25?(t.shadowBlur=7,t.shadowColor=`rgba(${i},${f},${h},0.85)`):t.shadowBlur=0,t.fillStyle=`rgba(${i},${f},${h},${a.toFixed(3)})`,t.fill()}if(t.shadowBlur=0,c!=="off"&&!e){c==="fancy"&&(B(),X(n));const o=c==="fancy"?r(2600,6e3):r(4200,9500);n>P&&(D(n),P=n+o),S(n)}},$=function(n){m(n),M=requestAnimationFrame($)},p=function(){if(c==="off"){m(0,!0);return}cancelAnimationFrame(M),M=requestAnimationFrame($)},w=function(){cancelAnimationFrame(M),t.clearRect(0,0,s,d),m(0,!0)};const t=u.getContext("2d"),k=matchMedia("(prefers-reduced-motion: reduce)").matches,A={white:[240,240,255],blue:[150,215,250],gold:[255,218,150],violet:[178,170,255]};let s=0,d=0,l=[],C=[],y=[],P=2500,M=0,c=document.documentElement.dataset.fx||"standard";k&&(c="off");const r=(n,e)=>n+Math.random()*(e-n);v(),addEventListener("resize",v),document.addEventListener("stella-fx-change",n=>{c=n.detail,c==="off"?w():p()}),c==="off"?m(0,!0):(p(),document.addEventListener("visibilitychange",()=>{document.hidden?w():p()}))}</script> <header class="site-header"> <div class="wrap site-header__inner"> <a class="logo" href="/STELLASTOPVRC/"> <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> <span>星之驿站</span> <span class="logo__romaji">StellaStop</span> </a> <div class="header-right"> <nav class="site-nav" aria-label="站内导航"> <a href="/STELLASTOPVRC/"> 首页 </a><a href="/STELLASTOPVRC/start/"> 新手 </a><a href="/STELLASTOPVRC/posts/"> 教程 </a><a href="/STELLASTOPVRC/videos/"> 视频 </a><a href="/STELLASTOPVRC/resources/"> 资源 </a><a href="/STELLASTOPVRC/booth/"> Booth </a><a href="/STELLASTOPVRC/announcements/"> 公告 </a><a href="/STELLASTOPVRC/ai/"> 问星 </a><a href="/STELLASTOPVRC/changelog/"> 更新日志 </a><a href="/STELLASTOPVRC/about/"> 关于 </a> </nav> <a class="login-link" data-desk-login hidden title="写作台：登录 / 注册后可发教程、传资源">
+登录 / 注册
+</a> <div class="theme-switch"> <button class="theme-switch__btn" id="themeBtn" type="button" aria-haspopup="listbox" aria-expanded="false" aria-label="切换主题配色" title="切换主题配色"> <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"> <path d="M12 3a9 9 0 1 0 9 9c0-1.2-1-2-2.2-2H17a2 2 0 0 1-2-2V6.2C15 5 14.2 4 13 4.4A9 9 0 0 0 12 3Z"></path> <circle cx="7.5" cy="11.5" r="1" fill="currentColor" stroke="none"></circle> <circle cx="10" cy="7.5" r="1" fill="currentColor" stroke="none"></circle> <circle cx="15" cy="7" r="1" fill="currentColor" stroke="none"></circle> </svg> </button> <div class="theme-pop" id="themePop" role="listbox" aria-label="选择主题" hidden> <button class="theme-opt" type="button" role="option" data-theme-value="nebula" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#8f7ff7"></span><span class="dot" style="background:#62c8f5"></span><span class="dot" style="background:#ffd98e"></span> </span> <span class="theme-opt__name">星云 · 蓝紫</span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt" type="button" role="option" data-theme-value="sakura" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#ff8fc7"></span><span class="dot" style="background:#c79bff"></span><span class="dot" style="background:#ffd08e"></span> </span> <span class="theme-opt__name">樱语 · 粉紫</span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt" type="button" role="option" data-theme-value="miku" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#2ed3c2"></span><span class="dot" style="background:#6ea8ff"></span><span class="dot" style="background:#ffe08e"></span> </span> <span class="theme-opt__name">葱色 · 青绿</span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt" type="button" role="option" data-theme-value="ember" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#ffb35c"></span><span class="dot" style="background:#ff7e6b"></span><span class="dot" style="background:#ffd98e"></span> </span> <span class="theme-opt__name">暮金 · 暖橙</span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt" type="button" role="option" data-theme-value="dawn" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#6a5ce8"></span><span class="dot" style="background:#e0568f"></span><span class="dot" style="background:#b8821e"></span> </span> <span class="theme-opt__name">晨星 · 浅色</span> <span class="theme-opt__mark">✦</span> </button> </div> </div> <script type="module">const a=document.getElementById("themeBtn"),n=document.getElementById("themePop");function s(c){document.documentElement.dataset.theme=c;try{localStorage.setItem("stella-theme",c)}catch{}const e=getComputedStyle(document.documentElement).getPropertyValue("--bg-deep").trim();document.querySelector('meta[name="theme-color"]')?.setAttribute("content",e||"#070a1c"),document.querySelectorAll(".theme-opt").forEach(t=>{const d=t.dataset.themeValue===c;t.classList.toggle("is-active",d),t.setAttribute("aria-selected",String(d))})}if(a&&n){const c=document.documentElement.dataset.theme||"nebula";document.querySelectorAll(".theme-opt").forEach(e=>{const t=e.dataset.themeValue===c;e.classList.toggle("is-active",t),e.setAttribute("aria-selected",String(t))}),a.addEventListener("click",e=>{e.stopPropagation();const t=n.hidden;n.hidden=!t,a.setAttribute("aria-expanded",String(t))}),document.addEventListener("click",e=>{!n.hidden&&!e.target.closest(".theme-switch")&&(n.hidden=!0,a.setAttribute("aria-expanded","false"))}),document.addEventListener("keydown",e=>{e.key==="Escape"&&!n.hidden&&(n.hidden=!0,a.setAttribute("aria-expanded","false"),a.focus())}),n.addEventListener("click",e=>{const t=e.target.closest(".theme-opt");t&&(s(t.dataset.themeValue??"nebula"),n.hidden=!0,a.setAttribute("aria-expanded","false"))})}</script> <div class="theme-switch fx-switch"> <button class="theme-switch__btn" id="fxBtn" type="button" aria-haspopup="listbox" aria-expanded="false" aria-label="背景特效设置" title="背景特效设置"> <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"> <path d="M5 3v4M3 5h4M6.5 17.5v3M5 19h3"></path> <path d="M14.5 4.5 16 9l4.5 1.5L16 12l-1.5 4.5L13 12l-4.5-1.5L13 9l1.5-4.5Z"></path> </svg> </button> <div class="theme-pop" id="fxPop" role="listbox" aria-label="背景特效" hidden> <button class="theme-opt fx-opt" type="button" role="option" data-fx-value="off" aria-selected="false"> <span class="fx-opt__body"> <span class="fx-opt__name">关闭特效</span> <span class="fx-opt__hint">最省电</span> </span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt fx-opt" type="button" role="option" data-fx-value="standard" aria-selected="false"> <span class="fx-opt__body"> <span class="fx-opt__name">标准</span> <span class="fx-opt__hint">闪烁星空 + 流星</span> </span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt fx-opt" type="button" role="option" data-fx-value="fancy" aria-selected="false"> <span class="fx-opt__body"> <span class="fx-opt__name">华丽</span> <span class="fx-opt__hint">追加极光 / 星座 / 光尘</span> </span> <span class="theme-opt__mark">✦</span> </button> </div> </div> <script type="module">const n=document.getElementById("fxBtn"),a=document.getElementById("fxPop");function s(d){document.documentElement.dataset.fx=d;try{localStorage.setItem("stella-fx",d)}catch{}document.querySelectorAll("#fxPop .fx-opt").forEach(t=>{const e=t.dataset.fxValue===d;t.classList.toggle("is-active",e),t.setAttribute("aria-selected",String(e))}),document.dispatchEvent(new CustomEvent("stella-fx-change",{detail:d}))}if(n&&a){const d=document.documentElement.dataset.fx||"standard";document.querySelectorAll("#fxPop .fx-opt").forEach(t=>{const e=t.dataset.fxValue===d;t.classList.toggle("is-active",e),t.setAttribute("aria-selected",String(e))}),n.addEventListener("click",t=>{t.stopPropagation();const e=a.hidden;a.hidden=!e,n.setAttribute("aria-expanded",String(e))}),document.addEventListener("click",t=>{!a.hidden&&!t.target.closest(".fx-switch")&&(a.hidden=!0,n.setAttribute("aria-expanded","false"))}),document.addEventListener("keydown",t=>{t.key==="Escape"&&!a.hidden&&(a.hidden=!0,n.setAttribute("aria-expanded","false"),n.focus())}),a.addEventListener("click",t=>{const e=t.target.closest(".fx-opt");e&&(s(e.dataset.fxValue??"standard"),a.hidden=!0,n.setAttribute("aria-expanded","false"))})}</script> </div> </div> </header> <main id="main">  <article class="wrap post-layout" data-astro-cid-lvjzyg5v> <div class="post-main page-fade" data-astro-cid-lvjzyg5v> <header class="post-head" data-astro-cid-lvjzyg5v> <a class="crumb" href="/STELLASTOPVRC/posts/" data-astro-cid-lvjzyg5v>← 返回教程档案</a> <div class="post-head__meta" style="--accent:var(--ink-dim)" data-astro-cid-lvjzyg5v> <span class="badge" data-cat="World 世界" data-astro-cid-lvjzyg5v>World 世界</span> <time datetime="2026-11-09" data-astro-cid-lvjzyg5v>2026-11-09</time> <span class="post-head__reading" data-astro-cid-lvjzyg5v>⏱ 约 10 分钟</span>  </div> <h1 class="post-head__title" data-astro-cid-lvjzyg5v>Script Execution Order</h1> <p class="post-head__lead" data-astro-cid-lvjzyg5v>ClientSim 在 Unity 中预设了严格的 Script Execution Order,确保 11 个核心系统在 Play Mode 中以正确顺序执行。</p> <div class="chip-row" data-astro-cid-lvjzyg5v> <a class="chip" href="/STELLASTOPVRC/posts/?tag=%E7%9F%A5%E8%AF%86%E5%BA%93" data-astro-cid-lvjzyg5v> 知识库 </a><a class="chip" href="/STELLASTOPVRC/posts/?tag=world" data-astro-cid-lvjzyg5v> world </a> </div> </header> <div class="prose" data-astro-cid-lvjzyg5v> <hr>
+<h1 id="script-execution-order">Script Execution Order</h1>
+<p>ClientSim 在 Unity 中预设了<strong>严格的 Script Execution Order</strong>,确保 11 个核心系统在 Play Mode 中以正确顺序执行。</p>
+<blockquote>
+<p>⚠️ <strong>修改 ClientSim 的 Script Execution Order 可能导致交互、输入、Udon 事件触发时序异常,除非完全理解每个系统职责,否则不建议调整。</strong></p>
+</blockquote>
+<hr>
+<hr>
+<h1 id="script-execution-orderscript-execution-order-完整表">Script Execution Order：Script Execution Order 完整表</h1>
+<table>
+<thead>
+<tr>
+<th>Execution Order</th>
+<th>System Name</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>-Infinity</strong></td>
+<td><strong>UnityInputSystem</strong></td>
+<td>Unity InputSystem 在所有 MonoBehaviour 之前更新。用户按钮输入被发送到 <code>ClientSimInput</code> 并分发事件。</td>
+</tr>
+<tr>
+<td><strong>-3000</strong></td>
+<td><strong>TrackingProvider</strong></td>
+<td>检查输入以更新 TrackingProvider。例如:Desktop 头部 X 旋转。</td>
+</tr>
+<tr>
+<td><strong>-3000</strong></td>
+<td><strong>PlayerController</strong></td>
+<td>在射线检测前更新 Player 位置。</td>
+</tr>
+<tr>
+<td><strong>-2000</strong></td>
+<td><strong>PlayerRaycaster</strong></td>
+<td>将 PlayerHands 位置更新到 TrackingProvider 的手部数据。射线检测以查找世界中的可交互对象。<strong>必须在 EventSystems 更新前完成</strong>。</td>
+</tr>
+<tr>
+<td><strong>-1000</strong></td>
+<td><strong>Unity Event System</strong></td>
+<td>发送鼠标事件以与 UI 交互。<strong>顺序不可更改</strong>。</td>
+</tr>
+<tr>
+<td><strong>0</strong></td>
+<td><strong>ClientSimBehaviours</strong></td>
+<td>(ClientSim 自定义 MonoBehaviour 的默认执行点)</td>
+</tr>
+<tr>
+<td><strong>0</strong></td>
+<td><strong>UdonBehaviour</strong></td>
+<td>向 Udon Programs 发送 Update 事件。</td>
+</tr>
+<tr>
+<td><strong>1</strong></td>
+<td><strong>UdonInput</strong></td>
+<td><strong>必须在 <code>UdonBehaviour.Update</code> 之后</strong>,以确保正确的事件顺序。</td>
+</tr>
+<tr>
+<td><strong>10000</strong></td>
+<td><strong>ClientSimBaseInput</strong></td>
+<td>更新 Input 事件的当前帧 tick。仅需确保测试与 Play Mode 在 Input 处理时机上行为一致。</td>
+</tr>
+<tr>
+<td><strong>30000</strong></td>
+<td><strong>PlayerStationManager</strong></td>
+<td><strong>尽可能晚</strong>地更新 Station 上玩家的位置,以便所有其他脚本先完成评估。</td>
+</tr>
+<tr>
+<td><strong>30001</strong></td>
+<td><strong>TooltipManager</strong></td>
+<td>在最终确定玩家位置后,更新 Tooltip 的视觉位置。</td>
+</tr>
+<tr>
+<td><strong>31000</strong></td>
+<td><strong>PostLateUpdater</strong></td>
+<td>VRChat 的 <code>PostLateUpdate</code> 事件被发送到 UdonBehaviours。</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<hr>
+<h1 id="script-execution-order执行阶段分析">Script Execution Order：执行阶段分析</h1>
+<h3 id="阶段-1输入采集--infinity---3000">阶段 1:输入采集 (-Infinity ~ -3000)</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>UnityInputSystem (-Infinity)</span></span>
+<span class="line"><span>    │ 读取硬件输入</span></span>
+<span class="line"><span>    ▼</span></span>
+<span class="line"><span>ClientSimInput (派发)</span></span>
+<span class="line"><span>    │</span></span>
+<span class="line"><span>    ├──► TrackingProvider (-3000)    // 头部 / 手部姿态</span></span>
+<span class="line"><span>    │</span></span>
+<span class="line"><span>    └──► PlayerController (-3000)    // 玩家位移(WASD)</span></span></code></pre>
+<p><strong>关键点</strong>:</p>
+<ul>
+<li><code>UnityInputSystem</code> 必须在所有 MonoBehaviour 之前</li>
+<li><code>TrackingProvider</code> 与 <code>PlayerController</code> 并列,均早于 -2000</li>
+</ul>
+<h3 id="阶段-2交互检测--2000---1000">阶段 2:交互检测 (-2000 ~ -1000)</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>PlayerRaycaster (-2000)</span></span>
+<span class="line"><span>    │ 发射射线,查找 Pickup / Interact</span></span>
+<span class="line"><span>    │</span></span>
+<span class="line"><span>    ▼</span></span>
+<span class="line"><span>Unity Event System (-1000)</span></span>
+<span class="line"><span>    │ UI 鼠标事件分发</span></span></code></pre>
+<p><strong>关键点</strong>:</p>
+<ul>
+<li><code>PlayerRaycaster</code> <strong>必须早于</strong> <code>Unity Event System</code>,否则交互检测的 GameObject 未及时更新</li>
+<li><code>Unity Event System</code> 顺序<strong>不可更改</strong>(Unity 内置约束)</li>
+</ul>
+<h3 id="阶段-3udon-执行-0--1">阶段 3:Udon 执行 (0 ~ 1)</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>ClientSimBehaviours (0)   // ClientSim 内部组件</span></span>
+<span class="line"><span>UdonBehaviour (0)          // Udon Update 事件</span></span>
+<span class="line"><span>    │</span></span>
+<span class="line"><span>    ▼</span></span>
+<span class="line"><span>UdonInput (1)              // Udon Input 事件</span></span></code></pre>
+<p><strong>关键点</strong>:</p>
+<ul>
+<li><code>UdonInput</code> 必须在 <code>UdonBehaviour.Update</code> 之后,确保 Input 事件响应 Udon 状态变化</li>
+<li>顺序差 1 是<strong>有意为之</strong>,用于保证 Udon 事件正确分发</li>
+</ul>
+<h3 id="阶段-4后置处理-10000--31000">阶段 4:后置处理 (10000 ~ 31000)</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>ClientSimBaseInput (10000)    // Input 帧 tick</span></span>
+<span class="line"><span>    │</span></span>
+<span class="line"><span>    ▼</span></span>
+<span class="line"><span>PlayerStationManager (30000)  // Station 玩家位置(尽可能晚)</span></span>
+<span class="line"><span>    │</span></span>
+<span class="line"><span>    ▼</span></span>
+<span class="line"><span>TooltipManager (30001)        // Tooltip 视觉(玩家位置确定后)</span></span>
+<span class="line"><span>    │</span></span>
+<span class="line"><span>    ▼</span></span>
+<span class="line"><span>PostLateUpdater (31000)       // VRChat PostLateUpdate</span></span></code></pre>
+<p><strong>关键点</strong>:</p>
+<ul>
+<li><code>PlayerStationManager</code> 与 <code>TooltipManager</code> 顺序差 1,确保 Tooltip 在玩家位置确定后更新</li>
+<li><code>PostLateUpdater</code> 触发 VRChat 的 <code>PostLateUpdate</code> 事件给 UdonBehaviours</li>
+</ul>
+<hr>
+<hr>
+<h1 id="script-execution-order工程意义">Script Execution Order：工程意义</h1>
+<h3 id="1-输入链路延迟">1. 输入链路延迟</h3>
+<table>
+<thead>
+<tr>
+<th>现象</th>
+<th>原因</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>按下交互键,Udon 下一帧才收到事件</td>
+<td><code>UdonInput</code> 排在 <code>UdonBehaviour.Update</code> 之后 1 个单位</td>
+</tr>
+<tr>
+<td>UI 点击与 GameObject 拾取冲突</td>
+<td><code>PlayerRaycaster</code> 早于 <code>Unity Event System</code>,Unity 先分发 UI 事件</td>
+</tr>
+</tbody>
+</table>
+<h3 id="2-性能与确定性">2. 性能与确定性</h3>
+<table>
+<thead>
+<tr>
+<th>维度</th>
+<th>设计</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>测试可重现</strong></td>
+<td><code>ClientSimBaseInput</code> 单独在 10000 更新,统一 Input tick 时机</td>
+</tr>
+<tr>
+<td><strong>位置稳定</strong></td>
+<td><code>PlayerStationManager</code> 在 30000 晚于所有常规逻辑,Station 上位置不会被其他系统覆盖</td>
+</tr>
+<tr>
+<td><strong>VRChat 兼容</strong></td>
+<td><code>PostLateUpdater</code> 31000 模仿 VRChat 客户端的 PostLateUpdate 时机</td>
+</tr>
+</tbody>
+</table>
+<h3 id="3-自定义脚本介入点">3. 自定义脚本介入点</h3>
+<table>
+<thead>
+<tr>
+<th>想做的事</th>
+<th>推荐 Order</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>比 Udon 更早读取 Input</td>
+<td><code>-3000 ~ -1</code></td>
+</tr>
+<tr>
+<td>比 ClientSim 组件更早</td>
+<td><code>&#x3C; 0</code>(负值)</td>
+</tr>
+<tr>
+<td>在 Udon Update 之前执行</td>
+<td><code>-1 ~ 0</code></td>
+</tr>
+<tr>
+<td>在 Udon Update 之后执行</td>
+<td><code>2 ~ 9999</code></td>
+</tr>
+<tr>
+<td>比 Station 更新更晚</td>
+<td><code>30000 ~ 30000</code>(很窄)</td>
+</tr>
+<tr>
+<td>比 PostLateUpdater 更晚</td>
+<td><code>> 31000</code></td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>⚠️ <strong>不建议</strong>将自己的脚本插入 <code>UnityInputSystem</code>/<code>Unity Event System</code> 之间,可能破坏输入链路。</p>
+</blockquote>
+<hr>
+<hr>
+<h1 id="script-execution-order关键数字速查">Script Execution Order：关键数字速查</h1>
+<table>
+<thead>
+<tr>
+<th>Order</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>-Infinity</code></td>
+<td>早于所有 MonoBehaviour</td>
+</tr>
+<tr>
+<td><code>-3000</code></td>
+<td>输入与玩家更新阶段</td>
+</tr>
+<tr>
+<td><code>-2000</code></td>
+<td>交互检测阶段</td>
+</tr>
+<tr>
+<td><code>-1000</code></td>
+<td>UI 事件阶段(不可更改)</td>
+</tr>
+<tr>
+<td><code>0</code></td>
+<td>默认阶段</td>
+</tr>
+<tr>
+<td><code>1</code></td>
+<td>Udon 紧随后置</td>
+</tr>
+<tr>
+<td><code>10000</code></td>
+<td>Input tick 收尾</td>
+</tr>
+<tr>
+<td><code>30000</code></td>
+<td>Station / Tooltip 阶段</td>
+</tr>
+<tr>
+<td><code>31000</code></td>
+<td>PostLateUpdate 阶段</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<hr>
+<h1 id="script-execution-order相关页面">Script Execution Order：相关页面</h1>
+<ul>
+<li>Systems Index - 回到 Systems 父目录</li>
+<li>Architecture - 整体架构</li>
+<li>Editor - Editor 子系统</li>
+<li>Runtime - Runtime 子系统</li>
+</ul>
+<hr> </div> <p class="kb-source-note" data-astro-cid-lvjzyg5v>
+本文由 VRChat 开发知识库自动整理（社区整理  · 可信度 medium ），
+          遇到与手写教程冲突的地方，以官方文档为最高优先级。
+</p> <section class="comments" id="comments" data-astro-cid-lvjzyg5v> <h2 class="comments__title" data-astro-cid-lvjzyg5v>✦ 旅人留言（0）</h2> <p class="comments__empty" id="commentsEmpty" data-astro-cid-lvjzyg5v>
+还没有旅人留言 —— 有疑问就写在下面，站长都会回复。
+</p> <form class="comment-form" id="commentForm" data-target="kb-world-clientsim-systems-script-execution-order" data-astro-cid-lvjzyg5v> <p class="comment-form__title" data-astro-cid-lvjzyg5v>写下你的留言</p> <input id="cAuthor" maxlength="20" placeholder="昵称（留空则为「旅人」）" data-astro-cid-lvjzyg5v> <textarea id="cBody" maxlength="1000" required placeholder="想问的问题、想说的感谢都可以（最多 1000 字）" data-astro-cid-lvjzyg5v></textarea> <div class="comment-form__actions" data-astro-cid-lvjzyg5v> <button class="btn btn--primary" type="submit" data-astro-cid-lvjzyg5v>发布留言</button> <span class="form-hint" data-astro-cid-lvjzyg5v>留言保存在本站，站长在写作台里能看到</span> <span class="form-msg" id="cMsg" data-astro-cid-lvjzyg5v></span> </div> </form> </section> <nav class="station-nav" aria-label="站间导航" data-astro-cid-lvjzyg5v> <a href="/STELLASTOPVRC/posts/kb-world-clientsim-systems-runtime/" data-astro-cid-lvjzyg5v> <span class="dir" data-astro-cid-lvjzyg5v>← 上一站 · 更新的星光</span> <span class="to" data-astro-cid-lvjzyg5v>Runtime Systems</span> </a> <a href="/STELLASTOPVRC/posts/kb-world-community-labs/" data-astro-cid-lvjzyg5v> <span class="dir" data-astro-cid-lvjzyg5v>下一站 · 更早的星光 →</span> <span class="to" data-astro-cid-lvjzyg5v>VRChat Community Labs — World 社区实验室发布系统</span> </a> </nav> </div> <aside class="toc" id="toc" hidden> <p class="toc__title">✦ 本页星图</p> <nav id="tocNav" aria-label="文章目录"></nav> </aside> <script type="module">const i=document.querySelector(".prose"),d=document.getElementById("toc"),u=document.getElementById("tocNav"),l=[];if(i&&d&&u){const c=[...i.querySelectorAll("h1, h2, h3")];if(c.length>=3){d.hidden=!1,c.forEach((o,e)=>{o.id||(o.id=`sec-${e}`);const n=document.createElement("a");n.href=`#${o.id}`;const s=(o.textContent??"").replace(/\s+/g," ").trim(),r=s.search(/[：:]/),a=r>=4?s.slice(0,r):s;n.textContent=a.length>40?`${a.slice(0,40)}…`:a,n.title=s,u.appendChild(n),l.push({a:n,h:o})});const t=()=>{let o=l[0];for(const e of l)e.h.getBoundingClientRect().top<=130&&(o=e);for(const e of l)e.a.classList.toggle("is-active",e===o)};addEventListener("scroll",t,{passive:!0}),t()}}document.querySelectorAll(".prose pre").forEach(c=>{const t=document.createElement("button");t.className="code-copy",t.type="button",t.textContent="复制",t.addEventListener("click",async()=>{const o=c.querySelector("code")?.innerText??c.innerText;try{await navigator.clipboard.writeText(o)}catch{const e=document.createElement("textarea");e.value=o,document.body.appendChild(e),e.select(),document.execCommand("copy"),e.remove()}t.textContent="已复制 ✓",t.classList.add("is-ok"),setTimeout(()=>{t.textContent="复制",t.classList.remove("is-ok")},1500)}),c.appendChild(t)});</script> </article>  </main> <footer class="site-footer"> <div class="wrap"> <p class="star-line" aria-hidden="true"> <svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> <svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> </p> <p>星之驿站 StellaStop —— 在虚拟宇宙中，为你保留一座驿站</p> <p class="site-footer__disclaimer">
+该网页目前是测试阶段，仅用于测试，所有内容仅供参考；内容全部为引用互联网当中的信息。
+</p> <p>© 2026 星之驿站 · 由 <a href="https://astro.build">Astro</a> 与星光驱动</p> <p> <a data-desk-login hidden title="写作台：登录 / 注册">登录 / 注册</a> ·
+<a href="/STELLASTOPVRC/announcements/">官方公告</a> ·
+<a href="/STELLASTOPVRC/ai/">问星 AI</a> ·
+<a href="/STELLASTOPVRC/feedback/">旅人留言板</a> </p> </div> </footer> <button class="to-top" id="toTop" aria-label="回到顶部"> <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"> <path d="M12 20V5"></path> <path d="M5.5 11.5 12 5l6.5 6.5"></path> </svg> </button> <script type="module">const e=document.getElementById("toTop");if(e){const t=()=>e.classList.toggle("is-visible",scrollY>480);addEventListener("scroll",t,{passive:!0}),t(),e.addEventListener("click",()=>{const o=matchMedia("(prefers-reduced-motion: reduce)").matches;scrollTo({top:0,behavior:o?"auto":"smooth"})})}</script> <script>(function(){const deskConfigured = "";
+
+      /* 写作台探测（页面尾部执行，DOM 已就绪）：
+         1. 计算写作台地址：站点配置 deskUrl（公网部署时填）> 本机默认 localhost:4322 > 同主机 4322
+         2. 探测 /api/gate/status —— 在线才点亮「登录 / 注册」入口，并复用给验证门横幅
+         3. 不在线则保持隐藏，绝不会把访客拽进内网地址；同时给出一次性「镜像模式」提示 */
+      (function () {
+        var host = location.hostname;
+        var isLocal = host === 'localhost' || host === '127.0.0.1' || host === '[::1]';
+        var desk = deskConfigured ||
+          (isLocal ? 'http://localhost:4322' : location.protocol + '//' + host + ':4322');
+        window.STELLA_DESK = desk;
+
+        function revealLogin() {
+          document.querySelectorAll('[data-desk-login]').forEach(function (a) {
+            a.href = desk + '/admin';
+            a.removeAttribute('hidden');
+          });
+        }
+        function showBanner(css, html, shiftHeader) {
+          var bar = document.createElement('div');
+          bar.style.cssText = css;
+          bar.innerHTML = html;
+          document.body.prepend(bar);
+          if (shiftHeader) {
+            var header = document.querySelector('.site-header');
+            if (header) header.style.marginTop = '42px';
+          }
+        }
+        function hintMirrorMode() {
+          try {
+            if (sessionStorage.getItem('stella-desk-hint')) return;
+            sessionStorage.setItem('stella-desk-hint', '1');
+          } catch (e) { /* 无痕模式等：忽略 */ }
+          var tip = document.createElement('div');
+          tip.style.cssText = 'position:fixed;left:14px;bottom:14px;z-index:9998;max-width:min(92vw,430px);padding:.65rem .9rem;border-radius:12px;background:rgba(18,20,44,.92);border:1px solid rgba(150,142,255,.35);color:#e8e6ff;font-size:.82rem;line-height:1.6;font-family:system-ui,sans-serif;box-shadow:0 8px 30px rgba(0,0,0,.35)';
+          tip.innerHTML = 'ℹ️ 静态镜像模式：登录 / 评论 / AI 等互动功能需要站长写作台在线，当前不可用。' +
+            '<span id="stellaDeskHintClose" style="float:right;cursor:pointer;opacity:.75;font-weight:700;margin-left:.6rem" title="关闭">×</span>';
+          document.body.appendChild(tip);
+          var close = function () { tip.remove(); };
+          tip.querySelector('#stellaDeskHintClose').addEventListener('click', close);
+          setTimeout(close, 9000);
+        }
+
+        try {
+          var ctrl = new AbortController();
+          var timer = setTimeout(function () { ctrl.abort(); }, 2500);
+          fetch(desk + '/api/gate/status', { credentials: 'include', signal: ctrl.signal })
+            .then(function (r) { return r.ok ? r.json() : null; })
+            .then(function (d) {
+              clearTimeout(timer);
+              if (!d) throw new Error('desk-offline');
+              window.STELLA_DESK_OK = true;
+              revealLogin();
+              if (d.regionBlocked) {
+                showBanner(
+                  'position:fixed;top:0;left:0;right:0;z-index:9999;padding:1.2rem;text-align:center;background:#1a0a0a;color:#ff9ed2;font-size:.95rem;border-bottom:2px solid #ff4d6d;font-family:system-ui,sans-serif',
+                  '⛔ 你所在的地区（' + (d.regionCountry || '未知') + '）暂不开放访问。',
+                  false
+                );
+                return;
+              }
+              if (d.enabled && !d.passed) {
+                showBanner(
+                  'position:fixed;top:0;left:0;right:0;z-index:9999;padding:0.7rem;text-align:center;background:linear-gradient(94deg,rgba(143,127,247,.25),rgba(98,200,245,.18));border-bottom:1px solid rgba(150,142,255,.3);color:#f0efff;font-size:.88rem;font-family:system-ui,sans-serif',
+                  '🔒 本站启用了安全验证 —— <a href="' + desk + '/gate?next=' + encodeURIComponent(location.href) + '" style="color:#ffd98e;font-weight:700;text-decoration:underline">点击完成验证</a>，通过后即可使用全部功能（30 天免验）。',
+                  true
+                );
+              }
+            })
+            .catch(function () {
+              clearTimeout(timer);
+              window.STELLA_DESK_OK = false;
+              hintMirrorMode();
+            });
+        } catch (e) { /* 忽略 */ }
+      })();
+    })();</script> </body> </html> <script type="module">const m=document.getElementById("commentForm"),s=document.getElementById("cMsg"),u=`${location.protocol}//${location.hostname}:4322/api/message`;function r(e,t=!1){s&&(s.textContent=e,s.classList.toggle("is-err",t),s.classList.toggle("is-ok",!t))}function y(){const e=new Date,t=n=>String(n).padStart(2,"0");return`${e.getFullYear()}-${t(e.getMonth()+1)}-${t(e.getDate())}`}function f(e){let t=7;for(const n of e)t=(t*31+n.charCodeAt(0))%360;return t}function g(e,t){const n=document.createElement("li");n.className="comment",n.innerHTML=`
+      <span class="comment__avatar"></span>
+      <div class="comment__bubble">
+        <div class="comment__head">
+          <span class="comment__name"></span>
+          <time class="comment__date">${y()}</time>
+        </div>
+        <p class="comment__body"></p>
+      </div>`;const o=n.querySelector(".comment__avatar");return o.style.setProperty("--h",String(f(e))),o.textContent=e.slice(0,1),n.querySelector(".comment__name").textContent=e,n.querySelector(".comment__body").textContent=t,n}m?.addEventListener("submit",async e=>{e.preventDefault();const t=document.getElementById("cBody").value.trim();if(!t)return r("留言内容不能为空哦",!0);const n=document.getElementById("cAuthor").value.trim()||"旅人",o=m.querySelector("button");o&&(o.disabled=!0);try{const c=await fetch(u,{credentials:"include",method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({target:m.dataset.target,kind:"comment",author:n,body:t})}),d=await c.json().catch(()=>({}));if(!c.ok)throw new Error(d.error||`发送失败（${c.status}）`);const l=document.querySelector(".comment-list");l&&l.appendChild(g(n,t)),document.getElementById("commentsEmpty")?.remove(),document.getElementById("cBody").value="",r("留言已发布，感谢支持 ✦");const a=document.querySelector(".comments__title"),i=a?.textContent?.match(/（(\d+)）/);a&&i&&(a.textContent=a.textContent.replace(/（\d+）/,`（${Number(i[1])+1}）`))}catch(c){r(c instanceof TypeError?"写作台没在运行，暂时收不到留言 —— 双击「启动博客.bat」就好":c.message,!0)}finally{o&&(o.disabled=!1)}});</script> 

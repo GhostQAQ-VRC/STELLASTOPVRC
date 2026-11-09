@@ -1,0 +1,422 @@
+<!DOCTYPE html><html lang="zh-CN"> <head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="generator" content="Astro v5.18.2"><meta name="description" content="TextMesh Pro 是 Unity 中用于显示高质量 2D 和 3D 文本的工具,被 VRChat Worlds 全面采用。"><meta name="theme-color" content="#070a1c"><meta property="og:title" content="TextMesh Pro (TMP) · 星之驿站 StellaStop"><meta property="og:description" content="TextMesh Pro 是 Unity 中用于显示高质量 2D 和 3D 文本的工具,被 VRChat Worlds 全面采用。"><meta property="og:type" content="website"><meta name="twitter:card" content="summary"><link rel="icon" type="image/svg+xml" href="/STELLASTOPVRC/favicon.svg"><script>
+      // 在渲染前恢复主题与特效档位，避免闪一下默认状态
+      try {
+        document.documentElement.dataset.theme =
+          localStorage.getItem('stella-theme') || 'nebula';
+        document.documentElement.dataset.fx =
+          localStorage.getItem('stella-fx') || 'standard';
+      } catch {
+        /* 隐私模式读不到就算了 */
+      }
+    </script><link rel="stylesheet" href="/STELLASTOPVRC/custom-vars.css"><title>TextMesh Pro (TMP) · 星之驿站 StellaStop</title><link rel="stylesheet" href="/STELLASTOPVRC/_astro/about.Bgh6wcGl.css">
+<style>.post-head__meta[data-astro-cid-lvjzyg5v]{color:var(--ink-faint);font-family:var(--font-mono);font-size:.82rem}.post-head[data-astro-cid-lvjzyg5v] .chip-row[data-astro-cid-lvjzyg5v]{margin-top:1rem}.kb-source-note[data-astro-cid-lvjzyg5v]{max-width:760px;margin:2.2rem auto 0;font-size:.82rem;color:var(--ink-faint);border-top:1px dashed var(--line);padding-top:1rem}
+</style></head> <body> <div class="site-notice" id="siteNotice"> <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> <span class="site-notice__text">欢迎来到星之驿站！</span> <button class="site-notice__close" id="noticeClose" type="button" aria-label="关闭公告">
+×
+</button> </div> <a class="skip-link" href="#main">跳到主要内容</a> <canvas id="starfield" aria-hidden="true" data-astro-cid-ra7sfcwn></canvas> <div class="fx-aurora fx-aurora--a" aria-hidden="true" data-astro-cid-ra7sfcwn></div> <div class="fx-aurora fx-aurora--b" aria-hidden="true" data-astro-cid-ra7sfcwn></div>  <script type="module">const u=document.getElementById("starfield");if(u){let F=function(){const n=Math.random();return n<.1?"gold":n<.42?"blue":"white"},v=function(){const n=Math.min(window.devicePixelRatio||1,2);s=window.innerWidth,d=window.innerHeight,u.width=s*n,u.height=d*n,u.style.width=`${s}px`,u.style.height=`${d}px`,t.setTransform(n,0,0,n,0,0);const e=Math.min(190,Math.round(s*d/8500));l=Array.from({length:e},()=>({x:Math.random()*s,y:Math.random()*d,r:r(.4,1.7),base:r(.25,.8),amp:r(.12,.4),speed:r(6e-4,.0022),phase:r(0,Math.PI*2),c:F()})),C=Array.from({length:26},()=>({x:Math.random()*s,y:Math.random()*d,r:r(.9,2.4),vx:r(-.006,.006),vy:r(-.02,-.006),base:r(.2,.5),speed:r(8e-4,.002),phase:r(0,Math.PI*2),c:Math.random()<.5?"gold":"violet"})),c==="off"&&m(0,!0)},D=function(n){const e=Math.random()<.5?1:-1,o=r(Math.PI/7,Math.PI/5),a=r(.45,.75);y.push({x:r(s*.15,s*.85),y:r(-20,d*.3),vx:Math.cos(o)*a*e,vy:Math.sin(o)*a,born:n,life:r(750,1050),len:r(100,170)})},S=function(n){y=y.filter(e=>n-e.born<e.life);for(const e of y){const o=(n-e.born)/e.life,a=e.x+e.vx*(n-e.born),i=e.y+e.vy*(n-e.born),f=o<.15?o/.15:o>.7?(1-o)/.3:1,h=Math.hypot(e.vx,e.vy),x=e.vx/h,g=e.vy/h,b=t.createLinearGradient(a,i,a-x*e.len,i-g*e.len);b.addColorStop(0,`rgba(236,242,255,${(.85*f).toFixed(3)})`),b.addColorStop(1,"rgba(236,242,255,0)"),t.strokeStyle=b,t.lineWidth=1.6,t.lineCap="round",t.beginPath(),t.moveTo(a,i),t.lineTo(a-x*e.len,i-g*e.len),t.stroke()}},B=function(){let o=0;t.lineWidth=.7;for(let a=0;a<l.length&&o<26;a++)for(let i=a+1;i<l.length&&o<26;i++){const f=l[a].x-l[i].x,h=l[a].y-l[i].y,x=f*f+h*h;if(x<16900){const g=(1-Math.sqrt(x)/130)*.17;t.strokeStyle=`rgba(178,170,255,${g.toFixed(3)})`,t.beginPath(),t.moveTo(l[a].x,l[a].y),t.lineTo(l[i].x,l[i].y),t.stroke(),o++}}},X=function(n){for(const e of C){e.x+=e.vx*16,e.y+=e.vy*16,e.y<-12&&(e.y=d+10),e.x<-12&&(e.x=s+10),e.x>s+12&&(e.x=-10);const o=Math.max(.05,e.base+.25*Math.sin(n*e.speed+e.phase)),[a,i,f]=A[e.c];t.beginPath(),t.arc(e.x,e.y,e.r,0,7),t.shadowBlur=9,t.shadowColor=`rgba(${a},${i},${f},0.9)`,t.fillStyle=`rgba(${a},${i},${f},${o.toFixed(3)})`,t.fill()}t.shadowBlur=0},m=function(n,e=!1){t.clearRect(0,0,s,d);for(const o of l){const a=c==="off"?o.base:Math.max(.05,o.base+o.amp*Math.sin(n*o.speed+o.phase)),[i,f,h]=A[o.c];t.beginPath(),t.arc(o.x,o.y,o.r,0,7),o.r>1.25?(t.shadowBlur=7,t.shadowColor=`rgba(${i},${f},${h},0.85)`):t.shadowBlur=0,t.fillStyle=`rgba(${i},${f},${h},${a.toFixed(3)})`,t.fill()}if(t.shadowBlur=0,c!=="off"&&!e){c==="fancy"&&(B(),X(n));const o=c==="fancy"?r(2600,6e3):r(4200,9500);n>P&&(D(n),P=n+o),S(n)}},$=function(n){m(n),M=requestAnimationFrame($)},p=function(){if(c==="off"){m(0,!0);return}cancelAnimationFrame(M),M=requestAnimationFrame($)},w=function(){cancelAnimationFrame(M),t.clearRect(0,0,s,d),m(0,!0)};const t=u.getContext("2d"),k=matchMedia("(prefers-reduced-motion: reduce)").matches,A={white:[240,240,255],blue:[150,215,250],gold:[255,218,150],violet:[178,170,255]};let s=0,d=0,l=[],C=[],y=[],P=2500,M=0,c=document.documentElement.dataset.fx||"standard";k&&(c="off");const r=(n,e)=>n+Math.random()*(e-n);v(),addEventListener("resize",v),document.addEventListener("stella-fx-change",n=>{c=n.detail,c==="off"?w():p()}),c==="off"?m(0,!0):(p(),document.addEventListener("visibilitychange",()=>{document.hidden?w():p()}))}</script> <header class="site-header"> <div class="wrap site-header__inner"> <a class="logo" href="/STELLASTOPVRC/"> <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> <span>星之驿站</span> <span class="logo__romaji">StellaStop</span> </a> <div class="header-right"> <nav class="site-nav" aria-label="站内导航"> <a href="/STELLASTOPVRC/"> 首页 </a><a href="/STELLASTOPVRC/start/"> 新手 </a><a href="/STELLASTOPVRC/posts/"> 教程 </a><a href="/STELLASTOPVRC/videos/"> 视频 </a><a href="/STELLASTOPVRC/resources/"> 资源 </a><a href="/STELLASTOPVRC/booth/"> Booth </a><a href="/STELLASTOPVRC/announcements/"> 公告 </a><a href="/STELLASTOPVRC/ai/"> 问星 </a><a href="/STELLASTOPVRC/changelog/"> 更新日志 </a><a href="/STELLASTOPVRC/about/"> 关于 </a> </nav> <a class="login-link" data-desk-login hidden title="写作台：登录 / 注册后可发教程、传资源">
+登录 / 注册
+</a> <div class="theme-switch"> <button class="theme-switch__btn" id="themeBtn" type="button" aria-haspopup="listbox" aria-expanded="false" aria-label="切换主题配色" title="切换主题配色"> <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"> <path d="M12 3a9 9 0 1 0 9 9c0-1.2-1-2-2.2-2H17a2 2 0 0 1-2-2V6.2C15 5 14.2 4 13 4.4A9 9 0 0 0 12 3Z"></path> <circle cx="7.5" cy="11.5" r="1" fill="currentColor" stroke="none"></circle> <circle cx="10" cy="7.5" r="1" fill="currentColor" stroke="none"></circle> <circle cx="15" cy="7" r="1" fill="currentColor" stroke="none"></circle> </svg> </button> <div class="theme-pop" id="themePop" role="listbox" aria-label="选择主题" hidden> <button class="theme-opt" type="button" role="option" data-theme-value="nebula" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#8f7ff7"></span><span class="dot" style="background:#62c8f5"></span><span class="dot" style="background:#ffd98e"></span> </span> <span class="theme-opt__name">星云 · 蓝紫</span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt" type="button" role="option" data-theme-value="sakura" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#ff8fc7"></span><span class="dot" style="background:#c79bff"></span><span class="dot" style="background:#ffd08e"></span> </span> <span class="theme-opt__name">樱语 · 粉紫</span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt" type="button" role="option" data-theme-value="miku" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#2ed3c2"></span><span class="dot" style="background:#6ea8ff"></span><span class="dot" style="background:#ffe08e"></span> </span> <span class="theme-opt__name">葱色 · 青绿</span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt" type="button" role="option" data-theme-value="ember" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#ffb35c"></span><span class="dot" style="background:#ff7e6b"></span><span class="dot" style="background:#ffd98e"></span> </span> <span class="theme-opt__name">暮金 · 暖橙</span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt" type="button" role="option" data-theme-value="dawn" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#6a5ce8"></span><span class="dot" style="background:#e0568f"></span><span class="dot" style="background:#b8821e"></span> </span> <span class="theme-opt__name">晨星 · 浅色</span> <span class="theme-opt__mark">✦</span> </button> </div> </div> <script type="module">const a=document.getElementById("themeBtn"),n=document.getElementById("themePop");function s(c){document.documentElement.dataset.theme=c;try{localStorage.setItem("stella-theme",c)}catch{}const e=getComputedStyle(document.documentElement).getPropertyValue("--bg-deep").trim();document.querySelector('meta[name="theme-color"]')?.setAttribute("content",e||"#070a1c"),document.querySelectorAll(".theme-opt").forEach(t=>{const d=t.dataset.themeValue===c;t.classList.toggle("is-active",d),t.setAttribute("aria-selected",String(d))})}if(a&&n){const c=document.documentElement.dataset.theme||"nebula";document.querySelectorAll(".theme-opt").forEach(e=>{const t=e.dataset.themeValue===c;e.classList.toggle("is-active",t),e.setAttribute("aria-selected",String(t))}),a.addEventListener("click",e=>{e.stopPropagation();const t=n.hidden;n.hidden=!t,a.setAttribute("aria-expanded",String(t))}),document.addEventListener("click",e=>{!n.hidden&&!e.target.closest(".theme-switch")&&(n.hidden=!0,a.setAttribute("aria-expanded","false"))}),document.addEventListener("keydown",e=>{e.key==="Escape"&&!n.hidden&&(n.hidden=!0,a.setAttribute("aria-expanded","false"),a.focus())}),n.addEventListener("click",e=>{const t=e.target.closest(".theme-opt");t&&(s(t.dataset.themeValue??"nebula"),n.hidden=!0,a.setAttribute("aria-expanded","false"))})}</script> <div class="theme-switch fx-switch"> <button class="theme-switch__btn" id="fxBtn" type="button" aria-haspopup="listbox" aria-expanded="false" aria-label="背景特效设置" title="背景特效设置"> <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"> <path d="M5 3v4M3 5h4M6.5 17.5v3M5 19h3"></path> <path d="M14.5 4.5 16 9l4.5 1.5L16 12l-1.5 4.5L13 12l-4.5-1.5L13 9l1.5-4.5Z"></path> </svg> </button> <div class="theme-pop" id="fxPop" role="listbox" aria-label="背景特效" hidden> <button class="theme-opt fx-opt" type="button" role="option" data-fx-value="off" aria-selected="false"> <span class="fx-opt__body"> <span class="fx-opt__name">关闭特效</span> <span class="fx-opt__hint">最省电</span> </span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt fx-opt" type="button" role="option" data-fx-value="standard" aria-selected="false"> <span class="fx-opt__body"> <span class="fx-opt__name">标准</span> <span class="fx-opt__hint">闪烁星空 + 流星</span> </span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt fx-opt" type="button" role="option" data-fx-value="fancy" aria-selected="false"> <span class="fx-opt__body"> <span class="fx-opt__name">华丽</span> <span class="fx-opt__hint">追加极光 / 星座 / 光尘</span> </span> <span class="theme-opt__mark">✦</span> </button> </div> </div> <script type="module">const n=document.getElementById("fxBtn"),a=document.getElementById("fxPop");function s(d){document.documentElement.dataset.fx=d;try{localStorage.setItem("stella-fx",d)}catch{}document.querySelectorAll("#fxPop .fx-opt").forEach(t=>{const e=t.dataset.fxValue===d;t.classList.toggle("is-active",e),t.setAttribute("aria-selected",String(e))}),document.dispatchEvent(new CustomEvent("stella-fx-change",{detail:d}))}if(n&&a){const d=document.documentElement.dataset.fx||"standard";document.querySelectorAll("#fxPop .fx-opt").forEach(t=>{const e=t.dataset.fxValue===d;t.classList.toggle("is-active",e),t.setAttribute("aria-selected",String(e))}),n.addEventListener("click",t=>{t.stopPropagation();const e=a.hidden;a.hidden=!e,n.setAttribute("aria-expanded",String(e))}),document.addEventListener("click",t=>{!a.hidden&&!t.target.closest(".fx-switch")&&(a.hidden=!0,n.setAttribute("aria-expanded","false"))}),document.addEventListener("keydown",t=>{t.key==="Escape"&&!a.hidden&&(a.hidden=!0,n.setAttribute("aria-expanded","false"),n.focus())}),a.addEventListener("click",t=>{const e=t.target.closest(".fx-opt");e&&(s(e.dataset.fxValue??"standard"),a.hidden=!0,n.setAttribute("aria-expanded","false"))})}</script> </div> </div> </header> <main id="main">  <article class="wrap post-layout" data-astro-cid-lvjzyg5v> <div class="post-main page-fade" data-astro-cid-lvjzyg5v> <header class="post-head" data-astro-cid-lvjzyg5v> <a class="crumb" href="/STELLASTOPVRC/posts/" data-astro-cid-lvjzyg5v>← 返回教程档案</a> <div class="post-head__meta" style="--accent:var(--ink-dim)" data-astro-cid-lvjzyg5v> <span class="badge" data-cat="World 世界" data-astro-cid-lvjzyg5v>World 世界</span> <time datetime="2026-11-09" data-astro-cid-lvjzyg5v>2026-11-09</time> <span class="post-head__reading" data-astro-cid-lvjzyg5v>⏱ 约 14 分钟</span>  </div> <h1 class="post-head__title" data-astro-cid-lvjzyg5v>TextMesh Pro (TMP)</h1> <p class="post-head__lead" data-astro-cid-lvjzyg5v>TextMesh Pro 是 Unity 中用于显示高质量 2D 和 3D 文本的工具,被 VRChat Worlds 全面采用。</p> <div class="chip-row" data-astro-cid-lvjzyg5v> <a class="chip" href="/STELLASTOPVRC/posts/?tag=%E7%9F%A5%E8%AF%86%E5%BA%93" data-astro-cid-lvjzyg5v> 知识库 </a><a class="chip" href="/STELLASTOPVRC/posts/?tag=world" data-astro-cid-lvjzyg5v> world </a> </div> </header> <div class="prose" data-astro-cid-lvjzyg5v> <hr>
+<h1 id="textmesh-pro-tmp">TextMesh Pro (TMP)</h1>
+<p><a href="https://docs.unity3d.com/Packages/com.unity.textmeshpro@4.0/manual/index.html">TextMesh Pro</a> 是 Unity 中用于显示高质量 2D 和 3D 文本的工具,被 VRChat Worlds 全面采用。</p>
+<p><strong>Udon 暴露的 TMP 组件</strong> (来自白名单):</p>
+<ul>
+<li><code>TMP_Text</code> (TextMeshProUGUI 和 TextMeshPro 的基类)</li>
+<li><code>TMP_Dropdown</code></li>
+<li><code>TMP_InputField</code></li>
+</ul>
+<blockquote>
+<p>✅ <strong>VRCTMPDropdownExtension</strong>（SDK 3.6.1 起暴露）: 为 <code>TMP_Dropdown</code> 提供 <code>AddOptions</code> 扩展方法，在 U# 中可简洁地批量添加选项：</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="csharp"><code><span class="line"><span style="color:#F97583">using</span><span style="color:#B392F0"> VRC</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">SDK3</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">Components</span><span style="color:#E1E4E8">; </span><span style="color:#6A737D">// 必须引入</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">dropdown.</span><span style="color:#B392F0">AddOptions</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">new</span><span style="color:#F97583"> string</span><span style="color:#E1E4E8">[] { </span><span style="color:#9ECBFF">"A"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"B"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"C"</span><span style="color:#E1E4E8"> });   </span><span style="color:#6A737D">// string[]</span></span>
+<span class="line"><span style="color:#E1E4E8">dropdown.</span><span style="color:#B392F0">AddOptions</span><span style="color:#E1E4E8">(sprites);                            </span><span style="color:#6A737D">// Sprite[]</span></span>
+<span class="line"><span style="color:#E1E4E8">dropdown.</span><span style="color:#B392F0">AddOptions</span><span style="color:#E1E4E8">(optionDataArray);                    </span><span style="color:#6A737D">// TMP_Dropdown.OptionData[]</span></span></code></pre>
+<p>非扩展写法 <code>AddOptions(dropdown, options)</code> 同样可用。来源: 官方 <a href="https://creators.vrchat.com/worlds/components/textmeshpro/tmp_dropdown">TMP Dropdown</a>。</p>
+</blockquote>
+<blockquote>
+<p>⚠️ <strong>FACT</strong>: 避免使用 Unity 内置的 <a href="https://docs.unity3d.com/2018.1/Documentation/ScriptReference/UI.Text.html">Text 组件</a>,因为:</p>
+<ul>
+<li>内置 Text 会有锯齿</li>
+<li>字符上限 16,250</li>
+<li>TextMesh Pro 提供更好的渲染、<a href="http://digitalnativestudios.com/textmeshpro/docs/rich-text/">富文本</a>支持,无字符限制</li>
+</ul>
+</blockquote>
+<hr>
+<hr>
+<h1 id="textmesh-pro-tmp安装">TextMesh Pro (TMP)：安装</h1>
+<p>TMP 包已包含在 Unity Editor 中。<strong>首次使用</strong>时,Unity 会提示导入必备资源:</p>
+<ol>
+<li>创建任何 TMP 组件会触发此提示</li>
+<li>也可以手动选择 <code>Window</code> > <code>TextMeshPro</code> > <code>Import TMP Essential Resources</code></li>
+</ol>
+<hr>
+<hr>
+<h1 id="textmesh-pro-tmp字体导入">TextMesh Pro (TMP)：字体导入</h1>
+<h3 id="默认字体">默认字体</h3>
+<p>TextMesh Pro 包含一个名为 <code>LiberationSans SDF</code> 的默认字体资产,可立即开始使用。</p>
+<h3 id="自定义字体">自定义字体</h3>
+<p>通过 <a href="https://docs.unity3d.com/Packages/com.unity.textmeshpro@4.0/manual/FontAssetsCreator.html">Font Asset Creator</a> 导入自己的字体,生成的字体资产可在 TMP 组件中使用。</p>
+<blockquote>
+<p>💡 <strong>优化提示</strong>:</p>
+<ul>
+<li>字体资产会增加 World 的下载大小和 RAM 占用</li>
+<li>降低 Atlas 分辨率</li>
+<li>仅导入需要的字符</li>
+<li><strong>不要</strong>导入整个 Unicode 范围(常用字符远少于全部)</li>
+</ul>
+</blockquote>
+<h3 id="vrchat-内置-fallback-字体">VRChat 内置 Fallback 字体</h3>
+<p>当导入自定义字体时,通常不会包含每个 Unicode 字符。如果 World 包含不在字体资产中的字符串或用户名,TMP 将无法渲染,显示为 ”□□□”。</p>
+<p><strong>使用 VRChat Fallback 字体</strong>:</p>
+<ol>
+<li>打开 <code>Project Settings</code> > <code>TextMeshPro settings</code></li>
+<li><strong>移除</strong> 所有的 “Fallback Font Assets”</li>
+</ol>
+<blockquote>
+<p><strong>FACT</strong>: 配置正确后,Unity 编辑器中显示为方块的字符,上传到 VRChat 后将正确渲染。</p>
+</blockquote>
+<hr>
+<hr>
+<h1 id="textmesh-pro-tmpu-引用方式">TextMesh Pro (TMP)：U# 引用方式</h1>
+<h3 id="tmp_text-基础属性">TMP_Text 基础属性</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="csharp"><code><span class="line"><span style="color:#F97583">using</span><span style="color:#B392F0"> TMPro</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">using</span><span style="color:#B392F0"> UdonSharp</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">using</span><span style="color:#B392F0"> UnityEngine</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">using</span><span style="color:#B392F0"> VRC</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">SDKBase</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">public</span><span style="color:#F97583"> class</span><span style="color:#B392F0"> TMPSample</span><span style="color:#E1E4E8"> : </span><span style="color:#B392F0">UdonSharpBehaviour</span></span>
+<span class="line"><span style="color:#E1E4E8">{</span></span>
+<span class="line"><span style="color:#E1E4E8">    [</span><span style="color:#B392F0">SerializeField</span><span style="color:#E1E4E8">] </span><span style="color:#F97583">private</span><span style="color:#B392F0"> TMP_Text</span><span style="color:#B392F0"> tmpText</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">    [</span><span style="color:#B392F0">SerializeField</span><span style="color:#E1E4E8">] </span><span style="color:#F97583">private</span><span style="color:#B392F0"> TextMeshProUGUI</span><span style="color:#B392F0"> uiText</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">    [</span><span style="color:#B392F0">SerializeField</span><span style="color:#E1E4E8">] </span><span style="color:#F97583">private</span><span style="color:#B392F0"> TextMeshPro</span><span style="color:#B392F0"> worldText</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span></span>
+<span class="line"><span style="color:#F97583">    public</span><span style="color:#F97583"> override</span><span style="color:#F97583"> void</span><span style="color:#B392F0"> Interact</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"><span style="color:#E1E4E8">    {</span></span>
+<span class="line"><span style="color:#6A737D">        // 设置文本</span></span>
+<span class="line"><span style="color:#E1E4E8">        tmpText.text </span><span style="color:#F97583">=</span><span style="color:#9ECBFF"> "Hello VRChat!"</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">        </span></span>
+<span class="line"><span style="color:#6A737D">        // 修改样式</span></span>
+<span class="line"><span style="color:#E1E4E8">        tmpText.color </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> Color.red;</span></span>
+<span class="line"><span style="color:#E1E4E8">        tmpText.fontSize </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> 24f</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">        </span></span>
+<span class="line"><span style="color:#6A737D">        // 对齐</span></span>
+<span class="line"><span style="color:#E1E4E8">        tmpText.alignment </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> TextAlignmentOptions.Center;</span></span>
+<span class="line"><span style="color:#E1E4E8">        </span></span>
+<span class="line"><span style="color:#6A737D">        // 富文本</span></span>
+<span class="line"><span style="color:#E1E4E8">        tmpText.richText </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> true</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">        tmpText.text </span><span style="color:#F97583">=</span><span style="color:#9ECBFF"> "&#x3C;color=red>Red&#x3C;/color> and &#x3C;b>Bold&#x3C;/b>"</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<h3 id="tmp_text-主要属性表">TMP_Text 主要属性表</h3>
+<table>
+<thead>
+<tr>
+<th>属性</th>
+<th>类型</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>text</code></td>
+<td><code>String</code></td>
+<td>访问文本内容</td>
+</tr>
+<tr>
+<td><code>isRightToLeftText</code></td>
+<td><code>Bool</code></td>
+<td>右到左显示(多语言)</td>
+</tr>
+<tr>
+<td><code>fontMaterial</code></td>
+<td><code>Material</code></td>
+<td>字体材质(访问会克隆)</td>
+</tr>
+<tr>
+<td><code>fontSharedMaterial</code></td>
+<td><code>Material</code></td>
+<td>共享字体材质(FontAsset 为 null 时返回 null)</td>
+</tr>
+<tr>
+<td><code>color</code></td>
+<td><code>Color</code></td>
+<td>文本颜色</td>
+</tr>
+<tr>
+<td><code>alpha</code></td>
+<td><code>Float</code></td>
+<td>文本不透明度</td>
+</tr>
+<tr>
+<td><code>fontSize</code></td>
+<td><code>Float</code></td>
+<td>字体大小</td>
+</tr>
+<tr>
+<td><code>enableAutoSizing</code></td>
+<td><code>Bool</code></td>
+<td>自动调整大小</td>
+</tr>
+<tr>
+<td><code>fontSizeMin</code> / <code>fontSizeMax</code></td>
+<td><code>Float</code></td>
+<td>自动大小最小/最大值</td>
+</tr>
+<tr>
+<td><code>horizontalAlignment</code></td>
+<td><code>HorizontalAlignmentOptions</code></td>
+<td>水平对齐</td>
+</tr>
+<tr>
+<td><code>verticalAlignment</code></td>
+<td><code>VerticalAlignmentOptions</code></td>
+<td>垂直对齐</td>
+</tr>
+<tr>
+<td><code>alignment</code></td>
+<td><code>TextAlignmentOptions</code></td>
+<td>总体对齐</td>
+</tr>
+<tr>
+<td><code>characterSpacing</code></td>
+<td><code>Float</code></td>
+<td>字符间距</td>
+</tr>
+<tr>
+<td><code>wordSpacing</code></td>
+<td><code>Float</code></td>
+<td>单词间距</td>
+</tr>
+<tr>
+<td><code>lineSpacing</code></td>
+<td><code>Float</code></td>
+<td>行间距</td>
+</tr>
+<tr>
+<td><code>paragraphSpacing</code></td>
+<td><code>Float</code></td>
+<td>段落间距</td>
+</tr>
+<tr>
+<td><code>characterWidthAdjustment</code></td>
+<td><code>Float</code></td>
+<td>字符重叠</td>
+</tr>
+<tr>
+<td><code>enableWordWrapping</code></td>
+<td><code>Bool</code></td>
+<td>自动换行</td>
+</tr>
+<tr>
+<td><code>overflowMode</code></td>
+<td><code>TextOverflowModes</code></td>
+<td>溢出处理(Truncate / Overflow / Ellipsis / Linked / Mask / Page)</td>
+</tr>
+<tr>
+<td><code>richText</code></td>
+<td><code>Bool</code></td>
+<td>富文本启用</td>
+</tr>
+<tr>
+<td><code>maxVisibleCharacters</code></td>
+<td><code>Int</code></td>
+<td>可见字符数(打字机效果)</td>
+</tr>
+<tr>
+<td><code>maxVisibleWords</code></td>
+<td><code>Int</code></td>
+<td>可见单词数</td>
+</tr>
+<tr>
+<td><code>maxVisibleLines</code></td>
+<td><code>Int</code></td>
+<td>可见行数</td>
+</tr>
+<tr>
+<td><code>enable</code></td>
+<td><code>bool</code></td>
+<td>启用/禁用组件</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<hr>
+<h1 id="textmesh-pro-tmpcanvas-render-mode">TextMesh Pro (TMP)：Canvas Render Mode</h1>
+<p><code>TextMeshProUGUI</code> 必须配合 Canvas 使用。Canvas Render Mode 选择:</p>
+<table>
+<thead>
+<tr>
+<th>Render Mode</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>World Space</strong></td>
+<td>将文本放置在世界中的任意位置(3D 文字招牌)</td>
+</tr>
+<tr>
+<td><strong>Screen Space - Overlay</strong></td>
+<td>直接显示在用户屏幕上(HUD 元素)</td>
+</tr>
+<tr>
+<td><strong>Screen Space - Camera</strong></td>
+<td>由 Camera 渲染,支持透视</td>
+</tr>
+</tbody>
+</table>
+<h3 id="性能影响">性能影响</h3>
+<ul>
+<li>TMP 文本一次性 batching,适合大量文本同时显示</li>
+<li>频繁修改 <code>text</code> 会触发网格重建,谨慎使用</li>
+<li>打字机效果:用 <code>maxVisibleCharacters</code> 替代 <code>text = "..."</code> 累加</li>
+</ul>
+<hr>
+<hr>
+<h1 id="textmesh-pro-tmp本地化建议">TextMesh Pro (TMP)：本地化建议</h1>
+<h3 id="方案-1-简单字符串替换">方案 1: 简单字符串替换</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="csharp"><code><span class="line"><span style="color:#E1E4E8">[</span><span style="color:#B392F0">SerializeField</span><span style="color:#E1E4E8">] </span><span style="color:#F97583">private</span><span style="color:#B392F0"> TMP_Text</span><span style="color:#B392F0"> label</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">public</span><span style="color:#F97583"> void</span><span style="color:#B392F0"> SetLocalizedText</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">string</span><span style="color:#B392F0"> languageCode</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#E1E4E8">{</span></span>
+<span class="line"><span style="color:#F97583">    switch</span><span style="color:#E1E4E8"> (languageCode)</span></span>
+<span class="line"><span style="color:#E1E4E8">    {</span></span>
+<span class="line"><span style="color:#F97583">        case</span><span style="color:#9ECBFF"> "zh-CN"</span><span style="color:#E1E4E8">: label.text </span><span style="color:#F97583">=</span><span style="color:#9ECBFF"> "你好"</span><span style="color:#E1E4E8">; </span><span style="color:#F97583">break</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">        case</span><span style="color:#9ECBFF"> "ja-JP"</span><span style="color:#E1E4E8">: label.text </span><span style="color:#F97583">=</span><span style="color:#9ECBFF"> "こんにちは"</span><span style="color:#E1E4E8">; </span><span style="color:#F97583">break</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">        case</span><span style="color:#9ECBFF"> "en-US"</span><span style="color:#E1E4E8">: label.text </span><span style="color:#F97583">=</span><span style="color:#9ECBFF"> "Hello"</span><span style="color:#E1E4E8">; </span><span style="color:#F97583">break</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<h3 id="方案-2-stringvariables-推荐">方案 2: StringVariables (推荐)</h3>
+<p>VRChat 自带 StringVariables 资产系统,可通过 SDK 工具配置多语言字符串,运行时直接读取。</p>
+<h3 id="方案-3-tmp-富文本--内嵌多语言">方案 3: TMP 富文本 + 内嵌多语言</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="csharp"><code><span class="line"><span style="color:#E1E4E8">tmpText.richText </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> true</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">tmpText.text </span><span style="color:#F97583">=</span><span style="color:#9ECBFF"> $"Player: &#x3C;color=#FFD700></span><span style="color:#9ECBFF">{</span><span style="color:#E1E4E8">playerName</span><span style="color:#9ECBFF">}</span><span style="color:#9ECBFF">&#x3C;/color>"</span><span style="color:#E1E4E8">;</span></span></code></pre>
+<hr>
+<hr>
+<h1 id="textmesh-pro-tmp与其他组件的依赖">TextMesh Pro (TMP)：与其他组件的依赖</h1>
+<ul>
+<li><strong>无强依赖</strong>: TMP 是独立 UI 系统</li>
+<li><strong>常与 UI 交互组合</strong>: VRC_UIShape + TMP InputField</li>
+<li><strong>可与 Pickup 组合</strong>: 玩家拿起物体时更新其标签文本</li>
+<li><strong>可与 VRC_AvatarPedestal 组合</strong>: 展示 Avatar 名称</li>
+</ul>
+<hr>
+<hr>
+<h1 id="textmesh-pro-tmp常见陷阱">TextMesh Pro (TMP)：常见陷阱</h1>
+<ol>
+<li><strong>不在 Editor 中显示 Fallback 字符</strong>: 这是预期行为,上传到 VRChat 后才生效</li>
+<li><strong>Atlas 分辨率过高</strong>: 导致内存和下载大小膨胀,建议 1024x1024 或更低</li>
+<li><strong>频繁 text 赋值</strong>: 触发网格重建,影响性能,使用 <code>maxVisibleCharacters</code></li>
+<li><strong>未导入 TMP Essential Resources</strong>: 新建项目后忘记导入,所有 TMP 组件显示异常</li>
+<li><strong>中文字符无法显示</strong>: 字体资产未包含中文字符,要么导入大字体(慎用),要么使用 VRChat Fallback 字体</li>
+</ol>
+<hr>
+<hr>
+<h1 id="textmesh-pro-tmp引用">TextMesh Pro (TMP)：引用</h1>
+<ul>
+<li>官方文档: <a href="https://creators.vrchat.com/worlds/components/textmeshpro/">https://creators.vrchat.com/worlds/components/textmeshpro/</a></li>
+<li>TMP 子组件:
+<ul>
+<li><code>TMP_Text</code> 基础类(TextMeshProUGUI / TextMeshPro)</li>
+<li><code>TMP_Dropdown</code>(下拉菜单)</li>
+<li><code>TMP_InputField</code>(输入框)</li>
+</ul>
+</li>
+<li>TextMeshPro Unity 文档: <a href="https://docs.unity3d.com/Packages/com.unity.textmeshpro@4.0/manual/">https://docs.unity3d.com/Packages/com.unity.textmeshpro@4.0/manual/</a></li>
+<li>API 文档: <a href="https://docs.unity3d.com/Packages/com.unity.textmeshpro@4.0/api/TMPro.html">https://docs.unity3d.com/Packages/com.unity.textmeshpro@4.0/api/TMPro.html</a></li>
+</ul>
+<hr> </div> <p class="kb-source-note" data-astro-cid-lvjzyg5v>
+本文由 VRChat 开发知识库自动整理（社区整理  · 可信度 medium ），
+          遇到与手写教程冲突的地方，以官方文档为最高优先级。
+</p> <section class="comments" id="comments" data-astro-cid-lvjzyg5v> <h2 class="comments__title" data-astro-cid-lvjzyg5v>✦ 旅人留言（0）</h2> <p class="comments__empty" id="commentsEmpty" data-astro-cid-lvjzyg5v>
+还没有旅人留言 —— 有疑问就写在下面，站长都会回复。
+</p> <form class="comment-form" id="commentForm" data-target="kb-world-scene-components-textmeshpro" data-astro-cid-lvjzyg5v> <p class="comment-form__title" data-astro-cid-lvjzyg5v>写下你的留言</p> <input id="cAuthor" maxlength="20" placeholder="昵称（留空则为「旅人」）" data-astro-cid-lvjzyg5v> <textarea id="cBody" maxlength="1000" required placeholder="想问的问题、想说的感谢都可以（最多 1000 字）" data-astro-cid-lvjzyg5v></textarea> <div class="comment-form__actions" data-astro-cid-lvjzyg5v> <button class="btn btn--primary" type="submit" data-astro-cid-lvjzyg5v>发布留言</button> <span class="form-hint" data-astro-cid-lvjzyg5v>留言保存在本站，站长在写作台里能看到</span> <span class="form-msg" id="cMsg" data-astro-cid-lvjzyg5v></span> </div> </form> </section> <nav class="station-nav" aria-label="站间导航" data-astro-cid-lvjzyg5v> <a href="/STELLASTOPVRC/posts/kb-world-scene-components-spherecollider/" data-astro-cid-lvjzyg5v> <span class="dir" data-astro-cid-lvjzyg5v>← 上一站 · 更新的星光</span> <span class="to" data-astro-cid-lvjzyg5v>SphereCollider — VRChat 原生 Unity 组件</span> </a> <a href="/STELLASTOPVRC/posts/kb-world-scene-components-spring-joint/" data-astro-cid-lvjzyg5v> <span class="dir" data-astro-cid-lvjzyg5v>下一站 · 更早的星光 →</span> <span class="to" data-astro-cid-lvjzyg5v>SpringJoint — VRChat 原生 Unity 组件</span> </a> </nav> </div> <aside class="toc" id="toc" hidden> <p class="toc__title">✦ 本页星图</p> <nav id="tocNav" aria-label="文章目录"></nav> </aside> <script type="module">const i=document.querySelector(".prose"),d=document.getElementById("toc"),u=document.getElementById("tocNav"),l=[];if(i&&d&&u){const c=[...i.querySelectorAll("h1, h2, h3")];if(c.length>=3){d.hidden=!1,c.forEach((o,e)=>{o.id||(o.id=`sec-${e}`);const n=document.createElement("a");n.href=`#${o.id}`;const s=(o.textContent??"").replace(/\s+/g," ").trim(),r=s.search(/[：:]/),a=r>=4?s.slice(0,r):s;n.textContent=a.length>40?`${a.slice(0,40)}…`:a,n.title=s,u.appendChild(n),l.push({a:n,h:o})});const t=()=>{let o=l[0];for(const e of l)e.h.getBoundingClientRect().top<=130&&(o=e);for(const e of l)e.a.classList.toggle("is-active",e===o)};addEventListener("scroll",t,{passive:!0}),t()}}document.querySelectorAll(".prose pre").forEach(c=>{const t=document.createElement("button");t.className="code-copy",t.type="button",t.textContent="复制",t.addEventListener("click",async()=>{const o=c.querySelector("code")?.innerText??c.innerText;try{await navigator.clipboard.writeText(o)}catch{const e=document.createElement("textarea");e.value=o,document.body.appendChild(e),e.select(),document.execCommand("copy"),e.remove()}t.textContent="已复制 ✓",t.classList.add("is-ok"),setTimeout(()=>{t.textContent="复制",t.classList.remove("is-ok")},1500)}),c.appendChild(t)});</script> </article>  </main> <footer class="site-footer"> <div class="wrap"> <p class="star-line" aria-hidden="true"> <svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> <svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> </p> <p>星之驿站 StellaStop —— 在虚拟宇宙中，为你保留一座驿站</p> <p class="site-footer__disclaimer">
+该网页目前是测试阶段，仅用于测试，所有内容仅供参考；内容全部为引用互联网当中的信息。
+</p> <p>© 2026 星之驿站 · 由 <a href="https://astro.build">Astro</a> 与星光驱动</p> <p> <a data-desk-login hidden title="写作台：登录 / 注册">登录 / 注册</a> ·
+<a href="/STELLASTOPVRC/announcements/">官方公告</a> ·
+<a href="/STELLASTOPVRC/ai/">问星 AI</a> ·
+<a href="/STELLASTOPVRC/feedback/">旅人留言板</a> </p> </div> </footer> <button class="to-top" id="toTop" aria-label="回到顶部"> <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"> <path d="M12 20V5"></path> <path d="M5.5 11.5 12 5l6.5 6.5"></path> </svg> </button> <script type="module">const e=document.getElementById("toTop");if(e){const t=()=>e.classList.toggle("is-visible",scrollY>480);addEventListener("scroll",t,{passive:!0}),t(),e.addEventListener("click",()=>{const o=matchMedia("(prefers-reduced-motion: reduce)").matches;scrollTo({top:0,behavior:o?"auto":"smooth"})})}</script> <script>(function(){const deskConfigured = "";
+
+      /* 写作台探测（页面尾部执行，DOM 已就绪）：
+         1. 计算写作台地址：站点配置 deskUrl（公网部署时填）> 本机默认 localhost:4322 > 同主机 4322
+         2. 探测 /api/gate/status —— 在线才点亮「登录 / 注册」入口，并复用给验证门横幅
+         3. 不在线则保持隐藏，绝不会把访客拽进内网地址；同时给出一次性「镜像模式」提示 */
+      (function () {
+        var host = location.hostname;
+        var isLocal = host === 'localhost' || host === '127.0.0.1' || host === '[::1]';
+        var desk = deskConfigured ||
+          (isLocal ? 'http://localhost:4322' : location.protocol + '//' + host + ':4322');
+        window.STELLA_DESK = desk;
+
+        function revealLogin() {
+          document.querySelectorAll('[data-desk-login]').forEach(function (a) {
+            a.href = desk + '/admin';
+            a.removeAttribute('hidden');
+          });
+        }
+        function showBanner(css, html, shiftHeader) {
+          var bar = document.createElement('div');
+          bar.style.cssText = css;
+          bar.innerHTML = html;
+          document.body.prepend(bar);
+          if (shiftHeader) {
+            var header = document.querySelector('.site-header');
+            if (header) header.style.marginTop = '42px';
+          }
+        }
+        function hintMirrorMode() {
+          try {
+            if (sessionStorage.getItem('stella-desk-hint')) return;
+            sessionStorage.setItem('stella-desk-hint', '1');
+          } catch (e) { /* 无痕模式等：忽略 */ }
+          var tip = document.createElement('div');
+          tip.style.cssText = 'position:fixed;left:14px;bottom:14px;z-index:9998;max-width:min(92vw,430px);padding:.65rem .9rem;border-radius:12px;background:rgba(18,20,44,.92);border:1px solid rgba(150,142,255,.35);color:#e8e6ff;font-size:.82rem;line-height:1.6;font-family:system-ui,sans-serif;box-shadow:0 8px 30px rgba(0,0,0,.35)';
+          tip.innerHTML = 'ℹ️ 静态镜像模式：登录 / 评论 / AI 等互动功能需要站长写作台在线，当前不可用。' +
+            '<span id="stellaDeskHintClose" style="float:right;cursor:pointer;opacity:.75;font-weight:700;margin-left:.6rem" title="关闭">×</span>';
+          document.body.appendChild(tip);
+          var close = function () { tip.remove(); };
+          tip.querySelector('#stellaDeskHintClose').addEventListener('click', close);
+          setTimeout(close, 9000);
+        }
+
+        try {
+          var ctrl = new AbortController();
+          var timer = setTimeout(function () { ctrl.abort(); }, 2500);
+          fetch(desk + '/api/gate/status', { credentials: 'include', signal: ctrl.signal })
+            .then(function (r) { return r.ok ? r.json() : null; })
+            .then(function (d) {
+              clearTimeout(timer);
+              if (!d) throw new Error('desk-offline');
+              window.STELLA_DESK_OK = true;
+              revealLogin();
+              if (d.regionBlocked) {
+                showBanner(
+                  'position:fixed;top:0;left:0;right:0;z-index:9999;padding:1.2rem;text-align:center;background:#1a0a0a;color:#ff9ed2;font-size:.95rem;border-bottom:2px solid #ff4d6d;font-family:system-ui,sans-serif',
+                  '⛔ 你所在的地区（' + (d.regionCountry || '未知') + '）暂不开放访问。',
+                  false
+                );
+                return;
+              }
+              if (d.enabled && !d.passed) {
+                showBanner(
+                  'position:fixed;top:0;left:0;right:0;z-index:9999;padding:0.7rem;text-align:center;background:linear-gradient(94deg,rgba(143,127,247,.25),rgba(98,200,245,.18));border-bottom:1px solid rgba(150,142,255,.3);color:#f0efff;font-size:.88rem;font-family:system-ui,sans-serif',
+                  '🔒 本站启用了安全验证 —— <a href="' + desk + '/gate?next=' + encodeURIComponent(location.href) + '" style="color:#ffd98e;font-weight:700;text-decoration:underline">点击完成验证</a>，通过后即可使用全部功能（30 天免验）。',
+                  true
+                );
+              }
+            })
+            .catch(function () {
+              clearTimeout(timer);
+              window.STELLA_DESK_OK = false;
+              hintMirrorMode();
+            });
+        } catch (e) { /* 忽略 */ }
+      })();
+    })();</script> </body> </html> <script type="module">const m=document.getElementById("commentForm"),s=document.getElementById("cMsg"),u=`${location.protocol}//${location.hostname}:4322/api/message`;function r(e,t=!1){s&&(s.textContent=e,s.classList.toggle("is-err",t),s.classList.toggle("is-ok",!t))}function y(){const e=new Date,t=n=>String(n).padStart(2,"0");return`${e.getFullYear()}-${t(e.getMonth()+1)}-${t(e.getDate())}`}function f(e){let t=7;for(const n of e)t=(t*31+n.charCodeAt(0))%360;return t}function g(e,t){const n=document.createElement("li");n.className="comment",n.innerHTML=`
+      <span class="comment__avatar"></span>
+      <div class="comment__bubble">
+        <div class="comment__head">
+          <span class="comment__name"></span>
+          <time class="comment__date">${y()}</time>
+        </div>
+        <p class="comment__body"></p>
+      </div>`;const o=n.querySelector(".comment__avatar");return o.style.setProperty("--h",String(f(e))),o.textContent=e.slice(0,1),n.querySelector(".comment__name").textContent=e,n.querySelector(".comment__body").textContent=t,n}m?.addEventListener("submit",async e=>{e.preventDefault();const t=document.getElementById("cBody").value.trim();if(!t)return r("留言内容不能为空哦",!0);const n=document.getElementById("cAuthor").value.trim()||"旅人",o=m.querySelector("button");o&&(o.disabled=!0);try{const c=await fetch(u,{credentials:"include",method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({target:m.dataset.target,kind:"comment",author:n,body:t})}),d=await c.json().catch(()=>({}));if(!c.ok)throw new Error(d.error||`发送失败（${c.status}）`);const l=document.querySelector(".comment-list");l&&l.appendChild(g(n,t)),document.getElementById("commentsEmpty")?.remove(),document.getElementById("cBody").value="",r("留言已发布，感谢支持 ✦");const a=document.querySelector(".comments__title"),i=a?.textContent?.match(/（(\d+)）/);a&&i&&(a.textContent=a.textContent.replace(/（\d+）/,`（${Number(i[1])+1}）`))}catch(c){r(c instanceof TypeError?"写作台没在运行，暂时收不到留言 —— 双击「启动博客.bat」就好":c.message,!0)}finally{o&&(o.disabled=!1)}});</script> 

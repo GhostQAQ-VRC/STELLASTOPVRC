@@ -1,0 +1,845 @@
+<!DOCTYPE html><html lang="zh-CN"> <head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="generator" content="Astro v5.18.2"><meta name="description" content="结论：VRChat 提供自定义约束系统（VRChat Constraints），允许 Avatar 或 World 中的 Transform 相对于其他 Transform 进行移动、旋转和缩放，典型用途是让一个物体跟随"><meta name="theme-color" content="#070a1c"><meta property="og:title" content="VRChat Constraints 知识库— 系统概述、版本时序与六种约束类型 · 星之驿站 StellaStop"><meta property="og:description" content="结论：VRChat 提供自定义约束系统（VRChat Constraints），允许 Avatar 或 World 中的 Transform 相对于其他 Transform 进行移动、旋转和缩放，典型用途是让一个物体跟随"><meta property="og:type" content="website"><meta name="twitter:card" content="summary"><link rel="icon" type="image/svg+xml" href="/STELLASTOPVRC/favicon.svg"><script>
+      // 在渲染前恢复主题与特效档位，避免闪一下默认状态
+      try {
+        document.documentElement.dataset.theme =
+          localStorage.getItem('stella-theme') || 'nebula';
+        document.documentElement.dataset.fx =
+          localStorage.getItem('stella-fx') || 'standard';
+      } catch {
+        /* 隐私模式读不到就算了 */
+      }
+    </script><link rel="stylesheet" href="/STELLASTOPVRC/custom-vars.css"><title>VRChat Constraints 知识库— 系统概述、版本时序与六种约束类型 · 星之驿站 StellaStop</title><link rel="stylesheet" href="/STELLASTOPVRC/_astro/about.Bgh6wcGl.css">
+<style>.post-head__meta[data-astro-cid-lvjzyg5v]{color:var(--ink-faint);font-family:var(--font-mono);font-size:.82rem}.post-head[data-astro-cid-lvjzyg5v] .chip-row[data-astro-cid-lvjzyg5v]{margin-top:1rem}.kb-source-note[data-astro-cid-lvjzyg5v]{max-width:760px;margin:2.2rem auto 0;font-size:.82rem;color:var(--ink-faint);border-top:1px dashed var(--line);padding-top:1rem}
+</style></head> <body> <div class="site-notice" id="siteNotice"> <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> <span class="site-notice__text">欢迎来到星之驿站！</span> <button class="site-notice__close" id="noticeClose" type="button" aria-label="关闭公告">
+×
+</button> </div> <a class="skip-link" href="#main">跳到主要内容</a> <canvas id="starfield" aria-hidden="true" data-astro-cid-ra7sfcwn></canvas> <div class="fx-aurora fx-aurora--a" aria-hidden="true" data-astro-cid-ra7sfcwn></div> <div class="fx-aurora fx-aurora--b" aria-hidden="true" data-astro-cid-ra7sfcwn></div>  <script type="module">const u=document.getElementById("starfield");if(u){let F=function(){const n=Math.random();return n<.1?"gold":n<.42?"blue":"white"},v=function(){const n=Math.min(window.devicePixelRatio||1,2);s=window.innerWidth,d=window.innerHeight,u.width=s*n,u.height=d*n,u.style.width=`${s}px`,u.style.height=`${d}px`,t.setTransform(n,0,0,n,0,0);const e=Math.min(190,Math.round(s*d/8500));l=Array.from({length:e},()=>({x:Math.random()*s,y:Math.random()*d,r:r(.4,1.7),base:r(.25,.8),amp:r(.12,.4),speed:r(6e-4,.0022),phase:r(0,Math.PI*2),c:F()})),C=Array.from({length:26},()=>({x:Math.random()*s,y:Math.random()*d,r:r(.9,2.4),vx:r(-.006,.006),vy:r(-.02,-.006),base:r(.2,.5),speed:r(8e-4,.002),phase:r(0,Math.PI*2),c:Math.random()<.5?"gold":"violet"})),c==="off"&&m(0,!0)},D=function(n){const e=Math.random()<.5?1:-1,o=r(Math.PI/7,Math.PI/5),a=r(.45,.75);y.push({x:r(s*.15,s*.85),y:r(-20,d*.3),vx:Math.cos(o)*a*e,vy:Math.sin(o)*a,born:n,life:r(750,1050),len:r(100,170)})},S=function(n){y=y.filter(e=>n-e.born<e.life);for(const e of y){const o=(n-e.born)/e.life,a=e.x+e.vx*(n-e.born),i=e.y+e.vy*(n-e.born),f=o<.15?o/.15:o>.7?(1-o)/.3:1,h=Math.hypot(e.vx,e.vy),x=e.vx/h,g=e.vy/h,b=t.createLinearGradient(a,i,a-x*e.len,i-g*e.len);b.addColorStop(0,`rgba(236,242,255,${(.85*f).toFixed(3)})`),b.addColorStop(1,"rgba(236,242,255,0)"),t.strokeStyle=b,t.lineWidth=1.6,t.lineCap="round",t.beginPath(),t.moveTo(a,i),t.lineTo(a-x*e.len,i-g*e.len),t.stroke()}},B=function(){let o=0;t.lineWidth=.7;for(let a=0;a<l.length&&o<26;a++)for(let i=a+1;i<l.length&&o<26;i++){const f=l[a].x-l[i].x,h=l[a].y-l[i].y,x=f*f+h*h;if(x<16900){const g=(1-Math.sqrt(x)/130)*.17;t.strokeStyle=`rgba(178,170,255,${g.toFixed(3)})`,t.beginPath(),t.moveTo(l[a].x,l[a].y),t.lineTo(l[i].x,l[i].y),t.stroke(),o++}}},X=function(n){for(const e of C){e.x+=e.vx*16,e.y+=e.vy*16,e.y<-12&&(e.y=d+10),e.x<-12&&(e.x=s+10),e.x>s+12&&(e.x=-10);const o=Math.max(.05,e.base+.25*Math.sin(n*e.speed+e.phase)),[a,i,f]=A[e.c];t.beginPath(),t.arc(e.x,e.y,e.r,0,7),t.shadowBlur=9,t.shadowColor=`rgba(${a},${i},${f},0.9)`,t.fillStyle=`rgba(${a},${i},${f},${o.toFixed(3)})`,t.fill()}t.shadowBlur=0},m=function(n,e=!1){t.clearRect(0,0,s,d);for(const o of l){const a=c==="off"?o.base:Math.max(.05,o.base+o.amp*Math.sin(n*o.speed+o.phase)),[i,f,h]=A[o.c];t.beginPath(),t.arc(o.x,o.y,o.r,0,7),o.r>1.25?(t.shadowBlur=7,t.shadowColor=`rgba(${i},${f},${h},0.85)`):t.shadowBlur=0,t.fillStyle=`rgba(${i},${f},${h},${a.toFixed(3)})`,t.fill()}if(t.shadowBlur=0,c!=="off"&&!e){c==="fancy"&&(B(),X(n));const o=c==="fancy"?r(2600,6e3):r(4200,9500);n>P&&(D(n),P=n+o),S(n)}},$=function(n){m(n),M=requestAnimationFrame($)},p=function(){if(c==="off"){m(0,!0);return}cancelAnimationFrame(M),M=requestAnimationFrame($)},w=function(){cancelAnimationFrame(M),t.clearRect(0,0,s,d),m(0,!0)};const t=u.getContext("2d"),k=matchMedia("(prefers-reduced-motion: reduce)").matches,A={white:[240,240,255],blue:[150,215,250],gold:[255,218,150],violet:[178,170,255]};let s=0,d=0,l=[],C=[],y=[],P=2500,M=0,c=document.documentElement.dataset.fx||"standard";k&&(c="off");const r=(n,e)=>n+Math.random()*(e-n);v(),addEventListener("resize",v),document.addEventListener("stella-fx-change",n=>{c=n.detail,c==="off"?w():p()}),c==="off"?m(0,!0):(p(),document.addEventListener("visibilitychange",()=>{document.hidden?w():p()}))}</script> <header class="site-header"> <div class="wrap site-header__inner"> <a class="logo" href="/STELLASTOPVRC/"> <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> <span>星之驿站</span> <span class="logo__romaji">StellaStop</span> </a> <div class="header-right"> <nav class="site-nav" aria-label="站内导航"> <a href="/STELLASTOPVRC/"> 首页 </a><a href="/STELLASTOPVRC/start/"> 新手 </a><a href="/STELLASTOPVRC/posts/"> 教程 </a><a href="/STELLASTOPVRC/videos/"> 视频 </a><a href="/STELLASTOPVRC/resources/"> 资源 </a><a href="/STELLASTOPVRC/booth/"> Booth </a><a href="/STELLASTOPVRC/announcements/"> 公告 </a><a href="/STELLASTOPVRC/ai/"> 问星 </a><a href="/STELLASTOPVRC/changelog/"> 更新日志 </a><a href="/STELLASTOPVRC/about/"> 关于 </a> </nav> <a class="login-link" data-desk-login hidden title="写作台：登录 / 注册后可发教程、传资源">
+登录 / 注册
+</a> <div class="theme-switch"> <button class="theme-switch__btn" id="themeBtn" type="button" aria-haspopup="listbox" aria-expanded="false" aria-label="切换主题配色" title="切换主题配色"> <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"> <path d="M12 3a9 9 0 1 0 9 9c0-1.2-1-2-2.2-2H17a2 2 0 0 1-2-2V6.2C15 5 14.2 4 13 4.4A9 9 0 0 0 12 3Z"></path> <circle cx="7.5" cy="11.5" r="1" fill="currentColor" stroke="none"></circle> <circle cx="10" cy="7.5" r="1" fill="currentColor" stroke="none"></circle> <circle cx="15" cy="7" r="1" fill="currentColor" stroke="none"></circle> </svg> </button> <div class="theme-pop" id="themePop" role="listbox" aria-label="选择主题" hidden> <button class="theme-opt" type="button" role="option" data-theme-value="nebula" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#8f7ff7"></span><span class="dot" style="background:#62c8f5"></span><span class="dot" style="background:#ffd98e"></span> </span> <span class="theme-opt__name">星云 · 蓝紫</span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt" type="button" role="option" data-theme-value="sakura" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#ff8fc7"></span><span class="dot" style="background:#c79bff"></span><span class="dot" style="background:#ffd08e"></span> </span> <span class="theme-opt__name">樱语 · 粉紫</span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt" type="button" role="option" data-theme-value="miku" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#2ed3c2"></span><span class="dot" style="background:#6ea8ff"></span><span class="dot" style="background:#ffe08e"></span> </span> <span class="theme-opt__name">葱色 · 青绿</span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt" type="button" role="option" data-theme-value="ember" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#ffb35c"></span><span class="dot" style="background:#ff7e6b"></span><span class="dot" style="background:#ffd98e"></span> </span> <span class="theme-opt__name">暮金 · 暖橙</span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt" type="button" role="option" data-theme-value="dawn" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#6a5ce8"></span><span class="dot" style="background:#e0568f"></span><span class="dot" style="background:#b8821e"></span> </span> <span class="theme-opt__name">晨星 · 浅色</span> <span class="theme-opt__mark">✦</span> </button> </div> </div> <script type="module">const a=document.getElementById("themeBtn"),n=document.getElementById("themePop");function s(c){document.documentElement.dataset.theme=c;try{localStorage.setItem("stella-theme",c)}catch{}const e=getComputedStyle(document.documentElement).getPropertyValue("--bg-deep").trim();document.querySelector('meta[name="theme-color"]')?.setAttribute("content",e||"#070a1c"),document.querySelectorAll(".theme-opt").forEach(t=>{const d=t.dataset.themeValue===c;t.classList.toggle("is-active",d),t.setAttribute("aria-selected",String(d))})}if(a&&n){const c=document.documentElement.dataset.theme||"nebula";document.querySelectorAll(".theme-opt").forEach(e=>{const t=e.dataset.themeValue===c;e.classList.toggle("is-active",t),e.setAttribute("aria-selected",String(t))}),a.addEventListener("click",e=>{e.stopPropagation();const t=n.hidden;n.hidden=!t,a.setAttribute("aria-expanded",String(t))}),document.addEventListener("click",e=>{!n.hidden&&!e.target.closest(".theme-switch")&&(n.hidden=!0,a.setAttribute("aria-expanded","false"))}),document.addEventListener("keydown",e=>{e.key==="Escape"&&!n.hidden&&(n.hidden=!0,a.setAttribute("aria-expanded","false"),a.focus())}),n.addEventListener("click",e=>{const t=e.target.closest(".theme-opt");t&&(s(t.dataset.themeValue??"nebula"),n.hidden=!0,a.setAttribute("aria-expanded","false"))})}</script> <div class="theme-switch fx-switch"> <button class="theme-switch__btn" id="fxBtn" type="button" aria-haspopup="listbox" aria-expanded="false" aria-label="背景特效设置" title="背景特效设置"> <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"> <path d="M5 3v4M3 5h4M6.5 17.5v3M5 19h3"></path> <path d="M14.5 4.5 16 9l4.5 1.5L16 12l-1.5 4.5L13 12l-4.5-1.5L13 9l1.5-4.5Z"></path> </svg> </button> <div class="theme-pop" id="fxPop" role="listbox" aria-label="背景特效" hidden> <button class="theme-opt fx-opt" type="button" role="option" data-fx-value="off" aria-selected="false"> <span class="fx-opt__body"> <span class="fx-opt__name">关闭特效</span> <span class="fx-opt__hint">最省电</span> </span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt fx-opt" type="button" role="option" data-fx-value="standard" aria-selected="false"> <span class="fx-opt__body"> <span class="fx-opt__name">标准</span> <span class="fx-opt__hint">闪烁星空 + 流星</span> </span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt fx-opt" type="button" role="option" data-fx-value="fancy" aria-selected="false"> <span class="fx-opt__body"> <span class="fx-opt__name">华丽</span> <span class="fx-opt__hint">追加极光 / 星座 / 光尘</span> </span> <span class="theme-opt__mark">✦</span> </button> </div> </div> <script type="module">const n=document.getElementById("fxBtn"),a=document.getElementById("fxPop");function s(d){document.documentElement.dataset.fx=d;try{localStorage.setItem("stella-fx",d)}catch{}document.querySelectorAll("#fxPop .fx-opt").forEach(t=>{const e=t.dataset.fxValue===d;t.classList.toggle("is-active",e),t.setAttribute("aria-selected",String(e))}),document.dispatchEvent(new CustomEvent("stella-fx-change",{detail:d}))}if(n&&a){const d=document.documentElement.dataset.fx||"standard";document.querySelectorAll("#fxPop .fx-opt").forEach(t=>{const e=t.dataset.fxValue===d;t.classList.toggle("is-active",e),t.setAttribute("aria-selected",String(e))}),n.addEventListener("click",t=>{t.stopPropagation();const e=a.hidden;a.hidden=!e,n.setAttribute("aria-expanded",String(e))}),document.addEventListener("click",t=>{!a.hidden&&!t.target.closest(".fx-switch")&&(a.hidden=!0,n.setAttribute("aria-expanded","false"))}),document.addEventListener("keydown",t=>{t.key==="Escape"&&!a.hidden&&(a.hidden=!0,n.setAttribute("aria-expanded","false"),n.focus())}),a.addEventListener("click",t=>{const e=t.target.closest(".fx-opt");e&&(s(e.dataset.fxValue??"standard"),a.hidden=!0,n.setAttribute("aria-expanded","false"))})}</script> </div> </div> </header> <main id="main">  <article class="wrap post-layout" data-astro-cid-lvjzyg5v> <div class="post-main page-fade" data-astro-cid-lvjzyg5v> <header class="post-head" data-astro-cid-lvjzyg5v> <a class="crumb" href="/STELLASTOPVRC/posts/" data-astro-cid-lvjzyg5v>← 返回教程档案</a> <div class="post-head__meta" style="--accent:var(--ink-dim)" data-astro-cid-lvjzyg5v> <span class="badge" data-cat="Avatar 虚拟形象" data-astro-cid-lvjzyg5v>Avatar 虚拟形象</span> <time datetime="2026-11-09" data-astro-cid-lvjzyg5v>2026-11-09</time> <span class="post-head__reading" data-astro-cid-lvjzyg5v>⏱ 约 81 分钟</span>  </div> <h1 class="post-head__title" data-astro-cid-lvjzyg5v>VRChat Constraints 知识库— 系统概述、版本时序与六种约束类型</h1> <p class="post-head__lead" data-astro-cid-lvjzyg5v>结论：VRChat 提供自定义约束系统（VRChat Constraints），允许 Avatar 或 World 中的 Transform 相对于其他 Transform 进行移动、旋转和缩放，典型用途是让一个物体跟随</p> <div class="chip-row" data-astro-cid-lvjzyg5v> <a class="chip" href="/STELLASTOPVRC/posts/?tag=%E7%9F%A5%E8%AF%86%E5%BA%93" data-astro-cid-lvjzyg5v> 知识库 </a><a class="chip" href="/STELLASTOPVRC/posts/?tag=avatar" data-astro-cid-lvjzyg5v> avatar </a> </div> </header> <div class="prose" data-astro-cid-lvjzyg5v> <hr>
+<h1 id="vrchat-constraints-约束系统让-avatarworld-的-transform-相对其他-transform-移动旋转缩放">VRChat Constraints 约束系统：让 Avatar/World 的 Transform 相对其他 Transform 移动、旋转、缩放</h1>
+<p>结论：VRChat 提供自定义约束系统（VRChat Constraints），允许 Avatar 或 World 中的 Transform 相对于其他 Transform 进行移动、旋转和缩放，典型用途是让一个物体跟随另一个物体运动，例如配饰跟随角色骨骼（来源：creators.vrchat.com/common-components/constraints/，official，Avatar 需 SDK 3.7.0+、World 需 SDK 3.10.0+）。</p>
+<p>命名空间：约束组件位于 VRC.SDK3.Dynamics.Constraint.Components 与 VRC.Dynamics 两个命名空间，编写脚本或在工程中检索约束组件时应在这两处查找。</p>
+<p>版本可用范围：</p>
+<ul>
+<li>Avatar 场景：自 SDK 3.7.0 起可直接使用 VRChat Constraints。</li>
+<li>World 场景：自 SDK 3.10.0（2025-10-24）起获得约束支持，约束由此从 Avatar 专用扩展为通用能力。</li>
+</ul>
+<p>合规要点：Avatar 中若存在 Unity 原生 Constraints，上传时会被自动转换为 VRChat Constraints——Avatar 场景 VRChat Constraints 是唯一合规方案。</p>
+<hr>
+<hr>
+<h1 id="avatar-必须使用-vrchat-constraints含-unity-constraints-时上传自动转换性能更好且功能更多">Avatar 必须使用 VRChat Constraints：含 Unity Constraints 时上传自动转换，性能更好且功能更多</h1>
+<p>结论：Avatar 必须使用 VRChat Constraints；如果 Avatar 中包含 Unity 原生 Constraints，上传时会由 SDK 自动转换为 VRChat Constraints（来源：creators.vrchat.com/common-components/constraints/，official，SDK 3.7.0+ 口径）。</p>
+<p>两者差异对照：</p>
+<ul>
+<li>适用对象：Avatar 推荐（实质强制）使用 VRChat Constraints；Unity Constraints 在 Avatar 上不能保留原样，仅靠上传自动转换兜底。World 场景两类均可使用。</li>
+<li>性能：VRChat Constraints 性能更好；Unity Constraints 可能产生性能问题。</li>
+<li>功能：VRChat Constraints 提供更多可选功能；Unity Constraints 仅提供基础功能。</li>
+</ul>
+<p>实践含义：新建或改造 Avatar 时应直接摆放 VRChat Constraints 组件，而不是放置 Unity Constraints 后依赖上传时的自动转换。</p>
+<hr>
+<hr>
+<h1 id="vrchat-constraints-版本时序362-constraints-open-beta-起步sdk-370-正式发布2024-08-163100-扩展到-world">VRChat Constraints 版本时序：3.6.2-constraints open-beta 起步、SDK 3.7.0 正式发布（2024-08-16）、3.10.0 扩展到 World</h1>
+<p>结论：VRChat Constraints 按「开放测试 → 正式发布 → 扩展到 World」三阶段演进：SDK 3.6.2-constraints.1～4 为 open-beta，SDK 3.7.0 于 2024-08-16 正式 live 发布并脱离 beta，SDK 3.10.0（2025-10-24）扩展到 World（来源：github.com/vrchat/packages/releases 官方 release 历史，official，覆盖 SDK 3.6.2-constraints.1 ～ 3.10.0）。</p>
+<p>时间线明细：</p>
+<ul>
+<li>SDK 3.6.2-constraints.1 至 3.6.2-constraints.4：open-beta 测试阶段，官方说明均为 “This is an open-beta release for VRChat Constraints.”。</li>
+<li>SDK 3.7.0-beta.1 / beta.2：3.7.0 正式版前的 open-beta 周期。</li>
+<li>SDK 3.7.0（2024-08-16）：正式 live release，官方说明 “This is a live release!”，VRChat Constraints 自此脱离 beta；同一版本还修复了同时选中多个 VRChat Constraint 并编辑其 sources 列表时约束源丢失引用的问题。</li>
+<li>SDK 3.10.0（2025-10-24）：从 Avatar 扩展到 World，成为通用约束能力。</li>
+</ul>
+<hr>
+<hr>
+<h1 id="各-sdk-版本下-avatar-约束可用方案370-前仅-unity-加自动转换370-起直用-vrc-constraints3100-起-world-可用">各 SDK 版本下 Avatar 约束可用方案：3.7.0 前仅 Unity 加自动转换、3.7.0 起直用 VRC Constraints、3.10.0 起 World 可用</h1>
+<p>结论：Avatar 能否直接使用 VRChat Constraints 由工程实际的 VRChat SDK 版本决定，分三个阶段判断（来源：github.com/vrchat/packages/releases + creators.vrchat.com/common-components/constraints/，official，SDK 3.6.2 ～ 3.10.0）：</p>
+<ul>
+<li>SDK 3.7.0 之前：Avatar 只能使用 Unity Constraints，由 SDK 在上传时自动转换为 VRChat Constraints。</li>
+<li>SDK 3.7.0 起（2024-08-16 正式发布）：创作者可直接使用 VRChat Constraints，不再依赖自动转换，功能更可控。</li>
+<li>SDK 3.10.0 起（2025-10-24）：VRChat Constraints 从仅 Avatar 可用扩展为 Avatar 与 World 通用。</li>
+</ul>
+<p>工程决策用法：SDK 低于 3.7.0 只能走 Unity Constraints 加上传自动转换路径；达到 3.7.0 及以上应直接采用 VRChat Constraints。排查旧 Avatar 工程时看到的 Unity Constraints，通常就是历史上传自动转换路线的痕迹。</p>
+<hr>
+<hr>
+<h1 id="vrcaimconstraint-目标约束用法与五类参数is-activeweightaim-vectorup-vectorworld-up-type-五种取值">VRCAimConstraint 目标约束用法与五类参数：Is Active、Weight、Aim Vector、Up Vector、World Up Type 五种取值</h1>
+<p>结论：VRCAimConstraint（目标约束）用于旋转目标 Transform 使其朝向源，并可通过 Aim Vector 自定义前进方向、通过 Up Vector 与 World Up Type 控制向上参考（来源：creators.vrchat.com/common-components/constraints/，official，Avatar 需 SDK 3.7.0+、World 需 SDK 3.10.0+）。</p>
+<p>参数一览：</p>
+<ul>
+<li>Is Active：控制约束是否评估，即是否参与计算。</li>
+<li>Weight：整体权重，取值范围 0 到 1。</li>
+<li>Aim Vector：控制以哪个轴指向源。</li>
+<li>Up Vector：控制向上的轴。</li>
+<li>World Up Type：世界向上参考类型，共五种取值——Scene Up（场景 Y 轴）、Object Up（指定对象的向上方向）、Object Up Rotation（局部空间）、Vector（世界空间向量）、None（无）。</li>
+</ul>
+<p>组合用法：调整朝向行为时，Aim Vector 决定哪个轴对准源，Up Vector 与 World Up Type 决定计算朝向时的向上参考基准，两者配合确定最终姿态。</p>
+<hr>
+<hr>
+<h1 id="vrc-constraints-解决的问题与适用范围位移旋转缩放的规则化绑定道具挂手饰品跟随头部等场景">VRC Constraints 解决的问题与适用范围：位移/旋转/缩放的规则化绑定，道具挂手、饰品跟随头部等场景</h1>
+<p>结论：VRChat Constraints（简称 VRC Constraints，常称「VRC 约束/约束系统」）是 VRChat 官方提供的自定义约束系统，允许 Avatar 或 World 中的某个 Transform 相对于其他 Transform 进行移动、旋转和缩放（来源：creators.vrchat.com/common-components/constraints/，official，知识库页 v1.1 复核于 2026-07-04）。</p>
+<p>解决的问题：把物体 A 的位移/旋转/缩放按规则绑定到物体 B 上形成相对运动，典型场景如道具挂在手上、饰品跟随头部、部件持续朝向目标。</p>
+<p>适用范围：Avatar（角色模型）与 World（世界/场景）两类场景均可用约束建立 Transform 之间的相对运动关系。</p>
+<p>关联事实：对 Avatar 必须使用 VRC Constraints（含 Unity Constraints 时上传自动转换）；自 SDK 3.10.0（2025-10-24）起从 Avatar 扩展到 World 成为通用方案；相关命名空间为 VRC.SDK3.Dynamics.Constraint.Components 与 VRC.Dynamics。</p>
+<hr>
+<hr>
+<h1 id="avatar-约束必须用-vrchat-constraints-的两条实践含义误用不报错但转换不可控world-场景不受限">Avatar 约束必须用 VRChat Constraints 的两条实践含义：误用不报错但转换不可控，World 场景不受限</h1>
+<p>结论：为 VRChat Avatar 配置约束时必须使用 VRChat Constraints 组件；放置的是 Unity 原生 Constraints 时上传会被 SDK 自动转换，但转换过程不受创作者控制（来源：creators.vrchat.com/common-components/constraints/，official，以 SDK 3.7.0（2024-08-16）前后行为分界）。</p>
+<p>实践含义两点：</p>
+<ol>
+<li>误用 Unity Constraints 不会导致上传失败——最终上传产物会被统一转换。</li>
+<li>转换过程不受创作者控制，为保证行为与功能符合预期，应直接使用 VRC Constraints 组件。</li>
+</ol>
+<p>边界：此强制要求仅针对 Avatar；World 中 Unity Constraints 与 VRC Constraints 都可使用，不做强制转换。</p>
+<p>版本背景：SDK 3.7.0 之前创作者实际只能编写 Unity Constraints 并依赖上传自动转换获得 VRC Constraints；自 3.7.0 起可在工程中直接使用 VRC Constraints，无需再依赖自动转换。</p>
+<p>[UNKNOWN] Unity Constraint 各类型到 VRC Constraint 的自动转换映射关系未在源文说明。</p>
+<hr>
+<hr>
+<h1 id="vrchat-constraints-与-unity-constraints-选型对比表avatar-强制走-vrcworld-两可性能与功能-vrc-占优">VRChat Constraints 与 Unity Constraints 选型对比表：Avatar 强制走 VRC、World 两可、性能与功能 VRC 占优</h1>
+<p>结论：在 VRChat 中做约束应优先选 VRChat Constraints（VRC Constraints）；它与 Unity 原生 Constraints 的差异集中在适用对象、性能、功能三方面（来源：creators.vrchat.com/common-components/constraints/ 对比表，official，对照基于 SDK 3.7.0+ 现状、知识库页 v1.1 复核于 2026-07-04）：</p>
+<table>
+<thead>
+<tr>
+<th>方面</th>
+<th>VRChat Constraints</th>
+<th>Unity Constraints</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Avatar</td>
+<td>✅ 推荐使用</td>
+<td>上传时自动转换</td>
+</tr>
+<tr>
+<td>World</td>
+<td>均可</td>
+<td>均可</td>
+</tr>
+<tr>
+<td>性能</td>
+<td>更好</td>
+<td>可能性能问题</td>
+</tr>
+<tr>
+<td>功能</td>
+<td>更多可选功能</td>
+<td>仅基础功能</td>
+</tr>
+</tbody>
+</table>
+<p>选型建议：制作 Avatar 一律直接使用 VRC Constraints，避免依赖上传自动转换；制作 World 时同样优先 VRC Constraints，以获得更好的性能与更丰富的功能选项。</p>
+<p>[UNKNOWN] 「更多可选功能」的具体功能清单未在源片段展开。</p>
+<hr>
+<hr>
+<h1 id="vrc-constraints-引入三阶段详解连续四个-open-beta370-beta-周期live-release-与-world-扩展两个里程碑">VRC Constraints 引入三阶段详解：连续四个 open-beta、3.7.0-beta 周期、live release 与 World 扩展两个里程碑</h1>
+<p>结论：VRC Constraints 的引入遵循「开放测试 → 正式发布 → 扩展到 World」三阶段时间线，依据 VRChat 官方 packages 仓库 release 历史（来源：github.com/vrchat/packages/releases，official，覆盖 SDK 3.6.2-constraints.1 至 3.10.0）。</p>
+<p>开放测试期：3.6.2-constraints.1、3.6.2-constraints.2、3.6.2-constraints.3、3.6.2-constraints.4 为连续四个 open-beta 版本，官方说明均为 “This is an open-beta release for VRChat Constraints.”；其后 3.7.0-beta.1 与 3.7.0-beta.2 构成正式版前的 beta 周期。</p>
+<p>正式发布里程碑：2024-08-16，SDK 3.7.0 以 live release 形式发布（官方说明 “This is a live release!”），VRC Constraints 至此脱离 beta 成为正式功能。</p>
+<p>能力扩展里程碑：2025-10-24，SDK 3.10.0 将 VRC Constraints 从 Avatar 进一步扩展到 World，使其成为 Avatar 与 World 通用的约束系统。</p>
+<p>对 Avatar 开发者的影响：3.7.0 之前只能用 Unity Constraints 并依赖上传自动转换；3.7.0 起可直接使用 VRC Constraints。</p>
+<p>[UNKNOWN] 3.6.2-constraints.1～4 各 open-beta 的具体发布日期未给出，仅 3.7.0 标注了 2024-08-16。</p>
+<hr>
+<hr>
+<h1 id="多选多个-vrchat-constraints-同时编辑源列表会丢失约束源引用sdk-370-已修复的历史缺陷">多选多个 VRChat Constraints 同时编辑源列表会丢失约束源引用：SDK 3.7.0 已修复的历史缺陷</h1>
+<p>结论：「多选多个 VRChat Constraints 后同时编辑其 sources 列表会导致约束源引用丢失」是已被官方修复的历史缺陷，修复版本为 SDK 3.7.0（2024-08-16 正式发布）（来源：github.com/vrchat/packages/releases 官方 release 说明，official，缺陷存在于 3.7.0 之前版本）。</p>
+<p>症状识别：在受影响的旧版 SDK 中，于 Unity 编辑器内一次选中多个带 VRC Constraints 的对象并批量编辑它们的源列表后，部分约束的 Source 引用会丢失。</p>
+<p>官方记录原文：SDK 3.7.0 同一版本除正式发布外还修复了 “constraint sources losing their references when selecting multiple VRChat constraints and editing their sources lists at the same time”。</p>
+<p>处置方式：遇到该现象先核对 SDK 版本，升级到 3.7.0 或更高即可消除；无法升级的工程里避免多选批量编辑、改为逐个约束单独编辑源列表可降低触发风险（此规避方式为基于触发条件的合理推断，非官方原文）。</p>
+<p>[UNKNOWN] SDK 3.7.0 之后是否另有导致 sources 引用丢失的缺陷未覆盖。</p>
+<hr>
+<hr>
+<h1 id="vrc-constraints-命名空间vrcsdk3dynamicsconstraintcomponents-与-vrcdynamics-两处查找约束类型">VRC Constraints 命名空间：VRC.SDK3.Dynamics.Constraint.Components 与 VRC.Dynamics 两处查找约束类型</h1>
+<p>结论：VRChat Constraints 相关类型分布在两个命名空间——VRC.SDK3.Dynamics.Constraint.Components 与 VRC.Dynamics；在 Udon/UdonSharp 脚本、编辑器工具或反射查找中引用约束类型时应 using 或检索这两个命名空间（来源：creators.vrchat.com/common-components/constraints/，official，SDK 3.x 约束体系、3.7.0 正式）。</p>
+<p>按命名惯例：VRC.SDK3.Dynamics.Constraint.Components 承载各约束组件类；VRC.Dynamics 承载动力学相关基础类型。</p>
+<p>检索提示：在 SDK 反编译代码或官方文档中定位约束 API 时，优先在这两个命名空间下搜索 Constraint 关键字。</p>
+<p>边界：此块仅列出命名空间本身；各约束组件类与命名空间的逐一对应关系、完整成员清单见 Constraints API 章节（如 Position/Rotation/Scale/Parent/Aim/LookAt 各组件的属性与方法签名）。</p>
+<p>[UNKNOWN] 各约束组件类与两个命名空间的精确归属未逐一标明。</p>
+<hr>
+<hr>
+<h1 id="vrcaimconstraint-的-constraint-settings-四项rotation-at-rest-基准姿态rotation-offset-微调lock-锁定freeze-rotation-axes-冻结轴">VRCAimConstraint 的 Constraint Settings 四项：Rotation At Rest 基准姿态、Rotation Offset 微调、Lock 锁定、Freeze Rotation Axes 冻结轴</h1>
+<p>结论：VRCAimConstraint（瞄准约束）的 Constraint Settings 区域包含 4 个设置项——Rotation At Rest、Rotation Offset、Lock、Freeze Rotation Axes（来源：VRChat 官方文档《VRC Constraints》参考页 §2.1，official）。</p>
+<p>逐项含义：</p>
+<ul>
+<li>Rotation At Rest：权重为 0 时目标 Transform 所呈现的旋转，是约束不生效时的基准姿态。</li>
+<li>Rotation Offset：叠加在约束结果上的旋转偏移，用于在不改动源的情况下微调最终朝向。</li>
+<li>Lock：将 At Rest 与 Offset 一并锁定，防止误修改。</li>
+<li>Freeze Rotation Axes：冻结特定的轴，被冻结的轴不参与约束驱动。</li>
+</ul>
+<p>配置入口：VRCAimConstraint 组件 Inspector 的 Constraint Settings 折叠区；四项与基础参数（Is Active/Weight/Aim Vector/Up Vector/World Up Type）共同构成该组件的完整参数面板。</p>
+<hr>
+<hr>
+<h1 id="vrcaimconstraint-目标约束总览旋转朝向源aim-vector-定前进轴world-up-type-五模式scene-upobject-upobject-up-rotationvectornone">VRCAimConstraint 目标约束总览：旋转朝向源、Aim Vector 定前进轴、World Up Type 五模式（Scene Up/Object Up/Object Up Rotation/Vector/None）</h1>
+<p>结论：VRCAimConstraint（目标约束）通过旋转目标 Transform 使其朝向源（Source），并支持自定义用作「前进方向」的轴；最终姿态由「Aim Vector 决定哪个轴指向源」与「Up Vector 决定向上轴」共同确定（来源：creators.vrchat.com/common-components/constraints/，official，SDK 3.7.0+ 现状）。</p>
+<p>适用场景：需要让部件持续指向另一物体时使用，例如眼睛注视点、指示器/天线指向目标、指针类部件。</p>
+<p>参数清单：</p>
+<ul>
+<li>Is Active——控制该约束是否参与评估。</li>
+<li>Weight——整体权重，取值 0 到 1。</li>
+<li>Aim Vector——控制朝向源的轴（即前进方向）。</li>
+<li>Up Vector——控制向上轴。</li>
+<li>World Up Type——世界向上参考的类型，共五种：Scene Up（场景 Y 轴）、Object Up（指定对象的向上方向）、Object Up Rotation（局部空间）、Vector（世界空间向量）、None（无）。</li>
+</ul>
+<p>仅需正 Z 轴朝向、不需要方向定制时可改用简化版 VRCLookAtConstraint。</p>
+<hr>
+<hr>
+<h1 id="vrclookatconstraint-注视约束正-z-轴朝向源的简化版-aimuse-up-object-与-roll-二选一控制翻滚">VRCLookAtConstraint 注视约束：正 Z 轴朝向源的简化版 Aim，Use Up Object 与 Roll 二选一控制翻滚</h1>
+<p>结论：VRCLookAtConstraint（注视约束）是简化版的 Aim Constraint，作用是让目标 Transform 的正 Z 轴朝向源对象，适合实现物体持续看向某一目标的注视效果（来源：VRChat 官方文档《VRC Constraints》参考页 §2.2，official）。</p>
+<p>参数说明：</p>
+<ul>
+<li>Is Active：控制该约束是否参与评估。</li>
+<li>Weight：整体权重，取值范围 0 到 1。</li>
+<li>Use Up Object：是否使用单独的对象来控制翻滚。</li>
+<li>Roll：在没有使用 Up Object 时，直接以角度值控制绕 Z 轴的翻滚。</li>
+<li>World Up Object：用作翻滚参照的目标对象。</li>
+</ul>
+<p>翻滚控制二选一：不使用 Up Object 时以 Roll 数值控制绕 Z 轴角度；启用 Use Up Object 后由指定对象决定翻滚。</p>
+<p>使用要点：只需要基本朝向功能保持默认即可；需要精确控制上方向翻滚时，再在 Roll 数值与指定 Up Object 两种方式中选择其一。</p>
+<hr>
+<hr>
+<h1 id="vrcparentconstraint-父约束像子对象一样移动旋转跟随但不改层级每个源的偏移独立设置">VRCParentConstraint 父约束：像子对象一样移动旋转跟随但不改层级，每个源的偏移独立设置</h1>
+<p>结论：VRCParentConstraint（父约束）会同时移动和旋转目标 Transform，使其表现如同目标是源的子对象，但无需真的把目标挂到源下面改变层级（来源：VRChat 官方文档《VRC Constraints》参考页 §2.3，official）。</p>
+<p>公共参数：Is Active 控制该约束是否参与评估；Weight 为整体权重，取值 0 到 1。</p>
+<p>Constraint Settings：</p>
+<ul>
+<li>Position/Rotation At Rest：静止位置/旋转，权重为 0 时的基准。</li>
+<li>Position/Rotation Offset：位置/旋转偏移量。</li>
+<li>Lock：锁定这些设置。</li>
+<li>Freeze Position/Rotation Axes：冻结指定轴，被冻结的轴不受影响。</li>
+</ul>
+<p>重要细节——每个源的偏移是独立设置的：存在多个源时，每个源各自保有自己的 At Rest 与 Offset 组合，而不是所有源共用一组数值，需分别配置。</p>
+<hr>
+<hr>
+<h1 id="vrcpositionconstraint-位置约束只匹配源的位置不影响旋转缩放at-rest-基准加-offset-偏移加单轴冻结">VRCPositionConstraint 位置约束：只匹配源的位置不影响旋转缩放，At Rest 基准加 Offset 偏移加单轴冻结</h1>
+<p>结论：VRCPositionConstraint（位置约束）只改变目标 Transform 的位置，使其匹配源的位置，不影响目标的旋转与缩放（来源：VRChat 官方文档《VRC Constraints》参考页 §2.4，official）。</p>
+<p>参数说明：Is Active 控制该约束是否参与评估；Weight 为整体权重，取值范围 0 到 1。</p>
+<p>Constraint Settings：</p>
+<ul>
+<li>Position At Rest：静止位置，即权重为 0 时目标的基准位置。</li>
+<li>Position Offset：在匹配结果上叠加的位置偏移。</li>
+<li>Lock：锁定上述设置。</li>
+<li>Freeze Position Axes：冻结指定的位置轴，被冻结的轴不再跟随源移动（仍保持原值）。</li>
+</ul>
+<p>典型用途：让附件、道具等对象的位置持续跟随另一个对象，例如手持物对齐手部骨骼。</p>
+<hr>
+<hr>
+<h1 id="vrcrotationconstraint-旋转约束只匹配源的旋转不影响位置缩放披风末端对齐身体转动类场景">VRCRotationConstraint 旋转约束：只匹配源的旋转不影响位置缩放，披风末端对齐身体转动类场景</h1>
+<p>结论：VRCRotationConstraint（旋转约束）只改变目标 Transform 的旋转，使其匹配源的旋转，不影响目标的位置与缩放（来源：VRChat 官方文档《VRC Constraints》参考页 §2.5，official）。</p>
+<p>参数说明：Is Active 控制该约束是否参与评估；Weight 为整体权重，取值范围 0 到 1。</p>
+<p>Constraint Settings：</p>
+<ul>
+<li>Rotation At Rest：静止旋转，即权重为 0 时目标的基准旋转。</li>
+<li>Rotation Offset：叠加在匹配结果上的旋转偏移。</li>
+<li>Lock：锁定上述设置。</li>
+<li>Freeze Rotation Axes：冻结指定的旋转轴，被冻结的轴不再跟随源旋转（仍保持原值）。</li>
+</ul>
+<p>典型用途：让附件、装饰物的朝向持续跟随另一对象，例如披风末端对齐身体某部位的转动。</p>
+<hr>
+<hr>
+<h1 id="vrcscaleconstraint-缩放约束只匹配源的缩放scale-at-rest-基准scale-offset-偏移freeze-scale-axes-单轴冻结">VRCScaleConstraint 缩放约束：只匹配源的缩放，Scale At Rest 基准、Scale Offset 偏移、Freeze Scale Axes 单轴冻结</h1>
+<p>结论：VRCScaleConstraint（缩放约束）只改变目标 Transform 的缩放，使其匹配源的缩放，不影响目标的位置与旋转（来源：VRChat 官方文档《VRC Constraints》参考页 §2.6，official）。</p>
+<p>参数说明：Is Active 控制该约束是否参与评估；Weight 为整体权重，取值范围 0 到 1。</p>
+<p>Constraint Settings：</p>
+<ul>
+<li>Scale At Rest：静止缩放，即权重为 0 时目标的基准缩放。</li>
+<li>Scale Offset：叠加在匹配结果上的缩放偏移。</li>
+<li>Lock：锁定上述设置。</li>
+<li>Freeze Scale Axes：冻结指定的缩放轴，被冻结的轴不再跟随源变化（仍保持原值）。</li>
+</ul>
+<p>典型用途：让道具、特效对象的大小随源对象同步放大缩小，保持视觉比例一致，例如变身、联动道具场景。</p>
+<hr>
+<hr>
+<h1 id="vrc-constraints-公共参数模式is-active-总开关加-weight-整体权重-0-1五种约束组件统一开头">VRC Constraints 公共参数模式：Is Active 总开关加 Weight 整体权重 0-1，五种约束组件统一开头</h1>
+<p>结论：VRChat 的 VRC Constraints 组件族共享统一的基础参数模式——Is Active（约束是否参与评估的总开关）与 Weight（整体权重，0 到 1，调节约束影响强弱）；掌握一组即可举一反三用到所有约束组件（来源：VRChat 官方文档《VRC Constraints》参考页 §2.2–§2.6 参数列表归纳，official）。</p>
+<p>两项公共参数：</p>
+<ul>
+<li>Is Active：控制该约束组件是否参与评估，相当于约束的总开关。</li>
+<li>Weight：整体权重，取值范围 0 到 1，用于调节约束影响的强弱程度。</li>
+</ul>
+<p>覆盖证据：官方参考页中 VRCLookAtConstraint、VRCParentConstraint、VRCPositionConstraint、VRCRotationConstraint、VRCScaleConstraint 五个组件的参数列表均以这两项开头，其后才是各自专属的 Constraint Settings（At Rest、Offset、Lock、Freeze Axes 等）。</p>
+<p>边界：Weight 从 0 渐变到 1 的具体插值行为、以及权重为 0 与关闭 Is Active 的精确差异，源文未展开，不作断言。</p>
+<hr>
+<hr>
+<h1 id="target-transform-高级设置约束可驱动附加对象以外的目标但不能通过动画更改">Target Transform 高级设置：约束可驱动附加对象以外的目标，但不能通过动画更改</h1>
+<p>结论：VRC Constraints 组件提供高级设置 Target Transform，用于更改约束实际驱动的目标 Transform；字段为空时约束应用于组件所附加的那个 Transform 本身，填入其他对象即可让约束去移动或旋转附加对象之外的目标（来源：VRChat 官方文档《VRC Constraints》参考页 §3 高级设置，official）。</p>
+<p>默认行为：Target Transform 为空 → 约束作用于自身附加的 Transform。</p>
+<p>扩展用法：将其他对象填入 Target Transform → 约束改为驱动该目标，可把约束组件集中挂在一个物体上而去驱动场景中的其他物体。</p>
+<p>硬性限制：Target Transform 不能通过动画更改——无法在运行过程中用 Animation 切换约束的作用对象；作用目标需要在构建期（编辑时）确定下来。</p>
+<hr>
+<hr>
+<h1 id="solve-in-local-space-开关关世界空间求解贴住源开局部空间求解随骨骼链假肢体场景开">Solve In Local Space 开关：关=世界空间求解贴住源、开=局部空间求解随骨骼链，假肢体场景开</h1>
+<p>结论：Solve In Local Space 决定 VRC Constraints 求解所处的空间——关闭时在世界空间求解，目标匹配源的世界位置/旋转/缩放；开启时在局部空间求解，目标匹配源的局部位置/旋转/缩放（来源：VRChat 官方文档《VRC Constraints》参考页 §3 高级设置，official）。</p>
+<p>两种模式对照：</p>
+<ul>
+<li>关闭（世界空间求解）：无论源处于层级中的哪个位置，目标都在世界坐标下贴合源。</li>
+<li>开启（局部空间求解）：保持的是目标与源之间的局部相对关系。</li>
+</ul>
+<p>典型用途：假肢体（fake limbs）、跟随骨骼链等场景适合开启局部空间求解——这类效果关心的是相对父级的局部关系而非世界坐标对齐，结果会随整条骨骼链一起运动。</p>
+<p>选择方法：要让目标在世界坐标里贴住源就关闭；要让目标作为源局部坐标系中的一员跟随运动就开启。</p>
+<p>[UNKNOWN] 源文未标注此开关的默认值（开启还是关闭）。</p>
+<hr>
+<hr>
+<h1 id="freeze-to-world-世界冻结忽略所有源锁定世界空间必须冻结全部轴才完全停止区别于禁用约束组件">Freeze To World 世界冻结：忽略所有源锁定世界空间、必须冻结全部轴才完全停止、区别于禁用约束组件</h1>
+<p>结论：Freeze To World 是 VRC Constraints 的高级设置——启用后约束忽略所有源，主动把目标 Transform 锁定在世界空间中，典型用途是「把物体放进世界」，例如放下一个道具后让它停在原地不跟随 Avatar 移动（来源：VRChat 官方文档《VRC Constraints》参考页 §3 高级设置，official）。</p>
+<p>关键要点一（必须全轴冻结）：必须冻结所有轴物体才会完全停止；若只冻结部分轴，其余轴仍会被约束驱动继续运动。开启后物体还在动时，先检查是否所有轴都已冻结。</p>
+<p>关键要点二（与禁用约束的区别）：禁用约束组件时 Transform 只是在局部空间停止被驱动，但仍跟随父对象一起移动；Freeze To World 则主动移动 Transform 来抵消父级运动，确保物体在世界空间中保持不动。</p>
+<p>结论性选择：想让物体脱离 Avatar 固定于世界时，用 Freeze To World 而不是简单地关闭约束。</p>
+<hr>
+<hr>
+<h1 id="rebake-offsets-when-unfrozen-解冻重烘焙解冻瞬间重算相对源的偏移而非沿用原始偏移">Rebake Offsets When Unfrozen 解冻重烘焙：解冻瞬间重算相对源的偏移而非沿用原始偏移</h1>
+<p>结论：Rebake Offsets When Unfrozen 控制 VRC Constraints 在解冻时刻如何处理偏移——启用时解冻瞬间重新计算目标相对于源的偏移（承认当前位姿并据此生成新的 Offset），关闭时保持原始偏移不变、解冻后回到按原 Offset 计算出的位姿（来源：VRChat 官方文档《VRC Constraints》参考页 §3 高级设置，official）。</p>
+<p>配合关系：它与 Freeze To World 同属冻结相关的高级设置；当物体在冻结期间发生了位移（例如被放到世界中的新位置），是否把这个新位置作为解冻后的跟随基准，正是由此开关决定。</p>
+<p>决策口径：冻结期间目标与源的相对关系发生了变化、希望解冻后以当前相对关系继续时启用；希望解冻后恢复冻结前的原始相对姿态时关闭。</p>
+<p>[UNKNOWN] 源文未明确此选项是仅与 Freeze To World 配套还是对所有冻结情形生效。</p>
+<hr>
+<hr>
+<h1 id="vrchat-constraints-系统全景六种约束类型加四项高级设置与-unity-constraints-并行存在">VRChat Constraints 系统全景：六种约束类型加四项高级设置，与 Unity Constraints 并行存在</h1>
+<p>结论：VRChat 提供一套自定义约束系统（VRChat Constraints），允许 Avatar 或 World 中的某个 Transform 相对于其他 Transform 进行移动、旋转和缩放，可用于实现物体跟随、朝向、附着等效果；它与 Unity 自带 Constraints 并行存在，Avatar 上官方推荐使用 VRChat Constraints（来源：creators.vrchat.com/common-components/constraints/，official，SDK 3.7.0+、知识库 v1.1 复核于 2026-07-04）。</p>
+<p>六种约束类型：Aim（朝向）、LookAt（注视）、Parent（父子式整体跟随）、Position（位置）、Rotation（旋转）、Scale（缩放）。</p>
+<p>高级设置清单：Target Transform（更换作用目标）、Solve In Local Space（求解空间切换）、Freeze To World（世界冻结）、Rebake Offsets When Unfrozen（解冻重算偏移）。</p>
+<p>场景适配：World 中两套约束均可使用；Avatar 场景以 VRChat Constraints 为正式路径。</p>
+<hr>
+<hr>
+<h1 id="avatar-约束选型结论表vrc-constraints-推荐unity-constraints-自动转换性能更好功能更多">Avatar 约束选型结论表：VRC Constraints 推荐、Unity Constraints 自动转换、性能更好功能更多</h1>
+<p>结论：Avatar 上必须使用 VRChat Constraints（VRC Constraints）；包含 Unity Constraints 时上传由 SDK 自动转换；World 中两套约束均可使用（来源：creators.vrchat.com/common-components/constraints/，official，SDK 3.7.0+、知识库 v1.1 复核于 2026-07-04）。</p>
+<p>差异对比全表：</p>
+<table>
+<thead>
+<tr>
+<th>方面</th>
+<th>VRChat Constraints</th>
+<th>Unity Constraints</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Avatar</td>
+<td>✅ 推荐使用</td>
+<td>自动转换</td>
+</tr>
+<tr>
+<td>World</td>
+<td>均可</td>
+<td>均可</td>
+</tr>
+<tr>
+<td>性能</td>
+<td>更好</td>
+<td>可能性能问题</td>
+</tr>
+<tr>
+<td>功能</td>
+<td>更多可选功能</td>
+<td>基础功能</td>
+</tr>
+</tbody>
+</table>
+<p>一句话记忆：VRChat Constraints 性能更好、可选功能更多；Unity Constraints 只有基础功能且在 Avatar 场景可能有性能问题——制作 Avatar 直接摆 VRC 组件，不要依赖上传自动转换。</p>
+<hr>
+<hr>
+<h1 id="vrc-constraints-版本引入时序表四个-open-beta-加-370-beta-周期2024-08-16-转-live-并附带-sources-修复">VRC Constraints 版本引入时序表：四个 open-beta 加 3.7.0-beta 周期，2024-08-16 转 live 并附带 sources 修复</h1>
+<p>结论：VRC Constraints 于 SDK 3.6.2-constraints 系列 open-beta 中引入，并随 SDK 3.7.0（2024-08-16）正式转为 live 发布；同一 release 还修复了多选编辑源列表丢失引用的缺陷（来源：github.com/vrchat/packages/releases 官方 release 历史，official，覆盖 SDK 3.6.2-constraints.1 ~ 3.7.0）。</p>
+<table>
+<thead>
+<tr>
+<th>SDK 版本</th>
+<th>类型</th>
+<th>官方说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>3.6.2-constraints.1</td>
+<td>open-beta</td>
+<td>“This is an open-beta release for VRChat Constraints.”</td>
+</tr>
+<tr>
+<td>3.6.2-constraints.2</td>
+<td>open-beta</td>
+<td>同上</td>
+</tr>
+<tr>
+<td>3.6.2-constraints.3</td>
+<td>open-beta</td>
+<td>同上</td>
+</tr>
+<tr>
+<td>3.6.2-constraints.4</td>
+<td>open-beta</td>
+<td>同上</td>
+</tr>
+<tr>
+<td>3.7.0-beta.1 / beta.2</td>
+<td>open-beta</td>
+<td>3.7.0 正式版前的 beta 周期</td>
+</tr>
+<tr>
+<td>3.7.0</td>
+<td>live release</td>
+<td>“This is a live release!”（2024-08-16）</td>
+</tr>
+</tbody>
+</table>
+<p>关键里程碑：2024-08-16 SDK 3.7.0 正式发布，VRChat Constraints 脱离 beta 成为正式功能；该 release 同时修复「同时选中多个 VRChat Constraints 并编辑其 sources 列表时 constraint sources 丢失引用」的问题。</p>
+<p>[UNKNOWN] 3.6.2-constraints.1～4 各 open-beta 的具体发布日期原文未给出。</p>
+<hr>
+<hr>
+<h1 id="版本演进对-avatar-开发者的影响推断整理370-前走-unity-自动转换370-起直用-vrc3100-起-world-可用">版本演进对 Avatar 开发者的影响（推断整理）：3.7.0 前走 Unity 自动转换、3.7.0 起直用 VRC、3.10.0 起 World 可用</h1>
+<p>结论：根据官方 packages 发布历史整理，VRC Constraints 的版本演进直接决定 Avatar 开发者的可用方案——SDK 3.7.0 之前只能用 Unity Constraints 靠上传自动转换，3.7.0 起可直接在 Avatar 上使用 VRC Constraints，3.10.0（2025-10-24）起进一步扩展到 World（来源：github.com/vrchat/packages/releases，inferred——本块为知识库基于官方 release 历史的推断性整理，非官方原文逐字结论，版本锚点 SDK 3.7.0 ~ 3.10.0）。</p>
+<p>三阶段用法：</p>
+<ul>
+<li>SDK 3.7.0 之前：Avatar 只能使用 Unity Constraints，SDK 上传时自动转换为 VRC Constraints。</li>
+<li>SDK 3.7.0 起（2024-08-16 正式发布）：创作者可直接使用 VRC Constraints，无需依赖自动转换。</li>
+<li>SDK 3.10.0（2025-10-24）：从 Avatar 扩展到 World，成为通用约束系统。</li>
+</ul>
+<p>工程决策：面向新版本 SDK 的项目应默认直接使用 VRC Constraints 组件；只有兼容 3.7.0 之前的旧工程或旧工作流时才需要走 Unity Constraints 加自动转换路径。</p>
+<p>证据边界：「无需依赖自动转换、功能更可控」为基于官方 release 历史的推断表述，引用时应保留此标注。</p>
+<hr>
+<hr>
+<h1 id="vrc-constraints-命名空间两行引入vrcsdk3dynamicsconstraintcomponents-与-vrcdynamics">VRC Constraints 命名空间两行引入：VRC.SDK3.Dynamics.Constraint.Components 与 VRC.Dynamics</h1>
+<p>结论：编写脚本访问 VRChat Constraints 组件或约束相关类型时需引入两个命名空间——VRC.SDK3.Dynamics.Constraint.Components 与 VRC.Dynamics（来源：creators.vrchat.com/common-components/constraints/，official，SDK 3.7.0+ 约束体系、知识库 v1.1 复核于 2026-07-04）。</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>VRC.SDK3.Dynamics.Constraint.Components</span></span>
+<span class="line"><span>VRC.Dynamics</span></span></code></pre>
+<p>使用方式：在 Udon/UdonSharp 脚本的 using 区写入上述两个命名空间后，即可访问各约束组件类及配套类型；在编辑器工具或反编译检索中定位约束 API 时也优先在这两个命名空间下搜索 Constraint 关键字。</p>
+<p>边界：原文仅列出命名空间名称，未逐一说明每个命名空间下包含哪些具体类型（组件类 vs 工具类）；各约束组件的完整成员清单见 Constraints API 相关块（IsActive、GlobalWeight、Locked、Sources、TargetTransform 等）。</p>
+<hr>
+<hr>
+<h1 id="六种约束类型总览与选用思路aimlookat-管朝向parent-管整体跟随positionrotationscale-管单属性">六种约束类型总览与选用思路：Aim/LookAt 管朝向、Parent 管整体跟随、Position/Rotation/Scale 管单属性</h1>
+<p>结论：VRChat Constraints 共提供六种约束组件，覆盖 Transform 的朝向与位移、旋转、缩放跟随需求；选用思路是朝向选 Aim 或更简单的 LookAt、整体跟随选 Parent、单一属性在 Position/Rotation/Scale 中按需选择（来源：creators.vrchat.com/common-components/constraints/ §2 约束类型，official，SDK 3.7.0+）。</p>
+<p>六种组件清单：</p>
+<ol>
+<li>VRCAimConstraint（目标约束）：旋转目标 Transform 使其朝向源，可自定义前进方向。</li>
+<li>VRCLookAtConstraint（注视约束）：简化版 Aim Constraint，使目标正 Z 轴朝向源。</li>
+<li>VRCParentConstraint（父约束）：移动并旋转目标，效果如同目标是源的子对象。</li>
+<li>VRCPositionConstraint（位置约束）：改变目标位置以匹配源位置。</li>
+<li>VRCRotationConstraint（旋转约束）：改变目标旋转以匹配源旋转。</li>
+<li>VRCScaleConstraint（缩放约束）：改变目标缩放以匹配源缩放。</li>
+</ol>
+<p>选用速查：只需朝向 → Aim 或 LookAt；像子对象一样整体跟随（位置加旋转）→ Parent；只跟单一属性 → Position / Rotation / Scale 三选一。</p>
+<hr>
+<hr>
+<h1 id="vrcaimconstraint-全参数面板基础五参数加-constraint-settings-四项at-restoffsetlockfreeze-rotation-axes">VRCAimConstraint 全参数面板：基础五参数加 Constraint Settings 四项（At Rest/Offset/Lock/Freeze Rotation Axes）</h1>
+<p>结论：VRCAimConstraint（目标约束）旋转目标 Transform 使其朝向源并可自定义前进方向，适合让武器、视线、指示物持续指向目标的场景；参数由基础参数组与 Constraint Settings 组构成（来源：creators.vrchat.com/common-components/constraints/ §2.1，official，SDK 3.7.0+、知识库 v1.1 复核于 2026-07-04）。</p>
+<p>基础参数：</p>
+<ul>
+<li>Is Active：控制约束是否参与评估。</li>
+<li>Weight：整体权重，取值范围 0-1。</li>
+<li>Aim Vector：控制以哪条轴朝向源。</li>
+<li>Up Vector：控制向上轴。</li>
+<li>World Up Type：世界向上的参考方式，五种选项——Scene Up（场景 Y 轴）、Object Up（指定对象的向上方向）、Object Up Rotation（局部空间）、Vector（世界空间向量）、None（无）。</li>
+</ul>
+<p>Constraint Settings：</p>
+<ul>
+<li>Rotation At Rest：权重为 0 时约束呈现的旋转基准。</li>
+<li>Rotation Offset：应用在结果上的旋转偏移。</li>
+<li>Lock：锁定 At Rest 和 Offset 设置。</li>
+<li>Freeze Rotation Axes：冻结特定旋转轴，被冻结轴不参与驱动。</li>
+</ul>
+<hr>
+<hr>
+<h1 id="vrclookatconstraint-与-aim-constraint-的取舍固定正-z-轴省去方向定制仅保留-roll-翻滚控制">VRCLookAtConstraint 与 Aim Constraint 的取舍：固定正 Z 轴省去方向定制、仅保留 Roll 翻滚控制</h1>
+<p>结论：VRCLookAtConstraint（注视约束）是简化版的 Aim Constraint——固定以正 Z 轴对准源，省去 Aim Vector、Up Vector 等方向定制参数，只保留翻滚（Roll）控制，适合视线注视、简单朝向跟随等不需要精细方向定制的场景（来源：creators.vrchat.com/common-components/constraints/ §2.2，official，SDK 3.7.0+、知识库 v1.1 复核于 2026-07-04）。</p>
+<p>参数清单：</p>
+<ul>
+<li>Is Active：控制约束是否评估。</li>
+<li>Weight：整体权重，取值范围 0-1。</li>
+<li>Use Up Object：是否使用单独的对象来控制翻滚。</li>
+<li>Roll：绕 Z 轴的角度，在没有使用 Up Object 时生效。</li>
+<li>World Up Object：控制翻滚所参照的目标对象。</li>
+</ul>
+<p>翻滚二选一规则：未启用 Use Up Object 时用 Roll 参数控制绕 Z 轴角度；启用后由 World Up Object 指定控制翻滚的对象。</p>
+<hr>
+<hr>
+<h1 id="vrcparentconstraint-参数与多源偏移规则positionrotation-双组-at-rest-加-offset每源独立配置">VRCParentConstraint 参数与多源偏移规则：Position/Rotation 双组 At Rest 加 Offset，每源独立配置</h1>
+<p>结论：VRCParentConstraint（父约束）移动并旋转目标 Transform 使其如同源的子对象，适合让饰品或道具整体跟随某一骨骼或物体；当约束配置多个源时，各源各自的 Position/Rotation Offset 相互独立、互不影响，需分别调整（来源：creators.vrchat.com/common-components/constraints/ §2.3，official，SDK 3.7.0+、知识库 v1.1 复核于 2026-07-04）。</p>
+<p>基础参数：Is Active 控制约束是否评估；Weight 整体权重 0-1。</p>
+<p>Constraint Settings：</p>
+<ul>
+<li>Position/Rotation At Rest：静止时的位置/旋转基准。</li>
+<li>Position/Rotation Offset：位置/旋转偏移量。</li>
+<li>Lock：锁定上述设置。</li>
+<li>Freeze Position/Rotation Axes：冻结特定位置/旋转轴。</li>
+</ul>
+<p>多源要点：每个源的偏移是独立设置的——不是所有源共用一组数值；为不同源配不同偏移可实现一个约束按权重混合跟随多个目标。</p>
+<hr>
+<hr>
+<h1 id="vrcpositionconstraint-用法与参数只平移跟随不继承旋转缩放freeze-position-axes-支持部分轴跟随">VRCPositionConstraint 用法与参数：只平移跟随不继承旋转缩放，Freeze Position Axes 支持部分轴跟随</h1>
+<p>结论：VRCPositionConstraint（位置约束）改变目标 Transform 的位置使其匹配源的位置，适合只需要平移跟随而不继承旋转、缩放的场景（来源：creators.vrchat.com/common-components/constraints/ §2.4，official，SDK 3.7.0+、知识库 v1.1 复核于 2026-07-04）。</p>
+<p>基础参数：Is Active 控制约束是否评估；Weight 整体权重 0-1。</p>
+<p>Constraint Settings：</p>
+<ul>
+<li>Position At Rest：静止位置基准。</li>
+<li>Position Offset：位置偏移。</li>
+<li>Lock：锁定上述设置。</li>
+<li>Freeze Position Axes：冻结特定位置轴——可用于只在部分轴上跟随，被冻结轴保持原值。</li>
+</ul>
+<p>典型用途：让附件、道具的位置持续对齐另一对象，例如手持物贴合手部骨骼、标记点跟随目标位移。</p>
+<hr>
+<hr>
+<h1 id="vrcrotationconstraint-用法与参数只转向跟随位置独立freeze-rotation-axes-支持部分轴旋转跟随">VRCRotationConstraint 用法与参数：只转向跟随位置独立，Freeze Rotation Axes 支持部分轴旋转跟随</h1>
+<p>结论：VRCRotationConstraint（旋转约束）改变目标 Transform 的旋转使其匹配源的旋转，适合只需要转向跟随而位置保持独立的场景（来源：creators.vrchat.com/common-components/constraints/ §2.5，official，SDK 3.7.0+、知识库 v1.1 复核于 2026-07-04）。</p>
+<p>基础参数：Is Active 控制约束是否评估；Weight 整体权重 0-1。</p>
+<p>Constraint Settings：</p>
+<ul>
+<li>Rotation At Rest：静止旋转基准。</li>
+<li>Rotation Offset：旋转偏移。</li>
+<li>Lock：锁定上述设置。</li>
+<li>Freeze Rotation Axes：冻结特定旋转轴——可用于只在部分轴上跟随旋转，被冻结轴保持原值。</li>
+</ul>
+<p>典型用途：披风末端对齐身体某部位转动、指示箭头始终朝向目标方向等只关心朝向的效果。</p>
+<hr>
+<hr>
+<h1 id="vrcscaleconstraint-用法与参数缩放同步放大缩小scale-at-rest-基准加-scale-offset-加-freeze-scale-axes-单轴冻结">VRCScaleConstraint 用法与参数：缩放同步放大缩小，Scale At Rest 基准加 Scale Offset 加 Freeze Scale Axes 单轴冻结</h1>
+<p>结论：VRCScaleConstraint（缩放约束）改变目标 Transform 的缩放使其匹配源的缩放，适合需要目标随源同步放大缩小的场景，例如变身、联动道具（来源：creators.vrchat.com/common-components/constraints/ §2.6，official，SDK 3.7.0+、知识库 v1.1 复核于 2026-07-04）。</p>
+<p>基础参数：Is Active 控制约束是否评估；Weight 整体权重 0-1。</p>
+<p>Constraint Settings：</p>
+<ul>
+<li>Scale At Rest：静止缩放基准。</li>
+<li>Scale Offset：缩放偏移。</li>
+<li>Lock：锁定上述设置。</li>
+<li>Freeze Scale Axes：冻结特定缩放轴——可用于只在部分轴上跟随缩放，被冻结轴保持原值。</li>
+</ul>
+<p>组合提示：与 Parent 约束的区别在于 Parent 同时管位置加旋转；只要大小联动就用 Scale，避免多余的自由度被绑定。</p>
+<hr>
+<hr>
+<h1 id="target-transform-挂-a-驱动-b约束组件可集中管理但目标不能运行中用-animation-切换">Target Transform 挂 A 驱动 B：约束组件可集中管理，但目标不能运行中用 Animation 切换</h1>
+<p>结论：高级设置中的 Target Transform 用于更改约束作用的目标对象——默认为空时约束应用于组件所附加到的 Transform，指定后约束改为作用于填写的目标 Transform，可把约束组件集中挂在一个物体上而去驱动场景中的其他物体（来源：creators.vrchat.com/common-components/constraints/ §3 高级设置，official，SDK 3.7.0+、知识库 v1.1 复核于 2026-07-04）。</p>
+<p>使用模式：约束挂在 A 物体上、却驱动 B 物体——例如把所有约束集中在一个控制器空物体上统一管理。</p>
+<p>硬性限制：Target Transform 不能通过动画更改——无法在运行过程中用 Animation 切换约束的目标对象；目标必须在编辑时确定。</p>
+<p>替代思路：若需要动态切换跟随对象，用「预置多个源加动画驱动源权重」的组合模拟换目标效果（详见约束动画三条限制块）。</p>
+<hr>
+<hr>
+<h1 id="solve-in-local-space-世界局部求解切换假肢体与骨骼链跟随开局部空间避免被世界坐标拉直">Solve In Local Space 世界/局部求解切换：假肢体与骨骼链跟随开局部空间，避免被世界坐标拉直</h1>
+<p>结论：Solve In Local Space 控制 VRC Constraints 在哪种空间下求解匹配关系——关闭按世界空间求解（目标匹配源的世界位置/旋转/缩放），开启按局部空间求解（目标匹配源的局部位置/旋转/缩放）（来源：creators.vrchat.com/common-components/constraints/ §3 高级设置，official，SDK 3.7.0+、知识库 v1.1 复核于 2026-07-04）。</p>
+<p>两种取值对照：</p>
+<ul>
+<li>关闭：世界空间求解——目标在世界坐标下贴合源。</li>
+<li>开启：局部空间求解——目标跟随源在其父级骨骼链中的局部变换关系。</li>
+</ul>
+<p>典型用途：假肢体、跟随骨骼链等需要随父级骨骼一起变形的场景应开启局部空间求解——结果会随整条骨骼链一起运动，而不会被世界坐标强行拉直。</p>
+<p>决策口诀：要贴住世界坐标就关，要做骨骼链内的相对跟随就开。</p>
+<hr>
+<hr>
+<h1 id="freeze-to-world-与禁用约束的区别前者主动抵消父级运动锁定世界后者仍跟随父对象">Freeze To World 与禁用约束的区别：前者主动抵消父级运动锁定世界、后者仍跟随父对象</h1>
+<p>结论：Freeze To World 启用后约束忽略所有源，把目标 Transform 锁定在世界空间中，用于「在世界中放下物体」的场景——例如把手里的物品放下后物品不再跟随 Avatar 移动；它与直接禁用约束组件效果不同，想让物体脱离 Avatar 固定于世界时必须用 Freeze To World（来源：creators.vrchat.com/common-components/constraints/ §3 高级设置，official，SDK 3.7.0+、知识库 v1.1 复核于 2026-07-04）。</p>
+<p>限制：必须冻结所有轴才能让目标完全停止移动。</p>
+<p>易混淆点对照：</p>
+<ul>
+<li>禁用约束组件：Transform 只是在局部空间停止移动，但仍会跟随父对象运动。</li>
+<li>Freeze To World：主动移动 Transform 来抵消父级运动，使其在世界空间中保持静止。</li>
+</ul>
+<p>排错入口：开启 Freeze To World 后物体仍在动，先检查是否所有轴都已冻结。</p>
+<hr>
+<hr>
+<h1 id="rebake-offsets-when-unfrozen-决策口径解冻后接受新相对关系就启用恢复原始姿态就关闭">Rebake Offsets When Unfrozen 决策口径：解冻后接受新相对关系就启用、恢复原始姿态就关闭</h1>
+<p>结论：Rebake Offsets When Unfrozen 启用后，约束在解冻时会重新计算相对于源的偏移而非保持原始偏移——解冻瞬间以目标与源的当前相对姿态生成新 offset；关闭则沿用冻结前记录的旧偏移值（来源：creators.vrchat.com/common-components/constraints/ §3 高级设置，official，SDK 3.7.0+、知识库 v1.1 复核于 2026-07-04）。</p>
+<p>配合场景：与 Freeze To World 等冻结手段搭配使用——当冻结期间目标被移动过、与源的相对位置已经改变时，由此开关决定解冻后是回到原始偏移还是接受新的相对关系。</p>
+<p>启用条件：冻结期间目标与源的相对关系发生变化、希望解冻后以当前相对关系继续时启用。</p>
+<p>关闭条件：希望解冻后恢复冻结前的原始相对姿态时关闭。</p>
+<p>[UNKNOWN] 原文未明确此选项是否仅与 Freeze To World 配套还是对所有冻结情形生效；关联表述含基于上下文的合理推断。</p>
+<hr>
+<hr>
+<h1 id="avatar-约束性能两项指标constraint-count-计全部约束含禁用constraint-depth-取最长约束链深度">Avatar 约束性能两项指标：Constraint Count 计全部约束含禁用，Constraint Depth 取最长约束链深度</h1>
+<p>结论：Avatar 性能分类从约束角度考核两项指标——Constraint Count（约束总数，包含已禁用的约束，同时计入 VRChat 约束与 Unity Constraints）与 Constraint Depth（最长约束链的深度）；约束链从链底部到顶部按特定顺序逐个评估（来源：creators.vrchat.com/common-components/constraints/ 性能章节，official，源文档 v1.0（2026-06-05））。</p>
+<p>深度计算示例：臀部 → 膝盖 → 脚三个旋转约束组成的链，三个约束分别处于深度 1、2、3，整条链深度记为 3：</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>约束1 (臀部) → 约束2 (膝盖) → 约束3 (脚)</span></span>
+<span class="line"><span>     深度 1        深度 2        深度 3</span></span></code></pre>
+<p>多条链的算法：多条深度为 3 的链，只要没有更长的链，Avatar 总体深度仍为 3。</p>
+<p>优化建议：减少最长约束链的长度；关注最长链而非链的总条数——总条数影响 Count，最长链决定 Depth。</p>
+<hr>
+<hr>
+<h1 id="unity-constraints-导致-constraint-depth-高估sdk-control-panel-的-auto-fix-一键转换为-vrchat-约束">Unity Constraints 导致 Constraint Depth 高估：SDK Control Panel 的 Auto Fix 一键转换为 VRChat 约束</h1>
+<p>结论：Unity Constraints 可能导致 Avatar 的 Constraint Depth（约束链深度）被高估，使性能分类结果看起来比实际更差；处理方法是打开 SDK Control Panel 使用 Auto Fix，把 Avatar 上所有 Unity Constraints 转换为 VRChat 约束（来源：creators.vrchat.com/common-components/constraints/ 性能章节，official，源文档 v1.0（2026-06-05））。</p>
+<p>触发判断：当性能统计中的约束深度明显高于实际搭建的约束链长度时，优先怀疑场景里存在未转换的 Unity Constraints。</p>
+<p>统计口径补充：Constraint Depth 按最长约束链计算，Constraint Count 也把 Unity Constraints 计入统计——未转换的 Unity Constraints 会同时影响两项指标的口径，Auto Fix 转换后统计恢复统一。</p>
+<p>排查顺序建议：先看 Count 是否虚高（有不该存在的约束），再看 Depth 是否虚高（链被算长），最后跑 Auto Fix 收口。</p>
+<hr>
+<hr>
+<h1 id="vrc-约束不生效排查三步先查-is-active再查组件与-gameobject-启用状态后查-lock">VRC 约束不生效排查三步：先查 Is Active、再查组件与 GameObject 启用状态、后查 Lock</h1>
+<p>结论：VRC 约束添加后没有效果时，依次做三项检查——①约束的 Is Active 是否启用；②约束组件本身及其所在 GameObject 是否处于启用状态；③约束的 Lock 是否启用；三项都正常仍不生效再检查源列表 Sources 权重与目标 Transform 设置（来源：creators.vrchat.com/common-components/constraints/ 使用技巧·故障排除，official，源文档 v1.0（2026-06-05））。</p>
+<p>三步明细：</p>
+<ol>
+<li>Is Active：约束的激活开关，对应 API 的 IsActive 属性（约束是否正在参与评估）；未启用则约束不求解。</li>
+<li>组件启用状态：确认约束组件及其所在 GameObject 都处于勾选启用状态。</li>
+<li>Lock：约束是否锁定，对应 API 的 Locked 属性；注意进入播放模式后约束始终处于锁定状态。</li>
+</ol>
+<p>递进排查：前三项通过后仍异常，检查 Sources 列表各源权重是否为 0、Target Transform 是否指向了预期外的对象。</p>
+<hr>
+<hr>
+<h1 id="vrc-约束动画三条硬限制target-transform-不可动画udon-更改不可动画换绑引用-transform单源引用不可动画多源权重替代">VRC 约束动画三条硬限制：Target Transform 不可动画/Udon 更改、不可动画换绑引用 Transform、单源引用不可动画——多源权重替代</h1>
+<p>结论：在 Avatar 中配合动画/Udon 使用 VRC 约束有三条硬性限制——①Target Transform 不能被动画或 Udon 更改；②不要用动画更改约束所引用的 Transform（不能运行时换绑源指向的对象）；③Avatar 上不能动画单个源的变换引用；需要动态改变跟随对象时，用「预置多个源加动画驱动各源权重」替代（来源：creators.vrchat.com/common-components/constraints/ 使用技巧·限制，official，源文档 v1.0（2026-06-05））。</p>
+<p>限制原因：前两条源于性能缓存机制——约束系统对目标与引用做了缓存，运行时改绑会引发性能问题。</p>
+<p>允许与禁止的边界：动画某个 Transform 自身的位置/旋转/缩放是完全允许的，限制只针对「更换约束绑定对象」这一操作。</p>
+<p>替代方案细节：预先在约束上设置多个源，然后用动画驱动各源的 Weight，通过权重此消彼长来模拟「换目标」或调整效果配比。</p>
+<hr>
+<hr>
+<h1 id="activate-与-zero-out-对照按钮与-api-一一对应差别只在保存当前偏移还是重置默认偏移">Activate 与 Zero out 对照：按钮与 API 一一对应，差别只在保存当前偏移还是重置默认偏移</h1>
+<p>结论：Activate 与 Zero out 是一对互斥的初始化操作，Inspector 按钮与 C# API 一一对应——Activate/ActivateConstraint() 保存当前偏移并激活锁定约束，Zero out/ZeroConstraint() 把偏移重置为默认值再激活锁定；差别仅在偏移处理（来源：creators.vrchat.com/common-components/constraints/ 使用技巧·按钮功能 + Constraints API，official，源文档 v1.0（2026-06-05））。</p>
+<table>
+<thead>
+<tr>
+<th>操作意图</th>
+<th>Inspector 按钮</th>
+<th>API 方法</th>
+<th>行为</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>保持当前姿态</td>
+<td>Activate</td>
+<td>ActivateConstraint()</td>
+<td>保存当前偏移，激活并锁定约束</td>
+</tr>
+<tr>
+<td>回到默认姿态</td>
+<td>Zero out</td>
+<td>ZeroConstraint()</td>
+<td>偏移重置为默认值，激活并锁定约束</td>
+</tr>
+</tbody>
+</table>
+<p>共同点：两者执行后约束都进入激活加锁定状态。</p>
+<p>典型用法：在编辑器里把姿势摆好后用 Activate 固化相对关系；用 Zero out 让受约束对象重新对齐源的默认姿态。</p>
+<hr>
+<hr>
+<h1 id="vrc-constraints-c-api-通用属性八项命名空间两行加-isactiveglobalweightlockedsourcestargettransformsolveinlocalspacefreezetoworldrebakeoffsetswhenunfrozen">VRC Constraints C# API 通用属性八项：命名空间两行加 IsActive/GlobalWeight/Locked/Sources/TargetTransform/SolveInLocalSpace/FreezeToWorld/RebakeOffsetsWhenUnfrozen</h1>
+<p>结论：VRC Constraints 的 C# API 位于 VRC.SDK3.Dynamics.Constraint.Components（约束组件）与 VRC.Dynamics 两个命名空间；所有约束组件共享八个通用属性，覆盖启停、权重、锁定、求解空间与解冻行为（来源：creators.vrchat.com/common-components/constraints/constraints-api，official，源文档 v1.0（2026-06-05）、对应 creators.vrchat.com Constraints API 页）。</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="csharp"><code><span class="line"><span style="color:#F97583">using</span><span style="color:#B392F0"> VRC</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">SDK3</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">Dynamics</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">Constraint</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">Components</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">using</span><span style="color:#B392F0"> VRC</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">Dynamics</span><span style="color:#E1E4E8">;</span></span></code></pre>
+<p>通用属性清单：</p>
+<ul>
+<li>IsActive：bool，约束当前是否正在参与评估。</li>
+<li>GlobalWeight：float，约束的全局权重。</li>
+<li>Locked：bool，约束是否锁定；进入播放模式后约束始终处于锁定状态。</li>
+<li>Sources：VRCConstraintSourceKeyableList 类型，约束的源列表。</li>
+<li>TargetTransform：Transform，受该约束影响的 Transform。</li>
+<li>SolveInLocalSpace：bool，是否在局部空间内求解约束。</li>
+<li>FreezeToWorld：bool，是否把约束冻结在世界空间。</li>
+<li>RebakeOffsetsWhenUnfrozen：bool，解冻时是否重新计算（重烘焙）偏移。</li>
+</ul>
+<p>适用范围：六种约束组件（Position/Rotation/Scale/Parent/Aim/Look At）通用，可用于运行时查询与配置约束状态。</p>
+<hr>
+<hr>
+<h1 id="applyconfigurationchanges-提交调用脚本修改约束属性后必须调用否则改动可能不生效">ApplyConfigurationChanges() 提交调用：脚本修改约束属性后必须调用，否则改动可能不生效</h1>
+<p>结论：用脚本修改 VRC 约束的任何配置后必须调用 ApplyConfigurationChanges() 提交更改，否则改动可能不会实际生效——「改属性 + 提交」是两步流程缺一不可（来源：creators.vrchat.com/common-components/constraints/constraints-api，official，源文档 v1.0（2026-06-05）、对应 creators.vrchat.com Constraints API 页）。</p>
+<p>官方示例：</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="csharp"><code><span class="line"><span style="color:#E1E4E8">constraint.PositionOffset </span><span style="color:#F97583">=</span><span style="color:#F97583"> new</span><span style="color:#B392F0"> Vector3</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">1</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">0</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">0</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#E1E4E8">constraint.</span><span style="color:#B392F0">ApplyConfigurationChanges</span><span style="color:#E1E4E8">();</span></span></code></pre>
+<p>适用条件：凡是在运行时用脚本改动约束参数（Offset、权重等属性），赋值之后都要追加调用该方法提交。</p>
+<p>典型症状：代码里对属性赋值成功且无报错，但约束行为毫无变化——多半就是漏掉了这次提交调用。</p>
+<hr>
+<hr>
+<h1 id="sources-源列表操作与前-16-个源动画限制回写式改权重addremove-增删超限需精简或拆分约束">Sources 源列表操作与前 16 个源动画限制：回写式改权重、Add/Remove 增删、超限需精简或拆分约束</h1>
+<p>结论：VRC 约束的源通过 Sources 属性（VRCConstraintSourceKeyableList 类型）管理——修改某源权重须取出元素改完 Weight 后回写 constraint.Sources[i]，添加用 Add、移除用 Remove/RemoveAt；关键限制是 Avatar 上只能对前 16 个源元素做 Animation 动画驱动（来源：creators.vrchat.com/common-components/constraints/constraints-api，official，源文档 v1.0（2026-06-05）、对应 creators.vrchat.com Constraints API 页）。</p>
+<p>常用操作代码：</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="csharp"><code><span class="line"><span style="color:#6A737D">// 修改源权重</span></span>
+<span class="line"><span style="color:#F97583">for</span><span style="color:#E1E4E8"> (</span><span style="color:#F97583">int</span><span style="color:#B392F0"> i</span><span style="color:#F97583"> =</span><span style="color:#79B8FF"> 0</span><span style="color:#E1E4E8">; i </span><span style="color:#F97583">&#x3C;</span><span style="color:#E1E4E8"> constraint.Sources.Count; i</span><span style="color:#F97583">++</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#E1E4E8">{</span></span>
+<span class="line"><span style="color:#B392F0">    VRCConstraintSource</span><span style="color:#B392F0"> source</span><span style="color:#F97583"> =</span><span style="color:#E1E4E8"> constraint.Sources[i];</span></span>
+<span class="line"><span style="color:#E1E4E8">    source.Weight </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> UnityEngine.Random.value;</span></span>
+<span class="line"><span style="color:#E1E4E8">    constraint.Sources[i] </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> source;</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// 添加源</span></span>
+<span class="line"><span style="color:#B392F0">VRCConstraintSource</span><span style="color:#B392F0"> source</span><span style="color:#F97583"> =</span><span style="color:#F97583"> new</span><span style="color:#B392F0"> VRCConstraintSource</span><span style="color:#E1E4E8">(transform, </span><span style="color:#79B8FF">1.0f</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#E1E4E8">constraint.Sources.</span><span style="color:#B392F0">Add</span><span style="color:#E1E4E8">(source);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// 移除源</span></span>
+<span class="line"><span style="color:#E1E4E8">constraint.Sources.</span><span style="color:#B392F0">Remove</span><span style="color:#E1E4E8">(source);</span></span>
+<span class="line"><span style="color:#E1E4E8">constraint.Sources.</span><span style="color:#B392F0">RemoveAt</span><span style="color:#E1E4E8">(i);</span></span></code></pre>
+<p>要点三条：</p>
+<ul>
+<li>回写必做：取出 VRCConstraintSource 改完 Weight 后执行 constraint.Sources[i] = source 才完成修改。</li>
+<li>构造签名：new VRCConstraintSource(transform, weight)，第二参数为初始权重。</li>
+<li>前 16 限制：Animation 只能驱动第 1～16 个源元素；需要更多可动画控制的源时应精简源数量或拆分到多个约束。</li>
+</ul>
+<hr>
+<hr>
+<h1 id="各约束类型-at-restoffset-类型对照表positionscale-为-vector3parent-双组rotationaimlook-at-标注欧拉角待核实-️">各约束类型 At-Rest/Offset 类型对照表：Position/Scale 为 Vector3、Parent 双组、Rotation/Aim/Look At 标注欧拉角待核实 ⚠️</h1>
+<p>结论：每个 VRC 约束类型都有配套的 At-Rest（静止值）与 Offset（偏移值），数据类型因约束而异；其中 Rotation/Aim/Look At 三类的确切 C# 类型官方未明确，存在欧拉角与 Quaternion 两种表述的不一致（来源：creators.vrchat.com/common-components/constraints/constraints-api，conflict，源文档 v1.0（2026-06-05）、对应 creators.vrchat.com Constraints API 页）。</p>
+<table>
+<thead>
+<tr>
+<th>约束类型</th>
+<th>At-Rest</th>
+<th>Offset</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Position</td>
+<td>Vector3</td>
+<td>Vector3</td>
+</tr>
+<tr>
+<td>Rotation</td>
+<td>Vector3（Euler 角）⚠️</td>
+<td>Vector3（Euler 角）⚠️</td>
+</tr>
+<tr>
+<td>Scale</td>
+<td>Vector3</td>
+<td>Vector3</td>
+</tr>
+<tr>
+<td>Parent</td>
+<td>Vector3 + Quaternion</td>
+<td>Vector3 + Quaternion</td>
+</tr>
+<tr>
+<td>Aim</td>
+<td>Vector3（Euler 角）⚠️</td>
+<td>Vector3（Euler 角）⚠️</td>
+</tr>
+<tr>
+<td>Look At</td>
+<td>Vector3（Euler 角）⚠️</td>
+<td>Vector3（Euler 角）⚠️</td>
+</tr>
+</tbody>
+</table>
+<p>⚠️ 类型待核实说明（照抄候选原文）：官方 Constraints API 页面对 Rotation/Aim/Look At 的 At-Rest/Offset 仅描述为「a set of Euler angles」（一组欧拉角），更可能是 Vector3（欧拉角）而非 Quaternion，但官方页未写明 C# 类型；本表倾向 Vector3，接入真实项目前请在 SDK Inspector 中确认。另需注意：同文档「约束类型特定 API」一节的代码签名把这三类的 At-Rest/Offset 写作 Quaternion，与本表标注存在不一致。</p>
+<p>使用场景提醒：编写编辑器工具或做序列化时需按各约束类型分别处理其 At-Rest/Offset 字段类型。</p>
+<p>[UNKNOWN] 官方 Constraints API 页未明确 Rotation/Aim/Look At 的 At-Rest/Offset 的确切 C# 类型（Vector3 欧拉角 vs Quaternion）。</p>
+<hr>
+<hr>
+<h1 id="positionrotationscaleconstraint-专属-api一对-at-restoffset-属性加一对单轴冻结方法rotation-签名为-quaternion-️">Position/Rotation/ScaleConstraint 专属 API：一对 At-Rest/Offset 属性加一对单轴冻结方法，Rotation 签名为 Quaternion ⚠️</h1>
+<p>结论：Position、Rotation、Scale 三种基础 VRC 约束的类型特定 API 均遵循「一对 At-Rest/Offset 属性 + 一对轴冻结方法」模式——Position/Scale 用 Vector3，Rotation 用 Quaternion；三类都可按 axis 索引单独冻结某一轴（来源：creators.vrchat.com/common-components/constraints/vrc-*-constraint，conflict，源文档 v1.0（2026-06-05）、对应 creators.vrchat.com 各约束组件页）。</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="csharp"><code><span class="line"><span style="color:#6A737D">// PositionConstraint</span></span>
+<span class="line"><span style="color:#E1E4E8">Vector3 PositionAtRest { get; set; }</span></span>
+<span class="line"><span style="color:#E1E4E8">Vector3 PositionOffset { get; set; }</span></span>
+<span class="line"><span style="color:#F97583">bool</span><span style="color:#B392F0"> GetPositionAxisIsFrozen</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">int</span><span style="color:#B392F0"> axis</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#F97583">void</span><span style="color:#B392F0"> SetPositionAxisIsFrozen</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">int</span><span style="color:#B392F0"> axis</span><span style="color:#E1E4E8">, </span><span style="color:#F97583">bool</span><span style="color:#B392F0"> value</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// RotationConstraint</span></span>
+<span class="line"><span style="color:#E1E4E8">Quaternion RotationAtRest { get; set; }</span></span>
+<span class="line"><span style="color:#E1E4E8">Quaternion RotationOffset { get; set; }</span></span>
+<span class="line"><span style="color:#F97583">bool</span><span style="color:#B392F0"> GetRotationAxisIsFrozen</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">int</span><span style="color:#B392F0"> axis</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#F97583">void</span><span style="color:#B392F0"> SetRotationAxisIsFrozen</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">int</span><span style="color:#B392F0"> axis</span><span style="color:#E1E4E8">, </span><span style="color:#F97583">bool</span><span style="color:#B392F0"> value</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// ScaleConstraint</span></span>
+<span class="line"><span style="color:#E1E4E8">Vector3 ScaleAtRest { get; set; }</span></span>
+<span class="line"><span style="color:#E1E4E8">Vector3 ScaleOffset { get; set; }</span></span>
+<span class="line"><span style="color:#F97583">bool</span><span style="color:#B392F0"> GetScaleAxisIsFrozen</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">int</span><span style="color:#B392F0"> axis</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#F97583">void</span><span style="color:#B392F0"> SetScaleAxisIsFrozen</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">int</span><span style="color:#B392F0"> axis</span><span style="color:#E1E4E8">, </span><span style="color:#F97583">bool</span><span style="color:#B392F0"> value</span><span style="color:#E1E4E8">);</span></span></code></pre>
+<p>⚠️ 不一致注记（照抄候选原文）：RotationConstraint 签名使用 Quaternion，而 At-Rest/Offset 汇总表将其标注为 Vector3（Euler 角）并注明待核实，两处存在不一致，以 SDK Inspector 实测为准。</p>
+<p>axis 参数说明：int 类型轴索引，用于指定要查询或冻结的具体轴。</p>
+<hr>
+<hr>
+<h1 id="parentaimlookatconstraint-专属-apiparent-位置旋转双组成员aim-与-look-at-仅旋转型且接口完全一致-️">Parent/Aim/LookAtConstraint 专属 API：Parent 位置旋转双组成员，Aim 与 Look At 仅旋转型且接口完全一致 ⚠️</h1>
+<p>结论：ParentConstraint 同时暴露位置与旋转两组成员（Vector3 PositionAtRest/PositionOffset 与 Quaternion RotationAtRest/RotationOffset 及各自独立的轴冻结方法）；AimConstraint 与 LookAtConstraint 结构完全相同——仅有 Quaternion RotationAtRest/RotationOffset 加 Get/SetRotationAxisIsFrozen（来源：creators.vrchat.com/common-components/constraints/vrc-*-constraint，conflict，源文档 v1.0（2026-06-05）、对应 creators.vrchat.com 各约束组件页）。</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="csharp"><code><span class="line"><span style="color:#6A737D">// ParentConstraint（位置+旋转两组）</span></span>
+<span class="line"><span style="color:#E1E4E8">Vector3 PositionAtRest { get; set; }</span></span>
+<span class="line"><span style="color:#E1E4E8">Quaternion RotationAtRest { get; set; }</span></span>
+<span class="line"><span style="color:#E1E4E8">Vector3 PositionOffset { get; set; }</span></span>
+<span class="line"><span style="color:#E1E4E8">Quaternion RotationOffset { get; set; }</span></span>
+<span class="line"><span style="color:#F97583">bool</span><span style="color:#B392F0"> GetPositionAxisIsFrozen</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">int</span><span style="color:#B392F0"> axis</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#F97583">void</span><span style="color:#B392F0"> SetPositionAxisIsFrozen</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">int</span><span style="color:#B392F0"> axis</span><span style="color:#E1E4E8">, </span><span style="color:#F97583">bool</span><span style="color:#B392F0"> value</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#F97583">bool</span><span style="color:#B392F0"> GetRotationAxisIsFrozen</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">int</span><span style="color:#B392F0"> axis</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#F97583">void</span><span style="color:#B392F0"> SetRotationAxisIsFrozen</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">int</span><span style="color:#B392F0"> axis</span><span style="color:#E1E4E8">, </span><span style="color:#F97583">bool</span><span style="color:#B392F0"> value</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// AimConstraint</span></span>
+<span class="line"><span style="color:#E1E4E8">Quaternion RotationAtRest { get; set; }</span></span>
+<span class="line"><span style="color:#E1E4E8">Quaternion RotationOffset { get; set; }</span></span>
+<span class="line"><span style="color:#F97583">bool</span><span style="color:#B392F0"> GetRotationAxisIsFrozen</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">int</span><span style="color:#B392F0"> axis</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#F97583">void</span><span style="color:#B392F0"> SetRotationAxisIsFrozen</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">int</span><span style="color:#B392F0"> axis</span><span style="color:#E1E4E8">, </span><span style="color:#F97583">bool</span><span style="color:#B392F0"> value</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// LookAtConstraint</span></span>
+<span class="line"><span style="color:#E1E4E8">Quaternion RotationAtRest { get; set; }</span></span>
+<span class="line"><span style="color:#E1E4E8">Quaternion RotationOffset { get; set; }</span></span>
+<span class="line"><span style="color:#F97583">bool</span><span style="color:#B392F0"> GetRotationAxisIsFrozen</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">int</span><span style="color:#B392F0"> axis</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#F97583">void</span><span style="color:#B392F0"> SetRotationAxisIsFrozen</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">int</span><span style="color:#B392F0"> axis</span><span style="color:#E1E4E8">, </span><span style="color:#F97583">bool</span><span style="color:#B392F0"> value</span><span style="color:#E1E4E8">);</span></span></code></pre>
+<p>要点：ParentConstraint 因同时控制位置与旋转拥有两组独立的 At-Rest/Offset 与轴冻结方法；AimConstraint 与 LookAtConstraint 只做旋转对齐，二者接口完全一致。</p>
+<p>⚠️ 不一致注记（照抄候选原文）：Aim/Look At 的 RotationAtRest/RotationOffset 签名为 Quaternion，而 At-Rest/Offset 汇总表按官方文字（一组欧拉角）标注为 Vector3 并注明待核实，存在不一致，以 SDK Inspector 实测为准。</p>
+<hr> </div> <p class="kb-source-note" data-astro-cid-lvjzyg5v>
+本文由 VRChat 开发知识库自动整理（官方来源  · 可信度 high ），
+          遇到与手写教程冲突的地方，以官方文档为最高优先级。
+</p> <section class="comments" id="comments" data-astro-cid-lvjzyg5v> <h2 class="comments__title" data-astro-cid-lvjzyg5v>✦ 旅人留言（0）</h2> <p class="comments__empty" id="commentsEmpty" data-astro-cid-lvjzyg5v>
+还没有旅人留言 —— 有疑问就写在下面，站长都会回复。
+</p> <form class="comment-form" id="commentForm" data-target="kb-avatar-vrc-constraints" data-astro-cid-lvjzyg5v> <p class="comment-form__title" data-astro-cid-lvjzyg5v>写下你的留言</p> <input id="cAuthor" maxlength="20" placeholder="昵称（留空则为「旅人」）" data-astro-cid-lvjzyg5v> <textarea id="cBody" maxlength="1000" required placeholder="想问的问题、想说的感谢都可以（最多 1000 字）" data-astro-cid-lvjzyg5v></textarea> <div class="comment-form__actions" data-astro-cid-lvjzyg5v> <button class="btn btn--primary" type="submit" data-astro-cid-lvjzyg5v>发布留言</button> <span class="form-hint" data-astro-cid-lvjzyg5v>留言保存在本站，站长在写作台里能看到</span> <span class="form-msg" id="cMsg" data-astro-cid-lvjzyg5v></span> </div> </form> </section> <nav class="station-nav" aria-label="站间导航" data-astro-cid-lvjzyg5v> <a href="/STELLASTOPVRC/posts/kb-avatar-unity-mcp/" data-astro-cid-lvjzyg5v> <span class="dir" data-astro-cid-lvjzyg5v>← 上一站 · 更新的星光</span> <span class="to" data-astro-cid-lvjzyg5v>Unity MCP (MCP for Unity) — AI 助手与 Unity Editor 的 MCP 桥接层（三层架构、48 工具清单、UPM 安装对接与证据边界）</span> </a> <a href="/STELLASTOPVRC/posts/kb-avatar-vrcfury-reference/" data-astro-cid-lvjzyg5v> <span class="dir" data-astro-cid-lvjzyg5v>下一站 · 更早的星光 →</span> <span class="to" data-astro-cid-lvjzyg5v>VRCFury 完整参考 — Non-Destructive Avatar 工具与优化系统</span> </a> </nav> </div> <aside class="toc" id="toc" hidden> <p class="toc__title">✦ 本页星图</p> <nav id="tocNav" aria-label="文章目录"></nav> </aside> <script type="module">const i=document.querySelector(".prose"),d=document.getElementById("toc"),u=document.getElementById("tocNav"),l=[];if(i&&d&&u){const c=[...i.querySelectorAll("h1, h2, h3")];if(c.length>=3){d.hidden=!1,c.forEach((o,e)=>{o.id||(o.id=`sec-${e}`);const n=document.createElement("a");n.href=`#${o.id}`;const s=(o.textContent??"").replace(/\s+/g," ").trim(),r=s.search(/[：:]/),a=r>=4?s.slice(0,r):s;n.textContent=a.length>40?`${a.slice(0,40)}…`:a,n.title=s,u.appendChild(n),l.push({a:n,h:o})});const t=()=>{let o=l[0];for(const e of l)e.h.getBoundingClientRect().top<=130&&(o=e);for(const e of l)e.a.classList.toggle("is-active",e===o)};addEventListener("scroll",t,{passive:!0}),t()}}document.querySelectorAll(".prose pre").forEach(c=>{const t=document.createElement("button");t.className="code-copy",t.type="button",t.textContent="复制",t.addEventListener("click",async()=>{const o=c.querySelector("code")?.innerText??c.innerText;try{await navigator.clipboard.writeText(o)}catch{const e=document.createElement("textarea");e.value=o,document.body.appendChild(e),e.select(),document.execCommand("copy"),e.remove()}t.textContent="已复制 ✓",t.classList.add("is-ok"),setTimeout(()=>{t.textContent="复制",t.classList.remove("is-ok")},1500)}),c.appendChild(t)});</script> </article>  </main> <footer class="site-footer"> <div class="wrap"> <p class="star-line" aria-hidden="true"> <svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> <svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> </p> <p>星之驿站 StellaStop —— 在虚拟宇宙中，为你保留一座驿站</p> <p class="site-footer__disclaimer">
+该网页目前是测试阶段，仅用于测试，所有内容仅供参考；内容全部为引用互联网当中的信息。
+</p> <p>© 2026 星之驿站 · 由 <a href="https://astro.build">Astro</a> 与星光驱动</p> <p> <a data-desk-login hidden title="写作台：登录 / 注册">登录 / 注册</a> ·
+<a href="/STELLASTOPVRC/announcements/">官方公告</a> ·
+<a href="/STELLASTOPVRC/ai/">问星 AI</a> ·
+<a href="/STELLASTOPVRC/feedback/">旅人留言板</a> </p> </div> </footer> <button class="to-top" id="toTop" aria-label="回到顶部"> <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"> <path d="M12 20V5"></path> <path d="M5.5 11.5 12 5l6.5 6.5"></path> </svg> </button> <script type="module">const e=document.getElementById("toTop");if(e){const t=()=>e.classList.toggle("is-visible",scrollY>480);addEventListener("scroll",t,{passive:!0}),t(),e.addEventListener("click",()=>{const o=matchMedia("(prefers-reduced-motion: reduce)").matches;scrollTo({top:0,behavior:o?"auto":"smooth"})})}</script> <script>(function(){const deskConfigured = "";
+
+      /* 写作台探测（页面尾部执行，DOM 已就绪）：
+         1. 计算写作台地址：站点配置 deskUrl（公网部署时填）> 本机默认 localhost:4322 > 同主机 4322
+         2. 探测 /api/gate/status —— 在线才点亮「登录 / 注册」入口，并复用给验证门横幅
+         3. 不在线则保持隐藏，绝不会把访客拽进内网地址；同时给出一次性「镜像模式」提示 */
+      (function () {
+        var host = location.hostname;
+        var isLocal = host === 'localhost' || host === '127.0.0.1' || host === '[::1]';
+        var desk = deskConfigured ||
+          (isLocal ? 'http://localhost:4322' : location.protocol + '//' + host + ':4322');
+        window.STELLA_DESK = desk;
+
+        function revealLogin() {
+          document.querySelectorAll('[data-desk-login]').forEach(function (a) {
+            a.href = desk + '/admin';
+            a.removeAttribute('hidden');
+          });
+        }
+        function showBanner(css, html, shiftHeader) {
+          var bar = document.createElement('div');
+          bar.style.cssText = css;
+          bar.innerHTML = html;
+          document.body.prepend(bar);
+          if (shiftHeader) {
+            var header = document.querySelector('.site-header');
+            if (header) header.style.marginTop = '42px';
+          }
+        }
+        function hintMirrorMode() {
+          try {
+            if (sessionStorage.getItem('stella-desk-hint')) return;
+            sessionStorage.setItem('stella-desk-hint', '1');
+          } catch (e) { /* 无痕模式等：忽略 */ }
+          var tip = document.createElement('div');
+          tip.style.cssText = 'position:fixed;left:14px;bottom:14px;z-index:9998;max-width:min(92vw,430px);padding:.65rem .9rem;border-radius:12px;background:rgba(18,20,44,.92);border:1px solid rgba(150,142,255,.35);color:#e8e6ff;font-size:.82rem;line-height:1.6;font-family:system-ui,sans-serif;box-shadow:0 8px 30px rgba(0,0,0,.35)';
+          tip.innerHTML = 'ℹ️ 静态镜像模式：登录 / 评论 / AI 等互动功能需要站长写作台在线，当前不可用。' +
+            '<span id="stellaDeskHintClose" style="float:right;cursor:pointer;opacity:.75;font-weight:700;margin-left:.6rem" title="关闭">×</span>';
+          document.body.appendChild(tip);
+          var close = function () { tip.remove(); };
+          tip.querySelector('#stellaDeskHintClose').addEventListener('click', close);
+          setTimeout(close, 9000);
+        }
+
+        try {
+          var ctrl = new AbortController();
+          var timer = setTimeout(function () { ctrl.abort(); }, 2500);
+          fetch(desk + '/api/gate/status', { credentials: 'include', signal: ctrl.signal })
+            .then(function (r) { return r.ok ? r.json() : null; })
+            .then(function (d) {
+              clearTimeout(timer);
+              if (!d) throw new Error('desk-offline');
+              window.STELLA_DESK_OK = true;
+              revealLogin();
+              if (d.regionBlocked) {
+                showBanner(
+                  'position:fixed;top:0;left:0;right:0;z-index:9999;padding:1.2rem;text-align:center;background:#1a0a0a;color:#ff9ed2;font-size:.95rem;border-bottom:2px solid #ff4d6d;font-family:system-ui,sans-serif',
+                  '⛔ 你所在的地区（' + (d.regionCountry || '未知') + '）暂不开放访问。',
+                  false
+                );
+                return;
+              }
+              if (d.enabled && !d.passed) {
+                showBanner(
+                  'position:fixed;top:0;left:0;right:0;z-index:9999;padding:0.7rem;text-align:center;background:linear-gradient(94deg,rgba(143,127,247,.25),rgba(98,200,245,.18));border-bottom:1px solid rgba(150,142,255,.3);color:#f0efff;font-size:.88rem;font-family:system-ui,sans-serif',
+                  '🔒 本站启用了安全验证 —— <a href="' + desk + '/gate?next=' + encodeURIComponent(location.href) + '" style="color:#ffd98e;font-weight:700;text-decoration:underline">点击完成验证</a>，通过后即可使用全部功能（30 天免验）。',
+                  true
+                );
+              }
+            })
+            .catch(function () {
+              clearTimeout(timer);
+              window.STELLA_DESK_OK = false;
+              hintMirrorMode();
+            });
+        } catch (e) { /* 忽略 */ }
+      })();
+    })();</script> </body> </html> <script type="module">const m=document.getElementById("commentForm"),s=document.getElementById("cMsg"),u=`${location.protocol}//${location.hostname}:4322/api/message`;function r(e,t=!1){s&&(s.textContent=e,s.classList.toggle("is-err",t),s.classList.toggle("is-ok",!t))}function y(){const e=new Date,t=n=>String(n).padStart(2,"0");return`${e.getFullYear()}-${t(e.getMonth()+1)}-${t(e.getDate())}`}function f(e){let t=7;for(const n of e)t=(t*31+n.charCodeAt(0))%360;return t}function g(e,t){const n=document.createElement("li");n.className="comment",n.innerHTML=`
+      <span class="comment__avatar"></span>
+      <div class="comment__bubble">
+        <div class="comment__head">
+          <span class="comment__name"></span>
+          <time class="comment__date">${y()}</time>
+        </div>
+        <p class="comment__body"></p>
+      </div>`;const o=n.querySelector(".comment__avatar");return o.style.setProperty("--h",String(f(e))),o.textContent=e.slice(0,1),n.querySelector(".comment__name").textContent=e,n.querySelector(".comment__body").textContent=t,n}m?.addEventListener("submit",async e=>{e.preventDefault();const t=document.getElementById("cBody").value.trim();if(!t)return r("留言内容不能为空哦",!0);const n=document.getElementById("cAuthor").value.trim()||"旅人",o=m.querySelector("button");o&&(o.disabled=!0);try{const c=await fetch(u,{credentials:"include",method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({target:m.dataset.target,kind:"comment",author:n,body:t})}),d=await c.json().catch(()=>({}));if(!c.ok)throw new Error(d.error||`发送失败（${c.status}）`);const l=document.querySelector(".comment-list");l&&l.appendChild(g(n,t)),document.getElementById("commentsEmpty")?.remove(),document.getElementById("cBody").value="",r("留言已发布，感谢支持 ✦");const a=document.querySelector(".comments__title"),i=a?.textContent?.match(/（(\d+)）/);a&&i&&(a.textContent=a.textContent.replace(/（\d+）/,`（${Number(i[1])+1}）`))}catch(c){r(c instanceof TypeError?"写作台没在运行，暂时收不到留言 —— 双击「启动博客.bat」就好":c.message,!0)}finally{o&&(o.disabled=!1)}});</script> 

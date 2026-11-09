@@ -1,0 +1,1255 @@
+<!DOCTYPE html><html lang="zh-CN"> <head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="generator" content="Astro v5.18.2"><meta name="description" content="《KB Index — Multi-Domain 路由地图》—— VRChat 知识库资料"><meta name="theme-color" content="#070a1c"><meta property="og:title" content="KB Index — Multi-Domain 路由地图 · 星之驿站 StellaStop"><meta property="og:description" content="《KB Index — Multi-Domain 路由地图》—— VRChat 知识库资料"><meta property="og:type" content="website"><meta name="twitter:card" content="summary"><link rel="icon" type="image/svg+xml" href="/STELLASTOPVRC/favicon.svg"><script>
+      // 在渲染前恢复主题与特效档位，避免闪一下默认状态
+      try {
+        document.documentElement.dataset.theme =
+          localStorage.getItem('stella-theme') || 'nebula';
+        document.documentElement.dataset.fx =
+          localStorage.getItem('stella-fx') || 'standard';
+      } catch {
+        /* 隐私模式读不到就算了 */
+      }
+    </script><link rel="stylesheet" href="/STELLASTOPVRC/custom-vars.css"><title>KB Index — Multi-Domain 路由地图 · 星之驿站 StellaStop</title><link rel="stylesheet" href="/STELLASTOPVRC/_astro/about.Bgh6wcGl.css">
+<style>.post-head__meta[data-astro-cid-lvjzyg5v]{color:var(--ink-faint);font-family:var(--font-mono);font-size:.82rem}.post-head[data-astro-cid-lvjzyg5v] .chip-row[data-astro-cid-lvjzyg5v]{margin-top:1rem}.kb-source-note[data-astro-cid-lvjzyg5v]{max-width:760px;margin:2.2rem auto 0;font-size:.82rem;color:var(--ink-faint);border-top:1px dashed var(--line);padding-top:1rem}
+</style></head> <body> <div class="site-notice" id="siteNotice"> <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> <span class="site-notice__text">欢迎来到星之驿站！</span> <button class="site-notice__close" id="noticeClose" type="button" aria-label="关闭公告">
+×
+</button> </div> <a class="skip-link" href="#main">跳到主要内容</a> <canvas id="starfield" aria-hidden="true" data-astro-cid-ra7sfcwn></canvas> <div class="fx-aurora fx-aurora--a" aria-hidden="true" data-astro-cid-ra7sfcwn></div> <div class="fx-aurora fx-aurora--b" aria-hidden="true" data-astro-cid-ra7sfcwn></div>  <script type="module">const u=document.getElementById("starfield");if(u){let F=function(){const n=Math.random();return n<.1?"gold":n<.42?"blue":"white"},v=function(){const n=Math.min(window.devicePixelRatio||1,2);s=window.innerWidth,d=window.innerHeight,u.width=s*n,u.height=d*n,u.style.width=`${s}px`,u.style.height=`${d}px`,t.setTransform(n,0,0,n,0,0);const e=Math.min(190,Math.round(s*d/8500));l=Array.from({length:e},()=>({x:Math.random()*s,y:Math.random()*d,r:r(.4,1.7),base:r(.25,.8),amp:r(.12,.4),speed:r(6e-4,.0022),phase:r(0,Math.PI*2),c:F()})),C=Array.from({length:26},()=>({x:Math.random()*s,y:Math.random()*d,r:r(.9,2.4),vx:r(-.006,.006),vy:r(-.02,-.006),base:r(.2,.5),speed:r(8e-4,.002),phase:r(0,Math.PI*2),c:Math.random()<.5?"gold":"violet"})),c==="off"&&m(0,!0)},D=function(n){const e=Math.random()<.5?1:-1,o=r(Math.PI/7,Math.PI/5),a=r(.45,.75);y.push({x:r(s*.15,s*.85),y:r(-20,d*.3),vx:Math.cos(o)*a*e,vy:Math.sin(o)*a,born:n,life:r(750,1050),len:r(100,170)})},S=function(n){y=y.filter(e=>n-e.born<e.life);for(const e of y){const o=(n-e.born)/e.life,a=e.x+e.vx*(n-e.born),i=e.y+e.vy*(n-e.born),f=o<.15?o/.15:o>.7?(1-o)/.3:1,h=Math.hypot(e.vx,e.vy),x=e.vx/h,g=e.vy/h,b=t.createLinearGradient(a,i,a-x*e.len,i-g*e.len);b.addColorStop(0,`rgba(236,242,255,${(.85*f).toFixed(3)})`),b.addColorStop(1,"rgba(236,242,255,0)"),t.strokeStyle=b,t.lineWidth=1.6,t.lineCap="round",t.beginPath(),t.moveTo(a,i),t.lineTo(a-x*e.len,i-g*e.len),t.stroke()}},B=function(){let o=0;t.lineWidth=.7;for(let a=0;a<l.length&&o<26;a++)for(let i=a+1;i<l.length&&o<26;i++){const f=l[a].x-l[i].x,h=l[a].y-l[i].y,x=f*f+h*h;if(x<16900){const g=(1-Math.sqrt(x)/130)*.17;t.strokeStyle=`rgba(178,170,255,${g.toFixed(3)})`,t.beginPath(),t.moveTo(l[a].x,l[a].y),t.lineTo(l[i].x,l[i].y),t.stroke(),o++}}},X=function(n){for(const e of C){e.x+=e.vx*16,e.y+=e.vy*16,e.y<-12&&(e.y=d+10),e.x<-12&&(e.x=s+10),e.x>s+12&&(e.x=-10);const o=Math.max(.05,e.base+.25*Math.sin(n*e.speed+e.phase)),[a,i,f]=A[e.c];t.beginPath(),t.arc(e.x,e.y,e.r,0,7),t.shadowBlur=9,t.shadowColor=`rgba(${a},${i},${f},0.9)`,t.fillStyle=`rgba(${a},${i},${f},${o.toFixed(3)})`,t.fill()}t.shadowBlur=0},m=function(n,e=!1){t.clearRect(0,0,s,d);for(const o of l){const a=c==="off"?o.base:Math.max(.05,o.base+o.amp*Math.sin(n*o.speed+o.phase)),[i,f,h]=A[o.c];t.beginPath(),t.arc(o.x,o.y,o.r,0,7),o.r>1.25?(t.shadowBlur=7,t.shadowColor=`rgba(${i},${f},${h},0.85)`):t.shadowBlur=0,t.fillStyle=`rgba(${i},${f},${h},${a.toFixed(3)})`,t.fill()}if(t.shadowBlur=0,c!=="off"&&!e){c==="fancy"&&(B(),X(n));const o=c==="fancy"?r(2600,6e3):r(4200,9500);n>P&&(D(n),P=n+o),S(n)}},$=function(n){m(n),M=requestAnimationFrame($)},p=function(){if(c==="off"){m(0,!0);return}cancelAnimationFrame(M),M=requestAnimationFrame($)},w=function(){cancelAnimationFrame(M),t.clearRect(0,0,s,d),m(0,!0)};const t=u.getContext("2d"),k=matchMedia("(prefers-reduced-motion: reduce)").matches,A={white:[240,240,255],blue:[150,215,250],gold:[255,218,150],violet:[178,170,255]};let s=0,d=0,l=[],C=[],y=[],P=2500,M=0,c=document.documentElement.dataset.fx||"standard";k&&(c="off");const r=(n,e)=>n+Math.random()*(e-n);v(),addEventListener("resize",v),document.addEventListener("stella-fx-change",n=>{c=n.detail,c==="off"?w():p()}),c==="off"?m(0,!0):(p(),document.addEventListener("visibilitychange",()=>{document.hidden?w():p()}))}</script> <header class="site-header"> <div class="wrap site-header__inner"> <a class="logo" href="/STELLASTOPVRC/"> <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> <span>星之驿站</span> <span class="logo__romaji">StellaStop</span> </a> <div class="header-right"> <nav class="site-nav" aria-label="站内导航"> <a href="/STELLASTOPVRC/"> 首页 </a><a href="/STELLASTOPVRC/start/"> 新手 </a><a href="/STELLASTOPVRC/posts/"> 教程 </a><a href="/STELLASTOPVRC/videos/"> 视频 </a><a href="/STELLASTOPVRC/resources/"> 资源 </a><a href="/STELLASTOPVRC/booth/"> Booth </a><a href="/STELLASTOPVRC/announcements/"> 公告 </a><a href="/STELLASTOPVRC/ai/"> 问星 </a><a href="/STELLASTOPVRC/changelog/"> 更新日志 </a><a href="/STELLASTOPVRC/about/"> 关于 </a> </nav> <a class="login-link" data-desk-login hidden title="写作台：登录 / 注册后可发教程、传资源">
+登录 / 注册
+</a> <div class="theme-switch"> <button class="theme-switch__btn" id="themeBtn" type="button" aria-haspopup="listbox" aria-expanded="false" aria-label="切换主题配色" title="切换主题配色"> <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"> <path d="M12 3a9 9 0 1 0 9 9c0-1.2-1-2-2.2-2H17a2 2 0 0 1-2-2V6.2C15 5 14.2 4 13 4.4A9 9 0 0 0 12 3Z"></path> <circle cx="7.5" cy="11.5" r="1" fill="currentColor" stroke="none"></circle> <circle cx="10" cy="7.5" r="1" fill="currentColor" stroke="none"></circle> <circle cx="15" cy="7" r="1" fill="currentColor" stroke="none"></circle> </svg> </button> <div class="theme-pop" id="themePop" role="listbox" aria-label="选择主题" hidden> <button class="theme-opt" type="button" role="option" data-theme-value="nebula" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#8f7ff7"></span><span class="dot" style="background:#62c8f5"></span><span class="dot" style="background:#ffd98e"></span> </span> <span class="theme-opt__name">星云 · 蓝紫</span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt" type="button" role="option" data-theme-value="sakura" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#ff8fc7"></span><span class="dot" style="background:#c79bff"></span><span class="dot" style="background:#ffd08e"></span> </span> <span class="theme-opt__name">樱语 · 粉紫</span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt" type="button" role="option" data-theme-value="miku" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#2ed3c2"></span><span class="dot" style="background:#6ea8ff"></span><span class="dot" style="background:#ffe08e"></span> </span> <span class="theme-opt__name">葱色 · 青绿</span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt" type="button" role="option" data-theme-value="ember" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#ffb35c"></span><span class="dot" style="background:#ff7e6b"></span><span class="dot" style="background:#ffd98e"></span> </span> <span class="theme-opt__name">暮金 · 暖橙</span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt" type="button" role="option" data-theme-value="dawn" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#6a5ce8"></span><span class="dot" style="background:#e0568f"></span><span class="dot" style="background:#b8821e"></span> </span> <span class="theme-opt__name">晨星 · 浅色</span> <span class="theme-opt__mark">✦</span> </button> </div> </div> <script type="module">const a=document.getElementById("themeBtn"),n=document.getElementById("themePop");function s(c){document.documentElement.dataset.theme=c;try{localStorage.setItem("stella-theme",c)}catch{}const e=getComputedStyle(document.documentElement).getPropertyValue("--bg-deep").trim();document.querySelector('meta[name="theme-color"]')?.setAttribute("content",e||"#070a1c"),document.querySelectorAll(".theme-opt").forEach(t=>{const d=t.dataset.themeValue===c;t.classList.toggle("is-active",d),t.setAttribute("aria-selected",String(d))})}if(a&&n){const c=document.documentElement.dataset.theme||"nebula";document.querySelectorAll(".theme-opt").forEach(e=>{const t=e.dataset.themeValue===c;e.classList.toggle("is-active",t),e.setAttribute("aria-selected",String(t))}),a.addEventListener("click",e=>{e.stopPropagation();const t=n.hidden;n.hidden=!t,a.setAttribute("aria-expanded",String(t))}),document.addEventListener("click",e=>{!n.hidden&&!e.target.closest(".theme-switch")&&(n.hidden=!0,a.setAttribute("aria-expanded","false"))}),document.addEventListener("keydown",e=>{e.key==="Escape"&&!n.hidden&&(n.hidden=!0,a.setAttribute("aria-expanded","false"),a.focus())}),n.addEventListener("click",e=>{const t=e.target.closest(".theme-opt");t&&(s(t.dataset.themeValue??"nebula"),n.hidden=!0,a.setAttribute("aria-expanded","false"))})}</script> <div class="theme-switch fx-switch"> <button class="theme-switch__btn" id="fxBtn" type="button" aria-haspopup="listbox" aria-expanded="false" aria-label="背景特效设置" title="背景特效设置"> <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"> <path d="M5 3v4M3 5h4M6.5 17.5v3M5 19h3"></path> <path d="M14.5 4.5 16 9l4.5 1.5L16 12l-1.5 4.5L13 12l-4.5-1.5L13 9l1.5-4.5Z"></path> </svg> </button> <div class="theme-pop" id="fxPop" role="listbox" aria-label="背景特效" hidden> <button class="theme-opt fx-opt" type="button" role="option" data-fx-value="off" aria-selected="false"> <span class="fx-opt__body"> <span class="fx-opt__name">关闭特效</span> <span class="fx-opt__hint">最省电</span> </span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt fx-opt" type="button" role="option" data-fx-value="standard" aria-selected="false"> <span class="fx-opt__body"> <span class="fx-opt__name">标准</span> <span class="fx-opt__hint">闪烁星空 + 流星</span> </span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt fx-opt" type="button" role="option" data-fx-value="fancy" aria-selected="false"> <span class="fx-opt__body"> <span class="fx-opt__name">华丽</span> <span class="fx-opt__hint">追加极光 / 星座 / 光尘</span> </span> <span class="theme-opt__mark">✦</span> </button> </div> </div> <script type="module">const n=document.getElementById("fxBtn"),a=document.getElementById("fxPop");function s(d){document.documentElement.dataset.fx=d;try{localStorage.setItem("stella-fx",d)}catch{}document.querySelectorAll("#fxPop .fx-opt").forEach(t=>{const e=t.dataset.fxValue===d;t.classList.toggle("is-active",e),t.setAttribute("aria-selected",String(e))}),document.dispatchEvent(new CustomEvent("stella-fx-change",{detail:d}))}if(n&&a){const d=document.documentElement.dataset.fx||"standard";document.querySelectorAll("#fxPop .fx-opt").forEach(t=>{const e=t.dataset.fxValue===d;t.classList.toggle("is-active",e),t.setAttribute("aria-selected",String(e))}),n.addEventListener("click",t=>{t.stopPropagation();const e=a.hidden;a.hidden=!e,n.setAttribute("aria-expanded",String(e))}),document.addEventListener("click",t=>{!a.hidden&&!t.target.closest(".fx-switch")&&(a.hidden=!0,n.setAttribute("aria-expanded","false"))}),document.addEventListener("keydown",t=>{t.key==="Escape"&&!a.hidden&&(a.hidden=!0,n.setAttribute("aria-expanded","false"),n.focus())}),a.addEventListener("click",t=>{const e=t.target.closest(".fx-opt");e&&(s(e.dataset.fxValue??"standard"),a.hidden=!0,n.setAttribute("aria-expanded","false"))})}</script> </div> </div> </header> <main id="main">  <article class="wrap post-layout" data-astro-cid-lvjzyg5v> <div class="post-main page-fade" data-astro-cid-lvjzyg5v> <header class="post-head" data-astro-cid-lvjzyg5v> <a class="crumb" href="/STELLASTOPVRC/posts/" data-astro-cid-lvjzyg5v>← 返回教程档案</a> <div class="post-head__meta" style="--accent:var(--ink-dim)" data-astro-cid-lvjzyg5v> <span class="badge" data-cat="总览速查" data-astro-cid-lvjzyg5v>总览速查</span> <time datetime="2026-08-13" data-astro-cid-lvjzyg5v>2026-08-13</time> <span class="post-head__reading" data-astro-cid-lvjzyg5v>⏱ 约 73 分钟</span>  </div> <h1 class="post-head__title" data-astro-cid-lvjzyg5v>KB Index — Multi-Domain 路由地图</h1> <p class="post-head__lead" data-astro-cid-lvjzyg5v>《KB Index — Multi-Domain 路由地图》—— VRChat 知识库资料</p> <div class="chip-row" data-astro-cid-lvjzyg5v> <a class="chip" href="/STELLASTOPVRC/posts/?tag=%E7%9F%A5%E8%AF%86%E5%BA%93" data-astro-cid-lvjzyg5v> 知识库 </a><a class="chip" href="/STELLASTOPVRC/posts/?tag=index.md" data-astro-cid-lvjzyg5v> index.md </a> </div> </header> <div class="prose" data-astro-cid-lvjzyg5v> <h1 id="kb-index--multi-domain-路由地图">KB Index — Multi-Domain 路由地图</h1>
+<blockquote>
+<p>Obsidian 总入口：本页保留原 Domain Router，同时新增可点击的 Obsidian MOC（Map of Content）。核心知识仍以 FACT / INFERENCE / UNKNOWN 分层，参考层与治理层按 <a href="/STELLASTOPVRC/posts/kb-meta-obsidian-governance/">obsidian-governance</a> 管理。</p>
+</blockquote>
+<hr>
+<h2 id="obsidian-moc--可点击总入口">Obsidian MOC — 可点击总入口</h2>
+<h3 id="核心启动入口">核心启动入口</h3>
+<table>
+<thead>
+<tr>
+<th>入口</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="/STELLASTOPVRC/posts/kb-fact/">FACT.md - 知识库核心事实</a></td>
+<td>知识库结构、核心约束、长期经验</td>
+</tr>
+<tr>
+<td><a href="/STELLASTOPVRC/posts/kb-_always-load/">_always-load.md - 全领域核心约束</a></td>
+<td>Agent 启动时的核心约束速查</td>
+</tr>
+<tr>
+<td><a href="/STELLASTOPVRC/posts/kb-meta-obsidian-governance/">obsidian-governance</a></td>
+<td>Obsidian Vault 分层、排除规则、完整性验收</td>
+</tr>
+</tbody>
+</table>
+<h3 id="一级知识域">一级知识域</h3>
+<table>
+<thead>
+<tr>
+<th>Domain</th>
+<th>入口</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>World</td>
+<td><a href="/STELLASTOPVRC/posts/kb-world-index/">index.md</a></td>
+<td>Udon、Networking、Persistence、World 性能、组件、示例</td>
+</tr>
+<tr>
+<td>Avatar</td>
+<td><a href="/STELLASTOPVRC/posts/kb-avatar-index/">index.md</a></td>
+<td>Avatar 3.0、Animator、VRC Constraints、Shader、改模与优化</td>
+</tr>
+<tr>
+<td>API</td>
+<td><a href="/STELLASTOPVRC/posts/kb-api-index/">index.md</a></td>
+<td>Networking、Persistence、Player API、Dynamics、Animator 等 API 参考</td>
+</tr>
+<tr>
+<td>Platform</td>
+<td><a href="/STELLASTOPVRC/posts/kb-platform-index/">index.md</a></td>
+<td>Android / Quest / Cross-platform / Unity 工具链</td>
+</tr>
+<tr>
+<td>Hybrid</td>
+<td><a href="/STELLASTOPVRC/posts/kb-concepts-hybrid-index/">index.md</a></td>
+<td>OSC、AudioLink、Avatar↔World 边界与桥接</td>
+</tr>
+<tr>
+<td>Rules</td>
+<td><a href="/STELLASTOPVRC/posts/kb-concepts-rules-index/">index.md</a></td>
+<td>UdonSharp、Networking、Performance、VM、陷阱规则</td>
+</tr>
+<tr>
+<td>Patterns</td>
+<td><a href="/STELLASTOPVRC/posts/kb-concepts-patterns-index/">index.md</a></td>
+<td>同步、状态机、消息总线、工程设计模式</td>
+</tr>
+<tr>
+<td>VRChatSDK</td>
+<td><a href="/STELLASTOPVRC/posts/kb-vrchatsdk-index/">index.md</a></td>
+<td>HTTP API、WebSocket、数据模型</td>
+</tr>
+<tr>
+<td>Sources</td>
+<td>源资料归档层（不随发布包分发）</td>
+<td>官方/开源/工具来源与案例研究</td>
+</tr>
+<tr>
+<td>References</td>
+<td>源资料归档层（不随发布包分发）</td>
+<td>参考文献、对比分析、待晋升资料</td>
+</tr>
+<tr>
+<td>Misc</td>
+<td><a href="/STELLASTOPVRC/posts/kb-concepts-misc-index/">index.md</a></td>
+<td>后处理、无障碍等杂项知识</td>
+</tr>
+<tr>
+<td>Comparisons</td>
+<td><a href="/STELLASTOPVRC/posts/kb-comparisons-index/">index.md</a></td>
+<td>跨实体/主题对比分析（Shader、工具、架构）</td>
+</tr>
+<tr>
+<td>Queries</td>
+<td><a href="/STELLASTOPVRC/posts/kb-queries-index/">index.md</a></td>
+<td>优质查询答案归档</td>
+</tr>
+<tr>
+<td>Meta</td>
+<td><a href="/STELLASTOPVRC/posts/kb-meta-index/">index</a></td>
+<td>知识库协议、工作模式、Obsidian 治理</td>
+</tr>
+</tbody>
+</table>
+<h3 id="参考与治理入口">参考与治理入口</h3>
+<table>
+<thead>
+<tr>
+<th>层级</th>
+<th>入口</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Reference Notes</td>
+<td>（来源：本地参考笔记）</td>
+<td>参考/整合资料，不直接等同核心事实</td>
+</tr>
+<tr>
+<td>VPM Mirrors</td>
+<td>源资料层（vpm-mirrors 镜像归档，不随发布包分发）</td>
+<td>VPM 仓库镜像与样本来源</td>
+</tr>
+<tr>
+<td>Curator Tools</td>
+<td>~（2026-08-18 归档：<code>辅助文件</code> 已移入 <code>辅助文件/报告/curator-tools/</code>，物理保留、不入 Git）</td>
+<td>manifest、baseline、审计脚本与报告，默认不进入主知识图谱</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="启动协议">启动协议</h2>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>1. Domain Detection（确定领域）</span></span>
+<span class="line"><span>2. 读本文件 → 确定相关域目录</span></span>
+<span class="line"><span>3. 读 _always-load.md（30s 核心约束）</span></span>
+<span class="line"><span>4. Goto 具体文件</span></span></code></pre>
+<h2 id="按-domain-路由">按 Domain 路由</h2>
+<h3 id="world-domain--当前主力">World Domain ← 当前主力 ✅</h3>
+<table>
+<thead>
+<tr>
+<th>需求</th>
+<th>路径</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>UdonSharp 代码</td>
+<td><code>concepts/rules/udonsharp-language-limits.md</code></td>
+</tr>
+<tr>
+<td><strong>Udon 官方文档本地化</strong></td>
+<td><code>entities/world/udon/</code> ← ⭐ 11 个核心单页 + 子目录(2026-06-21 +VRCTween)</td>
+</tr>
+<tr>
+<td><strong>Udon 总览</strong></td>
+<td><code>entities/world/udon/index.md</code> ← ⭐ 概念 + 3 种创建方式 + VM 关系</td>
+</tr>
+<tr>
+<td><strong>Udon 事件执行顺序</strong></td>
+<td><code>entities/world/udon/event-execution-order.md</code> ← ⭐ _onEnable→_start 无间隔</td>
+</tr>
+<tr>
+<td><strong>Udon Persistence 实战</strong></td>
+<td><code>entities/world/udon/persistence/</code> ← ⭐ 8 文档(PlayerData vs PlayerObject + 100KB + 3 实战模式)NEW 2026-06-21</td>
+</tr>
+<tr>
+<td><strong>Udon VM 字节码</strong></td>
+<td><code>entities/world/udon/vm-and-assembly.md</code> ← 9 Opcodes 官方规范</td>
+</tr>
+<tr>
+<td><strong>Udon 调试</strong></td>
+<td><code>entities/world/udon/debugging-udon-projects.md</code></td>
+</tr>
+<tr>
+<td><strong>Animation/Avatar/Input Events</strong></td>
+<td><code>entities/world/udon/animation-events.md</code> + <code>avatar-events.md</code> + <code>input-events.md</code></td>
+</tr>
+<tr>
+<td><strong>VRCTween(官方补间)</strong></td>
+<td><code>entities/world/udon/vrctween/index.md</code> ← ⭐ DOTween 封装 + 7 大类补间 + 虚拟补间 + 复用模式 ⭐NEW 2026-06-21 (2026-06-22 已校验与官方 5-28 一致)</td>
+</tr>
+<tr>
+<td><strong>VRCTween 原始英文 / DOTween 底层</strong></td>
+<td>VRCTween 官方原始快照（源资料层，不随发布包分发）</td>
+</tr>
+<tr>
+<td><strong>Image/String Loading</strong></td>
+<td><code>entities/world/udon/image-loading.md</code> + <code>string-loading.md</code> + <code>external-urls.md</code></td>
+</tr>
+<tr>
+<td><strong>AI Navigation</strong></td>
+<td><code>entities/world/udon/ai-navigation.md</code> ← NavMeshAgent + Owner 计算</td>
+</tr>
+<tr>
+<td><strong>Using Build &#x26; Test</strong></td>
+<td><code>entities/world/udon/using-build-test.md</code> ← 本地测试</td>
+</tr>
+<tr>
+<td><strong>Udon 版主工具</strong></td>
+<td><code>entities/world/udon/udon-moderation-tool-guidelines.md</code></td>
+</tr>
+<tr>
+<td>网络同步</td>
+<td><code>concepts/rules/networking-rules.md</code> → <code>concepts/patterns/manual-sync-state.md</code></td>
+</tr>
+<tr>
+<td>性能优化</td>
+<td><code>concepts/rules/performance-rules.md</code> → <code>concepts/rules/udon-vm-architecture.md</code></td>
+</tr>
+<tr>
+<td>陷阱排查</td>
+<td><code>concepts/rules/udonsharp-deep-pitfalls.md</code>（源资料层 common-failures，不随发布包分发）</td>
+</tr>
+<tr>
+<td>API 参考</td>
+<td><code>entities/api/</code> 目录（grep 关键词）</td>
+</tr>
+<tr>
+<td><strong>VRCBillboard（原生公告板）</strong></td>
+<td><code>entities/api/vrc-billboard.md</code> ← ⭐ 2026-08-13 官方预告（PLANNED）：<code>Register</code>/<code>Unregister</code>，原生替代 update loop</td>
+</tr>
+<tr>
+<td>设计模式</td>
+<td><code>concepts/patterns/</code> 目录</td>
+</tr>
+<tr>
+<td>脚本审查</td>
+<td>源资料层 review-checklist（不随发布包分发）</td>
+</tr>
+<tr>
+<td>后处理</td>
+<td><code>concepts/misc/postprocessing-principles.md</code> → <code>concepts/misc/postprocessing-usage.md</code></td>
+</tr>
+<tr>
+<td><strong>光照系统</strong></td>
+<td><code>entities/world/vrc-light-volumes.md</code> ← ⭐ 体素光照 + Point Light Volumes</td>
+</tr>
+<tr>
+<td><strong>光照烘焙</strong></td>
+<td><code>entities/world/bakery/light-baking-guide.md</code> ← ⭐ Bakery + Glim 烘焙指南</td>
+</tr>
+<tr>
+<td><strong>遮挡剔除</strong></td>
+<td><code>entities/world/occlusion-culling-guide.md</code> ← 性能优化</td>
+</tr>
+<tr>
+<td><strong>反射探针</strong></td>
+<td><code>entities/world/reflection-probes.md</code> ← 光照系统</td>
+</tr>
+<tr>
+<td><strong>World Shader</strong></td>
+<td><code>entities/world/shader/</code> ← ⭐ Graphlit 节点编辑器</td>
+</tr>
+<tr>
+<td><strong>VRCGraphics</strong></td>
+<td><code>entities/world/udon/vrc-graphics/index.md</code> ← ⭐ 着色器全局变量</td>
+</tr>
+<tr>
+<td><strong>VRCCameraSettings</strong></td>
+<td><code>entities/world/vrc-camera-settings.md</code> ← ⭐ 屏幕/手持相机 + VR 双眼 ⭐NEW</td>
+</tr>
+<tr>
+<td><strong>VRCQualitySettings</strong></td>
+<td><code>entities/world/vrc-quality-settings.md</code> ← ⭐ 阴影距离覆盖 + 质量只读 ⭐NEW</td>
+</tr>
+<tr>
+<td><strong>Data Containers</strong></td>
+<td><code>entities/world/udon/data-containers/index.md</code> ← ⭐ JSON 序列化</td>
+</tr>
+<tr>
+<td><strong>Data Tokens</strong></td>
+<td><code>entities/world/udon/data-containers/data-tokens.md</code> ← DataToken 类型系统 + 隐式装箱</td>
+</tr>
+<tr>
+<td><strong>Data Lists</strong></td>
+<td><code>entities/world/udon/data-containers/data-lists.md</code> ← DataList 完整 API + 性能基准</td>
+</tr>
+<tr>
+<td><strong>Data Dictionaries</strong></td>
+<td><code>entities/world/udon/data-containers/data-dictionaries.md</code> ← DataDictionary 完整 API + 键值对</td>
+</tr>
+<tr>
+<td><strong>VRCJSON</strong></td>
+<td><code>entities/world/udon/data-containers/vrcjson.md</code> ← JSON 序列化/反序列化 + 错误处理</td>
+</tr>
+<tr>
+<td><strong>Creator Economy</strong></td>
+<td><code>entities/world/creator-economy.md</code> ← ⭐ 产品集成</td>
+</tr>
+<tr>
+<td><strong>Community Labs(World 发布)</strong></td>
+<td><code>entities/world/community-labs.md</code> ⭐NEW 2026-06-30 ← Stage 2 + 每周 1 个 + Trust Rank User</td>
+</tr>
+<tr>
+<td><strong>Udon Example Scene</strong></td>
+<td><code>entities/world/examples/udon-example-scene/</code> ← ⭐SDK 内置标准示例(13+ Prefab)⭐NEW</td>
+</tr>
+<tr>
+<td><strong>Obstacle Course</strong></td>
+<td><code>entities/world/examples/obstacle-course/</code> ← ⭐World Jam 2 官方套件(Time Trial 模式 + 6 文档)⭐NEW 2026-06-15</td>
+</tr>
+<tr>
+<td><strong>LuraSwitch2 通用开关套件 (v1.06)</strong></td>
+<td><code>entities/world/luraswitch2.md</code> ← ⭐ 9+ Prefab + 3 同步模式 + PC/Quest 自动适配 + VN3 License 免费商用 + Slider_Video/Slider_Night/PlatformOverride ⭐REWRITTEN 2026-06-21 (2026-03-06 最新版)</td>
+</tr>
+<tr>
+<td><strong>VizVid (VVMW) 视频播放器</strong></td>
+<td><code>entities/world/vvmw.md</code> ← ⭐ 5 大模块 + 9 大集成 + 13 个 Releases + PC/Quest 跨平台 + 12+ 语言本地化 ⭐NEW 2026-06-20 (A2/C16 双重身份)</td>
+</tr>
+<tr>
+<td><strong>Companions vs Props (Items)</strong></td>
+<td><code>entities/world/companions.md</code> ⭐NEW 2026-06-30 ← Items 分裂(2026.2.3) + World Creator 视角</td>
+</tr>
+<tr>
+<td><strong>Steam Audio (替换 ONSP)</strong></td>
+<td><code>entities/world/audio-steam.md</code> ⭐NEW 2026-06-30 ← 2025.4.2+ 音频系统迁移 + Voice 滑块 65% 等效</td>
+</tr>
+</tbody>
+</table>
+<h3 id="platform-domain---新增">Platform Domain ← ✅ 新增</h3>
+<table>
+<thead>
+<tr>
+<th>需求</th>
+<th>路径</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Android/Quest 开发</td>
+<td><code>entities/platform/android-development.md</code></td>
+</tr>
+<tr>
+<td>跨平台内容</td>
+<td><code>entities/platform/cross-platform-content.md</code></td>
+</tr>
+<tr>
+<td>移动端 UI</td>
+<td><code>entities/platform/mobile-ui-optimization.md</code></td>
+</tr>
+<tr>
+<td><strong>Unity Recorder 截图</strong></td>
+<td><code>entities/platform/unity-recorder.md</code> ⭐NEW 2026-07-04 (Editor-only + VRChat Unity LTS 兼容)</td>
+</tr>
+<tr>
+<td><strong>Unity 管理员警告</strong></td>
+<td><code>entities/platform/unity-admin-warning.md</code> ⭐NEW 2026-07-04 (UAC + 兼容性 + UUM-42508)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="vrchatsdk-domain---已本地化">VRChatSDK Domain ← ✅ 已本地化</h3>
+<table>
+<thead>
+<tr>
+<th>需求</th>
+<th>路径</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SDK 概览</td>
+<td><code>entities/vrchatsdk/homepage.md</code></td>
+</tr>
+<tr>
+<td>认证 API</td>
+<td><code>entities/vrchatsdk/api-authentication.md</code></td>
+</tr>
+<tr>
+<td>用户/世界/Avatar API</td>
+<td><code>entities/vrchatsdk/api-{users,worlds,avatars}.md</code></td>
+</tr>
+<tr>
+<td>好友/通知/收藏 API</td>
+<td><code>entities/vrchatsdk/api-{friends,notifications,favorites}.md</code></td>
+</tr>
+<tr>
+<td>实例/文件/群组 API</td>
+<td><code>entities/vrchatsdk/api-{instances,files,groups}.md</code></td>
+</tr>
+<tr>
+<td>WebSocket 实时事件</td>
+<td><code>entities/vrchatsdk/websocket-api.md</code></td>
+</tr>
+<tr>
+<td>数据模型</td>
+<td><code>entities/vrchatsdk/model-{user,current-user}.md</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="sources-domain---新增">Sources Domain ← ✅ 新增</h3>
+<table>
+<thead>
+<tr>
+<th>需求</th>
+<th>路径</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Example Central</td>
+<td><code>源资料层《example-central》</code></td>
+</tr>
+<tr>
+<td><strong>VPM Package Template</strong></td>
+<td><code>源资料层《vpm-package-template》</code> ← ⭐NEW</td>
+</tr>
+<tr>
+<td><strong>HoshinoLabs ULocalization 源(A8)</strong></td>
+<td><code>源资料层《ulocalization》</code> ← ⭐NEW 2026-06-20</td>
+</tr>
+<tr>
+<td><strong>HoshinoLabs Sardinal 源(A9)</strong></td>
+<td><code>源资料层《sardinal》</code> ← ⭐NEW 2026-06-20 (通用消息总线)</td>
+</tr>
+<tr>
+<td><strong>Unity 动画路径重映射</strong></td>
+<td><code>源资料层《unity-animation-hierarchy-editor》</code> ⭐NEW 2026-07-04 (主推 hfcRed/Animation-Repathing)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="avatar-domain---已建设">Avatar Domain ← ✅ 已建设</h3>
+<table>
+<thead>
+<tr>
+<th>需求</th>
+<th>路径</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Animator 系统</strong></td>
+<td><code>entities/avatar/animator-system.md</code> ← ⭐ 参数驱动系统</td>
+</tr>
+<tr>
+<td><strong>VRC Constraints</strong></td>
+<td><code>entities/avatar/vrc-constraints.md</code> ← ⭐ 6 种约束类型</td>
+</tr>
+<tr>
+<td><strong>PhysBones</strong></td>
+<td><code>entities/avatar/physbones.md</code> ← ⭐ VRCPhysBone 组件参考(Avatar+World) ⭐2026-08-19</td>
+</tr>
+<tr>
+<td><strong>Playable Layers</strong></td>
+<td><code>entities/avatar/playable-layers.md</code> ← ⭐ 5 层详解</td>
+</tr>
+<tr>
+<td>性能等级标准</td>
+<td><code>entities/avatar/performance-rank.md</code></td>
+</tr>
+<tr>
+<td>NDMF 工具生态</td>
+<td><code>entities/avatar/ndmf-tools.md</code></td>
+</tr>
+<tr>
+<td>最佳化实操指南</td>
+<td><code>entities/avatar/optimization-guide.md</code></td>
+</tr>
+<tr>
+<td><strong>Modular Avatar</strong></td>
+<td><code>entities/avatar/modular-avatar.md</code> ← ⭐ VRChat改模必备插件(§0 速查 40 条 + §9 高级)</td>
+</tr>
+<tr>
+<td><strong>MA 组件教学卡</strong></td>
+<td><code>entities/avatar/ma-component-cards.md</code> ← ⭐ 28 个组件完整教学卡(含 Global Collider)</td>
+</tr>
+<tr>
+<td></td>
+<td><strong>玩家本地相机工具</strong></td>
+</tr>
+<tr>
+<td></td>
+<td><strong>VirtualLens2 子工具</strong></td>
+</tr>
+<tr>
+<td></td>
+<td><strong>VRCLens 子工具</strong></td>
+</tr>
+<tr>
+<td></td>
+<td><strong>Avatar Fallback System</strong></td>
+</tr>
+<tr>
+<td><strong>用户端 Dynamic Bone Limits</strong></td>
+<td><code>entities/avatar/avatar-dynamic-bone-limits.md</code> ⭐NEW 2026-06-30 ← 默认 32/8 + config.json</td>
+</tr>
+<tr>
+<td><strong>用户端 Particle System Limits</strong></td>
+<td><code>entities/avatar/avatar-particle-system-limits.md</code> ⭐NEW 2026-06-30 ← 11 变量 + Quest 不可禁用</td>
+</tr>
+<tr>
+<td><strong>Full-Body Tracking</strong></td>
+<td><code>entities/avatar/full-body-tracking.md</code> ⭐NEW 2026-06-30 ← 8 tracker + Rigging 要求</td>
+</tr>
+<tr>
+<td><strong>IK 2.0</strong></td>
+<td><code>entities/avatar/ik-2.0.md</code> ⭐NEW 2026-06-30 ← Lock Types + 启动参数</td>
+</tr>
+<tr>
+<td><strong>Avatar 交互权限</strong></td>
+<td><code>entities/avatar/avatar-interaction-permissions.md</code> ⭐NEW 2026-06-30</td>
+</tr>
+<tr>
+<td><strong>Public Avatar Cloning</strong></td>
+<td><code>entities/avatar/public-avatar-cloning.md</code> ⭐NEW 2026-06-30</td>
+</tr>
+<tr>
+<td><strong>Avatar Accessories</strong></td>
+<td><code>entities/avatar/accessories.md</code> ⭐NEW 2026-06-30 ← 配件系统(2026.2.1+) + Look Editor 整合 + PC=240/Quest=80</td>
+</tr>
+<tr>
+<td><strong>VRCRaycast (Avatar)</strong></td>
+<td><code>entities/avatar/vrcraycast.md</code> ⭐NEW 2026-06-30 ← 骨骼 raycast + 2026.2.1 自动剥离</td>
+</tr>
+<tr>
+<td><strong>Blender 形态键</strong></td>
+<td><code>entities/avatar/blender-shape-keys.md</code> ⭐NEW 2026-07-04 ← FBX 导出 + Unity 导入 + 4 步避坑</td>
+</tr>
+<tr>
+<td><strong>Shader 索引</strong></td>
+<td><code>entities/avatar/shader/index.md</code> ← ⭐ 完整对比矩阵 + 选择指南</td>
+</tr>
+<tr>
+<td><strong>Shader (lilToon)</strong></td>
+<td><code>entities/avatar/shader/liltoon/</code> ← ⭐ 16 个文档，30%+ VRChat 使用</td>
+</tr>
+<tr>
+<td><strong>Shader (Poiyomi)</strong></td>
+<td><code>entities/avatar/shader/poiyomi/</code> ⭐NEW 2026-07-01 ← 8 主题知识 + 65 原始文档(VRChat 主流 Toon,5 变体 + 9 Lighting Type + Modular Pro)</td>
+</tr>
+<tr>
+<td><strong>Shader (SCSS)</strong></td>
+<td><code>entities/avatar/shader/scss.md</code> ← ⭐ 双阴影系统 + UV 服装切换</td>
+</tr>
+<tr>
+<td><strong>Shader (ORL)</strong></td>
+<td><code>entities/avatar/shader/orl/</code> ← ⭐ World 通用模块化着色器（4个文档）</td>
+</tr>
+<tr>
+<td><strong>Shader (Filamented)</strong></td>
+<td><code>entities/avatar/shader/filamented/</code> ← ⭐ Google Filament PBR 替代（4个文档）</td>
+</tr>
+<tr>
+<td><strong>Shader (UnlitWF)</strong></td>
+<td><code>entities/avatar/shader/unlitwf/</code> ← ⭐ Unlit 扩展专业效果（Fur/Water/Grass/Gem）</td>
+</tr>
+<tr>
+<td><strong>Shader (其他)</strong></td>
+<td><code>entities/avatar/shader/other-shaders.md</code> ← Graphlit 等</td>
+</tr>
+<tr>
+<td>入口文件</td>
+<td><code>entities/avatar/index.md</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="hybrid-domain---已建设">Hybrid Domain ← ✅ 已建设</h3>
+<table>
+<thead>
+<tr>
+<th>需求</th>
+<th>路径</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>VCC (Creator Companion)</strong> ⭐NEW 2026-07-01</td>
+<td><code>concepts/hybrid/vcc.md</code> ← 架构/工作流/VPM格式/已知问题/CLI</td>
+</tr>
+<tr>
+<td><strong>ALCOM (替代品)</strong> ⭐NEW 2026-07-01</td>
+<td><code>concepts/hybrid/alcom.md</code> ← 跨平台/并行下载/vrc-get CLI</td>
+</tr>
+<tr>
+<td><strong>OSC 系统</strong></td>
+<td><code>concepts/hybrid/osc-protocol.md</code> ← ⭐ 完整协议数据库</td>
+</tr>
+<tr>
+<td><strong>AudioLink 系统</strong></td>
+<td><code>concepts/hybrid/audio-link.md</code> ← ⭐ 音频可视化核心</td>
+</tr>
+<tr>
+<td></td>
+<td><strong>Avatar↔World 总纲</strong></td>
+</tr>
+<tr>
+<td></td>
+<td><strong>玩家/Avatar 外显观察边界</strong></td>
+</tr>
+<tr>
+<td></td>
+<td><strong>Player↔World Trigger 桥</strong></td>
+</tr>
+<tr>
+<td></td>
+<td><strong>Avatar↔World Contact 桥</strong></td>
+</tr>
+<tr>
+<td></td>
+<td><strong>Avatar↔World 同步模型</strong></td>
+</tr>
+<tr>
+<td></td>
+<td>设计模式借鉴</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="world-domain-文件清单">World Domain 文件清单</h2>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>concepts/rules/</span></span>
+<span class="line"><span>  udonsharp-language-limits.md    ← C# 限制 (13 rules)</span></span>
+<span class="line"><span>  networking-rules.md             ← 网络同步 (22 rules)</span></span>
+<span class="line"><span>  performance-rules.md            ← 性能优化 (12 rules)</span></span>
+<span class="line"><span>  multi-vm-rules.md               ← 多 VM 协作 (9 rules)</span></span>
+<span class="line"><span>  udon-vm-architecture.md         ← VM 逆向 (9 指令/EXTERN/Heap)</span></span>
+<span class="line"><span>  udonsharp-deep-pitfalls.md      ← 深度陷阱 (19 rules)</span></span>
+<span class="line"><span>  vrchat-api-exposure.md          ← API 暴露判断</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>concepts/patterns/</span></span>
+<span class="line"><span>  owner-authoritative-interaction.md</span></span>
+<span class="line"><span>  manual-sync-state.md</span></span>
+<span class="line"><span>  late-joiner-state-restore.md</span></span>
+<span class="line"><span>  bit-packed-flags.md</span></span>
+<span class="line"><span>  event-driven-state-machine.md</span></span>
+<span class="line"><span>  advanced-sync-patterns.md</span></span>
+<span class="line"><span>  unorthodox-patterns.md</span></span>
+<span class="line"><span>  master-follower-syncer.md        ⭐NEW 2026-06-20</span></span>
+<span class="line"><span>  exclusive-control-selector.md    ⭐NEW 2026-06-20</span></span>
+<span class="line"><span>  soft-detent-interpolation.md     ⭐NEW 2026-06-20</span></span>
+<span class="line"><span>  fade-then-snap.md                ⭐NEW 2026-06-20</span></span>
+<span class="line"><span>  editor-preview-component.md      ⭐NEW 2026-06-20</span></span>
+<span class="line"><span>  material-propertyblock-safe-update.md ⭐NEW 2026-06-20</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>entities/api/</span></span>
+<span class="line"><span>  networking.md  player-api.md  persistence.md  dynamics.md</span></span>
+<span class="line"><span>  animator.md    audio.md       pickups.md      ui.md</span></span>
+<span class="line"><span>  vrchat-advanced-apis.md  official-doc-clarifications.md</span></span>
+<span class="line"><span>  events-reference.md</span></span>
+<span class="line"><span>  udon-type-exposure.md     ← Udon Type Exposure Tree 索引 ⭐NEW</span></span>
+<span class="line"><span>  exposed-types.md         ← 已暴露类型详细清单 ⭐NEW</span></span>
+<span class="line"><span>  not-exposed.md           ← 未暴露 API 黑名单 ⭐NEW</span></span>
+<span class="line"><span>  api-checker.md           ← API 检查器/代码模式 ⭐NEW</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>entities/world/</span></span>
+<span class="line"><span>  vrc-camera-settings.md      ← VRCCameraSettings（屏幕/手持相机 + VR 双眼）⭐NEW</span></span>
+<span class="line"><span>  vrc-quality-settings.md     ← VRCQualitySettings（阴影距离覆盖 + 质量只读）⭐NEW</span></span>
+<span class="line"><span>  creator-economy.md          ← 创作者经济 SDK</span></span>
+<span class="line"><span>  performance-guide.md        ← World 性能优化</span></span>
+<span class="line"><span>  vrc-light-volumes.md        ← VRCLightVolumes 工具</span></span>
+<span class="line"><span>  occlusion-culling-guide.md  ← 遮挡剔除优化</span></span>
+<span class="line"><span>  reflection-probes.md        ← 反射探针系统</span></span>
+<span class="line"><span>  udon/                       ← Udon 编程完整子目录(可视化 + C# 入口) ⭐NEW 2026-06-15</span></span>
+<span class="line"><span>    graph/                    ← Udon Node Graph(可视化编程)⭐NEW 2026-06-15</span></span>
+<span class="line"><span>      index.md                ← 主页:Interface/Flow/创建节点/编译/运行</span></span>
+<span class="line"><span>      event-nodes.md           ← Event 节点(Interact/Player/Video/...)⭐NEW</span></span>
+<span class="line"><span>      graph-elements.md       ← Graph 元素(Groups/Comments/Noodles)⭐NEW</span></span>
+<span class="line"><span>      searching-for-nodes.md   ← 5 种节点搜索方式 ⭐NEW</span></span>
+<span class="line"><span>      special-nodes.md         ← 特殊节点(Block/Branch/Loop/Variable/...)⭐NEW</span></span>
+<span class="line"><span>      type-nodes.md            ← 类型引用节点(VRCPickup/PlayerApi/...)⭐NEW</span></span>
+<span class="line"><span>    udonsharp/                ← UdonSharp C# 入口子目录</span></span>
+<span class="line"><span>    players/                  ← Players API 子目录</span></span>
+<span class="line"><span>    ui-events.md              ← UI Events(Input Events 单独页)</span></span>
+<span class="line"><span>    using-build-test.md       ← Build &#x26; Test 本地测试</span></span>
+<span class="line"><span>    vm-and-assembly.md        ← Udon VM 与 Udon Assembly</span></span>
+<span class="line"><span>    world-debug-views.md      ← World Debug Views</span></span>
+<span class="line"><span>    udon-moderation-tool-guidelines.md</span></span>
+<span class="line"><span>    index.md                  ← Udon 总览(3 种创建方式 + VM 关系)⭐NEW 2026-06-15</span></span>
+<span class="line"><span>    ai-navigation.md          ← AI Navigation(NavMeshAgent + Owner 计算)⭐NEW 2026-06-15</span></span>
+<span class="line"><span>    animation-events.md       ← Animation Events 白名单(12 个方法)⭐NEW 2026-06-15</span></span>
+<span class="line"><span>    avatar-events.md          ← Avatar Events(OnAvatarChanged/EyeHeight)⭐NEW 2026-06-15</span></span>
+<span class="line"><span>    debugging-udon-projects.md← Debugging(Debug 模式 + 错误日志)⭐NEW 2026-06-15</span></span>
+<span class="line"><span>    event-execution-order.md  ← ⭐事件执行顺序(_onEnable→_start 无间隔)⭐NEW 2026-06-15</span></span>
+<span class="line"><span>    external-urls.md          ← External URLs(VRCUrl + 域白名单)⭐NEW 2026-06-15</span></span>
+<span class="line"><span>    image-loading.md          ← Image Loading(VRCImageDownloader)⭐NEW 2026-06-15</span></span>
+<span class="line"><span>    input-events.md           ← Input Events(Button/Axis + UdonInputEventArgs)⭐NEW 2026-06-15</span></span>
+<span class="line"><span>    string-loading.md         ← String Loading(VRCStringDownloader)⭐NEW 2026-06-15</span></span>
+<span class="line"><span>    persistence/              ← ⭐Persistence 实战教程子目录(8 文档)NEW 2026-06-21</span></span>
+<span class="line"><span>      player-data.md          ← PlayerData 完整 API(20+ 方法)</span></span>
+<span class="line"><span>      player-object.md        ← PlayerObject + VRCEnablePersistence 设置</span></span>
+<span class="line"><span>      serialization.md        ← 18 种数据类型 + byte[] 编码模式</span></span>
+<span class="line"><span>      limits-and-quirks.md    ← 100KB 限制 + 8 个陷阱</span></span>
+<span class="line"><span>      concepts/patterns/               ← 3 个实战 Pattern</span></span>
+<span class="line"><span>        leaderboard.md        ← 排行榜</span></span>
+<span class="line"><span>        unlock-items.md       ← 解锁物品</span></span>
+<span class="line"><span>        persistent-pen.md     ← 持久画笔</span></span>
+<span class="line"><span>    vrctween/                 ← ⭐VRCTween 官方补间系统(7 大类 + 虚拟补间)NEW 2026-06-21 (2026-06-22 校验)</span></span>
+<span class="line"><span>      index.md                ← 总览 + 何时使用 + 关键事实(本地性/输入验证/性能) + 底层实现(DOTween)</span></span>
+<span class="line"><span>      basics.md               ← 基础 API(TweenXxx + VirtualTween + Ease)</span></span>
+<span class="line"><span>      tween-types.md          ← 7 大类补间完整列表</span></span>
+<span class="line"><span>      control.md              ← Play/Pause/Kill + 设置 + 复用模式</span></span>
+<span class="line"><span>      sequence.md             ← 序列与并行(OnComplete 链,无原生 Sequence)</span></span>
+<span class="line"><span>      custom-tween.md         ← 自定义虚拟补间 + AnimationCurve 缓动</span></span>
+<span class="line"><span>      patterns.md             ← 12 个实战模式(按钮/UI/相机/Late joiner)</span></span>
+<span class="line"><span>  源资料原始快照（外部资料，不随发布包分发）</span></span>
+<span class="line"><span>    VRCTween-Official-Overview.md         ← 官方主页 2026-05-28</span></span>
+<span class="line"><span>    VRCTween-Official-Tween-Types.md      ← 官方 tween-types</span></span>
+<span class="line"><span>    VRCTween-Official-Virtual-Tweens.md   ← 官方 virtual-tweens</span></span>
+<span class="line"><span>    VRCTween-Official-Settings.md         ← 官方 settings</span></span>
+<span class="line"><span>    DOTween-Underlying-Engine.md          ← DOTween 底层库介绍</span></span>
+<span class="line"><span>  items.md                    ← Items in Udon Worlds (Layer 3 + Udon 不可引用) ⭐NEW 2026-06-15</span></span>
+<span class="line"><span>  layers.md                   ← Unity Layers (32 Layer 分配 + Physics 安全模式) ⭐NEW 2026-06-15</span></span>
+<span class="line"><span>  sdk-prefabs.md              ← SDK Prefabs (8 个 Udon 示例 Prefab) ⭐NEW 2026-06-15</span></span>
+<span class="line"><span>  supported-assets.md         ← Supported Scripted Assets (TMP/PPSv2/FinalIK/DynamicBone) ⭐NEW 2026-06-15</span></span>
+<span class="line"><span>  whitelisted-world-components.md  ← 完整 Script 白名单 (10 个组件集合) ⭐NEW 2026-06-15</span></span>
+<span class="line"><span>  companions.md               ← ⭐Companions vs Props (Items 分裂 2026.2.3) NEW 2026-06-30</span></span>
+<span class="line"><span>  audio-steam.md              ← ⭐Steam Audio 替换 ONSP (2025.4.2+) NEW 2026-06-30</span></span>
+<span class="line"><span>  scene-components/           ← ⭐Scene Components 子分类(VRC 组件 9 + Unity 原生 24)⭐NEW 2026-06-15 / 2026-08-17 扩充</span></span>
+<span class="line"><span>    index.md                  ← Scene Components 总览(组件索引 + PhysBone/Contact 1024 限制)</span></span>
+<span class="line"><span>    textmeshpro.md            ← TextMesh Pro 集成/字体/Fallback 字体/本地化</span></span>
+<span class="line"><span>    vrc-avatarpedestal.md     ← Avatar Pedestal 展示与切换(Blueprint ID + Scale)</span></span>
+<span class="line"><span>    vrc-cameradolly.md        ← Camera Dolly 相机轨道(Animation/Path/Point 3 层)</span></span>
+<span class="line"><span>    vrc-mirrorreflection.md   ← Mirror Reflection 实时反射(Quest 性能警告)</span></span>
+<span class="line"><span>    vrc-objectsync.md         ← ⭐Object Sync 物理对象同步(SetKinematic/SetGravity/Respawn)</span></span>
+<span class="line"><span>    vrc-portalmarker.md       ← Portal Marker 传送门(World ID/None/Home/Hub)</span></span>
+<span class="line"><span>    vrc-scenedescriptor.md    ← ⭐Scene Descriptor World 必含核心(Spawn/Respawn/Order)</span></span>
+<span class="line"><span>    vrc-station.md            ← Station 玩家固定座位(OnStationEntered + Avatar Station)</span></span>
+<span class="line"><span>    vrc-enablepersistence.md  ← Enable Persistence 持久化(PlayerObject + 100KB 限制)</span></span>
+<span class="line"><span>    rigidbody.md              ← ⭐Unity 原生:Rigidbody 刚体(VRC Pickup 依赖/isKinematic 同步坑) NEW 2026-08-17</span></span>
+<span class="line"><span>    boxcollider.md            ← Unity 原生:BoxCollider NEW 2026-08-17</span></span>
+<span class="line"><span>    capsulecollider.md        ← Unity 原生:CapsuleCollider NEW 2026-08-17</span></span>
+<span class="line"><span>    spherecollider.md         ← Unity 原生:SphereCollider NEW 2026-08-17</span></span>
+<span class="line"><span>    meshcollider.md           ← Unity 原生:MeshCollider(medium) NEW 2026-08-17</span></span>
+<span class="line"><span>    characterjoint.md         ← Unity 原生:CharacterJoint(medium) NEW 2026-08-17</span></span>
+<span class="line"><span>    configurablejoint.md      ← Unity 原生:ConfigurableJoint(medium) NEW 2026-08-17</span></span>
+<span class="line"><span>    particlesystem.md         ← ⭐Unity 原生:ParticleSystem(Quest/ps_* 限制) NEW 2026-08-17</span></span>
+<span class="line"><span>    particlesystemforcefield.md ← Unity 原生:PSForceField(build 904 World 白名单/Tupper 确认) NEW 2026-08-17</span></span>
+<span class="line"><span>    light.md                  ← ⭐Unity 原生:Light(烘焙优先/粒子挂光陷阱) NEW 2026-08-17</span></span>
+<span class="line"><span>    lightprobegroup.md        ← Unity 原生:LightProbeGroup NEW 2026-08-17</span></span>
+<span class="line"><span>    linerenderer.md           ← Unity 原生:LineRenderer(笔刷/轨迹) NEW 2026-08-17</span></span>
+<span class="line"><span>    trailrenderer.md          ← Unity 原生:TrailRenderer NEW 2026-08-17</span></span>
+<span class="line"><span>    meshrenderer.md           ← Unity 原生:MeshRenderer NEW 2026-08-17</span></span>
+<span class="line"><span>    skinnedmeshrenderer.md    ← Unity 原生:SkinnedMeshRenderer(BlendShape) NEW 2026-08-17</span></span>
+<span class="line"><span>    audiosource.md            ← ⭐Unity 原生:AudioSource(VRC_SpatialAudioSource 配置) NEW 2026-08-17</span></span>
+<span class="line"><span>    audioreverbzone.md        ← Unity 原生:AudioReverbZone NEW 2026-08-17</span></span>
+<span class="line"><span>    audiolowpassfilter.md     ← Unity 原生:AudioLowPassFilter(AVPro 失效坑) NEW 2026-08-17</span></span>
+<span class="line"><span>    navmeshagent.md           ← ⚠️Unity 原生:NavMeshAgent(2022 兼容坑/时效) NEW 2026-08-17</span></span>
+<span class="line"><span>    navmeshobstacle.md        ← ⚠️Unity 原生:NavMeshObstacle(时效) NEW 2026-08-17</span></span>
+<span class="line"><span>    offmeshlink.md            ← ⚠️Unity 原生:OffMeshLink(时效) NEW 2026-08-17</span></span>
+<span class="line"><span>    videoplayer.md            ← Unity 原生:VideoPlayer(VOD/URL 白名单) NEW 2026-08-17</span></span>
+<span class="line"><span>    canvas.md                 ← ⭐Unity 原生:Canvas(VRC_UIShape 交互条件) NEW 2026-08-17</span></span>
+<span class="line"><span>    canvasgroup.md            ← Unity 原生:CanvasGroup NEW 2026-08-17</span></span>
+<span class="line"><span>  concepts/patterns/                 ← ⭐NEW 2026-07-04 World 域设计模式库</span></span>
+<span class="line"><span>    index.md                ← World Patterns 索引(UI / Player / Scene / Audio)</span></span>
+<span class="line"><span>    dynamic-player-list.md  ← ⭐NEW 2026-07-04 动态生成玩家传送按钮模式</span></span>
+<span class="line"><span>  bakery/                     ← Bakery 光照烘焙</span></span>
+<span class="line"><span>    index.md</span></span>
+<span class="line"><span>    light-baking-guide.md      ← Bakery + Glim 烘焙指南</span></span>
+<span class="line"><span>  shader/                     ← World Shader 知识库</span></span>
+<span class="line"><span>    index.md</span></span>
+<span class="line"><span>    graphlit.md               ← Graphlit 节点编辑器</span></span>
+<span class="line"><span>  examples/                   ← SDK 内置示例 ⭐NEW</span></span>
+<span class="line"><span>    udon.md                   ← Udon 基础 4 模式 (旋转/交互/传送/事件) ⭐NEW 2026-06-15</span></span>
+<span class="line"><span>    ai-navigation.md          ← AI Navigation 寻路 + Manual Sync ⭐NEW 2026-06-15</span></span>
+<span class="line"><span>    detect-controller-collide.md ← OnControllerColliderHit + HitPlayer ⭐NEW 2026-06-15</span></span>
+<span class="line"><span>    image-loading.md          ← VRCImageDownloader + GitHub Pages ⭐NEW 2026-06-15</span></span>
+<span class="line"><span>    midi-playback.md          ← VRCMidiPlayer + Note On/Off 12 音位 ⭐NEW 2026-06-15</span></span>
+<span class="line"><span>    minimap.md                ← VRCGraphics.Blit + RenderTexture + Shader ⭐NEW 2026-06-15</span></span>
+<span class="line"><span>    mute-others.md            ← SetVoiceDistanceFar(0) 模拟静音 ⭐NEW 2026-06-15</span></span>
+<span class="line"><span>    player-join-zones.md      ← DataList + FieldChangeCallback + 3 Mode 状态机 ⭐NEW 2026-06-15</span></span>
+<span class="line"><span>    screen-canvas.md          ← IsUserInVR + VRC_UIShape + TeleportTo ⭐NEW 2026-06-15</span></span>
+<span class="line"><span>    obstacle-course/          ← ⭐Obstacle Course(World Jam 2 官方套件)NEW 2026-06-15</span></span>
+<span class="line"><span>      index.md                ← Overview + Quick Start + Player/PowerUp 配置</span></span>
+<span class="line"><span>      build-from-demo-parts.md</span></span>
+<span class="line"><span>      build-from-custom-parts.md</span></span>
+<span class="line"><span>      uoc-flythrough.md</span></span>
+<span class="line"><span>      uoc-how-stuff-works.md</span></span>
+<span class="line"><span>      uoc-window.md</span></span>
+<span class="line"><span>    persistence/              ← Persistence Examples 子目录(Example Central 9 示例)</span></span>
+<span class="line"><span>    udon-example-scene/       ← Udon Example Scene(13+ Prefab)</span></span>
+<span class="line"><span>      index.md                ← 主页 13+ Prefab 详解 + 5 种同步模式</span></span>
+<span class="line"><span>      avatar-scaling-settings.md</span></span>
+<span class="line"><span>      player-mod-setter.md</span></span>
+<span class="line"><span>      simple-pen-system.md</span></span>
+<span class="line"><span>      udon-video-sync-player.md</span></span>
+<span class="line"><span>      world-audio-settings.md</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>源资料 review 快照（外部，不随发布包分发）</span></span>
+<span class="line"><span>  review-checklist / common-failures / severity-model（原始快照）</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>concepts/misc/</span></span>
+<span class="line"><span>  postprocessing-principles.md    ← 后处理原理（现实参照）</span></span>
+<span class="line"><span>  postprocessing-usage.md        ← Unity 参数与最佳实践</span></span>
+<span class="line"><span>  accessibility-guide.md         ← 无障碍设计指南</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>entities/platform/                      ← ⭐NEW 跨平台开发</span></span>
+<span class="line"><span>  android-development.md</span></span>
+<span class="line"><span>  cross-platform-content.md</span></span>
+<span class="line"><span>  mobile-ui-optimization.md</span></span>
+<span class="line"><span>  easyquestswitch.md</span></span>
+<span class="line"><span>  unity-recorder.md            ← ⭐NEW 2026-07-04 Unity 截图/录屏工具</span></span>
+<span class="line"><span>  unity-admin-warning.md       ← ⭐NEW 2026-07-04 Unity 管理员警告排查</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>源资料 source 快照（外部，不随发布包分发）</span></span>
+<span class="line"><span>  example-central.md           ← Example Central 使用</span></span>
+<span class="line"><span>  vpm-package-template.md      ← VPM Package 开发模板 ⭐NEW</span></span>
+<span class="line"><span>  clientsim.md                  ← ClientSim 编辑器模拟工具</span></span>
+<span class="line"><span>  open-source-projects.md      ← 开源项目参考</span></span>
+<span class="line"><span>  quickbrown-luraswitch2.md    ← QuickBrown LuraSwitch2 案例研究 ⭐NEW 2026-06-20</span></span>
+<span class="line"><span>  udonvoiceutils.md            ← TLP UdonVoiceUtils 案例研究 ⭐NEW 2026-06-20</span></span>
+<span class="line"><span>  ulocalization.md             ← HoshinoLabs ULocalization 案例研究 ⭐NEW 2026-06-20</span></span>
+<span class="line"><span>  sardinal.md                  ← HoshinoLabs Sardinal 案例研究 ⭐NEW 2026-06-20 (通用消息总线)</span></span>
+<span class="line"><span>  unity-animation-hierarchy-editor.md ← ⭐NEW 2026-07-04 动画路径重映射工具</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>entities/vrchatsdk/                     ← VRChatSDK HTTP API (18 个文档) ✅</span></span>
+<span class="line"><span>  index.md                    ← VRChatSDK 总览 + 端点分类 ⭐NEW 2026-06-15</span></span></code></pre>
+<h3 id="域索引文件总览2026-06-15-二次审计补全">域索引文件总览(2026-06-15 二次审计补全)</h3>
+<table>
+<thead>
+<tr>
+<th>域</th>
+<th>index.md</th>
+<th>文件数</th>
+<th>状态</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>entities/world/udon/</code></td>
+<td>✅</td>
+<td>~60</td>
+<td>已就位</td>
+</tr>
+<tr>
+<td><code>entities/world/scene-components/</code></td>
+<td>✅</td>
+<td>35</td>
+<td>已就位(2026-08-17 +24 Unity 原生组件)</td>
+</tr>
+<tr>
+<td><code>entities/world/bakery/</code></td>
+<td>✅</td>
+<td>2</td>
+<td>已就位</td>
+</tr>
+<tr>
+<td><code>entities/world/clientsim/</code></td>
+<td>✅</td>
+<td>8</td>
+<td>已就位</td>
+</tr>
+<tr>
+<td><code>entities/world/shader/</code></td>
+<td>✅</td>
+<td>2</td>
+<td>已就位</td>
+</tr>
+<tr>
+<td><code>entities/world/examples/</code></td>
+<td>✅</td>
+<td>31</td>
+<td>标准 <code>index.md</code> + README 详细页并存</td>
+</tr>
+<tr>
+<td><code>entities/avatar/</code></td>
+<td>✅</td>
+<td>9</td>
+<td>已就位</td>
+</tr>
+<tr>
+<td><code>entities/avatar/shader/</code></td>
+<td>✅</td>
+<td>4 + 子目录</td>
+<td>已就位</td>
+</tr>
+<tr>
+<td><code>entities/avatar/shader/liltoon/</code></td>
+<td>✅</td>
+<td><strong>17</strong>(新增 outline.md)</td>
+<td>✅ 已修复 outline 缺失</td>
+</tr>
+<tr>
+<td><code>entities/avatar/shader/orl/</code></td>
+<td>✅</td>
+<td>5</td>
+<td>已就位</td>
+</tr>
+<tr>
+<td><code>entities/avatar/shader/filamented/</code></td>
+<td>✅</td>
+<td>4</td>
+<td>已就位</td>
+</tr>
+<tr>
+<td><code>entities/avatar/shader/unlitwf/</code></td>
+<td>✅</td>
+<td>1</td>
+<td>已就位</td>
+</tr>
+<tr>
+<td><code>concepts/hybrid/</code></td>
+<td>✅</td>
+<td>3</td>
+<td>已就位</td>
+</tr>
+<tr>
+<td><strong><code>entities/vrchatsdk/</code></strong></td>
+<td>✅ ⭐NEW</td>
+<td>19(+1)</td>
+<td><strong>二次审计补全</strong></td>
+</tr>
+<tr>
+<td><strong><code>entities/platform/</code></strong></td>
+<td>✅ ⭐NEW</td>
+<td>6(+2)</td>
+<td><strong>二次审计补全</strong> ⭐2026-07-04 +2 (Recorder + Admin)</td>
+</tr>
+<tr>
+<td><strong><code>concepts/misc/</code></strong></td>
+<td>✅ ⭐NEW</td>
+<td>4(+1)</td>
+<td><strong>二次审计补全</strong></td>
+</tr>
+<tr>
+<td><strong><code>源资料 reference 快照</code></strong></td>
+<td>✅ ⭐NEW</td>
+<td>2(+1)</td>
+<td><strong>二次审计补全</strong></td>
+</tr>
+<tr>
+<td><code>源资料 source 快照</code></td>
+<td>✅</td>
+<td>12 (+2)</td>
+<td>已就位(2026-06-20 +1 Sardinal, 2026-07-04 +1 AnimationHierarchyEditor)</td>
+</tr>
+<tr>
+<td><code>concepts/rules/</code></td>
+<td>✅</td>
+<td>8</td>
+<td>已就位</td>
+</tr>
+<tr>
+<td><code>concepts/patterns/</code></td>
+<td>✅</td>
+<td>31 (+17)</td>
+<td>已就位(2026-06-20 +3 Sardinal 独有)</td>
+</tr>
+<tr>
+<td><code>entities/world/patterns/</code></td>
+<td>✅ ⭐NEW 2026-07-04</td>
+<td>1 (+1)</td>
+<td><strong>新建子目录</strong>(dynamic-player-list)</td>
+</tr>
+<tr>
+<td><code>entities/api/</code></td>
+<td>✅</td>
+<td>17</td>
+<td>已就位</td>
+</tr>
+<tr>
+<td>源资料 review 快照</td>
+<td>✅</td>
+<td>4 (32 FAILs)</td>
+<td>已就位(2026-06-20 +4 FAILs)</td>
+</tr>
+<tr>
+<td><code>meta/</code></td>
+<td>✅</td>
+<td>4</td>
+<td>工作模式、KB维护协议、网络搜索准入协议已就位</td>
+</tr>
+</tbody>
+</table>
+<h2 id="vrchatsdk-domain-文件清单">VRChatSDK Domain 文件清单</h2>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>entities/vrchatsdk/</span></span>
+<span class="line"><span>  homepage.md                  ← 层级概览</span></span>
+<span class="line"><span>  typescript-sdk.md            ← SDK 多语言支持</span></span>
+<span class="line"><span>  websocket-api.md             ← WebSocket 实时事件</span></span>
+<span class="line"><span>  instances.md                 ← 实例管理</span></span>
+<span class="line"><span>  tags.md                      ← 标签系统</span></span>
+<span class="line"><span>  faq.md                       ← 常见问题</span></span>
+<span class="line"><span>  api-authentication.md        ← 认证 API</span></span>
+<span class="line"><span>  api-users.md                 ← 用户 API</span></span>
+<span class="line"><span>  api-worlds.md                ← 世界 API</span></span>
+<span class="line"><span>  api-avatars.md               ← Avatar API</span></span>
+<span class="line"><span>  api-friends.md               ← 好友 API</span></span>
+<span class="line"><span>  api-notifications.md         ← 通知 API</span></span>
+<span class="line"><span>  api-favorites.md             ← 收藏 API</span></span>
+<span class="line"><span>  api-instances.md             ← 实例 API</span></span>
+<span class="line"><span>  api-files.md                 ← 文件 API</span></span>
+<span class="line"><span>  model-user.md                ← User 数据模型</span></span>
+<span class="line"><span>  model-current-user.md        ← CurrentUser 数据模型</span></span>
+<span class="line"><span>  api-groups.md                ← 群组 API</span></span></code></pre>
+<h2 id="avatar-domain-文件清单">Avatar Domain 文件清单</h2>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>entities/avatar/</span></span>
+<span class="line"><span>  index.md                     ← 域名索引</span></span>
+<span class="line"><span>  animator-system.md           ← Write Defaults/Avatar Mask/Playable Layers</span></span>
+<span class="line"><span>  vrc-constraints.md           ← VRC Constraints 6 种类型</span></span>
+<span class="line"><span>  playable-layers.md           ← 5 层详解</span></span>
+<span class="line"><span>  performance-rank.md          ← PC/Quest 性能等级</span></span>
+<span class="line"><span>  performance-benchmarks.md    ← 性能基准测试</span></span>
+<span class="line"><span>  ndmf-tools.md                ← NDMF 工具生态</span></span>
+<span class="line"><span>  optimization-guide.md        ← 最佳化实操指南</span></span>
+<span class="line"><span>  avatar-modding-guide.md      ← Bike Pose 修复等改模知识</span></span>
+<span class="line"><span>  modular-avatar.md            ← Modular Avatar 插件</span></span>
+<span class="line"><span>  accessories.md               ← ⭐Avatar Accessories 配件系统(2026.2.1+) NEW 2026-06-30</span></span>
+<span class="line"><span>  vrcraycast.md                ← ⭐VRCRaycast 骨骼 raycast(SDK 3.10.3+) NEW 2026-06-30</span></span>
+<span class="line"><span>  camera-tools.md              ← ⭐NEW 2026-07-04 玩家本地相机工具 (VirtualLens2 + VRCLens)</span></span>
+<span class="line"><span>  avatar-parameter-staged-sync.md</span></span>
+<span class="line"><span>  blender-shape-keys.md        ← ⭐NEW 2026-07-04 Blender 形态键 → Unity BlendShapes</span></span>
+<span class="line"><span>  shader/</span></span>
+<span class="line"><span>    index.md                   ← Shader 索引（完整对比矩阵 + 选择指南）⭐2026-06-11</span></span>
+<span class="line"><span>    liltoon/                   ← lilToon 详细文档（16个文件）</span></span>
+<span class="line"><span>    scss.md                    ← SCSS 详细分析报告（双阴影/UV切换）⭐2026-06-11</span></span>
+<span class="line"><span>    orl/                       ← ORL Shaders World 通用（4个文档）⭐NEW</span></span>
+<span class="line"><span>    filamented/                ← Filamented PBR 替代（4个文档）⭐NEW</span></span>
+<span class="line"><span>    unlitwf/                   ← UnlitWF Unlit 扩展（1个文件 + 详细分析）⭐NEW</span></span>
+<span class="line"><span>    other-shaders.md           ← 其他 Shader（Graphlit 等）</span></span></code></pre>
+<h2 id="hybrid-domain-文件清单">Hybrid Domain 文件清单</h2>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>concepts/hybrid/</span></span>
+<span class="line"><span>  index.md                ← 域名索引</span></span>
+<span class="line"><span>  osc-protocol.md         ← OSC 协议数据库 ✅</span></span>
+<span class="line"><span>  audio-link.md            ← AudioLink 系统架构 ✅</span></span></code></pre>
+<hr>
+<h2 id="搜索关键词">搜索关键词</h2>
+<table>
+<thead>
+<tr>
+<th>领域</th>
+<th>Grep pattern</th>
+<th>路径</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>World/网络</td>
+<td><code>networking|sync|SetOwner|RequestSerialization</code></td>
+<td><a href="/STELLASTOPVRC/posts/kb-concepts-rules-index/">index</a></td>
+</tr>
+<tr>
+<td>World/性能</td>
+<td><code>EXTERN|boxing|Update|GC|loop</code></td>
+<td><a href="/STELLASTOPVRC/posts/kb-concepts-rules-index/">index</a></td>
+</tr>
+<tr>
+<td>World/陷阱</td>
+<td><code>FAIL-|静默|陷阱</code></td>
+<td>源资料归档层（不随发布包分发）</td>
+</tr>
+<tr>
+<td>World/后处理</td>
+<td><code>bloom|vignette|grain|motion blur|chromatic</code></td>
+<td><a href="/STELLASTOPVRC/posts/kb-concepts-misc-index/">index</a></td>
+</tr>
+<tr>
+<td><strong>World/Persistence</strong></td>
+<td><code>PlayerData|PlayerObject|VRCEnablePersistence|OnPlayerRestored</code></td>
+<td><a href="/STELLASTOPVRC/posts/kb-world-udon-persistence-index/">index</a></td>
+</tr>
+<tr>
+<td>API</td>
+<td>API 方法名</td>
+<td><a href="/STELLASTOPVRC/posts/kb-api-index/">index</a></td>
+</tr>
+<tr>
+<td>Avatar</td>
+<td><code>animator|physbone|contact|constraint|cloth|benchmark</code></td>
+<td><a href="/STELLASTOPVRC/posts/kb-avatar-index/">index</a></td>
+</tr>
+<tr>
+<td><strong>Shader/Avatar专用</strong></td>
+<td><code>liltoon|scss|cel.*shader|toon.*shadow</code></td>
+<td><a href="/STELLASTOPVRC/posts/kb-avatar-shader-index/">index</a></td>
+</tr>
+<tr>
+<td><strong>Shader/World专用</strong></td>
+<td><code>orl.*shader|filamented|pbr.*world|configurable</code></td>
+<td><a href="/STELLASTOPVRC/posts/kb-avatar-shader-index/">index</a></td>
+</tr>
+<tr>
+<td><strong>Shader/通用</strong></td>
+<td><code>unlitwf|fur|water.*shader|gem.*shader|grass.*shader</code></td>
+<td><a href="/STELLASTOPVRC/posts/kb-avatar-shader-index/">index</a></td>
+</tr>
+<tr>
+<td>Hybrid/OSC</td>
+<td><code>osc|hybrid|cross-domain|AudioLink|ALPass</code></td>
+<td><a href="/STELLASTOPVRC/posts/kb-concepts-hybrid-index/">index</a></td>
+</tr>
+<tr>
+<td><strong>VRCGraphics</strong></td>
+<td><code>VRCGraphics|VRCShader|SetGlobal|Blit</code></td>
+<td><a href="/STELLASTOPVRC/posts/kb-world-index/">index</a></td>
+</tr>
+<tr>
+<td><strong>VRCCameraSettings</strong></td>
+<td><code>VRCCameraSettings|GetEyePosition|GetCurrentCamera|OnVRCCameraSettingsChanged</code></td>
+<td><a href="/STELLASTOPVRC/posts/kb-world-index/">index</a></td>
+</tr>
+<tr>
+<td><strong>玩家本地相机工具</strong></td>
+<td><code>VirtualLens2|VRCLens|vrclens|virtual-lens|tonemapper|DoF.*shader|camera.*plugin</code></td>
+<td><code>entities/avatar/camera-tools.md</code></td>
+</tr>
+<tr>
+<td><strong>VRCQualitySettings</strong></td>
+<td><code>VRCQualitySettings|SetShadowDistance|OnVRCQualitySettingsChanged</code></td>
+<td><a href="/STELLASTOPVRC/posts/kb-world-index/">index</a></td>
+</tr>
+<tr>
+<td><strong>Data Containers</strong></td>
+<td><code>DataList|DataDictionary|DataToken|VRCJson</code></td>
+<td><a href="/STELLASTOPVRC/posts/kb-world-index/">index</a></td>
+</tr>
+<tr>
+<td><strong>Platform</strong></td>
+<td><code>android|quest|mobile|cross-platform</code></td>
+<td><a href="/STELLASTOPVRC/posts/kb-platform-index/">index</a></td>
+</tr>
+<tr>
+<td><strong>Creator Economy</strong></td>
+<td><code>Store|UdonProduct|OpenListing</code></td>
+<td><a href="/STELLASTOPVRC/posts/kb-world-index/">index</a></td>
+</tr>
+<tr>
+<td><strong>光照系统</strong></td>
+<td><code>LightVolume|PointLight|SH|体素</code></td>
+<td><a href="/STELLASTOPVRC/posts/kb-world-index/">index</a></td>
+</tr>
+<tr>
+<td><strong>World Shader</strong></td>
+<td><code>Graphlit|node editor|PBR|Filament</code></td>
+<td><a href="/STELLASTOPVRC/posts/kb-world-shader-index/">index</a></td>
+</tr>
+<tr>
+<td><strong>Udon Example</strong></td>
+<td><code>ButtonSync|SendEventOn|PlayerTrigger|UdonSyncPlayer|VRCWorldSettings</code></td>
+<td><a href="/STELLASTOPVRC/posts/kb-world-examples-udon-example-scene-index/">index</a></td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="journal">Journal</h2>
+<blockquote>
+<p>ℹ️ V3.0 起,会话记忆(Journal)已弃用,所有整理阶段报告统一写入 <code>特殊Agent提示词/</code> 目录。
+临时记录不再保留,知识库保持长期纯净。</p>
+</blockquote> </div> <p class="kb-source-note" data-astro-cid-lvjzyg5v>
+本文由 VRChat 开发知识库自动整理（社区整理  · 可信度 High  · 最后校对 2026-08-13），
+          遇到与手写教程冲突的地方，以官方文档为最高优先级。
+</p> <section class="comments" id="comments" data-astro-cid-lvjzyg5v> <h2 class="comments__title" data-astro-cid-lvjzyg5v>✦ 旅人留言（0）</h2> <p class="comments__empty" id="commentsEmpty" data-astro-cid-lvjzyg5v>
+还没有旅人留言 —— 有疑问就写在下面，站长都会回复。
+</p> <form class="comment-form" id="commentForm" data-target="kb-index" data-astro-cid-lvjzyg5v> <p class="comment-form__title" data-astro-cid-lvjzyg5v>写下你的留言</p> <input id="cAuthor" maxlength="20" placeholder="昵称（留空则为「旅人」）" data-astro-cid-lvjzyg5v> <textarea id="cBody" maxlength="1000" required placeholder="想问的问题、想说的感谢都可以（最多 1000 字）" data-astro-cid-lvjzyg5v></textarea> <div class="comment-form__actions" data-astro-cid-lvjzyg5v> <button class="btn btn--primary" type="submit" data-astro-cid-lvjzyg5v>发布留言</button> <span class="form-hint" data-astro-cid-lvjzyg5v>留言保存在本站，站长在写作台里能看到</span> <span class="form-msg" id="cMsg" data-astro-cid-lvjzyg5v></span> </div> </form> </section> <nav class="station-nav" aria-label="站间导航" data-astro-cid-lvjzyg5v> <a href="/STELLASTOPVRC/posts/kb-concepts-rules-runtime-texture-compression/" data-astro-cid-lvjzyg5v> <span class="dir" data-astro-cid-lvjzyg5v>← 上一站 · 更新的星光</span> <span class="to" data-astro-cid-lvjzyg5v>VRChat Runtime Texture Compression</span> </a> <a href="/STELLASTOPVRC/posts/kb-world-index/" data-astro-cid-lvjzyg5v> <span class="dir" data-astro-cid-lvjzyg5v>下一站 · 更早的星光 →</span> <span class="to" data-astro-cid-lvjzyg5v>World Domain Index</span> </a> </nav> </div> <aside class="toc" id="toc" hidden> <p class="toc__title">✦ 本页星图</p> <nav id="tocNav" aria-label="文章目录"></nav> </aside> <script type="module">const i=document.querySelector(".prose"),d=document.getElementById("toc"),u=document.getElementById("tocNav"),l=[];if(i&&d&&u){const c=[...i.querySelectorAll("h1, h2, h3")];if(c.length>=3){d.hidden=!1,c.forEach((o,e)=>{o.id||(o.id=`sec-${e}`);const n=document.createElement("a");n.href=`#${o.id}`;const s=(o.textContent??"").replace(/\s+/g," ").trim(),r=s.search(/[：:]/),a=r>=4?s.slice(0,r):s;n.textContent=a.length>40?`${a.slice(0,40)}…`:a,n.title=s,u.appendChild(n),l.push({a:n,h:o})});const t=()=>{let o=l[0];for(const e of l)e.h.getBoundingClientRect().top<=130&&(o=e);for(const e of l)e.a.classList.toggle("is-active",e===o)};addEventListener("scroll",t,{passive:!0}),t()}}document.querySelectorAll(".prose pre").forEach(c=>{const t=document.createElement("button");t.className="code-copy",t.type="button",t.textContent="复制",t.addEventListener("click",async()=>{const o=c.querySelector("code")?.innerText??c.innerText;try{await navigator.clipboard.writeText(o)}catch{const e=document.createElement("textarea");e.value=o,document.body.appendChild(e),e.select(),document.execCommand("copy"),e.remove()}t.textContent="已复制 ✓",t.classList.add("is-ok"),setTimeout(()=>{t.textContent="复制",t.classList.remove("is-ok")},1500)}),c.appendChild(t)});</script> </article>  </main> <footer class="site-footer"> <div class="wrap"> <p class="star-line" aria-hidden="true"> <svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> <svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> </p> <p>星之驿站 StellaStop —— 在虚拟宇宙中，为你保留一座驿站</p> <p class="site-footer__disclaimer">
+该网页目前是测试阶段，仅用于测试，所有内容仅供参考；内容全部为引用互联网当中的信息。
+</p> <p>© 2026 星之驿站 · 由 <a href="https://astro.build">Astro</a> 与星光驱动</p> <p> <a data-desk-login hidden title="写作台：登录 / 注册">登录 / 注册</a> ·
+<a href="/STELLASTOPVRC/announcements/">官方公告</a> ·
+<a href="/STELLASTOPVRC/ai/">问星 AI</a> ·
+<a href="/STELLASTOPVRC/feedback/">旅人留言板</a> </p> </div> </footer> <button class="to-top" id="toTop" aria-label="回到顶部"> <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"> <path d="M12 20V5"></path> <path d="M5.5 11.5 12 5l6.5 6.5"></path> </svg> </button> <script type="module">const e=document.getElementById("toTop");if(e){const t=()=>e.classList.toggle("is-visible",scrollY>480);addEventListener("scroll",t,{passive:!0}),t(),e.addEventListener("click",()=>{const o=matchMedia("(prefers-reduced-motion: reduce)").matches;scrollTo({top:0,behavior:o?"auto":"smooth"})})}</script> <script>(function(){const deskConfigured = "";
+
+      /* 写作台探测（页面尾部执行，DOM 已就绪）：
+         1. 计算写作台地址：站点配置 deskUrl（公网部署时填）> 本机默认 localhost:4322 > 同主机 4322
+         2. 探测 /api/gate/status —— 在线才点亮「登录 / 注册」入口，并复用给验证门横幅
+         3. 不在线则保持隐藏，绝不会把访客拽进内网地址；同时给出一次性「镜像模式」提示 */
+      (function () {
+        var host = location.hostname;
+        var isLocal = host === 'localhost' || host === '127.0.0.1' || host === '[::1]';
+        var desk = deskConfigured ||
+          (isLocal ? 'http://localhost:4322' : location.protocol + '//' + host + ':4322');
+        window.STELLA_DESK = desk;
+
+        function revealLogin() {
+          document.querySelectorAll('[data-desk-login]').forEach(function (a) {
+            a.href = desk + '/admin';
+            a.removeAttribute('hidden');
+          });
+        }
+        function showBanner(css, html, shiftHeader) {
+          var bar = document.createElement('div');
+          bar.style.cssText = css;
+          bar.innerHTML = html;
+          document.body.prepend(bar);
+          if (shiftHeader) {
+            var header = document.querySelector('.site-header');
+            if (header) header.style.marginTop = '42px';
+          }
+        }
+        function hintMirrorMode() {
+          try {
+            if (sessionStorage.getItem('stella-desk-hint')) return;
+            sessionStorage.setItem('stella-desk-hint', '1');
+          } catch (e) { /* 无痕模式等：忽略 */ }
+          var tip = document.createElement('div');
+          tip.style.cssText = 'position:fixed;left:14px;bottom:14px;z-index:9998;max-width:min(92vw,430px);padding:.65rem .9rem;border-radius:12px;background:rgba(18,20,44,.92);border:1px solid rgba(150,142,255,.35);color:#e8e6ff;font-size:.82rem;line-height:1.6;font-family:system-ui,sans-serif;box-shadow:0 8px 30px rgba(0,0,0,.35)';
+          tip.innerHTML = 'ℹ️ 静态镜像模式：登录 / 评论 / AI 等互动功能需要站长写作台在线，当前不可用。' +
+            '<span id="stellaDeskHintClose" style="float:right;cursor:pointer;opacity:.75;font-weight:700;margin-left:.6rem" title="关闭">×</span>';
+          document.body.appendChild(tip);
+          var close = function () { tip.remove(); };
+          tip.querySelector('#stellaDeskHintClose').addEventListener('click', close);
+          setTimeout(close, 9000);
+        }
+
+        try {
+          var ctrl = new AbortController();
+          var timer = setTimeout(function () { ctrl.abort(); }, 2500);
+          fetch(desk + '/api/gate/status', { credentials: 'include', signal: ctrl.signal })
+            .then(function (r) { return r.ok ? r.json() : null; })
+            .then(function (d) {
+              clearTimeout(timer);
+              if (!d) throw new Error('desk-offline');
+              window.STELLA_DESK_OK = true;
+              revealLogin();
+              if (d.regionBlocked) {
+                showBanner(
+                  'position:fixed;top:0;left:0;right:0;z-index:9999;padding:1.2rem;text-align:center;background:#1a0a0a;color:#ff9ed2;font-size:.95rem;border-bottom:2px solid #ff4d6d;font-family:system-ui,sans-serif',
+                  '⛔ 你所在的地区（' + (d.regionCountry || '未知') + '）暂不开放访问。',
+                  false
+                );
+                return;
+              }
+              if (d.enabled && !d.passed) {
+                showBanner(
+                  'position:fixed;top:0;left:0;right:0;z-index:9999;padding:0.7rem;text-align:center;background:linear-gradient(94deg,rgba(143,127,247,.25),rgba(98,200,245,.18));border-bottom:1px solid rgba(150,142,255,.3);color:#f0efff;font-size:.88rem;font-family:system-ui,sans-serif',
+                  '🔒 本站启用了安全验证 —— <a href="' + desk + '/gate?next=' + encodeURIComponent(location.href) + '" style="color:#ffd98e;font-weight:700;text-decoration:underline">点击完成验证</a>，通过后即可使用全部功能（30 天免验）。',
+                  true
+                );
+              }
+            })
+            .catch(function () {
+              clearTimeout(timer);
+              window.STELLA_DESK_OK = false;
+              hintMirrorMode();
+            });
+        } catch (e) { /* 忽略 */ }
+      })();
+    })();</script> </body> </html> <script type="module">const m=document.getElementById("commentForm"),s=document.getElementById("cMsg"),u=`${location.protocol}//${location.hostname}:4322/api/message`;function r(e,t=!1){s&&(s.textContent=e,s.classList.toggle("is-err",t),s.classList.toggle("is-ok",!t))}function y(){const e=new Date,t=n=>String(n).padStart(2,"0");return`${e.getFullYear()}-${t(e.getMonth()+1)}-${t(e.getDate())}`}function f(e){let t=7;for(const n of e)t=(t*31+n.charCodeAt(0))%360;return t}function g(e,t){const n=document.createElement("li");n.className="comment",n.innerHTML=`
+      <span class="comment__avatar"></span>
+      <div class="comment__bubble">
+        <div class="comment__head">
+          <span class="comment__name"></span>
+          <time class="comment__date">${y()}</time>
+        </div>
+        <p class="comment__body"></p>
+      </div>`;const o=n.querySelector(".comment__avatar");return o.style.setProperty("--h",String(f(e))),o.textContent=e.slice(0,1),n.querySelector(".comment__name").textContent=e,n.querySelector(".comment__body").textContent=t,n}m?.addEventListener("submit",async e=>{e.preventDefault();const t=document.getElementById("cBody").value.trim();if(!t)return r("留言内容不能为空哦",!0);const n=document.getElementById("cAuthor").value.trim()||"旅人",o=m.querySelector("button");o&&(o.disabled=!0);try{const c=await fetch(u,{credentials:"include",method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({target:m.dataset.target,kind:"comment",author:n,body:t})}),d=await c.json().catch(()=>({}));if(!c.ok)throw new Error(d.error||`发送失败（${c.status}）`);const l=document.querySelector(".comment-list");l&&l.appendChild(g(n,t)),document.getElementById("commentsEmpty")?.remove(),document.getElementById("cBody").value="",r("留言已发布，感谢支持 ✦");const a=document.querySelector(".comments__title"),i=a?.textContent?.match(/（(\d+)）/);a&&i&&(a.textContent=a.textContent.replace(/（\d+）/,`（${Number(i[1])+1}）`))}catch(c){r(c instanceof TypeError?"写作台没在运行，暂时收不到留言 —— 双击「启动博客.bat」就好":c.message,!0)}finally{o&&(o.disabled=!1)}});</script> 

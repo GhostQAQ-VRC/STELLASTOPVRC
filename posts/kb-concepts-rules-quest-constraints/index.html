@@ -1,0 +1,853 @@
+<!DOCTYPE html><html lang="zh-CN"> <head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="generator" content="Astro v5.18.2"><meta name="description" content="原因: 光烘焙数据（Lightmap, Light Probe, Reflection Probe）的存储格式与目标平台相关,切换平台后需重新烘焙。"><meta name="theme-color" content="#070a1c"><meta property="og:title" content="Quest 兼容性约束清单 · 星之驿站 StellaStop"><meta property="og:description" content="原因: 光烘焙数据（Lightmap, Light Probe, Reflection Probe）的存储格式与目标平台相关,切换平台后需重新烘焙。"><meta property="og:type" content="website"><meta name="twitter:card" content="summary"><link rel="icon" type="image/svg+xml" href="/STELLASTOPVRC/favicon.svg"><script>
+      // 在渲染前恢复主题与特效档位，避免闪一下默认状态
+      try {
+        document.documentElement.dataset.theme =
+          localStorage.getItem('stella-theme') || 'nebula';
+        document.documentElement.dataset.fx =
+          localStorage.getItem('stella-fx') || 'standard';
+      } catch {
+        /* 隐私模式读不到就算了 */
+      }
+    </script><link rel="stylesheet" href="/STELLASTOPVRC/custom-vars.css"><title>Quest 兼容性约束清单 · 星之驿站 StellaStop</title><link rel="stylesheet" href="/STELLASTOPVRC/_astro/about.Bgh6wcGl.css">
+<style>.post-head__meta[data-astro-cid-lvjzyg5v]{color:var(--ink-faint);font-family:var(--font-mono);font-size:.82rem}.post-head[data-astro-cid-lvjzyg5v] .chip-row[data-astro-cid-lvjzyg5v]{margin-top:1rem}.kb-source-note[data-astro-cid-lvjzyg5v]{max-width:760px;margin:2.2rem auto 0;font-size:.82rem;color:var(--ink-faint);border-top:1px dashed var(--line);padding-top:1rem}
+</style></head> <body> <div class="site-notice" id="siteNotice"> <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> <span class="site-notice__text">欢迎来到星之驿站！</span> <button class="site-notice__close" id="noticeClose" type="button" aria-label="关闭公告">
+×
+</button> </div> <a class="skip-link" href="#main">跳到主要内容</a> <canvas id="starfield" aria-hidden="true" data-astro-cid-ra7sfcwn></canvas> <div class="fx-aurora fx-aurora--a" aria-hidden="true" data-astro-cid-ra7sfcwn></div> <div class="fx-aurora fx-aurora--b" aria-hidden="true" data-astro-cid-ra7sfcwn></div>  <script type="module">const u=document.getElementById("starfield");if(u){let F=function(){const n=Math.random();return n<.1?"gold":n<.42?"blue":"white"},v=function(){const n=Math.min(window.devicePixelRatio||1,2);s=window.innerWidth,d=window.innerHeight,u.width=s*n,u.height=d*n,u.style.width=`${s}px`,u.style.height=`${d}px`,t.setTransform(n,0,0,n,0,0);const e=Math.min(190,Math.round(s*d/8500));l=Array.from({length:e},()=>({x:Math.random()*s,y:Math.random()*d,r:r(.4,1.7),base:r(.25,.8),amp:r(.12,.4),speed:r(6e-4,.0022),phase:r(0,Math.PI*2),c:F()})),C=Array.from({length:26},()=>({x:Math.random()*s,y:Math.random()*d,r:r(.9,2.4),vx:r(-.006,.006),vy:r(-.02,-.006),base:r(.2,.5),speed:r(8e-4,.002),phase:r(0,Math.PI*2),c:Math.random()<.5?"gold":"violet"})),c==="off"&&m(0,!0)},D=function(n){const e=Math.random()<.5?1:-1,o=r(Math.PI/7,Math.PI/5),a=r(.45,.75);y.push({x:r(s*.15,s*.85),y:r(-20,d*.3),vx:Math.cos(o)*a*e,vy:Math.sin(o)*a,born:n,life:r(750,1050),len:r(100,170)})},S=function(n){y=y.filter(e=>n-e.born<e.life);for(const e of y){const o=(n-e.born)/e.life,a=e.x+e.vx*(n-e.born),i=e.y+e.vy*(n-e.born),f=o<.15?o/.15:o>.7?(1-o)/.3:1,h=Math.hypot(e.vx,e.vy),x=e.vx/h,g=e.vy/h,b=t.createLinearGradient(a,i,a-x*e.len,i-g*e.len);b.addColorStop(0,`rgba(236,242,255,${(.85*f).toFixed(3)})`),b.addColorStop(1,"rgba(236,242,255,0)"),t.strokeStyle=b,t.lineWidth=1.6,t.lineCap="round",t.beginPath(),t.moveTo(a,i),t.lineTo(a-x*e.len,i-g*e.len),t.stroke()}},B=function(){let o=0;t.lineWidth=.7;for(let a=0;a<l.length&&o<26;a++)for(let i=a+1;i<l.length&&o<26;i++){const f=l[a].x-l[i].x,h=l[a].y-l[i].y,x=f*f+h*h;if(x<16900){const g=(1-Math.sqrt(x)/130)*.17;t.strokeStyle=`rgba(178,170,255,${g.toFixed(3)})`,t.beginPath(),t.moveTo(l[a].x,l[a].y),t.lineTo(l[i].x,l[i].y),t.stroke(),o++}}},X=function(n){for(const e of C){e.x+=e.vx*16,e.y+=e.vy*16,e.y<-12&&(e.y=d+10),e.x<-12&&(e.x=s+10),e.x>s+12&&(e.x=-10);const o=Math.max(.05,e.base+.25*Math.sin(n*e.speed+e.phase)),[a,i,f]=A[e.c];t.beginPath(),t.arc(e.x,e.y,e.r,0,7),t.shadowBlur=9,t.shadowColor=`rgba(${a},${i},${f},0.9)`,t.fillStyle=`rgba(${a},${i},${f},${o.toFixed(3)})`,t.fill()}t.shadowBlur=0},m=function(n,e=!1){t.clearRect(0,0,s,d);for(const o of l){const a=c==="off"?o.base:Math.max(.05,o.base+o.amp*Math.sin(n*o.speed+o.phase)),[i,f,h]=A[o.c];t.beginPath(),t.arc(o.x,o.y,o.r,0,7),o.r>1.25?(t.shadowBlur=7,t.shadowColor=`rgba(${i},${f},${h},0.85)`):t.shadowBlur=0,t.fillStyle=`rgba(${i},${f},${h},${a.toFixed(3)})`,t.fill()}if(t.shadowBlur=0,c!=="off"&&!e){c==="fancy"&&(B(),X(n));const o=c==="fancy"?r(2600,6e3):r(4200,9500);n>P&&(D(n),P=n+o),S(n)}},$=function(n){m(n),M=requestAnimationFrame($)},p=function(){if(c==="off"){m(0,!0);return}cancelAnimationFrame(M),M=requestAnimationFrame($)},w=function(){cancelAnimationFrame(M),t.clearRect(0,0,s,d),m(0,!0)};const t=u.getContext("2d"),k=matchMedia("(prefers-reduced-motion: reduce)").matches,A={white:[240,240,255],blue:[150,215,250],gold:[255,218,150],violet:[178,170,255]};let s=0,d=0,l=[],C=[],y=[],P=2500,M=0,c=document.documentElement.dataset.fx||"standard";k&&(c="off");const r=(n,e)=>n+Math.random()*(e-n);v(),addEventListener("resize",v),document.addEventListener("stella-fx-change",n=>{c=n.detail,c==="off"?w():p()}),c==="off"?m(0,!0):(p(),document.addEventListener("visibilitychange",()=>{document.hidden?w():p()}))}</script> <header class="site-header"> <div class="wrap site-header__inner"> <a class="logo" href="/STELLASTOPVRC/"> <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> <span>星之驿站</span> <span class="logo__romaji">StellaStop</span> </a> <div class="header-right"> <nav class="site-nav" aria-label="站内导航"> <a href="/STELLASTOPVRC/"> 首页 </a><a href="/STELLASTOPVRC/start/"> 新手 </a><a href="/STELLASTOPVRC/posts/"> 教程 </a><a href="/STELLASTOPVRC/videos/"> 视频 </a><a href="/STELLASTOPVRC/resources/"> 资源 </a><a href="/STELLASTOPVRC/booth/"> Booth </a><a href="/STELLASTOPVRC/announcements/"> 公告 </a><a href="/STELLASTOPVRC/ai/"> 问星 </a><a href="/STELLASTOPVRC/changelog/"> 更新日志 </a><a href="/STELLASTOPVRC/about/"> 关于 </a> </nav> <a class="login-link" data-desk-login hidden title="写作台：登录 / 注册后可发教程、传资源">
+登录 / 注册
+</a> <div class="theme-switch"> <button class="theme-switch__btn" id="themeBtn" type="button" aria-haspopup="listbox" aria-expanded="false" aria-label="切换主题配色" title="切换主题配色"> <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"> <path d="M12 3a9 9 0 1 0 9 9c0-1.2-1-2-2.2-2H17a2 2 0 0 1-2-2V6.2C15 5 14.2 4 13 4.4A9 9 0 0 0 12 3Z"></path> <circle cx="7.5" cy="11.5" r="1" fill="currentColor" stroke="none"></circle> <circle cx="10" cy="7.5" r="1" fill="currentColor" stroke="none"></circle> <circle cx="15" cy="7" r="1" fill="currentColor" stroke="none"></circle> </svg> </button> <div class="theme-pop" id="themePop" role="listbox" aria-label="选择主题" hidden> <button class="theme-opt" type="button" role="option" data-theme-value="nebula" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#8f7ff7"></span><span class="dot" style="background:#62c8f5"></span><span class="dot" style="background:#ffd98e"></span> </span> <span class="theme-opt__name">星云 · 蓝紫</span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt" type="button" role="option" data-theme-value="sakura" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#ff8fc7"></span><span class="dot" style="background:#c79bff"></span><span class="dot" style="background:#ffd08e"></span> </span> <span class="theme-opt__name">樱语 · 粉紫</span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt" type="button" role="option" data-theme-value="miku" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#2ed3c2"></span><span class="dot" style="background:#6ea8ff"></span><span class="dot" style="background:#ffe08e"></span> </span> <span class="theme-opt__name">葱色 · 青绿</span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt" type="button" role="option" data-theme-value="ember" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#ffb35c"></span><span class="dot" style="background:#ff7e6b"></span><span class="dot" style="background:#ffd98e"></span> </span> <span class="theme-opt__name">暮金 · 暖橙</span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt" type="button" role="option" data-theme-value="dawn" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#6a5ce8"></span><span class="dot" style="background:#e0568f"></span><span class="dot" style="background:#b8821e"></span> </span> <span class="theme-opt__name">晨星 · 浅色</span> <span class="theme-opt__mark">✦</span> </button> </div> </div> <script type="module">const a=document.getElementById("themeBtn"),n=document.getElementById("themePop");function s(c){document.documentElement.dataset.theme=c;try{localStorage.setItem("stella-theme",c)}catch{}const e=getComputedStyle(document.documentElement).getPropertyValue("--bg-deep").trim();document.querySelector('meta[name="theme-color"]')?.setAttribute("content",e||"#070a1c"),document.querySelectorAll(".theme-opt").forEach(t=>{const d=t.dataset.themeValue===c;t.classList.toggle("is-active",d),t.setAttribute("aria-selected",String(d))})}if(a&&n){const c=document.documentElement.dataset.theme||"nebula";document.querySelectorAll(".theme-opt").forEach(e=>{const t=e.dataset.themeValue===c;e.classList.toggle("is-active",t),e.setAttribute("aria-selected",String(t))}),a.addEventListener("click",e=>{e.stopPropagation();const t=n.hidden;n.hidden=!t,a.setAttribute("aria-expanded",String(t))}),document.addEventListener("click",e=>{!n.hidden&&!e.target.closest(".theme-switch")&&(n.hidden=!0,a.setAttribute("aria-expanded","false"))}),document.addEventListener("keydown",e=>{e.key==="Escape"&&!n.hidden&&(n.hidden=!0,a.setAttribute("aria-expanded","false"),a.focus())}),n.addEventListener("click",e=>{const t=e.target.closest(".theme-opt");t&&(s(t.dataset.themeValue??"nebula"),n.hidden=!0,a.setAttribute("aria-expanded","false"))})}</script> <div class="theme-switch fx-switch"> <button class="theme-switch__btn" id="fxBtn" type="button" aria-haspopup="listbox" aria-expanded="false" aria-label="背景特效设置" title="背景特效设置"> <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"> <path d="M5 3v4M3 5h4M6.5 17.5v3M5 19h3"></path> <path d="M14.5 4.5 16 9l4.5 1.5L16 12l-1.5 4.5L13 12l-4.5-1.5L13 9l1.5-4.5Z"></path> </svg> </button> <div class="theme-pop" id="fxPop" role="listbox" aria-label="背景特效" hidden> <button class="theme-opt fx-opt" type="button" role="option" data-fx-value="off" aria-selected="false"> <span class="fx-opt__body"> <span class="fx-opt__name">关闭特效</span> <span class="fx-opt__hint">最省电</span> </span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt fx-opt" type="button" role="option" data-fx-value="standard" aria-selected="false"> <span class="fx-opt__body"> <span class="fx-opt__name">标准</span> <span class="fx-opt__hint">闪烁星空 + 流星</span> </span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt fx-opt" type="button" role="option" data-fx-value="fancy" aria-selected="false"> <span class="fx-opt__body"> <span class="fx-opt__name">华丽</span> <span class="fx-opt__hint">追加极光 / 星座 / 光尘</span> </span> <span class="theme-opt__mark">✦</span> </button> </div> </div> <script type="module">const n=document.getElementById("fxBtn"),a=document.getElementById("fxPop");function s(d){document.documentElement.dataset.fx=d;try{localStorage.setItem("stella-fx",d)}catch{}document.querySelectorAll("#fxPop .fx-opt").forEach(t=>{const e=t.dataset.fxValue===d;t.classList.toggle("is-active",e),t.setAttribute("aria-selected",String(e))}),document.dispatchEvent(new CustomEvent("stella-fx-change",{detail:d}))}if(n&&a){const d=document.documentElement.dataset.fx||"standard";document.querySelectorAll("#fxPop .fx-opt").forEach(t=>{const e=t.dataset.fxValue===d;t.classList.toggle("is-active",e),t.setAttribute("aria-selected",String(e))}),n.addEventListener("click",t=>{t.stopPropagation();const e=a.hidden;a.hidden=!e,n.setAttribute("aria-expanded",String(e))}),document.addEventListener("click",t=>{!a.hidden&&!t.target.closest(".fx-switch")&&(a.hidden=!0,n.setAttribute("aria-expanded","false"))}),document.addEventListener("keydown",t=>{t.key==="Escape"&&!a.hidden&&(a.hidden=!0,n.setAttribute("aria-expanded","false"),n.focus())}),a.addEventListener("click",t=>{const e=t.target.closest(".fx-opt");e&&(s(e.dataset.fxValue??"standard"),a.hidden=!0,n.setAttribute("aria-expanded","false"))})}</script> </div> </div> </header> <main id="main">  <article class="wrap post-layout" data-astro-cid-lvjzyg5v> <div class="post-main page-fade" data-astro-cid-lvjzyg5v> <header class="post-head" data-astro-cid-lvjzyg5v> <a class="crumb" href="/STELLASTOPVRC/posts/" data-astro-cid-lvjzyg5v>← 返回教程档案</a> <div class="post-head__meta" style="--accent:var(--ink-dim)" data-astro-cid-lvjzyg5v> <span class="badge" data-cat="核心规则" data-astro-cid-lvjzyg5v>核心规则</span> <time datetime="2026-07-04" data-astro-cid-lvjzyg5v>2026-07-04</time> <span class="post-head__reading" data-astro-cid-lvjzyg5v>⏱ 约 24 分钟</span>  </div> <h1 class="post-head__title" data-astro-cid-lvjzyg5v>Quest 兼容性约束清单</h1> <p class="post-head__lead" data-astro-cid-lvjzyg5v>原因: 光烘焙数据（Lightmap, Light Probe, Reflection Probe）的存储格式与目标平台相关,切换平台后需重新烘焙。</p> <div class="chip-row" data-astro-cid-lvjzyg5v> <a class="chip" href="/STELLASTOPVRC/posts/?tag=%E7%9F%A5%E8%AF%86%E5%BA%93" data-astro-cid-lvjzyg5v> 知识库 </a><a class="chip" href="/STELLASTOPVRC/posts/?tag=concepts" data-astro-cid-lvjzyg5v> concepts </a> </div> </header> <div class="prose" data-astro-cid-lvjzyg5v> <h1 id="quest-兼容性约束清单">Quest 兼容性约束清单</h1>
+<blockquote>
+<p>Quest(Android 平台)有独立的性能与功能约束。
+本文档汇总 <strong>World</strong> 和 <strong>Avatar</strong> 跨 Quest 兼容必须遵守的硬性约束与最佳实践。</p>
+<p>🔴 <strong>Quest 性能等级 = Poor</strong>(默认),VRC 默认不推荐 Quest 用户进入 Very Poor 性能 World。</p>
+</blockquote>
+<hr>
+<h2 id="1-平台基础">1. 平台基础</h2>
+<table>
+<thead>
+<tr>
+<th>项目</th>
+<th>PC(Win/Mac/Linux)</th>
+<th>Quest(Android)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>CPU 架构</td>
+<td>x86_64</td>
+<td>ARM64</td>
+</tr>
+<tr>
+<td>GPU</td>
+<td>NVIDIA/AMD/Apple Silicon</td>
+<td>Adreno / Quest 3 GPU</td>
+</tr>
+<tr>
+<td>内存上限</td>
+<td>~16 GB+</td>
+<td><strong>4 GB 进程上限</strong>(Quest 2/3)</td>
+</tr>
+<tr>
+<td>SDK</td>
+<td>Unity 2022.3.22f1 LTS</td>
+<td>Unity 2022.3.22f1 LTS(同一 SDK)</td>
+</tr>
+<tr>
+<td>上传通道</td>
+<td>VRChat SDK</td>
+<td>VRChat SDK(同一通道)</td>
+</tr>
+<tr>
+<td>Performance Rank</td>
+<td>Excellent/Good/Medium/Poor/Very Poor</td>
+<td><strong>Poor / Very Poor</strong></td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="2-world-约束">2. World 约束</h2>
+<h3 id="21-性能等级与容量">2.1 性能等级与容量</h3>
+<table>
+<thead>
+<tr>
+<th>等级</th>
+<th>Triangles</th>
+<th>Materials</th>
+<th>Lights</th>
+<th>Shadow Casters</th>
+<th>Texture Memory</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Excellent</td>
+<td>&#x3C; 75k</td>
+<td>&#x3C; 5</td>
+<td>&#x3C; 3</td>
+<td>&#x3C; 0.5k</td>
+<td>&#x3C; 50 MB</td>
+</tr>
+<tr>
+<td>Good</td>
+<td>75-200k</td>
+<td>5-15</td>
+<td>3-5</td>
+<td>0.5-2k</td>
+<td>50-200 MB</td>
+</tr>
+<tr>
+<td>Medium</td>
+<td>200-500k</td>
+<td>15-25</td>
+<td>5-10</td>
+<td>2-5k</td>
+<td>200-400 MB</td>
+</tr>
+<tr>
+<td>Poor</td>
+<td>500k-1M</td>
+<td>25-50</td>
+<td>10-20</td>
+<td>5-15k</td>
+<td>400-800 MB</td>
+</tr>
+<tr>
+<td><strong>Very Poor</strong></td>
+<td>1M+</td>
+<td>50+</td>
+<td>20+</td>
+<td>15k+</td>
+<td>800 MB+</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>🔴 <strong>Quest 移动端硬上限</strong>: 250k 三角形 / 25 材质 / 4 实时阴影 / 2048² 纹理。超过会被 SDK 直接拒绝上传。</p>
+</blockquote>
+<blockquote>
+<p><strong>2026-07 数字更新（创作者实操推荐值）</strong>:</p>
+<p><strong>来源</strong>: creators.vrchat.com/platforms/android/quest-content-optimization</p>
+<table>
+<thead>
+<tr>
+<th>内容类型</th>
+<th>官方推荐</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>World 三角形总数</strong></td>
+<td><strong>250,000</strong> 三角形（不是 Vowgan 2022 提到的 50,000）</td>
+</tr>
+<tr>
+<td><strong>Avatar 三角形数</strong></td>
+<td><strong>≤ 10,000</strong>（与 Fallback 硬性要求一致）</td>
+</tr>
+<tr>
+<td><strong>Quest Fallback Avatar</strong></td>
+<td><strong>≤ 10,000</strong> + Good 评级</td>
+</tr>
+</tbody>
+</table>
+<p>VRChat 官方原文: “We recommend that you budget approximately 250,000 triangles for your world in total.” + “We recommend that you aim for under 10,000 triangles for your avatar.”</p>
+</blockquote>
+<h3 id="211-平台切换后重新烘焙光照2026-07-补充">2.1.1 平台切换后重新烘焙光照（2026-07 补充）</h3>
+<blockquote>
+<p><strong>来源</strong>: VRCD 20-vowgan.md (COMMUNITY) + 工程经验【推断】
+<strong>状态</strong>: ⚠️ COMMUNITY (合理推断,官方未直接说明)</p>
+</blockquote>
+<p><strong>原因</strong>: 光烘焙数据（Lightmap, Light Probe, Reflection Probe）的存储格式与目标平台相关,切换平台后需重新烘焙。</p>
+<p><strong>最佳实践</strong>:</p>
+<ol>
+<li>PC 项目稳定后,首次切换到 Android 时<strong>预留 30-60 分钟</strong>烘焙时间</li>
+<li>烘焙前: 降低 Lightmap Resolution（Quest 推荐 1024-2048）</li>
+<li>烘焙后: 用 ClientSim 在 Android 模拟器上验证</li>
+</ol>
+<h3 id="22-实时光照">2.2 实时光照</h3>
+<table>
+<thead>
+<tr>
+<th>约束</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>实时光源数</td>
+<td>Quest 端<strong>最多 4 个</strong>(Baked Light 无限制)</td>
+</tr>
+<tr>
+<td>实时阴影</td>
+<td>禁用或烘焙(Realtime Shadow 在 Quest 上成本极高)</td>
+</tr>
+<tr>
+<td>Light Probe</td>
+<td>可用,但数量限制: &#x3C; 32</td>
+</tr>
+<tr>
+<td>Reflection Probe</td>
+<td><strong>Quest 端禁用实时反射</strong>;全部烘焙</td>
+</tr>
+<tr>
+<td>Lightmap</td>
+<td>强制烘焙,<strong>Atlas 共享</strong>(减少 Texture Sampler)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="23-udon-vm-性能">2.3 Udon VM 性能</h3>
+<blockquote>
+<p>Quest 端 Udon 解释执行成本约 PC 的 <strong>2-3 倍</strong>。约束:</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>维度</th>
+<th>PC 上限</th>
+<th>Quest 等效上限</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>活跃 UdonBehaviour 数</td>
+<td>~150</td>
+<td><strong>~60</strong></td>
+</tr>
+<tr>
+<td>每帧 Udon 指令预算</td>
+<td>~1M ops</td>
+<td><strong>~300k ops</strong></td>
+</tr>
+<tr>
+<td>序列化变量数(Manual)</td>
+<td>280,496 bytes</td>
+<td>同 PC,但实际帧时间紧</td>
+</tr>
+<tr>
+<td>Update() 频率</td>
+<td>每帧</td>
+<td><strong>必须用 SendCustomEvent 降频</strong></td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>⚠️ <strong>Quest 上绝对避免 Update() 中分配内存</strong>(GC 暂停在 Quest 上是 100-500 ms 一次,直接卡死)。</p>
+</blockquote>
+<h3 id="24-物理与动态">2.4 物理与动态</h3>
+<table>
+<thead>
+<tr>
+<th>维度</th>
+<th>限制</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>PhysBone 数</td>
+<td><strong>1024 房间上限</strong>(PC 同样,但 Quest 上每 PhysBone 成本高 3-5x)</td>
+</tr>
+<tr>
+<td>Contact 数</td>
+<td><strong>1024 房间上限</strong></td>
+</tr>
+<tr>
+<td>Rigidbody 数</td>
+<td>&#x3C; 50 active(Quest 物理 CPU 预算紧)</td>
+</tr>
+<tr>
+<td>Cloth 模拟</td>
+<td>禁用或仅限 PC</td>
+</tr>
+<tr>
+<td>Particle System</td>
+<td>&#x3C; 50 active,<strong>强制 GPU 粒子</strong></td>
+</tr>
+</tbody>
+</table>
+<h3 id="25-shader-与材质">2.5 Shader 与材质</h3>
+<table>
+<thead>
+<tr>
+<th>约束</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Shader 数量</td>
+<td>&#x3C; 25(避免变体爆炸)</td>
+</tr>
+<tr>
+<td>纹理 Atlas</td>
+<td>强制(同材质多对象共享一张 Atlas)</td>
+</tr>
+<tr>
+<td>纹理格式</td>
+<td><strong>ASTC</strong>(Android 专用压缩)</td>
+</tr>
+<tr>
+<td>多 Pass</td>
+<td>禁用</td>
+</tr>
+<tr>
+<td>Tessellation</td>
+<td>禁用</td>
+</tr>
+<tr>
+<td>Compute Shader</td>
+<td>禁用或仅 PC</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>2026-07 ASTC 确认</strong>: creators.vrchat.com/platforms/android/quest-content-optimization 官方推荐 ASTC。
+<strong>ASTC 规格速查</strong> (<a href="/STELLASTOPVRC/posts/kb-avatar-lac-avatar-compressor/">lac-avatar-compressor</a>):</p>
+<ul>
+<li>ASTC 4×4: 8 bpp (最高质量)</li>
+<li>ASTC 6×6: 3.55 bpp (均衡)</li>
+<li>ASTC 8×8: 2 bpp (最小)</li>
+<li>ASTC 12×12: 1 bpp (极小)</li>
+</ul>
+</blockquote>
+<h3 id="26-后处理post-processing-2026-07-补充">2.6 后处理(Post-Processing) (2026-07 补充)</h3>
+<blockquote>
+<p><strong>来源</strong>: creators.vrchat.com/platforms/android/quest-content-limitations
+<strong>状态</strong>: ✅ FACT-OFFICIAL</p>
+</blockquote>
+<blockquote>
+<p><strong>VRChat 官方原文</strong>:
+“Post-Processing | Post processing systems are disabled completely on Android and Quest. The GPU is not designed to handle these effects very well.”</p>
+</blockquote>
+<h4 id="实际影响">实际影响</h4>
+<table>
+<thead>
+<tr>
+<th>场景</th>
+<th>表现</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Unity Editor 测试</strong></td>
+<td>后处理<strong>可用</strong>(全效果)</td>
+</tr>
+<tr>
+<td><strong>Quest 端运行时</strong></td>
+<td><strong>完全不生效</strong>(即使配置了也不会渲染)</td>
+</tr>
+<tr>
+<td><strong>PC 玩家</strong></td>
+<td>正常生效</td>
+</tr>
+</tbody>
+</table>
+<h4 id="最佳实践">最佳实践</h4>
+<ul>
+<li><strong>不能依赖后处理</strong>实现核心视觉效果</li>
+<li>PC/Quest 端提供<strong>不同视觉效果</strong>(PC 用后处理, Quest 用烘焙/材质技巧)</li>
+<li>例: PC 端用 Bloom 实现”魔法光晕”, Quest 端用自发光贴图 + 体积光烘焙模拟</li>
+</ul>
+<h4 id="avatar-端完全禁用的组件2026-07-补充">Avatar 端完全禁用的组件（2026-07 补充）</h4>
+<p>来自 <code>creators.vrchat.com/platforms/android/quest-content-limitations</code> 官方禁用列表:</p>
+<table>
+<thead>
+<tr>
+<th>组件</th>
+<th>Avatar 端</th>
+<th>World 端</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Dynamic Bones</strong></td>
+<td>完全禁用</td>
+<td>可用</td>
+</tr>
+<tr>
+<td><strong>Cloth</strong></td>
+<td>完全禁用</td>
+<td>可用</td>
+</tr>
+<tr>
+<td><strong>Cameras</strong></td>
+<td>完全禁用</td>
+<td>可用（注意性能）</td>
+</tr>
+<tr>
+<td><strong>Lights</strong></td>
+<td>完全禁用</td>
+<td>可用</td>
+</tr>
+<tr>
+<td><strong>Video Players</strong></td>
+<td>部分限制</td>
+<td>可用</td>
+</tr>
+<tr>
+<td><strong>Post-Processing</strong></td>
+<td>完全禁用</td>
+<td>完全禁用</td>
+</tr>
+</tbody>
+</table>
+<h3 id="27-音频">2.7 音频</h3>
+<table>
+<thead>
+<tr>
+<th>维度</th>
+<th>限制</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>同播 AudioSource</td>
+<td>&#x3C; 8 个</td>
+</tr>
+<tr>
+<td>空间音 3D</td>
+<td>可用,但每增加 1 个 +5% DSP 成本</td>
+</tr>
+<tr>
+<td>Reverb Zone</td>
+<td>&#x3C; 4 个 active</td>
+</tr>
+<tr>
+<td>采样率</td>
+<td>22-44 kHz 足够,48 kHz 浪费内存</td>
+</tr>
+</tbody>
+</table>
+<h3 id="28-加载与流送">2.8 加载与流送</h3>
+<table>
+<thead>
+<tr>
+<th>维度</th>
+<th>限制</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>启动时间</td>
+<td>&#x3C; 30 秒(Quest 用户耐心阈值)</td>
+</tr>
+<tr>
+<td>异步加载</td>
+<td><strong>必须</strong>(同步加载直接 OOM)</td>
+</tr>
+<tr>
+<td>Addressable</td>
+<td>推荐(资源动态加载)</td>
+</tr>
+<tr>
+<td>VRC Async Loading</td>
+<td>充分利用,避免 World 启动阻塞</td>
+</tr>
+</tbody>
+</table>
+<h3 id="29-视频">2.9 视频</h3>
+<table>
+<thead>
+<tr>
+<th>维度</th>
+<th>限制</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Video Player</td>
+<td>同步在所有平台播放</td>
+</tr>
+<tr>
+<td>分辨率</td>
+<td>720p / 30fps 上限</td>
+</tr>
+<tr>
+<td>格式</td>
+<td>H.264 / VP8(Quest 硬件解码)</td>
+</tr>
+<tr>
+<td>同步模式</td>
+<td>AVPro / Unity Video(无 VVC)</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="3-avatar-约束">3. Avatar 约束</h2>
+<h3 id="31-性能等级">3.1 性能等级</h3>
+<table>
+<thead>
+<tr>
+<th>等级</th>
+<th>Triangles</th>
+<th>Materials</th>
+<th>Texture Memory</th>
+<th>Skinned Meshes</th>
+<th>PhysBones</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Excellent</td>
+<td>&#x3C; 7.5k</td>
+<td>&#x3C; 1</td>
+<td>&#x3C; 10 MB</td>
+<td>&#x3C; 1</td>
+<td>&#x3C; 4</td>
+</tr>
+<tr>
+<td>Good</td>
+<td>7.5-20k</td>
+<td>1-3</td>
+<td>10-25 MB</td>
+<td>1-2</td>
+<td>4-8</td>
+</tr>
+<tr>
+<td>Medium</td>
+<td>20-50k</td>
+<td>3-5</td>
+<td>25-50 MB</td>
+<td>2-3</td>
+<td>8-16</td>
+</tr>
+<tr>
+<td>Poor</td>
+<td>50-100k</td>
+<td>5-10</td>
+<td>50-100 MB</td>
+<td>3-4</td>
+<td>16-32</td>
+</tr>
+<tr>
+<td><strong>Very Poor</strong></td>
+<td>100k+</td>
+<td>10+</td>
+<td>100 MB+</td>
+<td>4+</td>
+<td>32+</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>🔴 <strong>Quest 移动端 Avatar 硬上限</strong>: 50k 三角形 / 5 材质 / 100 MB 纹理 / 8 PhysBones。超过会被 SDK 拒绝上传。</p>
+</blockquote>
+<blockquote>
+<p><strong>2026-07 Quest Fallback 硬性规则(必读)</strong>:</p>
+<p><strong>来源</strong>: docs.vrchat.com/docs/avatar-fallback-system (FACT-OFFICIAL) + wiki.vrchat.com (FACT-WIKI)</p>
+<p>Quest Fallback Avatar 必须同时满足以下 4 个条件:</p>
+<table>
+<thead>
+<tr>
+<th>条件</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1. <strong>Performance Rank: Good 或 Excellent</strong></td>
+<td>基于 Android/Quest 评级标准</td>
+</tr>
+<tr>
+<td>2. <strong>三角形数 ≤ 10,000</strong></td>
+<td>Good 评级上限(Excellent 为 7,500)</td>
+</tr>
+<tr>
+<td>3. <strong>平台覆盖完整</strong></td>
+<td>必须同时上传 Windows + Android/Quest</td>
+</tr>
+<tr>
+<td>4. <strong>Fallback 标志</strong></td>
+<td>Android 上传时必须设置 Fallback 标记</td>
+</tr>
+</tbody>
+</table>
+<p>🔴 <strong>关键 Insight</strong>: Fallback 评级基于 <strong>SDK 上传时</strong>的判断, 不是用户 Perf Filtering 后的结果.</p>
+<p>详细文档: <a href="/STELLASTOPVRC/posts/kb-avatar-avatar-fallback-system/">avatar-fallback-system</a> §Quest Fallback 硬性规则</p>
+</blockquote>
+<h3 id="32-物理与动态">3.2 物理与动态</h3>
+<p>详见 <a href="/STELLASTOPVRC/posts/kb-avatar-avatar-dynamic-bone-limits/">avatar-dynamic-bone-limits</a> 与 <a href="/STELLASTOPVRC/posts/kb-avatar-avatar-particle-system-limits/">avatar-particle-system-limits</a>。</p>
+<p>核心约束:</p>
+<table>
+<thead>
+<tr>
+<th>维度</th>
+<th>Quest 等效上限</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>PhysBone Transform 数</td>
+<td>&#x3C; 64(Quest 端动态模拟预算紧)</td>
+</tr>
+<tr>
+<td>PhysBone Collider 数</td>
+<td>&#x3C; 16</td>
+</tr>
+<tr>
+<td>Contact Sender + Receiver</td>
+<td>&#x3C; 8 个总和</td>
+</tr>
+<tr>
+<td>Particle System</td>
+<td>&#x3C; 4 个 active</td>
+</tr>
+</tbody>
+</table>
+<h3 id="33-shader-与材质">3.3 Shader 与材质</h3>
+<table>
+<thead>
+<tr>
+<th>约束</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Shader 库</td>
+<td>lilToon / Poiyomi / SCSS(经 Quest 优化版本)</td>
+</tr>
+<tr>
+<td>变体数</td>
+<td>&#x3C; 256(Quest 启动时 Shader 编译时间预算)</td>
+</tr>
+<tr>
+<td>烘焙光照</td>
+<td>强制(Avatar 端无实时光)</td>
+</tr>
+<tr>
+<td>描边 / 高光</td>
+<td>允许,但需每像素成本评估</td>
+</tr>
+<tr>
+<td>Tessellation</td>
+<td>禁用</td>
+</tr>
+</tbody>
+</table>
+<h3 id="34-动画与播放层">3.4 动画与播放层</h3>
+<table>
+<thead>
+<tr>
+<th>维度</th>
+<th>限制</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Animator Controller</td>
+<td>可用,但 Layer 数量 &#x3C; 5</td>
+</tr>
+<tr>
+<td>Animator Parameter</td>
+<td>&#x3C; 32(Quest 端每参数 +0.5% Update 成本)</td>
+</tr>
+<tr>
+<td>Playable Layers</td>
+<td>5 层(Base/Additive/Gesture/Action/FX)</td>
+</tr>
+<tr>
+<td>Blend Shape</td>
+<td>&#x3C; 100(Quest 端变形计算预算紧)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="35-音频">3.5 音频</h3>
+<table>
+<thead>
+<tr>
+<th>维度</th>
+<th>限制</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Audio Source</td>
+<td>&#x3C; 2 个持续播放</td>
+</tr>
+<tr>
+<td>采样率</td>
+<td>22 kHz 足够</td>
+</tr>
+<tr>
+<td>3D Audio</td>
+<td>可用,但避免 DSP 插件</td>
+</tr>
+</tbody>
+</table>
+<h3 id="36-osc-通信avatar-端-osc">3.6 OSC 通信(Avatar 端 OSC)</h3>
+<blockquote>
+<p>Quest 端 OSC <strong>仅支持接收</strong>(不能发送),且需要 OSCQuery 协议。
+详见 <a href="/STELLASTOPVRC/posts/kb-concepts-hybrid-osc-protocol/">osc-protocol</a> 与 <a href="/STELLASTOPVRC/posts/kb-avatar-vrcraycast/">vrcraycast</a>。</p>
+</blockquote>
+<hr>
+<h2 id="4-跨平台兼容清单world-上传-quest-前必查">4. 跨平台兼容清单(World 上传 Quest 前必查)</h2>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>□ 实时光源数 &#x3C; 4</span></span>
+<span class="line"><span>□ 实时阴影 = 0(全部烘焙)</span></span>
+<span class="line"><span>□ Reflection Probe = 0 实时</span></span>
+<span class="line"><span>□ Triangle 数 &#x3C; 250k</span></span>
+<span class="line"><span>□ Material 数 &#x3C; 25</span></span>
+<span class="line"><span>□ Texture 全部 ASTC</span></span>
+<span class="line"><span>□ AudioSource 持续播放 &#x3C; 8</span></span>
+<span class="line"><span>□ Udon Update() 内存分配 = 0</span></span>
+<span class="line"><span>□ UdonBehaviour 活跃数 &#x3C; 60</span></span>
+<span class="line"><span>□ PhysBone + Contact 房间总数 &#x3C; 1024</span></span>
+<span class="line"><span>□ Cloth Simulation = 0</span></span>
+<span class="line"><span>□ Tessellation = 0</span></span>
+<span class="line"><span>□ Compute Shader = 0</span></span>
+<span class="line"><span>□ 启动时间 &#x3C; 30s(实测,不是估算)</span></span></code></pre>
+<hr>
+<h2 id="5-性能调优建议">5. 性能调优建议</h2>
+<h3 id="51-world-调优优先级">5.1 World 调优优先级</h3>
+<ol>
+<li><strong>静态合批 + GPU Instancing</strong>(降低 Draw Call,Quest GPU 瓶颈)</li>
+<li><strong>Lightmap Atlas 共享</strong>(降 Texture Sampler)</li>
+<li><strong>Occlusion Culling</strong>(Quest 端 CPU 渲染预算紧)</li>
+<li><strong>LOD Group</strong>(降低远距 Triangle)</li>
+<li><strong>Udon Update() 降频</strong> → 改为 <code>SendCustomEventSeconds(0.1f, ...)</code> 之类</li>
+</ol>
+<h3 id="52-avatar-调优优先级">5.2 Avatar 调优优先级</h3>
+<ol>
+<li><strong>合并 SkinnedMesh</strong>(<code>Avatar 3.0 Toolbox</code> / <code>modular-avatar</code>)</li>
+<li><strong>Texture Atlas 合并</strong></li>
+<li><strong>PhysBone 链数 &#x3C; 8</strong></li>
+<li><strong>Shader 选用 Poiyomi / lilToon 的 Quest 预设</strong></li>
+<li><strong>动态骨骼降频</strong>(部分骨骼用 30 Hz 模拟)</li>
+</ol>
+<hr>
+<h2 id="6-测试与发布">6. 测试与发布</h2>
+<h3 id="61-本地测试">6.1 本地测试</h3>
+<ul>
+<li><strong>ClientSim</strong>:模拟 Quest 性能等级(可选 Excellent/Good/Medium/Poor/Very Poor)</li>
+<li><strong>Android Build Target</strong>: 实际打包 APK 测启动时间 / 内存占用</li>
+<li><strong>Profiler</strong>:Unity Profiler → CPU Usage → Android Player</li>
+</ul>
+<h3 id="62-发布检查">6.2 发布检查</h3>
+<ul>
+<li><strong>VRChat SDK Control Panel → Build → Cross-Platform Build</strong></li>
+<li>检查 “Quest Compatibility” 标签</li>
+<li>如有警告,逐项修正后重新上传</li>
+</ul>
+<h3 id="63-性能等级performance-rank">6.3 性能等级(Performance Rank)</h3>
+<p>上传后 SDK 自动检测,生成等级标签。<strong>VRChat Quest 用户可在设置中过滤等级</strong>:</p>
+<ul>
+<li>“Show Excellent” / “Show Good” / 等</li>
+<li>默认:<strong>不过滤</strong> = 显示所有等级</li>
+<li>推荐设置:<strong>不过滤 Poor 以上的</strong>(给 Quest 用户访问机会)</li>
+</ul>
+<hr>
+<h2 id="7-已知坑">7. 已知坑</h2>
+<ol>
+<li><strong>PC Build 通过 ≠ Quest Build 通过</strong> — 必须在 Android Build Target 下完整测一次</li>
+<li><strong>Texture Reimport 默认 PC 格式</strong> — 上传前手动设 Android Override</li>
+<li><strong>Lightmap 大小</strong> — Quest 端 Atlas > 4096² 会被 SDK 警告</li>
+<li><strong>Udon GC 在 Quest 上是 10-100 倍卡顿</strong> — 任何 <code>new</code> / <code>List.Add</code> / string interpolation 在热路径都是禁忌</li>
+<li><strong>VRC 消息载荷</strong> — Quest 网络带宽 ~5 KB/s(PC 是 11 KB/s),Manual Sync 数据量需按比例缩减</li>
+<li><strong>粒子 GPU 模拟</strong> — Quest 上 <code>Particle System</code> 默认 CPU 模拟,需手动改 GPU 模式</li>
+<li><strong>OSC 限制</strong> — Quest OSC 只能收,无 VRChat Settings API</li>
+<li><strong>Rigidbody 数量</strong> — > 50 active 会在 Quest 上直接掉帧</li>
+</ol>
+<hr>
+<h2 id="8-相关文档">8. 相关文档</h2>
+<ul>
+<li><strong>World 性能优化</strong>:<a href="/STELLASTOPVRC/posts/kb-world-performance-guide/">performance-guide</a></li>
+<li><strong>Avatar 优化</strong>:<a href="/STELLASTOPVRC/posts/kb-avatar-optimization-guide/">optimization-guide</a></li>
+<li><strong>PhysBone 限制</strong>:<a href="/STELLASTOPVRC/posts/kb-avatar-avatar-dynamic-bone-limits/">avatar-dynamic-bone-limits</a></li>
+<li><strong>Particle 限制</strong>:<a href="/STELLASTOPVRC/posts/kb-avatar-avatar-particle-system-limits/">avatar-particle-system-limits</a></li>
+<li><strong>Udon 语言限制</strong>:<a href="/STELLASTOPVRC/posts/kb-concepts-rules-udonsharp-language-limits/">udonsharp-language-limits</a></li>
+<li><strong>平台概览</strong>:index</li>
+<li><strong>World Components 限制</strong>:index</li>
+<li><strong>OSC 协议</strong>:<a href="/STELLASTOPVRC/posts/kb-concepts-hybrid-osc-protocol/">osc-protocol</a></li>
+</ul> </div> <p class="kb-source-note" data-astro-cid-lvjzyg5v>
+本文由 VRChat 开发知识库自动整理（官方来源  · 可信度 High  · 最后校对 2026-07-04），
+          遇到与手写教程冲突的地方，以官方文档为最高优先级。
+</p> <section class="comments" id="comments" data-astro-cid-lvjzyg5v> <h2 class="comments__title" data-astro-cid-lvjzyg5v>✦ 旅人留言（0）</h2> <p class="comments__empty" id="commentsEmpty" data-astro-cid-lvjzyg5v>
+还没有旅人留言 —— 有疑问就写在下面，站长都会回复。
+</p> <form class="comment-form" id="commentForm" data-target="kb-concepts-rules-quest-constraints" data-astro-cid-lvjzyg5v> <p class="comment-form__title" data-astro-cid-lvjzyg5v>写下你的留言</p> <input id="cAuthor" maxlength="20" placeholder="昵称（留空则为「旅人」）" data-astro-cid-lvjzyg5v> <textarea id="cBody" maxlength="1000" required placeholder="想问的问题、想说的感谢都可以（最多 1000 字）" data-astro-cid-lvjzyg5v></textarea> <div class="comment-form__actions" data-astro-cid-lvjzyg5v> <button class="btn btn--primary" type="submit" data-astro-cid-lvjzyg5v>发布留言</button> <span class="form-hint" data-astro-cid-lvjzyg5v>留言保存在本站，站长在写作台里能看到</span> <span class="form-msg" id="cMsg" data-astro-cid-lvjzyg5v></span> </div> </form> </section> <nav class="station-nav" aria-label="站间导航" data-astro-cid-lvjzyg5v> <a href="/STELLASTOPVRC/posts/kb-concepts-hybrid-avatar-camera-plugins/" data-astro-cid-lvjzyg5v> <span class="dir" data-astro-cid-lvjzyg5v>← 上一站 · 更新的星光</span> <span class="to" data-astro-cid-lvjzyg5v>Avatar 端摄影工具索引(Avatar Camera Plugins)</span> </a> <a href="/STELLASTOPVRC/posts/kb-platform-account-registration-cn/" data-astro-cid-lvjzyg5v> <span class="dir" data-astro-cid-lvjzyg5v>下一站 · 更早的星光 →</span> <span class="to" data-astro-cid-lvjzyg5v>VRChat 账号注册 — 国内网络环境指南</span> </a> </nav> </div> <aside class="toc" id="toc" hidden> <p class="toc__title">✦ 本页星图</p> <nav id="tocNav" aria-label="文章目录"></nav> </aside> <script type="module">const i=document.querySelector(".prose"),d=document.getElementById("toc"),u=document.getElementById("tocNav"),l=[];if(i&&d&&u){const c=[...i.querySelectorAll("h1, h2, h3")];if(c.length>=3){d.hidden=!1,c.forEach((o,e)=>{o.id||(o.id=`sec-${e}`);const n=document.createElement("a");n.href=`#${o.id}`;const s=(o.textContent??"").replace(/\s+/g," ").trim(),r=s.search(/[：:]/),a=r>=4?s.slice(0,r):s;n.textContent=a.length>40?`${a.slice(0,40)}…`:a,n.title=s,u.appendChild(n),l.push({a:n,h:o})});const t=()=>{let o=l[0];for(const e of l)e.h.getBoundingClientRect().top<=130&&(o=e);for(const e of l)e.a.classList.toggle("is-active",e===o)};addEventListener("scroll",t,{passive:!0}),t()}}document.querySelectorAll(".prose pre").forEach(c=>{const t=document.createElement("button");t.className="code-copy",t.type="button",t.textContent="复制",t.addEventListener("click",async()=>{const o=c.querySelector("code")?.innerText??c.innerText;try{await navigator.clipboard.writeText(o)}catch{const e=document.createElement("textarea");e.value=o,document.body.appendChild(e),e.select(),document.execCommand("copy"),e.remove()}t.textContent="已复制 ✓",t.classList.add("is-ok"),setTimeout(()=>{t.textContent="复制",t.classList.remove("is-ok")},1500)}),c.appendChild(t)});</script> </article>  </main> <footer class="site-footer"> <div class="wrap"> <p class="star-line" aria-hidden="true"> <svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> <svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> </p> <p>星之驿站 StellaStop —— 在虚拟宇宙中，为你保留一座驿站</p> <p class="site-footer__disclaimer">
+该网页目前是测试阶段，仅用于测试，所有内容仅供参考；内容全部为引用互联网当中的信息。
+</p> <p>© 2026 星之驿站 · 由 <a href="https://astro.build">Astro</a> 与星光驱动</p> <p> <a data-desk-login hidden title="写作台：登录 / 注册">登录 / 注册</a> ·
+<a href="/STELLASTOPVRC/announcements/">官方公告</a> ·
+<a href="/STELLASTOPVRC/ai/">问星 AI</a> ·
+<a href="/STELLASTOPVRC/feedback/">旅人留言板</a> </p> </div> </footer> <button class="to-top" id="toTop" aria-label="回到顶部"> <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"> <path d="M12 20V5"></path> <path d="M5.5 11.5 12 5l6.5 6.5"></path> </svg> </button> <script type="module">const e=document.getElementById("toTop");if(e){const t=()=>e.classList.toggle("is-visible",scrollY>480);addEventListener("scroll",t,{passive:!0}),t(),e.addEventListener("click",()=>{const o=matchMedia("(prefers-reduced-motion: reduce)").matches;scrollTo({top:0,behavior:o?"auto":"smooth"})})}</script> <script>(function(){const deskConfigured = "";
+
+      /* 写作台探测（页面尾部执行，DOM 已就绪）：
+         1. 计算写作台地址：站点配置 deskUrl（公网部署时填）> 本机默认 localhost:4322 > 同主机 4322
+         2. 探测 /api/gate/status —— 在线才点亮「登录 / 注册」入口，并复用给验证门横幅
+         3. 不在线则保持隐藏，绝不会把访客拽进内网地址；同时给出一次性「镜像模式」提示 */
+      (function () {
+        var host = location.hostname;
+        var isLocal = host === 'localhost' || host === '127.0.0.1' || host === '[::1]';
+        var desk = deskConfigured ||
+          (isLocal ? 'http://localhost:4322' : location.protocol + '//' + host + ':4322');
+        window.STELLA_DESK = desk;
+
+        function revealLogin() {
+          document.querySelectorAll('[data-desk-login]').forEach(function (a) {
+            a.href = desk + '/admin';
+            a.removeAttribute('hidden');
+          });
+        }
+        function showBanner(css, html, shiftHeader) {
+          var bar = document.createElement('div');
+          bar.style.cssText = css;
+          bar.innerHTML = html;
+          document.body.prepend(bar);
+          if (shiftHeader) {
+            var header = document.querySelector('.site-header');
+            if (header) header.style.marginTop = '42px';
+          }
+        }
+        function hintMirrorMode() {
+          try {
+            if (sessionStorage.getItem('stella-desk-hint')) return;
+            sessionStorage.setItem('stella-desk-hint', '1');
+          } catch (e) { /* 无痕模式等：忽略 */ }
+          var tip = document.createElement('div');
+          tip.style.cssText = 'position:fixed;left:14px;bottom:14px;z-index:9998;max-width:min(92vw,430px);padding:.65rem .9rem;border-radius:12px;background:rgba(18,20,44,.92);border:1px solid rgba(150,142,255,.35);color:#e8e6ff;font-size:.82rem;line-height:1.6;font-family:system-ui,sans-serif;box-shadow:0 8px 30px rgba(0,0,0,.35)';
+          tip.innerHTML = 'ℹ️ 静态镜像模式：登录 / 评论 / AI 等互动功能需要站长写作台在线，当前不可用。' +
+            '<span id="stellaDeskHintClose" style="float:right;cursor:pointer;opacity:.75;font-weight:700;margin-left:.6rem" title="关闭">×</span>';
+          document.body.appendChild(tip);
+          var close = function () { tip.remove(); };
+          tip.querySelector('#stellaDeskHintClose').addEventListener('click', close);
+          setTimeout(close, 9000);
+        }
+
+        try {
+          var ctrl = new AbortController();
+          var timer = setTimeout(function () { ctrl.abort(); }, 2500);
+          fetch(desk + '/api/gate/status', { credentials: 'include', signal: ctrl.signal })
+            .then(function (r) { return r.ok ? r.json() : null; })
+            .then(function (d) {
+              clearTimeout(timer);
+              if (!d) throw new Error('desk-offline');
+              window.STELLA_DESK_OK = true;
+              revealLogin();
+              if (d.regionBlocked) {
+                showBanner(
+                  'position:fixed;top:0;left:0;right:0;z-index:9999;padding:1.2rem;text-align:center;background:#1a0a0a;color:#ff9ed2;font-size:.95rem;border-bottom:2px solid #ff4d6d;font-family:system-ui,sans-serif',
+                  '⛔ 你所在的地区（' + (d.regionCountry || '未知') + '）暂不开放访问。',
+                  false
+                );
+                return;
+              }
+              if (d.enabled && !d.passed) {
+                showBanner(
+                  'position:fixed;top:0;left:0;right:0;z-index:9999;padding:0.7rem;text-align:center;background:linear-gradient(94deg,rgba(143,127,247,.25),rgba(98,200,245,.18));border-bottom:1px solid rgba(150,142,255,.3);color:#f0efff;font-size:.88rem;font-family:system-ui,sans-serif',
+                  '🔒 本站启用了安全验证 —— <a href="' + desk + '/gate?next=' + encodeURIComponent(location.href) + '" style="color:#ffd98e;font-weight:700;text-decoration:underline">点击完成验证</a>，通过后即可使用全部功能（30 天免验）。',
+                  true
+                );
+              }
+            })
+            .catch(function () {
+              clearTimeout(timer);
+              window.STELLA_DESK_OK = false;
+              hintMirrorMode();
+            });
+        } catch (e) { /* 忽略 */ }
+      })();
+    })();</script> </body> </html> <script type="module">const m=document.getElementById("commentForm"),s=document.getElementById("cMsg"),u=`${location.protocol}//${location.hostname}:4322/api/message`;function r(e,t=!1){s&&(s.textContent=e,s.classList.toggle("is-err",t),s.classList.toggle("is-ok",!t))}function y(){const e=new Date,t=n=>String(n).padStart(2,"0");return`${e.getFullYear()}-${t(e.getMonth()+1)}-${t(e.getDate())}`}function f(e){let t=7;for(const n of e)t=(t*31+n.charCodeAt(0))%360;return t}function g(e,t){const n=document.createElement("li");n.className="comment",n.innerHTML=`
+      <span class="comment__avatar"></span>
+      <div class="comment__bubble">
+        <div class="comment__head">
+          <span class="comment__name"></span>
+          <time class="comment__date">${y()}</time>
+        </div>
+        <p class="comment__body"></p>
+      </div>`;const o=n.querySelector(".comment__avatar");return o.style.setProperty("--h",String(f(e))),o.textContent=e.slice(0,1),n.querySelector(".comment__name").textContent=e,n.querySelector(".comment__body").textContent=t,n}m?.addEventListener("submit",async e=>{e.preventDefault();const t=document.getElementById("cBody").value.trim();if(!t)return r("留言内容不能为空哦",!0);const n=document.getElementById("cAuthor").value.trim()||"旅人",o=m.querySelector("button");o&&(o.disabled=!0);try{const c=await fetch(u,{credentials:"include",method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({target:m.dataset.target,kind:"comment",author:n,body:t})}),d=await c.json().catch(()=>({}));if(!c.ok)throw new Error(d.error||`发送失败（${c.status}）`);const l=document.querySelector(".comment-list");l&&l.appendChild(g(n,t)),document.getElementById("commentsEmpty")?.remove(),document.getElementById("cBody").value="",r("留言已发布，感谢支持 ✦");const a=document.querySelector(".comments__title"),i=a?.textContent?.match(/（(\d+)）/);a&&i&&(a.textContent=a.textContent.replace(/（\d+）/,`（${Number(i[1])+1}）`))}catch(c){r(c instanceof TypeError?"写作台没在运行，暂时收不到留言 —— 双击「启动博客.bat」就好":c.message,!0)}finally{o&&(o.disabled=!1)}});</script> 

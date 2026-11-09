@@ -1,0 +1,9 @@
+{
+  "defaultTheme": "nebula",
+  "notice": "欢迎来到星之驿站！",
+  "noticeEnabled": true,
+  "colors": {
+    "theme": "nebula",
+    "violet": "#9b8cff"
+  }
+}

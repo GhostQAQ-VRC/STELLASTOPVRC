@@ -1,0 +1,568 @@
+<!DOCTYPE html><html lang="zh-CN"> <head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="generator" content="Astro v5.18.2"><meta name="description" content="Unity 导入设置:"><meta name="theme-color" content="#070a1c"><meta property="og:title" content="Avatar 粒子系统创建工作流 · 星之驿站 StellaStop"><meta property="og:description" content="Unity 导入设置:"><meta property="og:type" content="website"><meta name="twitter:card" content="summary"><link rel="icon" type="image/svg+xml" href="/STELLASTOPVRC/favicon.svg"><script>
+      // 在渲染前恢复主题与特效档位，避免闪一下默认状态
+      try {
+        document.documentElement.dataset.theme =
+          localStorage.getItem('stella-theme') || 'nebula';
+        document.documentElement.dataset.fx =
+          localStorage.getItem('stella-fx') || 'standard';
+      } catch {
+        /* 隐私模式读不到就算了 */
+      }
+    </script><link rel="stylesheet" href="/STELLASTOPVRC/custom-vars.css"><title>Avatar 粒子系统创建工作流 · 星之驿站 StellaStop</title><link rel="stylesheet" href="/STELLASTOPVRC/_astro/about.Bgh6wcGl.css">
+<style>.post-head__meta[data-astro-cid-lvjzyg5v]{color:var(--ink-faint);font-family:var(--font-mono);font-size:.82rem}.post-head[data-astro-cid-lvjzyg5v] .chip-row[data-astro-cid-lvjzyg5v]{margin-top:1rem}.kb-source-note[data-astro-cid-lvjzyg5v]{max-width:760px;margin:2.2rem auto 0;font-size:.82rem;color:var(--ink-faint);border-top:1px dashed var(--line);padding-top:1rem}
+</style></head> <body> <div class="site-notice" id="siteNotice"> <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> <span class="site-notice__text">欢迎来到星之驿站！</span> <button class="site-notice__close" id="noticeClose" type="button" aria-label="关闭公告">
+×
+</button> </div> <a class="skip-link" href="#main">跳到主要内容</a> <canvas id="starfield" aria-hidden="true" data-astro-cid-ra7sfcwn></canvas> <div class="fx-aurora fx-aurora--a" aria-hidden="true" data-astro-cid-ra7sfcwn></div> <div class="fx-aurora fx-aurora--b" aria-hidden="true" data-astro-cid-ra7sfcwn></div>  <script type="module">const u=document.getElementById("starfield");if(u){let F=function(){const n=Math.random();return n<.1?"gold":n<.42?"blue":"white"},v=function(){const n=Math.min(window.devicePixelRatio||1,2);s=window.innerWidth,d=window.innerHeight,u.width=s*n,u.height=d*n,u.style.width=`${s}px`,u.style.height=`${d}px`,t.setTransform(n,0,0,n,0,0);const e=Math.min(190,Math.round(s*d/8500));l=Array.from({length:e},()=>({x:Math.random()*s,y:Math.random()*d,r:r(.4,1.7),base:r(.25,.8),amp:r(.12,.4),speed:r(6e-4,.0022),phase:r(0,Math.PI*2),c:F()})),C=Array.from({length:26},()=>({x:Math.random()*s,y:Math.random()*d,r:r(.9,2.4),vx:r(-.006,.006),vy:r(-.02,-.006),base:r(.2,.5),speed:r(8e-4,.002),phase:r(0,Math.PI*2),c:Math.random()<.5?"gold":"violet"})),c==="off"&&m(0,!0)},D=function(n){const e=Math.random()<.5?1:-1,o=r(Math.PI/7,Math.PI/5),a=r(.45,.75);y.push({x:r(s*.15,s*.85),y:r(-20,d*.3),vx:Math.cos(o)*a*e,vy:Math.sin(o)*a,born:n,life:r(750,1050),len:r(100,170)})},S=function(n){y=y.filter(e=>n-e.born<e.life);for(const e of y){const o=(n-e.born)/e.life,a=e.x+e.vx*(n-e.born),i=e.y+e.vy*(n-e.born),f=o<.15?o/.15:o>.7?(1-o)/.3:1,h=Math.hypot(e.vx,e.vy),x=e.vx/h,g=e.vy/h,b=t.createLinearGradient(a,i,a-x*e.len,i-g*e.len);b.addColorStop(0,`rgba(236,242,255,${(.85*f).toFixed(3)})`),b.addColorStop(1,"rgba(236,242,255,0)"),t.strokeStyle=b,t.lineWidth=1.6,t.lineCap="round",t.beginPath(),t.moveTo(a,i),t.lineTo(a-x*e.len,i-g*e.len),t.stroke()}},B=function(){let o=0;t.lineWidth=.7;for(let a=0;a<l.length&&o<26;a++)for(let i=a+1;i<l.length&&o<26;i++){const f=l[a].x-l[i].x,h=l[a].y-l[i].y,x=f*f+h*h;if(x<16900){const g=(1-Math.sqrt(x)/130)*.17;t.strokeStyle=`rgba(178,170,255,${g.toFixed(3)})`,t.beginPath(),t.moveTo(l[a].x,l[a].y),t.lineTo(l[i].x,l[i].y),t.stroke(),o++}}},X=function(n){for(const e of C){e.x+=e.vx*16,e.y+=e.vy*16,e.y<-12&&(e.y=d+10),e.x<-12&&(e.x=s+10),e.x>s+12&&(e.x=-10);const o=Math.max(.05,e.base+.25*Math.sin(n*e.speed+e.phase)),[a,i,f]=A[e.c];t.beginPath(),t.arc(e.x,e.y,e.r,0,7),t.shadowBlur=9,t.shadowColor=`rgba(${a},${i},${f},0.9)`,t.fillStyle=`rgba(${a},${i},${f},${o.toFixed(3)})`,t.fill()}t.shadowBlur=0},m=function(n,e=!1){t.clearRect(0,0,s,d);for(const o of l){const a=c==="off"?o.base:Math.max(.05,o.base+o.amp*Math.sin(n*o.speed+o.phase)),[i,f,h]=A[o.c];t.beginPath(),t.arc(o.x,o.y,o.r,0,7),o.r>1.25?(t.shadowBlur=7,t.shadowColor=`rgba(${i},${f},${h},0.85)`):t.shadowBlur=0,t.fillStyle=`rgba(${i},${f},${h},${a.toFixed(3)})`,t.fill()}if(t.shadowBlur=0,c!=="off"&&!e){c==="fancy"&&(B(),X(n));const o=c==="fancy"?r(2600,6e3):r(4200,9500);n>P&&(D(n),P=n+o),S(n)}},$=function(n){m(n),M=requestAnimationFrame($)},p=function(){if(c==="off"){m(0,!0);return}cancelAnimationFrame(M),M=requestAnimationFrame($)},w=function(){cancelAnimationFrame(M),t.clearRect(0,0,s,d),m(0,!0)};const t=u.getContext("2d"),k=matchMedia("(prefers-reduced-motion: reduce)").matches,A={white:[240,240,255],blue:[150,215,250],gold:[255,218,150],violet:[178,170,255]};let s=0,d=0,l=[],C=[],y=[],P=2500,M=0,c=document.documentElement.dataset.fx||"standard";k&&(c="off");const r=(n,e)=>n+Math.random()*(e-n);v(),addEventListener("resize",v),document.addEventListener("stella-fx-change",n=>{c=n.detail,c==="off"?w():p()}),c==="off"?m(0,!0):(p(),document.addEventListener("visibilitychange",()=>{document.hidden?w():p()}))}</script> <header class="site-header"> <div class="wrap site-header__inner"> <a class="logo" href="/STELLASTOPVRC/"> <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> <span>星之驿站</span> <span class="logo__romaji">StellaStop</span> </a> <div class="header-right"> <nav class="site-nav" aria-label="站内导航"> <a href="/STELLASTOPVRC/"> 首页 </a><a href="/STELLASTOPVRC/start/"> 新手 </a><a href="/STELLASTOPVRC/posts/"> 教程 </a><a href="/STELLASTOPVRC/videos/"> 视频 </a><a href="/STELLASTOPVRC/resources/"> 资源 </a><a href="/STELLASTOPVRC/booth/"> Booth </a><a href="/STELLASTOPVRC/announcements/"> 公告 </a><a href="/STELLASTOPVRC/ai/"> 问星 </a><a href="/STELLASTOPVRC/changelog/"> 更新日志 </a><a href="/STELLASTOPVRC/about/"> 关于 </a> </nav> <a class="login-link" data-desk-login hidden title="写作台：登录 / 注册后可发教程、传资源">
+登录 / 注册
+</a> <div class="theme-switch"> <button class="theme-switch__btn" id="themeBtn" type="button" aria-haspopup="listbox" aria-expanded="false" aria-label="切换主题配色" title="切换主题配色"> <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"> <path d="M12 3a9 9 0 1 0 9 9c0-1.2-1-2-2.2-2H17a2 2 0 0 1-2-2V6.2C15 5 14.2 4 13 4.4A9 9 0 0 0 12 3Z"></path> <circle cx="7.5" cy="11.5" r="1" fill="currentColor" stroke="none"></circle> <circle cx="10" cy="7.5" r="1" fill="currentColor" stroke="none"></circle> <circle cx="15" cy="7" r="1" fill="currentColor" stroke="none"></circle> </svg> </button> <div class="theme-pop" id="themePop" role="listbox" aria-label="选择主题" hidden> <button class="theme-opt" type="button" role="option" data-theme-value="nebula" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#8f7ff7"></span><span class="dot" style="background:#62c8f5"></span><span class="dot" style="background:#ffd98e"></span> </span> <span class="theme-opt__name">星云 · 蓝紫</span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt" type="button" role="option" data-theme-value="sakura" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#ff8fc7"></span><span class="dot" style="background:#c79bff"></span><span class="dot" style="background:#ffd08e"></span> </span> <span class="theme-opt__name">樱语 · 粉紫</span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt" type="button" role="option" data-theme-value="miku" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#2ed3c2"></span><span class="dot" style="background:#6ea8ff"></span><span class="dot" style="background:#ffe08e"></span> </span> <span class="theme-opt__name">葱色 · 青绿</span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt" type="button" role="option" data-theme-value="ember" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#ffb35c"></span><span class="dot" style="background:#ff7e6b"></span><span class="dot" style="background:#ffd98e"></span> </span> <span class="theme-opt__name">暮金 · 暖橙</span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt" type="button" role="option" data-theme-value="dawn" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#6a5ce8"></span><span class="dot" style="background:#e0568f"></span><span class="dot" style="background:#b8821e"></span> </span> <span class="theme-opt__name">晨星 · 浅色</span> <span class="theme-opt__mark">✦</span> </button> </div> </div> <script type="module">const a=document.getElementById("themeBtn"),n=document.getElementById("themePop");function s(c){document.documentElement.dataset.theme=c;try{localStorage.setItem("stella-theme",c)}catch{}const e=getComputedStyle(document.documentElement).getPropertyValue("--bg-deep").trim();document.querySelector('meta[name="theme-color"]')?.setAttribute("content",e||"#070a1c"),document.querySelectorAll(".theme-opt").forEach(t=>{const d=t.dataset.themeValue===c;t.classList.toggle("is-active",d),t.setAttribute("aria-selected",String(d))})}if(a&&n){const c=document.documentElement.dataset.theme||"nebula";document.querySelectorAll(".theme-opt").forEach(e=>{const t=e.dataset.themeValue===c;e.classList.toggle("is-active",t),e.setAttribute("aria-selected",String(t))}),a.addEventListener("click",e=>{e.stopPropagation();const t=n.hidden;n.hidden=!t,a.setAttribute("aria-expanded",String(t))}),document.addEventListener("click",e=>{!n.hidden&&!e.target.closest(".theme-switch")&&(n.hidden=!0,a.setAttribute("aria-expanded","false"))}),document.addEventListener("keydown",e=>{e.key==="Escape"&&!n.hidden&&(n.hidden=!0,a.setAttribute("aria-expanded","false"),a.focus())}),n.addEventListener("click",e=>{const t=e.target.closest(".theme-opt");t&&(s(t.dataset.themeValue??"nebula"),n.hidden=!0,a.setAttribute("aria-expanded","false"))})}</script> <div class="theme-switch fx-switch"> <button class="theme-switch__btn" id="fxBtn" type="button" aria-haspopup="listbox" aria-expanded="false" aria-label="背景特效设置" title="背景特效设置"> <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"> <path d="M5 3v4M3 5h4M6.5 17.5v3M5 19h3"></path> <path d="M14.5 4.5 16 9l4.5 1.5L16 12l-1.5 4.5L13 12l-4.5-1.5L13 9l1.5-4.5Z"></path> </svg> </button> <div class="theme-pop" id="fxPop" role="listbox" aria-label="背景特效" hidden> <button class="theme-opt fx-opt" type="button" role="option" data-fx-value="off" aria-selected="false"> <span class="fx-opt__body"> <span class="fx-opt__name">关闭特效</span> <span class="fx-opt__hint">最省电</span> </span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt fx-opt" type="button" role="option" data-fx-value="standard" aria-selected="false"> <span class="fx-opt__body"> <span class="fx-opt__name">标准</span> <span class="fx-opt__hint">闪烁星空 + 流星</span> </span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt fx-opt" type="button" role="option" data-fx-value="fancy" aria-selected="false"> <span class="fx-opt__body"> <span class="fx-opt__name">华丽</span> <span class="fx-opt__hint">追加极光 / 星座 / 光尘</span> </span> <span class="theme-opt__mark">✦</span> </button> </div> </div> <script type="module">const n=document.getElementById("fxBtn"),a=document.getElementById("fxPop");function s(d){document.documentElement.dataset.fx=d;try{localStorage.setItem("stella-fx",d)}catch{}document.querySelectorAll("#fxPop .fx-opt").forEach(t=>{const e=t.dataset.fxValue===d;t.classList.toggle("is-active",e),t.setAttribute("aria-selected",String(e))}),document.dispatchEvent(new CustomEvent("stella-fx-change",{detail:d}))}if(n&&a){const d=document.documentElement.dataset.fx||"standard";document.querySelectorAll("#fxPop .fx-opt").forEach(t=>{const e=t.dataset.fxValue===d;t.classList.toggle("is-active",e),t.setAttribute("aria-selected",String(e))}),n.addEventListener("click",t=>{t.stopPropagation();const e=a.hidden;a.hidden=!e,n.setAttribute("aria-expanded",String(e))}),document.addEventListener("click",t=>{!a.hidden&&!t.target.closest(".fx-switch")&&(a.hidden=!0,n.setAttribute("aria-expanded","false"))}),document.addEventListener("keydown",t=>{t.key==="Escape"&&!a.hidden&&(a.hidden=!0,n.setAttribute("aria-expanded","false"),n.focus())}),a.addEventListener("click",t=>{const e=t.target.closest(".fx-opt");e&&(s(e.dataset.fxValue??"standard"),a.hidden=!0,n.setAttribute("aria-expanded","false"))})}</script> </div> </div> </header> <main id="main">  <article class="wrap post-layout" data-astro-cid-lvjzyg5v> <div class="post-main page-fade" data-astro-cid-lvjzyg5v> <header class="post-head" data-astro-cid-lvjzyg5v> <a class="crumb" href="/STELLASTOPVRC/posts/" data-astro-cid-lvjzyg5v>← 返回教程档案</a> <div class="post-head__meta" style="--accent:var(--ink-dim)" data-astro-cid-lvjzyg5v> <span class="badge" data-cat="Avatar 虚拟形象" data-astro-cid-lvjzyg5v>Avatar 虚拟形象</span> <time datetime="2026-07-04" data-astro-cid-lvjzyg5v>2026-07-04</time> <span class="post-head__reading" data-astro-cid-lvjzyg5v>⏱ 约 17 分钟</span>  </div> <h1 class="post-head__title" data-astro-cid-lvjzyg5v>Avatar 粒子系统创建工作流</h1> <p class="post-head__lead" data-astro-cid-lvjzyg5v>Unity 导入设置:</p> <div class="chip-row" data-astro-cid-lvjzyg5v> <a class="chip" href="/STELLASTOPVRC/posts/?tag=%E7%9F%A5%E8%AF%86%E5%BA%93" data-astro-cid-lvjzyg5v> 知识库 </a><a class="chip" href="/STELLASTOPVRC/posts/?tag=avatar" data-astro-cid-lvjzyg5v> avatar </a> </div> </header> <div class="prose" data-astro-cid-lvjzyg5v> <h1 id="avatar-粒子系统创建工作流">Avatar 粒子系统创建工作流</h1>
+<blockquote>
+<p>本文档提供 Avatar 粒子系统(Particle System)的”创建端”完整工作流
+来源:VRCD 视频蒸馏(video_8, 2026-07-04) + Unity 官方 + VRChat 官方
+配套:本文是”创建端”,<code>avatar-particle-system-limits.md</code> 是”限制端”</p>
+</blockquote>
+<h2 id="1-概述">§1 概述</h2>
+<h3 id="11-粒子系统在-avatar-中的作用">§1.1 粒子系统在 Avatar 中的作用</h3>
+<ul>
+<li>眼睛流星特效(本文示例)</li>
+<li>脚下光环</li>
+<li>背后光环</li>
+<li>法术 / 技能特效</li>
+<li>环境氛围(光斑、萤火虫等)</li>
+</ul>
+<h3 id="12-文档范围创建端-vs-限制端">§1.2 文档范围(创建端 vs 限制端)</h3>
+<table>
+<thead>
+<tr>
+<th>文档</th>
+<th>视角</th>
+<th>内容</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>本文(创建端)</strong></td>
+<td>玩家/创作者</td>
+<td>怎么创建一个 Avatar 粒子系统</td>
+</tr>
+<tr>
+<td><code>avatar-particle-system-limits.md</code>(限制端)</td>
+<td>用户/平台</td>
+<td>平台对粒子系统的硬性限制</td>
+</tr>
+</tbody>
+</table>
+<h3 id="13-必备前提">§1.3 必备前提</h3>
+<ul>
+<li>已读 <code>avatar-particle-system-limits.md</code> 了解平台限制</li>
+<li>熟悉 Unity Particle System 基础</li>
+<li>已配置好 Shader 包(lilToon / Poiyomi 等)</li>
+</ul>
+<h2 id="2-粒子纹理准备">§2 粒子纹理准备</h2>
+<h3 id="21-尺寸">§2.1 尺寸</h3>
+<ul>
+<li><strong>Canvas 尺寸</strong>:512×512</li>
+<li><strong>理由</strong>:平衡质量与性能</li>
+</ul>
+<h3 id="22-配色">§2.2 配色</h3>
+<ul>
+<li>🔴 <strong>黑底 + 白图案</strong>(<strong>不是</strong>白底)</li>
+<li>原因:配合 §3 Additive Rendering Mode</li>
+<li>白底 + Additive = 过曝 / 全白</li>
+</ul>
+<h3 id="23-格式">§2.3 格式</h3>
+<ul>
+<li><strong>PNG</strong>(支持透明通道)</li>
+<li>不要用 JPG(会丢失透明)</li>
+</ul>
+<h3 id="24-透明通道设置">§2.4 透明通道设置</h3>
+<p>Unity 导入设置:</p>
+<ul>
+<li>Alpha Source: Input Texture Alpha</li>
+<li>✅ Alpha is Transparency</li>
+</ul>
+<h2 id="3-粒子材质设置关键配方">§3 粒子材质设置(关键配方)</h2>
+<h3 id="31-shader">§3.1 Shader</h3>
+<p><strong><code>Particles > Standard Unlit</code></strong></p>
+<p>理由:Unity 官方粒子专用 Shader,性能最优</p>
+<h3 id="32-rendering-mode">§3.2 Rendering Mode</h3>
+<p><strong><code>Additive</code>(自发光叠加)</strong></p>
+<blockquote>
+<p>来源:Unity 官方文档
+“Additive: Adds the background and final particle color together. This is useful for glow effects, like those you might use for fire or magic spells.”</p>
+</blockquote>
+<h3 id="33-two-sided">§3.3 Two Sided</h3>
+<p><strong>勾选 Two Sided(双面渲染)</strong></p>
+<p>理由:粒子朝向不定时,避免”消失面”</p>
+<h3 id="34-颜色">§3.4 颜色</h3>
+<ul>
+<li><strong>Maps 调色板</strong>:调整贴图颜色</li>
+<li><strong>Intensity</strong>:调整自发光强度</li>
+</ul>
+<h2 id="4-particle-system-main-module-配置">§4 Particle System Main Module 配置</h2>
+<h3 id="41-参数总表视频参考值">§4.1 参数总表(视频参考值)</h3>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>值(参考)</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Duration</td>
+<td>1</td>
+<td>持续时间(秒)</td>
+</tr>
+<tr>
+<td>Start Lifetime</td>
+<td>3.5</td>
+<td>粒子生命周期(秒)</td>
+</tr>
+<tr>
+<td>Start Speed</td>
+<td>0.01</td>
+<td>初始速度</td>
+</tr>
+<tr>
+<td>Start Size</td>
+<td>0.0075</td>
+<td>初始大小</td>
+</tr>
+<tr>
+<td>Simulation Speed</td>
+<td>0.8</td>
+<td>仿真速度</td>
+</tr>
+<tr>
+<td>Scaling Mode</td>
+<td>Hierarchy</td>
+<td>缩放模式</td>
+</tr>
+<tr>
+<td>Max Particles</td>
+<td>15</td>
+<td>数量限制</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>⚠️ <strong>数值说明</strong>:以上数值为 video_8 视频参考值,实际应根据场景调整
+建议先复制本文档的”基线配置”,再根据视觉调试</p>
+</blockquote>
+<h3 id="42-关键参数解读">§4.2 关键参数解读</h3>
+<p><strong>Duration = 1</strong></p>
+<ul>
+<li>粒子系统的”激活时长”(秒)</li>
+<li>配合 Looping 决定持续发射</li>
+</ul>
+<p><strong>Start Lifetime = 3.5</strong></p>
+<ul>
+<li>单个粒子从发射到消失的时间</li>
+<li>视频为”眼睛流星”的悬停感设计</li>
+</ul>
+<p><strong>Start Speed = 0.01</strong></p>
+<ul>
+<li>极低速度</li>
+<li>配合 Shape(§5.2)实现”聚集感”</li>
+</ul>
+<p><strong>Start Size = 0.0075</strong></p>
+<ul>
+<li>极小尺寸</li>
+<li>适合”眼睛/面部”小范围特效</li>
+</ul>
+<p><strong>Max Particles = 15</strong></p>
+<ul>
+<li>极低数量</li>
+<li>VRChat 限制端:总上限 50000,单系统 50000</li>
+<li>视频示例为低消耗场景</li>
+</ul>
+<h2 id="5-附加模块配置">§5 附加模块配置</h2>
+<h3 id="51-emission">§5.1 Emission</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>Rate Over Time = 5</span></span></code></pre>
+<p>每秒发射 5 个粒子(配合 Max Particles = 15,平均 3 秒发射一轮)</p>
+<h3 id="52-shape">§5.2 Shape</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>Angle = 10</span></span>
+<span class="line"><span>Radius = 0.005</span></span></code></pre>
+<ul>
+<li>Angle 10:窄锥形发射</li>
+<li>Radius 0.005:极小半径(几乎点发射)</li>
+</ul>
+<h3 id="53-velocity-over-lifetime">§5.3 Velocity Over Lifetime</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>Linear Y = -0.0005</span></span>
+<span class="line"><span>Speed Modifier = 0.8</span></span></code></pre>
+<ul>
+<li>Y 轴缓慢向下</li>
+<li>整体速度衰减</li>
+</ul>
+<h3 id="54-color-over-lifetime">§5.4 Color Over Lifetime</h3>
+<ul>
+<li>4 个关键帧渐变</li>
+<li>首尾 Alpha = 0(淡入淡出)</li>
+<li>中间渐变到目标色</li>
+</ul>
+<h3 id="55-size-over-lifetime">§5.5 Size Over Lifetime</h3>
+<ul>
+<li>模式:<code>Random Between Two Curves</code></li>
+<li>两条曲线,粒子大小随机分布在曲线之间</li>
+</ul>
+<h3 id="56-size-by-speed">§5.6 Size By Speed</h3>
+<ul>
+<li>模式:<code>Random Between Two Constants</code></li>
+<li>范围:0.25 ~ 0.5</li>
+<li>速度影响大小的随机范围</li>
+</ul>
+<h3 id="57-renderer">§5.7 Renderer</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>Render Mode = Mesh</span></span>
+<span class="line"><span>Meshes = Quad</span></span>
+<span class="line"><span>Material = 拖入 §3 配方的材质</span></span></code></pre>
+<h3 id="58-custom-vertex-streams">§5.8 Custom Vertex Streams</h3>
+<p><strong>保留项</strong>:</p>
+<ul>
+<li>Position</li>
+<li>Color</li>
+<li>UV0</li>
+<li>Animation Frame</li>
+</ul>
+<blockquote>
+<p>这是 Unity Particle 高级特性,新手可跳过</p>
+</blockquote>
+<h2 id="6-parent-object-设计防双重发射">§6 Parent Object 设计(防双重发射)</h2>
+<h3 id="61-设计目的">§6.1 设计目的</h3>
+<ul>
+<li>避免双重发射(双眼分别发射)</li>
+<li>单一 Bone Proxy 跟随 Head 骨</li>
+</ul>
+<h3 id="62-操作步骤">§6.2 操作步骤</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>Step 1: 创建空 GameObject(作为双眼效果的父对象)</span></span>
+<span class="line"><span>Step 2: Add Component → Particle System</span></span>
+<span class="line"><span>Step 3: **所有模块 uncheck**(不实际发射,只作为父级)</span></span>
+<span class="line"><span>Step 4: 父对象加 MA Bone Proxy</span></span>
+<span class="line"><span>Step 5: Target = Head 骨</span></span></code></pre>
+<h3 id="63-单一-bone-proxy-原则">§6.3 单一 Bone Proxy 原则</h3>
+<blockquote>
+<p>双眼效果共享一个父对象 + 一个 Bone Proxy
+避免每只眼睛单独挂 Bone Proxy 导致性能浪费</p>
+</blockquote>
+<h2 id="7-镜像到双眼">§7 镜像到双眼</h2>
+<h3 id="71-操作流程">§7.1 操作流程</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>Step 1: Ctrl+D 复制父对象</span></span>
+<span class="line"><span>Step 2: 改 X position 为负(镜像到另一侧)</span></span>
+<span class="line"><span>Step 3: 改 Y rotation 为负(朝向镜像)</span></span></code></pre>
+<h3 id="72-原理">§7.2 原理</h3>
+<p>镜面对称:</p>
+<ul>
+<li>X 位置取负 = 水平镜像</li>
+<li>Y 旋转取负 = 角度镜像</li>
+</ul>
+<h2 id="8-挂接到眼睛流程">§8 挂接到眼睛流程</h2>
+<h3 id="81-vrc-avatar-descriptor-路径">§8.1 VRC Avatar Descriptor 路径</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>Avatar → VRC Avatar Descriptor → Eye Look → Eyes → Transforms(眼锚)</span></span></code></pre>
+<h3 id="82-完整操作">§8.2 完整操作</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>Step 1: 选中 VRC Avatar Descriptor</span></span>
+<span class="line"><span>Step 2: 找到 Eye Look 部分</span></span>
+<span class="line"><span>Step 3: 展开 Eyes,确认 Transforms(眼锚)已配置</span></span>
+<span class="line"><span>Step 4: 拖入粒子系统 Prefab</span></span>
+<span class="line"><span>Step 5: Reset Transform(归零位置)</span></span>
+<span class="line"><span>Step 6: 调整位置到眼睛周围</span></span>
+<span class="line"><span>Step 7: Bone Proxy 跟随 Head 骨</span></span></code></pre>
+<h2 id="9-关键限制交叉引用">§9 关键限制(交叉引用)</h2>
+<h3 id="91-vrchat-用户端限制">§9.1 VRChat 用户端限制</h3>
+<p>详见 <code>avatar-particle-system-limits.md</code>:</p>
+<table>
+<thead>
+<tr>
+<th>限制项</th>
+<th>默认值</th>
+<th>Quest</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Max Particles</td>
+<td>50000</td>
+<td>50000</td>
+</tr>
+<tr>
+<td>Max Systems</td>
+<td>200</td>
+<td>200</td>
+</tr>
+<tr>
+<td>Max Emission</td>
+<td>5000</td>
+<td>5000</td>
+</tr>
+<tr>
+<td><strong>Quest 强制启用</strong></td>
+<td>—</td>
+<td><strong>不可禁用</strong></td>
+</tr>
+<tr>
+<td><strong>PlayerLocal 碰撞</strong></td>
+<td>支持</td>
+<td>限制</td>
+</tr>
+</tbody>
+</table>
+<h3 id="92-quest-端行为">§9.2 Quest 端行为</h3>
+<ul>
+<li>默认启用且<strong>不可禁用</strong></li>
+<li>超出会自动降低质量</li>
+<li>详见 <code>avatar-particle-system-limits.md</code> §Quest 行为</li>
+</ul>
+<h3 id="93-性能优化检查清单">§9.3 性能优化检查清单</h3>
+<ul class="contains-task-list">
+<li class="task-list-item"><input type="checkbox" disabled> 单个粒子系统粒子数 &#x3C; 50000</li>
+<li class="task-list-item"><input type="checkbox" disabled> 总粒子系统数 &#x3C; 200</li>
+<li class="task-list-item"><input type="checkbox" disabled> 总 Emission Rate &#x3C; 5000</li>
+<li class="task-list-item"><input type="checkbox" disabled> 网格多边形 &#x3C; 60000</li>
+<li class="task-list-item"><input type="checkbox" disabled> 配合 Optimization Guide</li>
+</ul>
+<h2 id="10-实战示例">§10 实战示例</h2>
+<h3 id="101-示例-1眼睛流星特效参考-video_8">§10.1 示例 1:眼睛流星特效(参考 video_8)</h3>
+<p>详见视频源,本文 §2-§8 即此示例的完整还原</p>
+<h3 id="102-示例-2脚下光环">§10.2 示例 2:脚下光环</h3>
+<p>参数调整建议:</p>
+<ul>
+<li>Start Size: 0.05~0.1(更大)</li>
+<li>Max Particles: 30~50</li>
+<li>Shape: Cone, Angle 90(向下发射)</li>
+<li>Color: 暖色调</li>
+</ul>
+<h3 id="103-示例-3背后光环">§10.3 示例 3:背后光环</h3>
+<p>参数调整建议:</p>
+<ul>
+<li>Start Size: 0.1~0.3</li>
+<li>Max Particles: 50~100</li>
+<li>Shape: Hemisphere(半球)</li>
+<li>Velocity: 向上飘</li>
+</ul>
+<h3 id="104-性能优化检查清单">§10.4 性能优化检查清单</h3>
+<ul class="contains-task-list">
+<li class="task-list-item"><input type="checkbox" disabled> 优先用 Mesh = Quad(比默认 Plane 轻)</li>
+<li class="task-list-item"><input type="checkbox" disabled> 减少 Max Particles 数量</li>
+<li class="task-list-item"><input type="checkbox" disabled> 关闭不必要的 Custom Vertex Streams</li>
+<li class="task-list-item"><input type="checkbox" disabled> 启用 Prewarmed(避免初始跳变)</li>
+</ul>
+<h2 id="11-关键帧核对记录">§11 关键帧核对记录</h2>
+<blockquote>
+<p>本节为视频数值核对结果(待用户 review)</p>
+</blockquote>
+<h3 id="111-视频参考值-vs-实测值">§11.1 视频参考值 vs 实测值</h3>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>视频值</th>
+<th>实测建议</th>
+<th>通用性</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Start Lifetime</td>
+<td>3.5</td>
+<td>视场景</td>
+<td>中</td>
+</tr>
+<tr>
+<td>Start Speed</td>
+<td>0.01</td>
+<td>视场景</td>
+<td>中</td>
+</tr>
+<tr>
+<td>Start Size</td>
+<td>0.0075</td>
+<td>视场景</td>
+<td>高(小尺寸)</td>
+</tr>
+<tr>
+<td>Max Particles</td>
+<td>15</td>
+<td>视场景</td>
+<td>高(低消耗)</td>
+</tr>
+<tr>
+<td>Rate Over Time</td>
+<td>5</td>
+<td>视场景</td>
+<td>中</td>
+</tr>
+<tr>
+<td>Angle</td>
+<td>10</td>
+<td>视场景</td>
+<td>中</td>
+</tr>
+<tr>
+<td>Radius</td>
+<td>0.005</td>
+<td>视场景</td>
+<td>高(点发射)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="112-通用性评估">§11.2 通用性评估</h3>
+<ul>
+<li><strong>Start Size 0.0075</strong>:适合眼睛/面部小范围特效,通用性高</li>
+<li><strong>Max Particles 15</strong>:低消耗参考,通用性高</li>
+<li><strong>Start Lifetime 3.5 / Start Speed 0.01</strong>:视频特定值,需根据场景调整</li>
+</ul>
+<h3 id="113-推荐做法">§11.3 推荐做法</h3>
+<ol>
+<li><strong>先复制本文 §4.1 的”基线配置”</strong></li>
+<li><strong>根据场景调整</strong> Duration / Start Lifetime / Max Particles</li>
+<li><strong>根据视觉效果</strong> 调整 Color / Size</li>
+<li><strong>在 VRChat 中实测</strong> 验证性能</li>
+</ol>
+<h2 id="12-faq">§12 FAQ</h2>
+<h3 id="q1为什么我的粒子是白色的方块">Q1:为什么我的粒子是白色的方块?</h3>
+<p><strong>A</strong>:通常是以下原因:</p>
+<ul>
+<li>纹理是白底而非黑底(违反 §2.2)</li>
+<li>材质未配置 Additive(违反 §3.2)</li>
+<li>解决:重新导入纹理(黑底) + 配置 Additive</li>
+</ul>
+<h3 id="q2粒子发射了但看不到效果">Q2:粒子发射了但看不到效果?</h3>
+<p><strong>A</strong>:排查:</p>
+<ol>
+<li>Render Mode 是否为 Mesh(§5.7)</li>
+<li>Material 是否正确赋值</li>
+<li>Start Size 是否过小(0.0075 接近 0 看不见)</li>
+<li>摄像机视角是否对</li>
+</ol>
+<h3 id="q3双眼效果只有一只眼有">Q3:双眼效果只有一只眼有?</h3>
+<p><strong>A</strong>:违反 §7 镜像流程:</p>
+<ul>
+<li>漏复制父对象(Ctrl+D)</li>
+<li>镜像后未改 X position / Y rotation</li>
+<li>解决:严格按 §7.1 三步操作</li>
+</ul>
+<h3 id="q4quest-上粒子消失">Q4:Quest 上粒子消失?</h3>
+<p><strong>A</strong>:Quest 默认启用粒子限制(不可禁用),可能超出限制:</p>
+<ul>
+<li>降低 Max Particles</li>
+<li>减少总粒子系统数</li>
+<li>详见 <code>avatar-particle-system-limits.md</code> §Quest 行为</li>
+</ul>
+<h3 id="q5为什么粒子被裁剪">Q5:为什么粒子被裁剪?</h3>
+<p><strong>A</strong>:可能是相机裁剪问题:</p>
+<ul>
+<li>调整 Particle Renderer 的 Sorting Fudge</li>
+<li>检查 Layer 顺序</li>
+<li>检查 Material 的 Render Queue</li>
+</ul>
+<h2 id="13-参考资料">§13 参考资料</h2>
+<ul>
+<li>[L1 Unity 官方] Particle System 总览: <a href="https://docs.unity3d.com/2022.3/Documentation/Manual/PartSysReference.html">https://docs.unity3d.com/2022.3/Documentation/Manual/PartSysReference.html</a></li>
+<li>[L1 Unity 官方] Particle System Modules: <a href="https://docs.unity3d.com/2022.3/Documentation/Manual/ParticleSystemModules.html">https://docs.unity3d.com/2022.3/Documentation/Manual/ParticleSystemModules.html</a></li>
+<li>[L1 Unity 官方] Standard Unlit Shader: <a href="https://docs.unity3d.com/2022.3/Documentation/Manual/shader-StandardUnlitParticles.html">https://docs.unity3d.com/2022.3/Documentation/Manual/shader-StandardUnlitParticles.html</a></li>
+<li>[L1 官方] VRChat Avatar Particle System Limits: <a href="https://docs.vrchat.com/docs/avatar-particle-system-limits">https://docs.vrchat.com/docs/avatar-particle-system-limits</a></li>
+<li>蒸馏产物: <code>源资料层笔记：《笔记/avatar-video-consolidated-2026-07-04/KP04-Avatar粒子系统创建工作流》</code></li>
+<li>配套文档: <code>avatar-particle-system-limits.md</code>(限制端)</li>
+</ul>
+<h2 id="14-视频来源">§14 视频来源</h2>
+<ul>
+<li>video_8 (12:50, 310 帧,眼睛流星特效)</li>
+<li>蒸馏产物: <code>KP04-Avatar粒子系统创建工作流.md</code></li>
+</ul>
+<hr>
+<h2 id="相关页面">相关页面</h2>
+<p><a href="/STELLASTOPVRC/posts/kb-avatar-avatar-particle-system-limits/">avatar-particle-system-limits.md</a> · <a href="/STELLASTOPVRC/posts/kb-avatar-optimization-guide/">optimization-guide.md</a> · <a href="/STELLASTOPVRC/posts/kb-avatar-modular-avatar/">modular-avatar.md</a> · <a href="/STELLASTOPVRC/posts/kb-avatar-bone-binding-workflow/">bone-binding-workflow.md</a></p> </div> <p class="kb-source-note" data-astro-cid-lvjzyg5v>
+本文由 VRChat 开发知识库自动整理（社区整理  · 可信度 Medium  · 最后校对 2026-07-04），
+          遇到与手写教程冲突的地方，以官方文档为最高优先级。
+</p> <section class="comments" id="comments" data-astro-cid-lvjzyg5v> <h2 class="comments__title" data-astro-cid-lvjzyg5v>✦ 旅人留言（0）</h2> <p class="comments__empty" id="commentsEmpty" data-astro-cid-lvjzyg5v>
+还没有旅人留言 —— 有疑问就写在下面，站长都会回复。
+</p> <form class="comment-form" id="commentForm" data-target="kb-avatar-avatar-particle-system-creation" data-astro-cid-lvjzyg5v> <p class="comment-form__title" data-astro-cid-lvjzyg5v>写下你的留言</p> <input id="cAuthor" maxlength="20" placeholder="昵称（留空则为「旅人」）" data-astro-cid-lvjzyg5v> <textarea id="cBody" maxlength="1000" required placeholder="想问的问题、想说的感谢都可以（最多 1000 字）" data-astro-cid-lvjzyg5v></textarea> <div class="comment-form__actions" data-astro-cid-lvjzyg5v> <button class="btn btn--primary" type="submit" data-astro-cid-lvjzyg5v>发布留言</button> <span class="form-hint" data-astro-cid-lvjzyg5v>留言保存在本站，站长在写作台里能看到</span> <span class="form-msg" id="cMsg" data-astro-cid-lvjzyg5v></span> </div> </form> </section> <nav class="station-nav" aria-label="站间导航" data-astro-cid-lvjzyg5v> <a href="/STELLASTOPVRC/posts/kb-avatar-avatar-audio-optimization/" data-astro-cid-lvjzyg5v> <span class="dir" data-astro-cid-lvjzyg5v>← 上一站 · 更新的星光</span> <span class="to" data-astro-cid-lvjzyg5v>VRChat Avatar 音频优化</span> </a> <a href="/STELLASTOPVRC/posts/kb-avatar-avatar-size-limits/" data-astro-cid-lvjzyg5v> <span class="dir" data-astro-cid-lvjzyg5v>下一站 · 更早的星光 →</span> <span class="to" data-astro-cid-lvjzyg5v>VRChat Avatar 大小限制与定义</span> </a> </nav> </div> <aside class="toc" id="toc" hidden> <p class="toc__title">✦ 本页星图</p> <nav id="tocNav" aria-label="文章目录"></nav> </aside> <script type="module">const i=document.querySelector(".prose"),d=document.getElementById("toc"),u=document.getElementById("tocNav"),l=[];if(i&&d&&u){const c=[...i.querySelectorAll("h1, h2, h3")];if(c.length>=3){d.hidden=!1,c.forEach((o,e)=>{o.id||(o.id=`sec-${e}`);const n=document.createElement("a");n.href=`#${o.id}`;const s=(o.textContent??"").replace(/\s+/g," ").trim(),r=s.search(/[：:]/),a=r>=4?s.slice(0,r):s;n.textContent=a.length>40?`${a.slice(0,40)}…`:a,n.title=s,u.appendChild(n),l.push({a:n,h:o})});const t=()=>{let o=l[0];for(const e of l)e.h.getBoundingClientRect().top<=130&&(o=e);for(const e of l)e.a.classList.toggle("is-active",e===o)};addEventListener("scroll",t,{passive:!0}),t()}}document.querySelectorAll(".prose pre").forEach(c=>{const t=document.createElement("button");t.className="code-copy",t.type="button",t.textContent="复制",t.addEventListener("click",async()=>{const o=c.querySelector("code")?.innerText??c.innerText;try{await navigator.clipboard.writeText(o)}catch{const e=document.createElement("textarea");e.value=o,document.body.appendChild(e),e.select(),document.execCommand("copy"),e.remove()}t.textContent="已复制 ✓",t.classList.add("is-ok"),setTimeout(()=>{t.textContent="复制",t.classList.remove("is-ok")},1500)}),c.appendChild(t)});</script> </article>  </main> <footer class="site-footer"> <div class="wrap"> <p class="star-line" aria-hidden="true"> <svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> <svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> </p> <p>星之驿站 StellaStop —— 在虚拟宇宙中，为你保留一座驿站</p> <p class="site-footer__disclaimer">
+该网页目前是测试阶段，仅用于测试，所有内容仅供参考；内容全部为引用互联网当中的信息。
+</p> <p>© 2026 星之驿站 · 由 <a href="https://astro.build">Astro</a> 与星光驱动</p> <p> <a data-desk-login hidden title="写作台：登录 / 注册">登录 / 注册</a> ·
+<a href="/STELLASTOPVRC/announcements/">官方公告</a> ·
+<a href="/STELLASTOPVRC/ai/">问星 AI</a> ·
+<a href="/STELLASTOPVRC/feedback/">旅人留言板</a> </p> </div> </footer> <button class="to-top" id="toTop" aria-label="回到顶部"> <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"> <path d="M12 20V5"></path> <path d="M5.5 11.5 12 5l6.5 6.5"></path> </svg> </button> <script type="module">const e=document.getElementById("toTop");if(e){const t=()=>e.classList.toggle("is-visible",scrollY>480);addEventListener("scroll",t,{passive:!0}),t(),e.addEventListener("click",()=>{const o=matchMedia("(prefers-reduced-motion: reduce)").matches;scrollTo({top:0,behavior:o?"auto":"smooth"})})}</script> <script>(function(){const deskConfigured = "";
+
+      /* 写作台探测（页面尾部执行，DOM 已就绪）：
+         1. 计算写作台地址：站点配置 deskUrl（公网部署时填）> 本机默认 localhost:4322 > 同主机 4322
+         2. 探测 /api/gate/status —— 在线才点亮「登录 / 注册」入口，并复用给验证门横幅
+         3. 不在线则保持隐藏，绝不会把访客拽进内网地址；同时给出一次性「镜像模式」提示 */
+      (function () {
+        var host = location.hostname;
+        var isLocal = host === 'localhost' || host === '127.0.0.1' || host === '[::1]';
+        var desk = deskConfigured ||
+          (isLocal ? 'http://localhost:4322' : location.protocol + '//' + host + ':4322');
+        window.STELLA_DESK = desk;
+
+        function revealLogin() {
+          document.querySelectorAll('[data-desk-login]').forEach(function (a) {
+            a.href = desk + '/admin';
+            a.removeAttribute('hidden');
+          });
+        }
+        function showBanner(css, html, shiftHeader) {
+          var bar = document.createElement('div');
+          bar.style.cssText = css;
+          bar.innerHTML = html;
+          document.body.prepend(bar);
+          if (shiftHeader) {
+            var header = document.querySelector('.site-header');
+            if (header) header.style.marginTop = '42px';
+          }
+        }
+        function hintMirrorMode() {
+          try {
+            if (sessionStorage.getItem('stella-desk-hint')) return;
+            sessionStorage.setItem('stella-desk-hint', '1');
+          } catch (e) { /* 无痕模式等：忽略 */ }
+          var tip = document.createElement('div');
+          tip.style.cssText = 'position:fixed;left:14px;bottom:14px;z-index:9998;max-width:min(92vw,430px);padding:.65rem .9rem;border-radius:12px;background:rgba(18,20,44,.92);border:1px solid rgba(150,142,255,.35);color:#e8e6ff;font-size:.82rem;line-height:1.6;font-family:system-ui,sans-serif;box-shadow:0 8px 30px rgba(0,0,0,.35)';
+          tip.innerHTML = 'ℹ️ 静态镜像模式：登录 / 评论 / AI 等互动功能需要站长写作台在线，当前不可用。' +
+            '<span id="stellaDeskHintClose" style="float:right;cursor:pointer;opacity:.75;font-weight:700;margin-left:.6rem" title="关闭">×</span>';
+          document.body.appendChild(tip);
+          var close = function () { tip.remove(); };
+          tip.querySelector('#stellaDeskHintClose').addEventListener('click', close);
+          setTimeout(close, 9000);
+        }
+
+        try {
+          var ctrl = new AbortController();
+          var timer = setTimeout(function () { ctrl.abort(); }, 2500);
+          fetch(desk + '/api/gate/status', { credentials: 'include', signal: ctrl.signal })
+            .then(function (r) { return r.ok ? r.json() : null; })
+            .then(function (d) {
+              clearTimeout(timer);
+              if (!d) throw new Error('desk-offline');
+              window.STELLA_DESK_OK = true;
+              revealLogin();
+              if (d.regionBlocked) {
+                showBanner(
+                  'position:fixed;top:0;left:0;right:0;z-index:9999;padding:1.2rem;text-align:center;background:#1a0a0a;color:#ff9ed2;font-size:.95rem;border-bottom:2px solid #ff4d6d;font-family:system-ui,sans-serif',
+                  '⛔ 你所在的地区（' + (d.regionCountry || '未知') + '）暂不开放访问。',
+                  false
+                );
+                return;
+              }
+              if (d.enabled && !d.passed) {
+                showBanner(
+                  'position:fixed;top:0;left:0;right:0;z-index:9999;padding:0.7rem;text-align:center;background:linear-gradient(94deg,rgba(143,127,247,.25),rgba(98,200,245,.18));border-bottom:1px solid rgba(150,142,255,.3);color:#f0efff;font-size:.88rem;font-family:system-ui,sans-serif',
+                  '🔒 本站启用了安全验证 —— <a href="' + desk + '/gate?next=' + encodeURIComponent(location.href) + '" style="color:#ffd98e;font-weight:700;text-decoration:underline">点击完成验证</a>，通过后即可使用全部功能（30 天免验）。',
+                  true
+                );
+              }
+            })
+            .catch(function () {
+              clearTimeout(timer);
+              window.STELLA_DESK_OK = false;
+              hintMirrorMode();
+            });
+        } catch (e) { /* 忽略 */ }
+      })();
+    })();</script> </body> </html> <script type="module">const m=document.getElementById("commentForm"),s=document.getElementById("cMsg"),u=`${location.protocol}//${location.hostname}:4322/api/message`;function r(e,t=!1){s&&(s.textContent=e,s.classList.toggle("is-err",t),s.classList.toggle("is-ok",!t))}function y(){const e=new Date,t=n=>String(n).padStart(2,"0");return`${e.getFullYear()}-${t(e.getMonth()+1)}-${t(e.getDate())}`}function f(e){let t=7;for(const n of e)t=(t*31+n.charCodeAt(0))%360;return t}function g(e,t){const n=document.createElement("li");n.className="comment",n.innerHTML=`
+      <span class="comment__avatar"></span>
+      <div class="comment__bubble">
+        <div class="comment__head">
+          <span class="comment__name"></span>
+          <time class="comment__date">${y()}</time>
+        </div>
+        <p class="comment__body"></p>
+      </div>`;const o=n.querySelector(".comment__avatar");return o.style.setProperty("--h",String(f(e))),o.textContent=e.slice(0,1),n.querySelector(".comment__name").textContent=e,n.querySelector(".comment__body").textContent=t,n}m?.addEventListener("submit",async e=>{e.preventDefault();const t=document.getElementById("cBody").value.trim();if(!t)return r("留言内容不能为空哦",!0);const n=document.getElementById("cAuthor").value.trim()||"旅人",o=m.querySelector("button");o&&(o.disabled=!0);try{const c=await fetch(u,{credentials:"include",method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({target:m.dataset.target,kind:"comment",author:n,body:t})}),d=await c.json().catch(()=>({}));if(!c.ok)throw new Error(d.error||`发送失败（${c.status}）`);const l=document.querySelector(".comment-list");l&&l.appendChild(g(n,t)),document.getElementById("commentsEmpty")?.remove(),document.getElementById("cBody").value="",r("留言已发布，感谢支持 ✦");const a=document.querySelector(".comments__title"),i=a?.textContent?.match(/（(\d+)）/);a&&i&&(a.textContent=a.textContent.replace(/（\d+）/,`（${Number(i[1])+1}）`))}catch(c){r(c instanceof TypeError?"写作台没在运行，暂时收不到留言 —— 双击「启动博客.bat」就好":c.message,!0)}finally{o&&(o.disabled=!1)}});</script> 

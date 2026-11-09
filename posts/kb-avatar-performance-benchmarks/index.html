@@ -1,0 +1,365 @@
+<!DOCTYPE html><html lang="zh-CN"> <head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="generator" content="Astro v5.18.2"><meta name="description" content="结论：该基准（VRCLibrary - Unity/VRChat Performance Benchmarks，原作者 JustSleightly，中文翻译 LIII Works，数据仓库 github.com/jell"><meta name="theme-color" content="#070a1c"><meta property="og:title" content="Unity/VRChat 性能基准测试 — 组件帧时间实测（动画层/Constraints/Contacts/Cloth/PhysBones） · 星之驿站 StellaStop"><meta property="og:description" content="结论：该基准（VRCLibrary - Unity/VRChat Performance Benchmarks，原作者 JustSleightly，中文翻译 LIII Works，数据仓库 github.com/jell"><meta property="og:type" content="website"><meta name="twitter:card" content="summary"><link rel="icon" type="image/svg+xml" href="/STELLASTOPVRC/favicon.svg"><script>
+      // 在渲染前恢复主题与特效档位，避免闪一下默认状态
+      try {
+        document.documentElement.dataset.theme =
+          localStorage.getItem('stella-theme') || 'nebula';
+        document.documentElement.dataset.fx =
+          localStorage.getItem('stella-fx') || 'standard';
+      } catch {
+        /* 隐私模式读不到就算了 */
+      }
+    </script><link rel="stylesheet" href="/STELLASTOPVRC/custom-vars.css"><title>Unity/VRChat 性能基准测试 — 组件帧时间实测（动画层/Constraints/Contacts/Cloth/PhysBones） · 星之驿站 StellaStop</title><link rel="stylesheet" href="/STELLASTOPVRC/_astro/about.Bgh6wcGl.css">
+<style>.post-head__meta[data-astro-cid-lvjzyg5v]{color:var(--ink-faint);font-family:var(--font-mono);font-size:.82rem}.post-head[data-astro-cid-lvjzyg5v] .chip-row[data-astro-cid-lvjzyg5v]{margin-top:1rem}.kb-source-note[data-astro-cid-lvjzyg5v]{max-width:760px;margin:2.2rem auto 0;font-size:.82rem;color:var(--ink-faint);border-top:1px dashed var(--line);padding-top:1rem}
+</style></head> <body> <div class="site-notice" id="siteNotice"> <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> <span class="site-notice__text">欢迎来到星之驿站！</span> <button class="site-notice__close" id="noticeClose" type="button" aria-label="关闭公告">
+×
+</button> </div> <a class="skip-link" href="#main">跳到主要内容</a> <canvas id="starfield" aria-hidden="true" data-astro-cid-ra7sfcwn></canvas> <div class="fx-aurora fx-aurora--a" aria-hidden="true" data-astro-cid-ra7sfcwn></div> <div class="fx-aurora fx-aurora--b" aria-hidden="true" data-astro-cid-ra7sfcwn></div>  <script type="module">const u=document.getElementById("starfield");if(u){let F=function(){const n=Math.random();return n<.1?"gold":n<.42?"blue":"white"},v=function(){const n=Math.min(window.devicePixelRatio||1,2);s=window.innerWidth,d=window.innerHeight,u.width=s*n,u.height=d*n,u.style.width=`${s}px`,u.style.height=`${d}px`,t.setTransform(n,0,0,n,0,0);const e=Math.min(190,Math.round(s*d/8500));l=Array.from({length:e},()=>({x:Math.random()*s,y:Math.random()*d,r:r(.4,1.7),base:r(.25,.8),amp:r(.12,.4),speed:r(6e-4,.0022),phase:r(0,Math.PI*2),c:F()})),C=Array.from({length:26},()=>({x:Math.random()*s,y:Math.random()*d,r:r(.9,2.4),vx:r(-.006,.006),vy:r(-.02,-.006),base:r(.2,.5),speed:r(8e-4,.002),phase:r(0,Math.PI*2),c:Math.random()<.5?"gold":"violet"})),c==="off"&&m(0,!0)},D=function(n){const e=Math.random()<.5?1:-1,o=r(Math.PI/7,Math.PI/5),a=r(.45,.75);y.push({x:r(s*.15,s*.85),y:r(-20,d*.3),vx:Math.cos(o)*a*e,vy:Math.sin(o)*a,born:n,life:r(750,1050),len:r(100,170)})},S=function(n){y=y.filter(e=>n-e.born<e.life);for(const e of y){const o=(n-e.born)/e.life,a=e.x+e.vx*(n-e.born),i=e.y+e.vy*(n-e.born),f=o<.15?o/.15:o>.7?(1-o)/.3:1,h=Math.hypot(e.vx,e.vy),x=e.vx/h,g=e.vy/h,b=t.createLinearGradient(a,i,a-x*e.len,i-g*e.len);b.addColorStop(0,`rgba(236,242,255,${(.85*f).toFixed(3)})`),b.addColorStop(1,"rgba(236,242,255,0)"),t.strokeStyle=b,t.lineWidth=1.6,t.lineCap="round",t.beginPath(),t.moveTo(a,i),t.lineTo(a-x*e.len,i-g*e.len),t.stroke()}},B=function(){let o=0;t.lineWidth=.7;for(let a=0;a<l.length&&o<26;a++)for(let i=a+1;i<l.length&&o<26;i++){const f=l[a].x-l[i].x,h=l[a].y-l[i].y,x=f*f+h*h;if(x<16900){const g=(1-Math.sqrt(x)/130)*.17;t.strokeStyle=`rgba(178,170,255,${g.toFixed(3)})`,t.beginPath(),t.moveTo(l[a].x,l[a].y),t.lineTo(l[i].x,l[i].y),t.stroke(),o++}}},X=function(n){for(const e of C){e.x+=e.vx*16,e.y+=e.vy*16,e.y<-12&&(e.y=d+10),e.x<-12&&(e.x=s+10),e.x>s+12&&(e.x=-10);const o=Math.max(.05,e.base+.25*Math.sin(n*e.speed+e.phase)),[a,i,f]=A[e.c];t.beginPath(),t.arc(e.x,e.y,e.r,0,7),t.shadowBlur=9,t.shadowColor=`rgba(${a},${i},${f},0.9)`,t.fillStyle=`rgba(${a},${i},${f},${o.toFixed(3)})`,t.fill()}t.shadowBlur=0},m=function(n,e=!1){t.clearRect(0,0,s,d);for(const o of l){const a=c==="off"?o.base:Math.max(.05,o.base+o.amp*Math.sin(n*o.speed+o.phase)),[i,f,h]=A[o.c];t.beginPath(),t.arc(o.x,o.y,o.r,0,7),o.r>1.25?(t.shadowBlur=7,t.shadowColor=`rgba(${i},${f},${h},0.85)`):t.shadowBlur=0,t.fillStyle=`rgba(${i},${f},${h},${a.toFixed(3)})`,t.fill()}if(t.shadowBlur=0,c!=="off"&&!e){c==="fancy"&&(B(),X(n));const o=c==="fancy"?r(2600,6e3):r(4200,9500);n>P&&(D(n),P=n+o),S(n)}},$=function(n){m(n),M=requestAnimationFrame($)},p=function(){if(c==="off"){m(0,!0);return}cancelAnimationFrame(M),M=requestAnimationFrame($)},w=function(){cancelAnimationFrame(M),t.clearRect(0,0,s,d),m(0,!0)};const t=u.getContext("2d"),k=matchMedia("(prefers-reduced-motion: reduce)").matches,A={white:[240,240,255],blue:[150,215,250],gold:[255,218,150],violet:[178,170,255]};let s=0,d=0,l=[],C=[],y=[],P=2500,M=0,c=document.documentElement.dataset.fx||"standard";k&&(c="off");const r=(n,e)=>n+Math.random()*(e-n);v(),addEventListener("resize",v),document.addEventListener("stella-fx-change",n=>{c=n.detail,c==="off"?w():p()}),c==="off"?m(0,!0):(p(),document.addEventListener("visibilitychange",()=>{document.hidden?w():p()}))}</script> <header class="site-header"> <div class="wrap site-header__inner"> <a class="logo" href="/STELLASTOPVRC/"> <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> <span>星之驿站</span> <span class="logo__romaji">StellaStop</span> </a> <div class="header-right"> <nav class="site-nav" aria-label="站内导航"> <a href="/STELLASTOPVRC/"> 首页 </a><a href="/STELLASTOPVRC/start/"> 新手 </a><a href="/STELLASTOPVRC/posts/"> 教程 </a><a href="/STELLASTOPVRC/videos/"> 视频 </a><a href="/STELLASTOPVRC/resources/"> 资源 </a><a href="/STELLASTOPVRC/booth/"> Booth </a><a href="/STELLASTOPVRC/announcements/"> 公告 </a><a href="/STELLASTOPVRC/ai/"> 问星 </a><a href="/STELLASTOPVRC/changelog/"> 更新日志 </a><a href="/STELLASTOPVRC/about/"> 关于 </a> </nav> <a class="login-link" data-desk-login hidden title="写作台：登录 / 注册后可发教程、传资源">
+登录 / 注册
+</a> <div class="theme-switch"> <button class="theme-switch__btn" id="themeBtn" type="button" aria-haspopup="listbox" aria-expanded="false" aria-label="切换主题配色" title="切换主题配色"> <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"> <path d="M12 3a9 9 0 1 0 9 9c0-1.2-1-2-2.2-2H17a2 2 0 0 1-2-2V6.2C15 5 14.2 4 13 4.4A9 9 0 0 0 12 3Z"></path> <circle cx="7.5" cy="11.5" r="1" fill="currentColor" stroke="none"></circle> <circle cx="10" cy="7.5" r="1" fill="currentColor" stroke="none"></circle> <circle cx="15" cy="7" r="1" fill="currentColor" stroke="none"></circle> </svg> </button> <div class="theme-pop" id="themePop" role="listbox" aria-label="选择主题" hidden> <button class="theme-opt" type="button" role="option" data-theme-value="nebula" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#8f7ff7"></span><span class="dot" style="background:#62c8f5"></span><span class="dot" style="background:#ffd98e"></span> </span> <span class="theme-opt__name">星云 · 蓝紫</span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt" type="button" role="option" data-theme-value="sakura" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#ff8fc7"></span><span class="dot" style="background:#c79bff"></span><span class="dot" style="background:#ffd08e"></span> </span> <span class="theme-opt__name">樱语 · 粉紫</span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt" type="button" role="option" data-theme-value="miku" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#2ed3c2"></span><span class="dot" style="background:#6ea8ff"></span><span class="dot" style="background:#ffe08e"></span> </span> <span class="theme-opt__name">葱色 · 青绿</span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt" type="button" role="option" data-theme-value="ember" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#ffb35c"></span><span class="dot" style="background:#ff7e6b"></span><span class="dot" style="background:#ffd98e"></span> </span> <span class="theme-opt__name">暮金 · 暖橙</span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt" type="button" role="option" data-theme-value="dawn" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#6a5ce8"></span><span class="dot" style="background:#e0568f"></span><span class="dot" style="background:#b8821e"></span> </span> <span class="theme-opt__name">晨星 · 浅色</span> <span class="theme-opt__mark">✦</span> </button> </div> </div> <script type="module">const a=document.getElementById("themeBtn"),n=document.getElementById("themePop");function s(c){document.documentElement.dataset.theme=c;try{localStorage.setItem("stella-theme",c)}catch{}const e=getComputedStyle(document.documentElement).getPropertyValue("--bg-deep").trim();document.querySelector('meta[name="theme-color"]')?.setAttribute("content",e||"#070a1c"),document.querySelectorAll(".theme-opt").forEach(t=>{const d=t.dataset.themeValue===c;t.classList.toggle("is-active",d),t.setAttribute("aria-selected",String(d))})}if(a&&n){const c=document.documentElement.dataset.theme||"nebula";document.querySelectorAll(".theme-opt").forEach(e=>{const t=e.dataset.themeValue===c;e.classList.toggle("is-active",t),e.setAttribute("aria-selected",String(t))}),a.addEventListener("click",e=>{e.stopPropagation();const t=n.hidden;n.hidden=!t,a.setAttribute("aria-expanded",String(t))}),document.addEventListener("click",e=>{!n.hidden&&!e.target.closest(".theme-switch")&&(n.hidden=!0,a.setAttribute("aria-expanded","false"))}),document.addEventListener("keydown",e=>{e.key==="Escape"&&!n.hidden&&(n.hidden=!0,a.setAttribute("aria-expanded","false"),a.focus())}),n.addEventListener("click",e=>{const t=e.target.closest(".theme-opt");t&&(s(t.dataset.themeValue??"nebula"),n.hidden=!0,a.setAttribute("aria-expanded","false"))})}</script> <div class="theme-switch fx-switch"> <button class="theme-switch__btn" id="fxBtn" type="button" aria-haspopup="listbox" aria-expanded="false" aria-label="背景特效设置" title="背景特效设置"> <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"> <path d="M5 3v4M3 5h4M6.5 17.5v3M5 19h3"></path> <path d="M14.5 4.5 16 9l4.5 1.5L16 12l-1.5 4.5L13 12l-4.5-1.5L13 9l1.5-4.5Z"></path> </svg> </button> <div class="theme-pop" id="fxPop" role="listbox" aria-label="背景特效" hidden> <button class="theme-opt fx-opt" type="button" role="option" data-fx-value="off" aria-selected="false"> <span class="fx-opt__body"> <span class="fx-opt__name">关闭特效</span> <span class="fx-opt__hint">最省电</span> </span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt fx-opt" type="button" role="option" data-fx-value="standard" aria-selected="false"> <span class="fx-opt__body"> <span class="fx-opt__name">标准</span> <span class="fx-opt__hint">闪烁星空 + 流星</span> </span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt fx-opt" type="button" role="option" data-fx-value="fancy" aria-selected="false"> <span class="fx-opt__body"> <span class="fx-opt__name">华丽</span> <span class="fx-opt__hint">追加极光 / 星座 / 光尘</span> </span> <span class="theme-opt__mark">✦</span> </button> </div> </div> <script type="module">const n=document.getElementById("fxBtn"),a=document.getElementById("fxPop");function s(d){document.documentElement.dataset.fx=d;try{localStorage.setItem("stella-fx",d)}catch{}document.querySelectorAll("#fxPop .fx-opt").forEach(t=>{const e=t.dataset.fxValue===d;t.classList.toggle("is-active",e),t.setAttribute("aria-selected",String(e))}),document.dispatchEvent(new CustomEvent("stella-fx-change",{detail:d}))}if(n&&a){const d=document.documentElement.dataset.fx||"standard";document.querySelectorAll("#fxPop .fx-opt").forEach(t=>{const e=t.dataset.fxValue===d;t.classList.toggle("is-active",e),t.setAttribute("aria-selected",String(e))}),n.addEventListener("click",t=>{t.stopPropagation();const e=a.hidden;a.hidden=!e,n.setAttribute("aria-expanded",String(e))}),document.addEventListener("click",t=>{!a.hidden&&!t.target.closest(".fx-switch")&&(a.hidden=!0,n.setAttribute("aria-expanded","false"))}),document.addEventListener("keydown",t=>{t.key==="Escape"&&!a.hidden&&(a.hidden=!0,n.setAttribute("aria-expanded","false"),n.focus())}),a.addEventListener("click",t=>{const e=t.target.closest(".fx-opt");e&&(s(e.dataset.fxValue??"standard"),a.hidden=!0,n.setAttribute("aria-expanded","false"))})}</script> </div> </div> </header> <main id="main">  <article class="wrap post-layout" data-astro-cid-lvjzyg5v> <div class="post-main page-fade" data-astro-cid-lvjzyg5v> <header class="post-head" data-astro-cid-lvjzyg5v> <a class="crumb" href="/STELLASTOPVRC/posts/" data-astro-cid-lvjzyg5v>← 返回教程档案</a> <div class="post-head__meta" style="--accent:var(--ink-dim)" data-astro-cid-lvjzyg5v> <span class="badge" data-cat="Avatar 虚拟形象" data-astro-cid-lvjzyg5v>Avatar 虚拟形象</span> <time datetime="2026-11-09" data-astro-cid-lvjzyg5v>2026-11-09</time> <span class="post-head__reading" data-astro-cid-lvjzyg5v>⏱ 约 19 分钟</span>  </div> <h1 class="post-head__title" data-astro-cid-lvjzyg5v>Unity/VRChat 性能基准测试 — 组件帧时间实测（动画层/Constraints/Contacts/Cloth/PhysBones）</h1> <p class="post-head__lead" data-astro-cid-lvjzyg5v>结论：该基准（VRCLibrary - Unity/VRChat Performance Benchmarks，原作者 JustSleightly，中文翻译 LIII Works，数据仓库 github.com/jell</p> <div class="chip-row" data-astro-cid-lvjzyg5v> <a class="chip" href="/STELLASTOPVRC/posts/?tag=%E7%9F%A5%E8%AF%86%E5%BA%93" data-astro-cid-lvjzyg5v> 知识库 </a><a class="chip" href="/STELLASTOPVRC/posts/?tag=avatar" data-astro-cid-lvjzyg5v> avatar </a> </div> </header> <div class="prose" data-astro-cid-lvjzyg5v> <hr>
+<h1 id="性能基准测试方法论逐步添加组件拟合成数学公式推导开销测试环境为-ryzen-7-5800x--rtx-4090-台式机">性能基准测试方法论：逐步添加组件拟合成数学公式推导开销，测试环境为 Ryzen 7 5800X + RTX 4090 台式机</h1>
+<p>结论：该基准（VRCLibrary - Unity/VRChat Performance Benchmarks，原作者 JustSleightly，中文翻译 LIII Works，数据仓库 github.com/jellejurre/UnityBenchmark）收集数据的方法不是只测单个组件，而是逐步添加更多组件，从数据中推导出性能消耗的数学公式（community-tested）。</p>
+<p>做法示例：想知道在 FX 控制器上增加一个额外动画层会增加多少帧时间，就设置 1 层、8 层、64 层、256 层四个梯度，绘制图表，把数据拟合成一条线，再用线的公式计算「再增加一层」所需的帧时间。</p>
+<p>测试环境：CPU AMD Ryzen 7 5800X；内存 DDR4 2x16GB 3200MHz CL18；GPU NVIDIA GeForce RTX 4090。</p>
+<p>使用边界：本页所有绝对帧时间数字都以这台高配台式机为参照口径，低端设备上的绝对值会不同；跨硬件对比时应看比例与档位关系而非照搬 ms 数值。[UNKNOWN] 拟合公式的原始数据点与回归系数未在页内给出。</p>
+<hr>
+<hr>
+<h1 id="帧时间预算90fps11msquest-标准60fps16mspc-标准40fps25ms低性能设备1ms-占-90fps-预算约-91">帧时间预算：90fps=11ms（Quest 标准）、60fps=16ms（PC 标准）、40fps=25ms（低性能设备），1ms 占 90fps 预算约 9.1%</h1>
+<p>结论：帧时间预算表给出三个目标档位（community-tested）：90 fps = 11 ms（Quest 标准）；60 fps = 16 ms（PC 标准）；40 fps = 25 ms（低性能设备）。</p>
+<p>换算示例：某个操作消耗 1ms，约占 90fps 预算的 9.1%。</p>
+<p>使用方法：以目标平台的档位作为分母评估单项开销占比——Quest 内容用 11ms、PC 内容用 16ms——不要混用档位分母；单项组件的 ms 开销乘以数量后与预算比较，即可判断是否可接受。单位为 ms/帧。</p>
+<hr>
+<hr>
+<h1 id="动画控制器基准前提任一动画层含状态行为使所有控制器运行时间-50animator-性能不线性缩放">动画控制器基准前提：任一动画层含状态行为使所有控制器运行时间 +50%；Animator 性能不线性缩放</h1>
+<p>结论：动画控制器基准测试的所有用例都不包含状态行为（State Behaviour），并测得两条前提规则（community-tested，页版本 1.0）：</p>
+<ol>
+<li>只要一个控制器的任意动画层上有一个或多个状态行为，所有控制器的运行时间就会增加 50%。由于默认的 Action &#x26; Gesture 层中包含状态行为，这种额外开销可能出现在每一个使用的 Avatar 上。</li>
+<li>Animator Controller 的性能不会线性缩放：两个拥有 100 个动画层的 Avatar 并不会比一个拥有 200 个动画层的头像更慢。</li>
+</ol>
+<p>适用条件：估算动画层数量对帧时间的影响，或比较多层少控制器与少层多控制器两种结构时，必须先套用这两条前提。[UNKNOWN] 50% 增量对状态行为类型/数量的具体依赖关系未细分。</p>
+<hr>
+<hr>
+<h1 id="双状态切换基准被动切换约-001ms层主动频繁切换比被动高-20-30与快速参考表数值自洽">双状态切换基准：被动切换约 +0.01ms/层，主动频繁切换比被动高 20-30%，与快速参考表数值自洽</h1>
+<p>结论：双状态（two-state）切换是动画控制器的参考基准（community-tested）：被动切换（无主动切换）每增加 1 层的额外开销约 0.01 ms；主动频繁切换比被动高 20-30%。</p>
+<p>自洽校验：与快速参考表对照——被动约 10ms/1000 层、主动约 12-13ms/1000 层——0.01×1000=10ms，+25% 落在 20-30% 区间内，两处数据一致。</p>
+<p>使用注意：该基准不含状态行为；实际 Avatar 因默认 Action &#x26; Gesture 层含状态行为，需在此基础上整体 +50%（见基准前提块）。单位为 ms/层。</p>
+<hr>
+<hr>
+<h1 id="anystate-规则切换数量无显著影响启用可以过渡到自身即使不切换也固定-20-开销">AnyState 规则：切换数量无显著影响，启用『可以过渡到自身』即使不切换也固定 +20% 开销</h1>
+<p>结论：AnyState 行为的性能影响分两点（community-tested）：</p>
+<ol>
+<li>AnyState 切换数量对性能无显著影响。</li>
+<li>启用「可以过渡到自身」（Can Transition To Self）带来约 +20% 开销，且即使根本不进行任何切换也生效——这是常驻成本。</li>
+</ol>
+<p>适用条件：在 Animator 中使用 AnyState 机制，或决定是否勾选「可以过渡到自身」时。</p>
+<p>推论：可以用 AnyState 减少过渡连线数量而不必担心切换次数本身；但应检查「可以过渡到自身」是否被勾选——不需要时应关闭，避免无谓的常驻 +20%。例外：关闭该选项即不产生此开销。</p>
+<hr>
+<hr>
+<h1 id="direct-blend-tree-优化效果1d-blend-tree-约减-75-帧时间默认动画层direct-bt-约减-80除频繁切换场景外仍建议双状态">Direct Blend Tree 优化效果：1D Blend Tree 约减 75% 帧时间，默认动画层+Direct BT 约减 80%；除频繁切换场景外仍建议双状态</h1>
+<p>结论：相对双状态设置的帧时间减少幅度（community-tested）：</p>
+<table>
+<thead>
+<tr>
+<th>设置方式</th>
+<th>帧时间减少</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1D Blend Tree（多个子项）</td>
+<td>约 -75%</td>
+<td>较慢但简单</td>
+</tr>
+<tr>
+<td>默认动画层 + Direct BT</td>
+<td>约 -80%</td>
+<td>比 1D 再减少约 50%</td>
+</tr>
+</tbody>
+</table>
+<p>场景建议：除非是面部追踪等频繁切换场景，否则源页建议继续使用双状态设置——Direct BT 的收益主要来自减少活动层/过渡负担，适合稳定状态的动画表现；频繁切换场景用其他方案更稳。</p>
+<p>关联：VRCFT 面部追踪用例的实测对比见 VRCFT 控制器块，Blend Tree 版方案在参数密集且切换固定的场景收益显著。</p>
+<hr>
+<hr>
+<h1 id="vrcft-控制器对比37-个面部追踪参数普通版-01733msvrcftgeneratorblend-tree-版0066ms优化--62">VRCFT 控制器对比（37 个面部追踪参数）：普通版 0.1733ms，VRCFTGenerator（Blend Tree 版）0.066ms，优化 -62%</h1>
+<p>结论：37 个面部追踪参数用例下两种 VRCFT 控制器的实测帧时间（community-tested）：普通 VRCFT 控制器 0.1733 ms；VRCFTGenerator（Blend Tree 版）0.066 ms，优化幅度 -62%。</p>
+<p>适用解读：对面部追踪这类参数密集但状态切换相对固定的场景，Blend Tree 版方案收益显著；这也与「除频繁切换场景外倾向双状态/Direct BT」的整体结论相互印证。</p>
+<p>使用边界：这是单一用例（37 参数）的绝对值，受测试环境 RTX 4090 影响；换用参数规模或硬件时应按比例估算。[UNKNOWN] VRCFTGenerator 的具体实现与参数配置未在页内展开。</p>
+<hr>
+<hr>
+<h1 id="动画控制器无显著影响因素清单每层状态过渡数量遮罩子状态机嵌套-blend-treeswd-offdirect-bt几乎不影响性能">动画控制器无显著影响因素清单：每层状态/过渡数量、遮罩、子状态机、嵌套 Blend Trees、WD Off（Direct BT）几乎不影响性能</h1>
+<p>结论：动画控制器「其他发现」中，以下因素经实测无显著影响（community-tested）：</p>
+<ul>
+<li>每层状态/过渡数量——例外：单状态超过 1000 个布尔过渡时，1000 个过渡需要 1ms。</li>
+<li>遮罩（Mask）——无显著影响。</li>
+<li>子状态机——无显著影响。</li>
+<li>嵌套 Blend Trees——几乎无影响。</li>
+<li>WD Off（Direct BT 场景）——无显著影响。</li>
+</ul>
+<p>优化指向：调整动画控制器结构时不必优先考虑遮罩/子状态机/嵌套 Blend Tree 这类纯结构项；应聚焦有实测差异的项——状态行为存在与否、总层数、Direct BT 采用与否、本地 Avatar 参数数量（见显著影响因素块）。各因素单独评估，组合叠加效果未量化。</p>
+<hr>
+<hr>
+<h1 id="动画控制器显著影响因素骨架使每层帧时间较无-avatar-减少-50wd-off动画层50本地-avatar-参数每-1000-个-15ms">动画控制器显著影响因素：骨架使每层帧时间较无 Avatar 减少 ~50%、WD Off（动画层）+50%、本地 Avatar 参数每 1000 个 +1.5ms</h1>
+<p>结论：动画控制器「其他发现」中三个因素有实测显著影响（community-tested）：</p>
+<ol>
+<li>人形/非人形骨架 vs 无 Avatar：存在 Avatar 骨架时每层帧时间比无 Avatar 基准减少约 50%。</li>
+<li>WD Off（动画层场景）：帧时间 +50%——这与状态行为带来的 +50% 是两个独立增量，可同时发生。</li>
+<li>本地 Avatar 参数：每 1000 个参数 +1.5 ms；远程 Avatar 不适用此项。</li>
+</ol>
+<p>共同特征：三者都是「增加实际计算内容」的因素，与遮罩/子状态机等纯结构项形成对照，优化时应优先处理。注意本地 Avatar 参数的 +1.5ms/1000 在 Contacts 一节同样出现，预算 Avatar 参数总量时按同一杠杆管理。[UNKNOWN] 「WD Off」（Write Defaults 关闭）的技术含义源页未展开解释。</p>
+<hr>
+<hr>
+<h1 id="多控制器缩放规则非线性2100-层--1200-层1100-层--1030-层层数减半省约-50拆分大型控制器更优">多控制器缩放规则：非线性（2×100 层 &#x3C; 1×200 层）、1×100 层 ≈ 10×30 层、层数减半省约 50%——拆分大型控制器更优</h1>
+<p>结论：多控制器与总层数之间存在非线性缩放关系（community-tested）：2 个 100 层控制器的开销 &#x3C; 1 个 200 层控制器；1 个 100 层 ≈ 10 个 30 层的开销；所有控制器层数减半 → 总帧时间减少约 50%。</p>
+<p>决策条件：在决定大型动画控制器是「合并还是拆分」时使用这组规则。</p>
+<p>原因：动画控制器性能非线性缩放，单个巨型控制器的边际开销高于多个小型控制器之和，因此拆分大型控制器比合并更优。</p>
+<p>例外与边界：若拆分后各控制器引入额外状态行为或重复参数，实际收益可能被抵消（状态行为见 +50% 规则）；具体比例受配置影响。装配建议：动画层很多时优先拆成规模适中的控制器（如 30 层一档），而不是把层数堆进单个控制器。</p>
+<hr>
+<hr>
+<h1 id="constraints-帧时间与-681-上限启用-1680-个约-17ms-缓慢上升681-跳升至约-24ms41">Constraints 帧时间与 681 上限：启用 1~680 个约 1.7ms 缓慢上升，681+ 跳升至约 2.4ms（+41%）</h1>
+<p>结论：约束（Constraints，指 VRChat Constraints + Unity Constraints）启用总数对帧时间的影响（community-tested）：</p>
+<table>
+<thead>
+<tr>
+<th>启用约束总数</th>
+<th>帧时间</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1~680</td>
+<td>约 1.7 ms</td>
+<td>缓慢上升</td>
+</tr>
+<tr>
+<td>681 及以上</td>
+<td>约 2.4 ms</td>
+<td>跃升 41%；VRChat 将限制设为 681</td>
+</tr>
+</tbody>
+</table>
+<p>单位说明：此处为总计 ms，不是每实例数值。</p>
+<p>预算规则：681 是 VRChat 对启用约束总数的平台上限；接近上限前应主动控制约束数量，避免跨过 681 触发性能跃升。统计总数时，「禁用条件」定义的三种关闭状态的约束不计入（见约束禁用条件块）。[UNKNOWN] 681 上限的官方出处链接未在本页锚定。</p>
+<hr>
+<hr>
+<h1 id="约束不计入启用总数的三种关闭方式gameobject-关闭--constraint-组件关闭--constraint-设置关闭仅权重置-0-不算关闭仍耗性能">约束不计入启用总数的三种关闭方式：GameObject 关闭 / Constraint 组件关闭 / Constraint 设置关闭；仅权重置 0 不算关闭仍耗性能</h1>
+<p>结论：约束组件在以下三种情况不计入总启用数（community-tested）：(1) GameObject 被关闭（Disabled）；(2) Constraint 组件被关闭（Disabled）；(3) Constraint 设置为「关闭」（Disabled）。只有处于关闭状态的约束才被平台视为未启用。</p>
+<p>重要警告：单纯将权重（Weight）设置为 0 而不是上述三种关闭方式，约束仍然会影响性能——既不省预算也无节流效果。</p>
+<p>正确做法：想省下约束预算时必须使用 GameObject 级或组件级 Disable，而不是把 Weight 归零；统计是否接近 681 上限时也按「是否处于上述三种关闭状态」判断，而非看权重值。</p>
+<hr>
+<hr>
+<h1 id="音源-audio-source数量即使达到-64-个上限也测不出帧时间影响vrchat-平台限制每个角色-3-个">音源 Audio Source：数量即使达到 64 个上限也测不出帧时间影响；VRChat 平台限制每个角色 3 个</h1>
+<p>结论：音源（Audio Source）方面两条数据（community-tested）：Audio Source 数量无法测出帧时间影响——即使达到 64 个上限也在测量误差内；VRChat 平台限制每个角色最多 3 个 Audio Source。</p>
+<p>预算策略：对该组件可放宽到平台上限（3 个/角色）管理，无需像 Constraints、Contacts 那样刻意压缩数量；音频成本主要不在帧时间维度，混音与响度问题另行处理。[UNKNOWN] 64 个上限的配置口径与 VRChat 3 个/角色限制的具体版本未在页内注明。</p>
+<hr>
+<hr>
+<h1 id="contacts-基准关闭状态每-1000-个-05ms开启-receivers-每-1000-个-075ms50房间上限-4096-个超出部分停止工作">Contacts 基准：关闭状态每 1000 个 0.5ms、开启 Receivers 每 1000 个 0.75ms（+50%）；房间上限 4096 个，超出部分停止工作</h1>
+<p>结论：接触发射器/接收器（Contacts）性能数据（community-tested）：关闭状态每 1000 个 Contacts 帧时间 0.5 ms；开启 Receivers 每 1000 个 0.75 ms（+50%）。</p>
+<p>无关因素：形状、类型、参数数量、碰撞标签对帧时间无显著差异。</p>
+<p>附加成本与上限：本地 Avatar 参数每 1000 个额外 +1.5 ms；房间最大上限 4096 个 Contacts，超出部分直接停止工作。</p>
+<p>预算方法：Contacts 数量一律按「房间总上限 4096」统一预算（不只是单个 Avatar 的配额——房间内所有角色的 Contacts 共享这一池子）；接收端开启会产生额外 50% 成本，不需要接收事件时保持关闭状态更省。[UNKNOWN] 4096 上限与 0.5ms/1000 的测试配置细节未展开。</p>
+<hr>
+<hr>
+<h1 id="cloth-基准20-万顶点每-1000-顶点-02ms超过后急剧增加限制按整房间计本地角色按-3-倍顶点模拟colliders-使帧时间翻倍">Cloth 基准：≤20 万顶点每 1000 顶点 +0.2ms、超过后急剧增加；限制按整房间计，本地角色按 3 倍顶点模拟，Colliders 使帧时间翻倍</h1>
+<p>结论：布料（Cloth）性能数据（community-tested）：顶点 ≤20 万时每 1000 顶点 +0.2 ms；大于 20 万顶点后开销急剧增加。</p>
+<p>三条注意事项：</p>
+<ol>
+<li>顶点限制针对整个房间而非单个角色——预算按房间内所有角色 Cloth 顶点之和计算。</li>
+<li>本地 Avatar 的 Cloth 被模拟 3 次（Mirror + Shadow Clones），本地角色实际负担需按 3 倍顶点估算。</li>
+<li>Colliders 使帧时间翻倍，且每 10 个 Colliders 每个额外 +7%。</li>
+</ol>
+<p>推论：给带布料的 Avatar 做 Cross-platform 或镜像场景预算时，先按 3 倍顶点折算再加 Collider 系数，否则会严重低估实际开销。[UNKNOWN] 超过 20 万顶点后的增长曲线未给出；Colliders 测试配置未展开。</p>
+<hr>
+<hr>
+<h1 id="physbones-基准主要成本每-1000-个带顶点权重骨头-2ms层级结构与-colliders-数量影响轻微数据来自-vrchat-内部测试">PhysBones 基准：主要成本每 1000 个带顶点权重骨头 +2ms；层级结构与 Colliders 数量影响轻微，数据来自 VRChat 内部测试</h1>
+<p>结论：物理骨骼（PhysBones）性能数据（community-tested，来源为 VRChat 内部测试）：</p>
+<table>
+<thead>
+<tr>
+<th>因素</th>
+<th>影响程度</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>主要成本（每 1000 个带顶点权重的骨头）</td>
+<td>+2 ms</td>
+</tr>
+<tr>
+<td>层级结构（父子关系）</td>
+<td>轻微——组件少时较好，极端情况差异 33%</td>
+</tr>
+<tr>
+<td>Colliders 数量</td>
+<td>非常微小</td>
+</tr>
+<tr>
+<td>其他设置</td>
+<td>无明显影响</td>
+</tr>
+</tbody>
+</table>
+<p>数据边界：因为 PhysBones 在 Unity 与 VRChat 中行为差异较大，数据来自 VRChat 内部测试而非 Unity 侧实测，不能把 Unity 侧经验直接照搬。[UNKNOWN] 该内部测试的具体方法与版本未公开，无法独立复核。</p>
+<p>预算方法：PhysBones 优化以「带顶点权重的骨头数量」为主要杠杆，层级结构与 Colliders 属次要项，可后置处理。</p>
+<hr>
+<hr>
+<h1 id="组件性能快速参考表每-1000-实例帧时间动画层-10-13msdirect-bt-2-25msconstraints-1724ms-总计contacts-05075mscloth-02msphysbones-2ms">组件性能快速参考表（每 1000 实例帧时间）：动画层 ~10-13ms、Direct BT ~2-2.5ms、Constraints 1.7/2.4ms 总计、Contacts 0.5/0.75ms、Cloth 0.2ms、PhysBones 2ms</h1>
+<p>结论：各组件每 1000 实例的帧时间快速参考（community-tested，测试环境 AMD Ryzen 7 5800X + RTX 4090）：</p>
+<table>
+<thead>
+<tr>
+<th>组件</th>
+<th>帧时间</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>双状态切换动画层（被动）</td>
+<td>约 10 ms</td>
+<td>每 1000 层</td>
+</tr>
+<tr>
+<td>双状态切换动画层（主动）</td>
+<td>约 12-13 ms</td>
+<td>每 1000 层</td>
+</tr>
+<tr>
+<td>Direct Blend Tree（1D）</td>
+<td>约 2.5 ms</td>
+<td>每 1000 层</td>
+</tr>
+<tr>
+<td>Direct Blend Tree（双层）</td>
+<td>约 2 ms</td>
+<td>每 1000 层</td>
+</tr>
+<tr>
+<td>Constraints（≤680）</td>
+<td>1.7 ms</td>
+<td>总计，非每实例</td>
+</tr>
+<tr>
+<td>Constraints（681+）</td>
+<td>2.4 ms</td>
+<td>总计，跃升 +41%</td>
+</tr>
+<tr>
+<td>Contacts（关闭）</td>
+<td>0.5 ms</td>
+<td>每 1000 个</td>
+</tr>
+<tr>
+<td>Contacts（开启 Receivers）</td>
+<td>0.75 ms</td>
+<td>每 1000 个</td>
+</tr>
+<tr>
+<td>Cloth（≤20 万顶点）</td>
+<td>0.2 ms</td>
+<td>每 1000 顶点</td>
+</tr>
+<tr>
+<td>PhysBones</td>
+<td>2 ms</td>
+<td>每 1000 个带权重骨头</td>
+</tr>
+</tbody>
+</table>
+<p>口径提醒：除 Constraints 为总计外，其余均为每 1000 实例的 ms；绝对数值受测试环境影响，跨硬件看比例。该表与各章节细表数值自洽（被动层 0.01ms/层 ×1000 = 10ms），可作为装配预算的入口速查。[UNKNOWN] 待测项 Skinned mesh renderers、Lights、Animations 数值/引用影响、不同类型开关、AAPs 尚未实测，本页无对应数字。</p>
+<hr> </div> <p class="kb-source-note" data-astro-cid-lvjzyg5v>
+本文由 VRChat 开发知识库自动整理（社区整理  · 可信度 medium ），
+          遇到与手写教程冲突的地方，以官方文档为最高优先级。
+</p> <section class="comments" id="comments" data-astro-cid-lvjzyg5v> <h2 class="comments__title" data-astro-cid-lvjzyg5v>✦ 旅人留言（0）</h2> <p class="comments__empty" id="commentsEmpty" data-astro-cid-lvjzyg5v>
+还没有旅人留言 —— 有疑问就写在下面，站长都会回复。
+</p> <form class="comment-form" id="commentForm" data-target="kb-avatar-performance-benchmarks" data-astro-cid-lvjzyg5v> <p class="comment-form__title" data-astro-cid-lvjzyg5v>写下你的留言</p> <input id="cAuthor" maxlength="20" placeholder="昵称（留空则为「旅人」）" data-astro-cid-lvjzyg5v> <textarea id="cBody" maxlength="1000" required placeholder="想问的问题、想说的感谢都可以（最多 1000 字）" data-astro-cid-lvjzyg5v></textarea> <div class="comment-form__actions" data-astro-cid-lvjzyg5v> <button class="btn btn--primary" type="submit" data-astro-cid-lvjzyg5v>发布留言</button> <span class="form-hint" data-astro-cid-lvjzyg5v>留言保存在本站，站长在写作台里能看到</span> <span class="form-msg" id="cMsg" data-astro-cid-lvjzyg5v></span> </div> </form> </section> <nav class="station-nav" aria-label="站间导航" data-astro-cid-lvjzyg5v> <a href="/STELLASTOPVRC/posts/kb-avatar-ndmf-tools/" data-astro-cid-lvjzyg5v> <span class="dir" data-astro-cid-lvjzyg5v>← 上一站 · 更新的星光</span> <span class="to" data-astro-cid-lvjzyg5v>NDMF 工具生态体系</span> </a> <a href="/STELLASTOPVRC/posts/kb-avatar-performance-rank/" data-astro-cid-lvjzyg5v> <span class="dir" data-astro-cid-lvjzyg5v>下一站 · 更早的星光 →</span> <span class="to" data-astro-cid-lvjzyg5v>Avatar Performance Ranking System — 上传时 SDK 性能分级（PC/Quest 档位表、Very Poor 风险与 SPS 影响）</span> </a> </nav> </div> <aside class="toc" id="toc" hidden> <p class="toc__title">✦ 本页星图</p> <nav id="tocNav" aria-label="文章目录"></nav> </aside> <script type="module">const i=document.querySelector(".prose"),d=document.getElementById("toc"),u=document.getElementById("tocNav"),l=[];if(i&&d&&u){const c=[...i.querySelectorAll("h1, h2, h3")];if(c.length>=3){d.hidden=!1,c.forEach((o,e)=>{o.id||(o.id=`sec-${e}`);const n=document.createElement("a");n.href=`#${o.id}`;const s=(o.textContent??"").replace(/\s+/g," ").trim(),r=s.search(/[：:]/),a=r>=4?s.slice(0,r):s;n.textContent=a.length>40?`${a.slice(0,40)}…`:a,n.title=s,u.appendChild(n),l.push({a:n,h:o})});const t=()=>{let o=l[0];for(const e of l)e.h.getBoundingClientRect().top<=130&&(o=e);for(const e of l)e.a.classList.toggle("is-active",e===o)};addEventListener("scroll",t,{passive:!0}),t()}}document.querySelectorAll(".prose pre").forEach(c=>{const t=document.createElement("button");t.className="code-copy",t.type="button",t.textContent="复制",t.addEventListener("click",async()=>{const o=c.querySelector("code")?.innerText??c.innerText;try{await navigator.clipboard.writeText(o)}catch{const e=document.createElement("textarea");e.value=o,document.body.appendChild(e),e.select(),document.execCommand("copy"),e.remove()}t.textContent="已复制 ✓",t.classList.add("is-ok"),setTimeout(()=>{t.textContent="复制",t.classList.remove("is-ok")},1500)}),c.appendChild(t)});</script> </article>  </main> <footer class="site-footer"> <div class="wrap"> <p class="star-line" aria-hidden="true"> <svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> <svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> </p> <p>星之驿站 StellaStop —— 在虚拟宇宙中，为你保留一座驿站</p> <p class="site-footer__disclaimer">
+该网页目前是测试阶段，仅用于测试，所有内容仅供参考；内容全部为引用互联网当中的信息。
+</p> <p>© 2026 星之驿站 · 由 <a href="https://astro.build">Astro</a> 与星光驱动</p> <p> <a data-desk-login hidden title="写作台：登录 / 注册">登录 / 注册</a> ·
+<a href="/STELLASTOPVRC/announcements/">官方公告</a> ·
+<a href="/STELLASTOPVRC/ai/">问星 AI</a> ·
+<a href="/STELLASTOPVRC/feedback/">旅人留言板</a> </p> </div> </footer> <button class="to-top" id="toTop" aria-label="回到顶部"> <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"> <path d="M12 20V5"></path> <path d="M5.5 11.5 12 5l6.5 6.5"></path> </svg> </button> <script type="module">const e=document.getElementById("toTop");if(e){const t=()=>e.classList.toggle("is-visible",scrollY>480);addEventListener("scroll",t,{passive:!0}),t(),e.addEventListener("click",()=>{const o=matchMedia("(prefers-reduced-motion: reduce)").matches;scrollTo({top:0,behavior:o?"auto":"smooth"})})}</script> <script>(function(){const deskConfigured = "";
+
+      /* 写作台探测（页面尾部执行，DOM 已就绪）：
+         1. 计算写作台地址：站点配置 deskUrl（公网部署时填）> 本机默认 localhost:4322 > 同主机 4322
+         2. 探测 /api/gate/status —— 在线才点亮「登录 / 注册」入口，并复用给验证门横幅
+         3. 不在线则保持隐藏，绝不会把访客拽进内网地址；同时给出一次性「镜像模式」提示 */
+      (function () {
+        var host = location.hostname;
+        var isLocal = host === 'localhost' || host === '127.0.0.1' || host === '[::1]';
+        var desk = deskConfigured ||
+          (isLocal ? 'http://localhost:4322' : location.protocol + '//' + host + ':4322');
+        window.STELLA_DESK = desk;
+
+        function revealLogin() {
+          document.querySelectorAll('[data-desk-login]').forEach(function (a) {
+            a.href = desk + '/admin';
+            a.removeAttribute('hidden');
+          });
+        }
+        function showBanner(css, html, shiftHeader) {
+          var bar = document.createElement('div');
+          bar.style.cssText = css;
+          bar.innerHTML = html;
+          document.body.prepend(bar);
+          if (shiftHeader) {
+            var header = document.querySelector('.site-header');
+            if (header) header.style.marginTop = '42px';
+          }
+        }
+        function hintMirrorMode() {
+          try {
+            if (sessionStorage.getItem('stella-desk-hint')) return;
+            sessionStorage.setItem('stella-desk-hint', '1');
+          } catch (e) { /* 无痕模式等：忽略 */ }
+          var tip = document.createElement('div');
+          tip.style.cssText = 'position:fixed;left:14px;bottom:14px;z-index:9998;max-width:min(92vw,430px);padding:.65rem .9rem;border-radius:12px;background:rgba(18,20,44,.92);border:1px solid rgba(150,142,255,.35);color:#e8e6ff;font-size:.82rem;line-height:1.6;font-family:system-ui,sans-serif;box-shadow:0 8px 30px rgba(0,0,0,.35)';
+          tip.innerHTML = 'ℹ️ 静态镜像模式：登录 / 评论 / AI 等互动功能需要站长写作台在线，当前不可用。' +
+            '<span id="stellaDeskHintClose" style="float:right;cursor:pointer;opacity:.75;font-weight:700;margin-left:.6rem" title="关闭">×</span>';
+          document.body.appendChild(tip);
+          var close = function () { tip.remove(); };
+          tip.querySelector('#stellaDeskHintClose').addEventListener('click', close);
+          setTimeout(close, 9000);
+        }
+
+        try {
+          var ctrl = new AbortController();
+          var timer = setTimeout(function () { ctrl.abort(); }, 2500);
+          fetch(desk + '/api/gate/status', { credentials: 'include', signal: ctrl.signal })
+            .then(function (r) { return r.ok ? r.json() : null; })
+            .then(function (d) {
+              clearTimeout(timer);
+              if (!d) throw new Error('desk-offline');
+              window.STELLA_DESK_OK = true;
+              revealLogin();
+              if (d.regionBlocked) {
+                showBanner(
+                  'position:fixed;top:0;left:0;right:0;z-index:9999;padding:1.2rem;text-align:center;background:#1a0a0a;color:#ff9ed2;font-size:.95rem;border-bottom:2px solid #ff4d6d;font-family:system-ui,sans-serif',
+                  '⛔ 你所在的地区（' + (d.regionCountry || '未知') + '）暂不开放访问。',
+                  false
+                );
+                return;
+              }
+              if (d.enabled && !d.passed) {
+                showBanner(
+                  'position:fixed;top:0;left:0;right:0;z-index:9999;padding:0.7rem;text-align:center;background:linear-gradient(94deg,rgba(143,127,247,.25),rgba(98,200,245,.18));border-bottom:1px solid rgba(150,142,255,.3);color:#f0efff;font-size:.88rem;font-family:system-ui,sans-serif',
+                  '🔒 本站启用了安全验证 —— <a href="' + desk + '/gate?next=' + encodeURIComponent(location.href) + '" style="color:#ffd98e;font-weight:700;text-decoration:underline">点击完成验证</a>，通过后即可使用全部功能（30 天免验）。',
+                  true
+                );
+              }
+            })
+            .catch(function () {
+              clearTimeout(timer);
+              window.STELLA_DESK_OK = false;
+              hintMirrorMode();
+            });
+        } catch (e) { /* 忽略 */ }
+      })();
+    })();</script> </body> </html> <script type="module">const m=document.getElementById("commentForm"),s=document.getElementById("cMsg"),u=`${location.protocol}//${location.hostname}:4322/api/message`;function r(e,t=!1){s&&(s.textContent=e,s.classList.toggle("is-err",t),s.classList.toggle("is-ok",!t))}function y(){const e=new Date,t=n=>String(n).padStart(2,"0");return`${e.getFullYear()}-${t(e.getMonth()+1)}-${t(e.getDate())}`}function f(e){let t=7;for(const n of e)t=(t*31+n.charCodeAt(0))%360;return t}function g(e,t){const n=document.createElement("li");n.className="comment",n.innerHTML=`
+      <span class="comment__avatar"></span>
+      <div class="comment__bubble">
+        <div class="comment__head">
+          <span class="comment__name"></span>
+          <time class="comment__date">${y()}</time>
+        </div>
+        <p class="comment__body"></p>
+      </div>`;const o=n.querySelector(".comment__avatar");return o.style.setProperty("--h",String(f(e))),o.textContent=e.slice(0,1),n.querySelector(".comment__name").textContent=e,n.querySelector(".comment__body").textContent=t,n}m?.addEventListener("submit",async e=>{e.preventDefault();const t=document.getElementById("cBody").value.trim();if(!t)return r("留言内容不能为空哦",!0);const n=document.getElementById("cAuthor").value.trim()||"旅人",o=m.querySelector("button");o&&(o.disabled=!0);try{const c=await fetch(u,{credentials:"include",method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({target:m.dataset.target,kind:"comment",author:n,body:t})}),d=await c.json().catch(()=>({}));if(!c.ok)throw new Error(d.error||`发送失败（${c.status}）`);const l=document.querySelector(".comment-list");l&&l.appendChild(g(n,t)),document.getElementById("commentsEmpty")?.remove(),document.getElementById("cBody").value="",r("留言已发布，感谢支持 ✦");const a=document.querySelector(".comments__title"),i=a?.textContent?.match(/（(\d+)）/);a&&i&&(a.textContent=a.textContent.replace(/（\d+）/,`（${Number(i[1])+1}）`))}catch(c){r(c instanceof TypeError?"写作台没在运行，暂时收不到留言 —— 双击「启动博客.bat」就好":c.message,!0)}finally{o&&(o.disabled=!1)}});</script> 

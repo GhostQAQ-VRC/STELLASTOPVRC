@@ -1,0 +1,450 @@
+<!DOCTYPE html><html lang="zh-CN"> <head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="generator" content="Astro v5.18.2"><meta name="description" content="UdonSharp 使用 C# 语法作为前端表达，但编译目标是 Udon Assembly/Udon Bytecode，运行在 Udon VM 上。不得默认任何完整 C# 特性可用。"><meta name="theme-color" content="#070a1c"><meta property="og:title" content="Rule Set: UdonSharp Language Limits · 星之驿站 StellaStop"><meta property="og:description" content="UdonSharp 使用 C# 语法作为前端表达，但编译目标是 Udon Assembly/Udon Bytecode，运行在 Udon VM 上。不得默认任何完整 C# 特性可用。"><meta property="og:type" content="website"><meta name="twitter:card" content="summary"><link rel="icon" type="image/svg+xml" href="/STELLASTOPVRC/favicon.svg"><script>
+      // 在渲染前恢复主题与特效档位，避免闪一下默认状态
+      try {
+        document.documentElement.dataset.theme =
+          localStorage.getItem('stella-theme') || 'nebula';
+        document.documentElement.dataset.fx =
+          localStorage.getItem('stella-fx') || 'standard';
+      } catch {
+        /* 隐私模式读不到就算了 */
+      }
+    </script><link rel="stylesheet" href="/STELLASTOPVRC/custom-vars.css"><title>Rule Set: UdonSharp Language Limits · 星之驿站 StellaStop</title><link rel="stylesheet" href="/STELLASTOPVRC/_astro/about.Bgh6wcGl.css">
+<style>.post-head__meta[data-astro-cid-lvjzyg5v]{color:var(--ink-faint);font-family:var(--font-mono);font-size:.82rem}.post-head[data-astro-cid-lvjzyg5v] .chip-row[data-astro-cid-lvjzyg5v]{margin-top:1rem}.kb-source-note[data-astro-cid-lvjzyg5v]{max-width:760px;margin:2.2rem auto 0;font-size:.82rem;color:var(--ink-faint);border-top:1px dashed var(--line);padding-top:1rem}
+</style></head> <body> <div class="site-notice" id="siteNotice"> <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> <span class="site-notice__text">欢迎来到星之驿站！</span> <button class="site-notice__close" id="noticeClose" type="button" aria-label="关闭公告">
+×
+</button> </div> <a class="skip-link" href="#main">跳到主要内容</a> <canvas id="starfield" aria-hidden="true" data-astro-cid-ra7sfcwn></canvas> <div class="fx-aurora fx-aurora--a" aria-hidden="true" data-astro-cid-ra7sfcwn></div> <div class="fx-aurora fx-aurora--b" aria-hidden="true" data-astro-cid-ra7sfcwn></div>  <script type="module">const u=document.getElementById("starfield");if(u){let F=function(){const n=Math.random();return n<.1?"gold":n<.42?"blue":"white"},v=function(){const n=Math.min(window.devicePixelRatio||1,2);s=window.innerWidth,d=window.innerHeight,u.width=s*n,u.height=d*n,u.style.width=`${s}px`,u.style.height=`${d}px`,t.setTransform(n,0,0,n,0,0);const e=Math.min(190,Math.round(s*d/8500));l=Array.from({length:e},()=>({x:Math.random()*s,y:Math.random()*d,r:r(.4,1.7),base:r(.25,.8),amp:r(.12,.4),speed:r(6e-4,.0022),phase:r(0,Math.PI*2),c:F()})),C=Array.from({length:26},()=>({x:Math.random()*s,y:Math.random()*d,r:r(.9,2.4),vx:r(-.006,.006),vy:r(-.02,-.006),base:r(.2,.5),speed:r(8e-4,.002),phase:r(0,Math.PI*2),c:Math.random()<.5?"gold":"violet"})),c==="off"&&m(0,!0)},D=function(n){const e=Math.random()<.5?1:-1,o=r(Math.PI/7,Math.PI/5),a=r(.45,.75);y.push({x:r(s*.15,s*.85),y:r(-20,d*.3),vx:Math.cos(o)*a*e,vy:Math.sin(o)*a,born:n,life:r(750,1050),len:r(100,170)})},S=function(n){y=y.filter(e=>n-e.born<e.life);for(const e of y){const o=(n-e.born)/e.life,a=e.x+e.vx*(n-e.born),i=e.y+e.vy*(n-e.born),f=o<.15?o/.15:o>.7?(1-o)/.3:1,h=Math.hypot(e.vx,e.vy),x=e.vx/h,g=e.vy/h,b=t.createLinearGradient(a,i,a-x*e.len,i-g*e.len);b.addColorStop(0,`rgba(236,242,255,${(.85*f).toFixed(3)})`),b.addColorStop(1,"rgba(236,242,255,0)"),t.strokeStyle=b,t.lineWidth=1.6,t.lineCap="round",t.beginPath(),t.moveTo(a,i),t.lineTo(a-x*e.len,i-g*e.len),t.stroke()}},B=function(){let o=0;t.lineWidth=.7;for(let a=0;a<l.length&&o<26;a++)for(let i=a+1;i<l.length&&o<26;i++){const f=l[a].x-l[i].x,h=l[a].y-l[i].y,x=f*f+h*h;if(x<16900){const g=(1-Math.sqrt(x)/130)*.17;t.strokeStyle=`rgba(178,170,255,${g.toFixed(3)})`,t.beginPath(),t.moveTo(l[a].x,l[a].y),t.lineTo(l[i].x,l[i].y),t.stroke(),o++}}},X=function(n){for(const e of C){e.x+=e.vx*16,e.y+=e.vy*16,e.y<-12&&(e.y=d+10),e.x<-12&&(e.x=s+10),e.x>s+12&&(e.x=-10);const o=Math.max(.05,e.base+.25*Math.sin(n*e.speed+e.phase)),[a,i,f]=A[e.c];t.beginPath(),t.arc(e.x,e.y,e.r,0,7),t.shadowBlur=9,t.shadowColor=`rgba(${a},${i},${f},0.9)`,t.fillStyle=`rgba(${a},${i},${f},${o.toFixed(3)})`,t.fill()}t.shadowBlur=0},m=function(n,e=!1){t.clearRect(0,0,s,d);for(const o of l){const a=c==="off"?o.base:Math.max(.05,o.base+o.amp*Math.sin(n*o.speed+o.phase)),[i,f,h]=A[o.c];t.beginPath(),t.arc(o.x,o.y,o.r,0,7),o.r>1.25?(t.shadowBlur=7,t.shadowColor=`rgba(${i},${f},${h},0.85)`):t.shadowBlur=0,t.fillStyle=`rgba(${i},${f},${h},${a.toFixed(3)})`,t.fill()}if(t.shadowBlur=0,c!=="off"&&!e){c==="fancy"&&(B(),X(n));const o=c==="fancy"?r(2600,6e3):r(4200,9500);n>P&&(D(n),P=n+o),S(n)}},$=function(n){m(n),M=requestAnimationFrame($)},p=function(){if(c==="off"){m(0,!0);return}cancelAnimationFrame(M),M=requestAnimationFrame($)},w=function(){cancelAnimationFrame(M),t.clearRect(0,0,s,d),m(0,!0)};const t=u.getContext("2d"),k=matchMedia("(prefers-reduced-motion: reduce)").matches,A={white:[240,240,255],blue:[150,215,250],gold:[255,218,150],violet:[178,170,255]};let s=0,d=0,l=[],C=[],y=[],P=2500,M=0,c=document.documentElement.dataset.fx||"standard";k&&(c="off");const r=(n,e)=>n+Math.random()*(e-n);v(),addEventListener("resize",v),document.addEventListener("stella-fx-change",n=>{c=n.detail,c==="off"?w():p()}),c==="off"?m(0,!0):(p(),document.addEventListener("visibilitychange",()=>{document.hidden?w():p()}))}</script> <header class="site-header"> <div class="wrap site-header__inner"> <a class="logo" href="/STELLASTOPVRC/"> <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> <span>星之驿站</span> <span class="logo__romaji">StellaStop</span> </a> <div class="header-right"> <nav class="site-nav" aria-label="站内导航"> <a href="/STELLASTOPVRC/"> 首页 </a><a href="/STELLASTOPVRC/start/"> 新手 </a><a href="/STELLASTOPVRC/posts/"> 教程 </a><a href="/STELLASTOPVRC/videos/"> 视频 </a><a href="/STELLASTOPVRC/resources/"> 资源 </a><a href="/STELLASTOPVRC/booth/"> Booth </a><a href="/STELLASTOPVRC/announcements/"> 公告 </a><a href="/STELLASTOPVRC/ai/"> 问星 </a><a href="/STELLASTOPVRC/changelog/"> 更新日志 </a><a href="/STELLASTOPVRC/about/"> 关于 </a> </nav> <a class="login-link" data-desk-login hidden title="写作台：登录 / 注册后可发教程、传资源">
+登录 / 注册
+</a> <div class="theme-switch"> <button class="theme-switch__btn" id="themeBtn" type="button" aria-haspopup="listbox" aria-expanded="false" aria-label="切换主题配色" title="切换主题配色"> <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"> <path d="M12 3a9 9 0 1 0 9 9c0-1.2-1-2-2.2-2H17a2 2 0 0 1-2-2V6.2C15 5 14.2 4 13 4.4A9 9 0 0 0 12 3Z"></path> <circle cx="7.5" cy="11.5" r="1" fill="currentColor" stroke="none"></circle> <circle cx="10" cy="7.5" r="1" fill="currentColor" stroke="none"></circle> <circle cx="15" cy="7" r="1" fill="currentColor" stroke="none"></circle> </svg> </button> <div class="theme-pop" id="themePop" role="listbox" aria-label="选择主题" hidden> <button class="theme-opt" type="button" role="option" data-theme-value="nebula" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#8f7ff7"></span><span class="dot" style="background:#62c8f5"></span><span class="dot" style="background:#ffd98e"></span> </span> <span class="theme-opt__name">星云 · 蓝紫</span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt" type="button" role="option" data-theme-value="sakura" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#ff8fc7"></span><span class="dot" style="background:#c79bff"></span><span class="dot" style="background:#ffd08e"></span> </span> <span class="theme-opt__name">樱语 · 粉紫</span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt" type="button" role="option" data-theme-value="miku" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#2ed3c2"></span><span class="dot" style="background:#6ea8ff"></span><span class="dot" style="background:#ffe08e"></span> </span> <span class="theme-opt__name">葱色 · 青绿</span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt" type="button" role="option" data-theme-value="ember" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#ffb35c"></span><span class="dot" style="background:#ff7e6b"></span><span class="dot" style="background:#ffd98e"></span> </span> <span class="theme-opt__name">暮金 · 暖橙</span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt" type="button" role="option" data-theme-value="dawn" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#6a5ce8"></span><span class="dot" style="background:#e0568f"></span><span class="dot" style="background:#b8821e"></span> </span> <span class="theme-opt__name">晨星 · 浅色</span> <span class="theme-opt__mark">✦</span> </button> </div> </div> <script type="module">const a=document.getElementById("themeBtn"),n=document.getElementById("themePop");function s(c){document.documentElement.dataset.theme=c;try{localStorage.setItem("stella-theme",c)}catch{}const e=getComputedStyle(document.documentElement).getPropertyValue("--bg-deep").trim();document.querySelector('meta[name="theme-color"]')?.setAttribute("content",e||"#070a1c"),document.querySelectorAll(".theme-opt").forEach(t=>{const d=t.dataset.themeValue===c;t.classList.toggle("is-active",d),t.setAttribute("aria-selected",String(d))})}if(a&&n){const c=document.documentElement.dataset.theme||"nebula";document.querySelectorAll(".theme-opt").forEach(e=>{const t=e.dataset.themeValue===c;e.classList.toggle("is-active",t),e.setAttribute("aria-selected",String(t))}),a.addEventListener("click",e=>{e.stopPropagation();const t=n.hidden;n.hidden=!t,a.setAttribute("aria-expanded",String(t))}),document.addEventListener("click",e=>{!n.hidden&&!e.target.closest(".theme-switch")&&(n.hidden=!0,a.setAttribute("aria-expanded","false"))}),document.addEventListener("keydown",e=>{e.key==="Escape"&&!n.hidden&&(n.hidden=!0,a.setAttribute("aria-expanded","false"),a.focus())}),n.addEventListener("click",e=>{const t=e.target.closest(".theme-opt");t&&(s(t.dataset.themeValue??"nebula"),n.hidden=!0,a.setAttribute("aria-expanded","false"))})}</script> <div class="theme-switch fx-switch"> <button class="theme-switch__btn" id="fxBtn" type="button" aria-haspopup="listbox" aria-expanded="false" aria-label="背景特效设置" title="背景特效设置"> <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"> <path d="M5 3v4M3 5h4M6.5 17.5v3M5 19h3"></path> <path d="M14.5 4.5 16 9l4.5 1.5L16 12l-1.5 4.5L13 12l-4.5-1.5L13 9l1.5-4.5Z"></path> </svg> </button> <div class="theme-pop" id="fxPop" role="listbox" aria-label="背景特效" hidden> <button class="theme-opt fx-opt" type="button" role="option" data-fx-value="off" aria-selected="false"> <span class="fx-opt__body"> <span class="fx-opt__name">关闭特效</span> <span class="fx-opt__hint">最省电</span> </span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt fx-opt" type="button" role="option" data-fx-value="standard" aria-selected="false"> <span class="fx-opt__body"> <span class="fx-opt__name">标准</span> <span class="fx-opt__hint">闪烁星空 + 流星</span> </span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt fx-opt" type="button" role="option" data-fx-value="fancy" aria-selected="false"> <span class="fx-opt__body"> <span class="fx-opt__name">华丽</span> <span class="fx-opt__hint">追加极光 / 星座 / 光尘</span> </span> <span class="theme-opt__mark">✦</span> </button> </div> </div> <script type="module">const n=document.getElementById("fxBtn"),a=document.getElementById("fxPop");function s(d){document.documentElement.dataset.fx=d;try{localStorage.setItem("stella-fx",d)}catch{}document.querySelectorAll("#fxPop .fx-opt").forEach(t=>{const e=t.dataset.fxValue===d;t.classList.toggle("is-active",e),t.setAttribute("aria-selected",String(e))}),document.dispatchEvent(new CustomEvent("stella-fx-change",{detail:d}))}if(n&&a){const d=document.documentElement.dataset.fx||"standard";document.querySelectorAll("#fxPop .fx-opt").forEach(t=>{const e=t.dataset.fxValue===d;t.classList.toggle("is-active",e),t.setAttribute("aria-selected",String(e))}),n.addEventListener("click",t=>{t.stopPropagation();const e=a.hidden;a.hidden=!e,n.setAttribute("aria-expanded",String(e))}),document.addEventListener("click",t=>{!a.hidden&&!t.target.closest(".fx-switch")&&(a.hidden=!0,n.setAttribute("aria-expanded","false"))}),document.addEventListener("keydown",t=>{t.key==="Escape"&&!a.hidden&&(a.hidden=!0,n.setAttribute("aria-expanded","false"),n.focus())}),a.addEventListener("click",t=>{const e=t.target.closest(".fx-opt");e&&(s(e.dataset.fxValue??"standard"),a.hidden=!0,n.setAttribute("aria-expanded","false"))})}</script> </div> </div> </header> <main id="main">  <article class="wrap post-layout" data-astro-cid-lvjzyg5v> <div class="post-main page-fade" data-astro-cid-lvjzyg5v> <header class="post-head" data-astro-cid-lvjzyg5v> <a class="crumb" href="/STELLASTOPVRC/posts/" data-astro-cid-lvjzyg5v>← 返回教程档案</a> <div class="post-head__meta" style="--accent:var(--ink-dim)" data-astro-cid-lvjzyg5v> <span class="badge" data-cat="核心规则" data-astro-cid-lvjzyg5v>核心规则</span> <time datetime="2026-06-20" data-astro-cid-lvjzyg5v>2026-06-20</time> <span class="post-head__reading" data-astro-cid-lvjzyg5v>⏱ 约 21 分钟</span>  </div> <h1 class="post-head__title" data-astro-cid-lvjzyg5v>Rule Set: UdonSharp Language Limits</h1> <p class="post-head__lead" data-astro-cid-lvjzyg5v>UdonSharp 使用 C# 语法作为前端表达，但编译目标是 Udon Assembly/Udon Bytecode，运行在 Udon VM 上。不得默认任何完整 C# 特性可用。</p> <div class="chip-row" data-astro-cid-lvjzyg5v> <a class="chip" href="/STELLASTOPVRC/posts/?tag=%E7%9F%A5%E8%AF%86%E5%BA%93" data-astro-cid-lvjzyg5v> 知识库 </a><a class="chip" href="/STELLASTOPVRC/posts/?tag=concepts" data-astro-cid-lvjzyg5v> concepts </a> </div> </header> <div class="prose" data-astro-cid-lvjzyg5v> <h1 id="rule-set-udonsharp-language-limits">Rule Set: UdonSharp Language Limits</h1>
+<blockquote>
+<p>SDK Version: VRChat SDK 3.x
+UdonSharp Version: 1.x
+Last Verified: 2026-06-15
+<strong>字节码级参考</strong>:<code>memory/world/udon/vm-and-assembly.md</code> - PUSH/COPY/EXTERN 实现的底层细节,所有 UdonSharp 限制的最终约束来源</p>
+</blockquote>
+<hr>
+<h2 id="rule-ll-01-udonsharp-is-not-full-c">RULE-LL-01: UdonSharp Is Not Full C#</h2>
+<h3 id="rule">Rule</h3>
+<p>UdonSharp 使用 C# 语法作为前端表达，但编译目标是 Udon Assembly/Udon Bytecode，运行在 Udon VM 上。不得默认任何完整 C# 特性可用。</p>
+<h3 id="reason">Reason</h3>
+<p>Udon VM 是一个受限的解释执行环境。UdonSharp 编译器不支持大量 C# 特性。编译后的产物不是 IL，而是 Udon Assembly。</p>
+<h3 id="impact">Impact</h3>
+<ul>
+<li>使用不支持特性会导致编译错误或运行时崩溃</li>
+<li>部分特性可能”静默失败”——编译通过但行为异常</li>
+<li>必须逐一验证每个 C# 特性的可用性</li>
+</ul>
+<hr>
+<h2 id="rule-ll-02-prohibited-c-features">RULE-LL-02: Prohibited C# Features</h2>
+<p>以下 C# 特性在 UdonSharp 中禁止或应极力避免：</p>
+<h3 id="集合类">集合类</h3>
+<ul>
+<li><code>List&#x3C;T></code> — 使用数组或 <code>DataList</code></li>
+<li><code>Dictionary&#x3C;TKey, TValue></code> — 使用 <code>DataDictionary</code></li>
+<li>LINQ 任何形式 — 使用显式 <code>for</code> 循环</li>
+<li>迭代器 / <code>yield return</code></li>
+</ul>
+<h3 id="异步--异常">异步 / 异常</h3>
+<ul>
+<li><code>async</code> / <code>await</code> — Udon VM 不支持</li>
+<li><code>try</code> / <code>catch</code> / <code>throw</code> / <code>finally</code> — Udon VM 不支持异常处理</li>
+<li>Coroutine (<code>IEnumerator</code>, <code>StartCoroutine</code>) — 使用 <code>SendCustomEventDelayedSeconds</code></li>
+</ul>
+<h3 id="泛型与委托">泛型与委托</h3>
+<ul>
+<li>复杂泛型 — 仅支持简单泛型约束</li>
+<li><code>Action&#x3C;T></code>, <code>Func&#x3C;T></code>, delegate 关键字 — 使用 <code>SendCustomEvent</code></li>
+<li>Runtime <code>AddListener</code> / <code>RemoveListener</code> on UnityEvent</li>
+<li>Lambda 表达式</li>
+</ul>
+<h3 id="反射与动态">反射与动态</h3>
+<ul>
+<li><code>System.Reflection</code> 任何成员</li>
+<li><code>dynamic</code> 关键字</li>
+<li><code>GetType()</code>, <code>typeof()</code> 反射用法</li>
+<li><code>Activator.CreateInstance</code></li>
+</ul>
+<h3 id="多线程">多线程</h3>
+<ul>
+<li><code>System.Threading</code> 任何成员</li>
+<li><code>Task</code>, <code>Thread</code>, <code>ThreadPool</code></li>
+</ul>
+<h3 id="其他">其他</h3>
+<ul>
+<li><code>switch</code> on string types — 用 <code>if/else</code> 替代</li>
+<li><code>String.Format</code> — 简单拼接可接受，高频场景避免</li>
+<li><code>enum.TryParse</code> — 不可用</li>
+</ul>
+<hr>
+<h2 id="rule-ll-03-preferred-patterns">RULE-LL-03: Preferred Patterns</h2>
+<h3 id="集合与迭代">集合与迭代</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="csharp"><code><span class="line"><span style="color:#6A737D">// ✅ 正确</span></span>
+<span class="line"><span style="color:#B392F0">GameObject</span><span style="color:#E1E4E8">[] </span><span style="color:#B392F0">targets</span><span style="color:#F97583"> =</span><span style="color:#F97583"> new</span><span style="color:#B392F0"> GameObject</span><span style="color:#E1E4E8">[</span><span style="color:#79B8FF">16</span><span style="color:#E1E4E8">];</span></span>
+<span class="line"><span style="color:#F97583">for</span><span style="color:#E1E4E8"> (</span><span style="color:#F97583">int</span><span style="color:#B392F0"> i</span><span style="color:#F97583"> =</span><span style="color:#79B8FF"> 0</span><span style="color:#E1E4E8">; i </span><span style="color:#F97583">&#x3C;</span><span style="color:#E1E4E8"> targets.Length; i</span><span style="color:#F97583">++</span><span style="color:#E1E4E8">) { </span><span style="color:#F97583">..</span><span style="color:#E1E4E8">. }</span></span>
+<span class="line"><span style="color:#B392F0">DataList</span><span style="color:#B392F0"> list</span><span style="color:#F97583"> =</span><span style="color:#F97583"> new</span><span style="color:#B392F0"> DataList</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#B392F0">DataDictionary</span><span style="color:#B392F0"> dict</span><span style="color:#F97583"> =</span><span style="color:#F97583"> new</span><span style="color:#B392F0"> DataDictionary</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// ❌ 错误</span></span>
+<span class="line"><span style="color:#B392F0">List</span><span style="color:#E1E4E8">&#x3C;</span><span style="color:#B392F0">GameObject</span><span style="color:#E1E4E8">> </span><span style="color:#B392F0">targets</span><span style="color:#F97583"> =</span><span style="color:#F97583"> new</span><span style="color:#B392F0"> List</span><span style="color:#E1E4E8">&#x3C;</span><span style="color:#B392F0">GameObject</span><span style="color:#E1E4E8">>();</span></span>
+<span class="line"><span style="color:#F97583">var</span><span style="color:#B392F0"> result</span><span style="color:#F97583"> =</span><span style="color:#E1E4E8"> targets.</span><span style="color:#B392F0">Where</span><span style="color:#E1E4E8">(</span><span style="color:#B392F0">x</span><span style="color:#F97583"> =></span><span style="color:#E1E4E8"> x.activeSelf);</span></span></code></pre>
+<h3 id="延迟调用">延迟调用</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="csharp"><code><span class="line"><span style="color:#6A737D">// ✅ 正确</span></span>
+<span class="line"><span style="color:#B392F0">SendCustomEventDelayedSeconds</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">nameof</span><span style="color:#E1E4E8">(_DelayedAction), </span><span style="color:#79B8FF">1.0f</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// ❌ 错误</span></span>
+<span class="line"><span style="color:#F97583">yield</span><span style="color:#F97583"> return</span><span style="color:#F97583"> new</span><span style="color:#B392F0"> WaitForSeconds</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">1.0f</span><span style="color:#E1E4E8">);</span></span></code></pre>
+<h3 id="事件通信">事件通信</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="csharp"><code><span class="line"><span style="color:#6A737D">// ✅ 正确</span></span>
+<span class="line"><span style="color:#B392F0">SendCustomNetworkEvent</span><span style="color:#E1E4E8">(VRC.Udon.Common.Interfaces.NetworkEventTarget.All, </span><span style="color:#F97583">nameof</span><span style="color:#E1E4E8">(PlayEffect));</span></span>
+<span class="line"><span style="color:#B392F0">SendCustomEvent</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">nameof</span><span style="color:#E1E4E8">(OnStateChanged));</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// ❌ 错误</span></span>
+<span class="line"><span style="color:#E1E4E8">myEvent.</span><span style="color:#B392F0">AddListener</span><span style="color:#E1E4E8">(MyHandler);</span></span>
+<span class="line"><span style="color:#B392F0">Action</span><span style="color:#E1E4E8">&#x3C;</span><span style="color:#F97583">int</span><span style="color:#E1E4E8">> </span><span style="color:#B392F0">callback</span><span style="color:#F97583"> =</span><span style="color:#B392F0"> x</span><span style="color:#F97583"> =></span><span style="color:#E1E4E8"> { </span><span style="color:#F97583">..</span><span style="color:#E1E4E8">. };</span></span></code></pre>
+<hr>
+<h2 id="rule-ll-04-conditional-compilation">RULE-LL-04: Conditional Compilation</h2>
+<h3 id="rule-1">Rule</h3>
+<p>使用 <code>#if UNITY_EDITOR</code> 或 <code>#if UDONSHARP</code> 等条件编译来区分编辑器代码和运行时代码。</p>
+<h3 id="reason-1">Reason</h3>
+<p>某些 Unity Editor API 在 Udon 运行时不可用。条件编译可以保留编辑器工具代码而不影响运行时。</p>
+<hr>
+<hr>
+<h2 id="rule-ll-05-getcomponent-restrictions">RULE-LL-05: GetComponent Restrictions</h2>
+<h3 id="rule-2">Rule</h3>
+<p><code>GetComponent&#x3C;T>()</code> 泛型形式在 UdonSharp 中不可用（SDK &#x3C; 3.8）。必须使用 cast 语法。SDK 3.8+ 对 UdonSharpBehaviour 子类可用泛型形式。</p>
+<h3 id="pattern">Pattern</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="csharp"><code><span class="line"><span style="color:#6A737D">// ❌ 错误 (SDK &#x3C; 3.8)</span></span>
+<span class="line"><span style="color:#B392F0">UdonBehaviour</span><span style="color:#B392F0"> ub</span><span style="color:#F97583"> =</span><span style="color:#B392F0"> GetComponent</span><span style="color:#E1E4E8">&#x3C;</span><span style="color:#B392F0">UdonBehaviour</span><span style="color:#E1E4E8">>();</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// ✅ 正确 (所有版本)</span></span>
+<span class="line"><span style="color:#B392F0">UdonBehaviour</span><span style="color:#B392F0"> ub</span><span style="color:#F97583"> =</span><span style="color:#E1E4E8"> (</span><span style="color:#B392F0">UdonBehaviour</span><span style="color:#E1E4E8">)</span><span style="color:#B392F0">GetComponent</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">typeof</span><span style="color:#E1E4E8">(</span><span style="color:#B392F0">UdonBehaviour</span><span style="color:#E1E4E8">));</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// ✅ 正确 (SDK 3.8+)</span></span>
+<span class="line"><span style="color:#B392F0">MyScript</span><span style="color:#B392F0"> s</span><span style="color:#F97583"> =</span><span style="color:#B392F0"> GetComponent</span><span style="color:#E1E4E8">&#x3C;</span><span style="color:#B392F0">MyScript</span><span style="color:#E1E4E8">>();</span></span></code></pre>
+<hr>
+<h2 id="rule-ll-06-struct-mutation-requires-assignment">RULE-LL-06: Struct Mutation Requires Assignment</h2>
+<h3 id="rule-3">Rule</h3>
+<p>结构体方法不修改原始值。必须使用返回值。</p>
+<h3 id="pattern-1">Pattern</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="csharp"><code><span class="line"><span style="color:#6A737D">// ❌ 错误: v 未被修改</span></span>
+<span class="line"><span style="color:#E1E4E8">v.</span><span style="color:#B392F0">Normalize</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// ✅ 正确: 使用返回值</span></span>
+<span class="line"><span style="color:#E1E4E8">v </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> v.normalized;</span></span></code></pre>
+<hr>
+<h2 id="rule-ll-07-field-initializers-are-compile-time">RULE-LL-07: Field Initializers Are Compile-Time</h2>
+<h3 id="rule-4">Rule</h3>
+<p>字段初始化器在编译时求值。场景相关引用必须在 <code>Start()</code> 中获取。</p>
+<h3 id="pattern-2">Pattern</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="csharp"><code><span class="line"><span style="color:#6A737D">// ✅ OK: 编译时常量</span></span>
+<span class="line"><span style="color:#F97583">private</span><span style="color:#F97583"> int</span><span style="color:#B392F0"> maxPlayers</span><span style="color:#F97583"> =</span><span style="color:#79B8FF"> 10</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// ❌ 错误: 运行时值在字段初始化器（所有实例共享同一值）</span></span>
+<span class="line"><span style="color:#6A737D">// private int rng = Random.Range(0, 100);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// ✅ OK: Start() 中初始化</span></span>
+<span class="line"><span style="color:#F97583">private</span><span style="color:#F97583"> int</span><span style="color:#B392F0"> rng</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">void</span><span style="color:#B392F0"> Start</span><span style="color:#E1E4E8">() { rng </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> Random.</span><span style="color:#B392F0">Range</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">0</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">100</span><span style="color:#E1E4E8">); }</span></span></code></pre>
+<hr>
+<h2 id="rule-ll-08-udonsharpprogramasset-requirement">RULE-LL-08: UdonSharpProgramAsset Requirement</h2>
+<h3 id="rule-5">Rule</h3>
+<p>每个 <code>.cs</code> UdonSharpBehaviour 需要对应的 <code>.asset</code>（UdonSharpProgramAsset）文件。创建新脚本后必须确认 <code>Assets/Editor/UdonSharpProgramAssetAutoGenerator.cs</code> 存在，否则需要安装。</p>
+<h3 id="impact-1">Impact</h3>
+<p>没有 <code>.asset</code> → “The associated script cannot be loaded”，脚本不编译到 Udon。</p>
+<hr>
+<h2 id="rule-ll-09-udonbehaviour-program-source-wiring">RULE-LL-09: UdonBehaviour Program Source Wiring</h2>
+<h3 id="rule-6">Rule</h3>
+<p>UdonBehaviour 组件的 <code>programSource</code> 字段必须引用匹配的 UdonSharpProgramAsset。推荐使用 <code>AddUdonSharpComponent&#x3C;T>()</code> 自动处理。</p>
+<h3 id="pattern-3">Pattern</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="csharp"><code><span class="line"><span style="color:#E1E4E8">#</span><span style="color:#F97583">if</span><span style="color:#B392F0"> UNITY_EDITOR</span><span style="color:#F97583"> &#x26;&#x26;</span><span style="color:#F97583"> !</span><span style="color:#B392F0">COMPILER_UDONSHARP</span></span>
+<span class="line"><span style="color:#F97583">using</span><span style="color:#B392F0"> UdonSharpEditor</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#B392F0">    MyScript</span><span style="color:#B392F0"> script</span><span style="color:#F97583"> =</span><span style="color:#E1E4E8"> gameObject.</span><span style="color:#B392F0">AddUdonSharpComponent</span><span style="color:#E1E4E8">&#x3C;</span><span style="color:#B392F0">MyScript</span><span style="color:#E1E4E8">>();</span></span>
+<span class="line"><span style="color:#E1E4E8">#</span><span style="color:#F97583">endif</span></span></code></pre>
+<hr>
+<h2 id="rule-ll-10-recursive-methods-need-attribute">RULE-LL-10: Recursive Methods Need Attribute</h2>
+<h3 id="rule-7">Rule</h3>
+<p>递归方法必须标记 <code>[RecursiveMethod]</code> 属性。</p>
+<h3 id="pattern-4">Pattern</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="csharp"><code><span class="line"><span style="color:#E1E4E8">[</span><span style="color:#B392F0">RecursiveMethod</span><span style="color:#E1E4E8">]</span></span>
+<span class="line"><span style="color:#F97583">private</span><span style="color:#F97583"> int</span><span style="color:#B392F0"> Factorial</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">int</span><span style="color:#B392F0"> n</span><span style="color:#E1E4E8">) { </span><span style="color:#F97583">..</span><span style="color:#E1E4E8">. }</span></span></code></pre>
+<hr>
+<h2 id="rule-ll-11-unity-callbacks-dont-need-override">RULE-LL-11: Unity Callbacks Don’t Need Override</h2>
+<h3 id="rule-8">Rule</h3>
+<p>Unity 回调 (<code>OnTriggerEnter</code> 等) 不需要 <code>override</code>。只有 VRChat 事件需要 <code>override</code>。</p>
+<h3 id="pattern-5">Pattern</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="csharp"><code><span class="line"><span style="color:#6A737D">// ❌ 错误: override → CS0115</span></span>
+<span class="line"><span style="color:#F97583">public</span><span style="color:#F97583"> override</span><span style="color:#F97583"> void</span><span style="color:#B392F0"> OnTriggerEnter</span><span style="color:#E1E4E8">(</span><span style="color:#B392F0">Collider</span><span style="color:#B392F0"> other</span><span style="color:#E1E4E8">) { }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// ✅ 正确: 无 override</span></span>
+<span class="line"><span style="color:#F97583">public</span><span style="color:#F97583"> void</span><span style="color:#B392F0"> OnTriggerEnter</span><span style="color:#E1E4E8">(</span><span style="color:#B392F0">Collider</span><span style="color:#B392F0"> other</span><span style="color:#E1E4E8">) { }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// ✅ 正确: VRChat 事件需要 override</span></span>
+<span class="line"><span style="color:#F97583">public</span><span style="color:#F97583"> override</span><span style="color:#F97583"> void</span><span style="color:#B392F0"> OnPlayerJoined</span><span style="color:#E1E4E8">(</span><span style="color:#B392F0">VRCPlayerApi</span><span style="color:#B392F0"> player</span><span style="color:#E1E4E8">) { }</span></span></code></pre>
+<hr>
+<h2 id="rule-ll-12-method-overloading-not-supported">RULE-LL-12: Method Overloading Not Supported</h2>
+<h3 id="rule-9">Rule</h3>
+<p>UdonSharp 不支持方法重载。所有方法名必须唯一。</p>
+<h3 id="pattern-6">Pattern</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="csharp"><code><span class="line"><span style="color:#6A737D">// ❌ 错误</span></span>
+<span class="line"><span style="color:#F97583">void</span><span style="color:#B392F0"> Do</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">int</span><span style="color:#B392F0"> x</span><span style="color:#E1E4E8">) { }</span></span>
+<span class="line"><span style="color:#F97583">void</span><span style="color:#B392F0"> Do</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">string</span><span style="color:#B392F0"> x</span><span style="color:#E1E4E8">) { }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// ✅ 正确</span></span>
+<span class="line"><span style="color:#F97583">void</span><span style="color:#B392F0"> DoInt</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">int</span><span style="color:#B392F0"> x</span><span style="color:#E1E4E8">) { }</span></span>
+<span class="line"><span style="color:#F97583">void</span><span style="color:#B392F0"> DoString</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">string</span><span style="color:#B392F0"> x</span><span style="color:#E1E4E8">) { }</span></span></code></pre>
+<hr>
+<h2 id="rule-ll-13-available-but-limited-c-features-sdk-371">RULE-LL-13: Available But Limited C# Features (SDK 3.7.1+)</h2>
+<h3 id="可用但有约束">可用但有约束</h3>
+<table>
+<thead>
+<tr>
+<th>Feature</th>
+<th>SDK</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>StringBuilder</code></td>
+<td>3.7.1</td>
+<td>高效字符串拼接</td>
+</tr>
+<tr>
+<td><code>Regex</code></td>
+<td>3.7.1</td>
+<td>正则匹配</td>
+</tr>
+<tr>
+<td><code>System.Random</code></td>
+<td>3.7.1</td>
+<td>确定性随机数</td>
+</tr>
+<tr>
+<td><code>System.Type</code></td>
+<td>3.7.1+</td>
+<td>运行时类型信息</td>
+</tr>
+<tr>
+<td><code>GetComponent&#x3C;T>()</code> (继承)</td>
+<td>3.8+</td>
+<td>仅 UdonSharpBehaviour 子类</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="exceptions">Exceptions</h2>
+<ul>
+<li><code>DataList</code> / <code>DataDictionary</code> 的性能特性不同于普通 C# 集合，高频读写需实测</li>
+<li>简单 <code>string + string</code> 在低频场景可接受</li>
+<li><code>static</code> 字段在所有实例间共享且不同步，仅用于只读常量</li>
+</ul>
+<hr>
+<h2 id="字节码级参考">字节码级参考</h2>
+<p>所有 UdonSharp 语言限制的<strong>最终原因</strong>是 Udon VM 仅有 9 条指令(PUSH/POP/JUMP/JUMP_IF_FALSE/JUMP_INDIRECT/COPY/EXTERN/ANNOTATION/NOP)且<strong>无局部变量、无异常、无反射</strong>。</p>
+<p>如需理解某个限制的底层原因,参考:</p>
+<ul>
+<li><strong><code>memory/world/udon/vm-and-assembly.md</code></strong> - 完整 9 Opcodes 说明、Udon Assembly 语法、Extern 签名格式</li>
+<li><strong><code>memory/rules/udon-vm-architecture.md</code></strong> - Udon VM 内部实现(强类型堆、LightweightStack、10 秒硬限制)</li>
+<li><strong><code>memory/api/udon-type-exposure.md</code></strong> - 哪些 C# 类型/成员被白名单暴露</li>
+</ul>
+<blockquote>
+<p><strong>关键洞察</strong>:本规则集(RULE-LL-01 ~ RULE-LL-13)的每条规则都对应 Udon VM 的一种能力缺失。例如:</p>
+<ul>
+<li><strong>RULE-LL-02 禁用 <code>List&#x3C;T></code></strong> ↔ Udon VM 无泛型集合运行时</li>
+<li><strong>RULE-LL-02 禁用 <code>async/await</code></strong> ↔ 无协程指令</li>
+<li><strong>RULE-LL-02 禁用 <code>try/catch</code></strong> ↔ EXTERN 指令无异常处理</li>
+<li><strong>RULE-LL-12 不支持重载</strong> ↔ Extern 签名按方法名定位,重载会产生冲突</li>
+</ul>
+</blockquote>
+<hr>
+<h2 id="rule-ll-14-vrc-graphics-api-限制2026-06-15-新增">RULE-LL-14: VRC Graphics API 限制(2026-06-15 新增)</h2>
+<blockquote>
+<p>详细文档: <code>memory/world/udon/vrc-graphics/index.md</code>、<code>asyncgpureadback.md</code>、<code>vrchat-shader-globals.md</code></p>
+</blockquote>
+<h3 id="141-vrcshader-属性名-_udon-前缀限制">14.1 VRCShader 属性名 <code>_Udon</code> 前缀限制 🔴</h3>
+<p><strong>Rule</strong>: <code>VRCShader.PropertyToID()</code> 接受的属性名必须以 <code>_Udon</code> 为前缀,或使用字面量 <code>_AudioTexture</code>。</p>
+<p><strong>Reason</strong>: VRChat 引擎只将 <code>_Udon*</code> 前缀的全局属性路由到 Udon 系统,其他属性会被过滤。</p>
+<p><strong>Impact</strong>:</p>
+<ul>
+<li>无 <code>_Udon</code> 前缀 → <code>PropertyToID</code> 仍返回 ID(不报错),但 <code>SetGlobal*</code> <strong>静默失败</strong>(不报错但不生效)</li>
+<li>必须使用 <code>_Udon</code> 前缀才会影响世界/Avatar 的所有 Shader</li>
+</ul>
+<p><strong>Pattern</strong>:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="csharp"><code><span class="line"><span style="color:#6A737D">// ✅ 正确</span></span>
+<span class="line"><span style="color:#F97583">int</span><span style="color:#B392F0"> id</span><span style="color:#F97583"> =</span><span style="color:#E1E4E8"> VRCShader.</span><span style="color:#B392F0">PropertyToID</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"_UdonMyColor"</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#E1E4E8">VRCShader.</span><span style="color:#B392F0">SetGlobalColor</span><span style="color:#E1E4E8">(id, Color.red);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// ❌ 错误 - 静默失败</span></span>
+<span class="line"><span style="color:#F97583">int</span><span style="color:#B392F0"> id</span><span style="color:#F97583"> =</span><span style="color:#E1E4E8"> VRCShader.</span><span style="color:#B392F0">PropertyToID</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"MyColor"</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#E1E4E8">VRCShader.</span><span style="color:#B392F0">SetGlobalColor</span><span style="color:#E1E4E8">(id, Color.red);  </span><span style="color:#6A737D">// 不生效但不报错</span></span></code></pre>
+<h3 id="142-vrcgraphicsblit-quest-gpu-限制">14.2 VRCGraphics.Blit Quest GPU 限制 🔴</h3>
+<p><strong>Rule</strong>: <code>VRCGraphics.Blit</code> 在 Quest GPU 上<strong>不会工作</strong>,除非满足以下条件之一:</p>
+<ol>
+<li>在 Shader Pass 中添加 <code>ZTest Always</code></li>
+<li>关闭目标 RenderTexture 的 depth(<code>renderTexture.depth = 0</code>)</li>
+</ol>
+<p><strong>Impact</strong>: 未处理会导致操作静默失败(不报错但 Blit 不生效)。</p>
+<h3 id="143-vrcasyncgpureadback-接口差异">14.3 VRCAsyncGPUReadback 接口差异</h3>
+<p><strong>Rule</strong>: <code>VRCAsyncGPUReadback</code> 与 Unity <code>AsyncGPUReadback</code> 接口不同:</p>
+<ul>
+<li>接收 <code>IUdonEventReceiver</code> 而非 <code>Action&#x3C;...></code> 回调</li>
+<li>通过 <code>OnAsyncGpuReadbackComplete</code> 方法接收完成消息</li>
+<li>使用 <code>TryGetData(array)</code> 而非 <code>GetData&#x3C;T>()</code></li>
+</ul>
+<p><strong>Impact</strong>:</p>
+<ul>
+<li>回调可能在非主线程,需通过 <code>SendCustomEvent</code> 跳转到主线程</li>
+<li>每次请求有 GPU 同步成本,避免每帧调用</li>
+<li>Texture 必须 <code>isReadable = true</code></li>
+</ul>
+<p><strong>Pattern</strong>:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="csharp"><code><span class="line"><span style="color:#6A737D">// ✅ 正确</span></span>
+<span class="line"><span style="color:#E1E4E8">VRCAsyncGPUReadback.</span><span style="color:#B392F0">Request</span><span style="color:#E1E4E8">(texture, </span><span style="color:#79B8FF">0</span><span style="color:#E1E4E8">, (</span><span style="color:#B392F0">IUdonEventReceiver</span><span style="color:#E1E4E8">)</span><span style="color:#79B8FF">this</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">public</span><span style="color:#F97583"> void</span><span style="color:#B392F0"> OnAsyncGpuReadbackComplete</span><span style="color:#E1E4E8">(</span><span style="color:#B392F0">VRCAsyncGPUReadbackRequest</span><span style="color:#B392F0"> request</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#E1E4E8">{</span></span>
+<span class="line"><span style="color:#F97583">    if</span><span style="color:#E1E4E8"> (request.hasError) </span><span style="color:#F97583">return</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">    _data </span><span style="color:#F97583">=</span><span style="color:#F97583"> new</span><span style="color:#F97583"> byte</span><span style="color:#E1E4E8">[request.layerDataSize];</span></span>
+<span class="line"><span style="color:#E1E4E8">    request.</span><span style="color:#B392F0">TryGetData</span><span style="color:#E1E4E8">(_data);</span></span>
+<span class="line"><span style="color:#B392F0">    SendCustomEvent</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">nameof</span><span style="color:#E1E4E8">(ProcessOnMainThread));  </span><span style="color:#6A737D">// 跳主线程</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">public</span><span style="color:#F97583"> void</span><span style="color:#B392F0"> ProcessOnMainThread</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"><span style="color:#E1E4E8">{</span></span>
+<span class="line"><span style="color:#6A737D">    // 安全访问 Udon API</span></span>
+<span class="line"><span style="color:#E1E4E8">    myVariable </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> _data[</span><span style="color:#79B8FF">0</span><span style="color:#E1E4E8">];</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<h3 id="144-vrcshadersetglobalinteger-仍按-float-存储">14.4 VRCShader.SetGlobalInteger 仍按 float 存储</h3>
+<p><strong>Rule</strong>: <code>VRCShader.SetGlobalInteger(int id, int value)</code> 由于 Unity bug 实际以 <code>float</code> 存储值。</p>
+<p><strong>Impact</strong>: 精度损失(超过 2^24 的整数会被截断)。需要精确 int 存储时,使用 <code>SetGlobalFloat</code> + 显式转换,或考虑不使用整数类型。</p>
+<h3 id="145-_vrchat-前缀是受保护命名空间">14.5 <code>_VRChat</code> 前缀是受保护命名空间 🔴</h3>
+<p><strong>Rule</strong>: 不要在自定义 Shader 中使用 <code>_VRChat</code> 前缀(除了官方文档化的变量),VRChat 可能随时新增未文档化的同名变量。</p>
+<p><strong>Reason</strong>: 保留给 VRChat 引擎注入的全局变量(相机模式、镜子模式、时间等)。</p>
+<p><strong>Impact</strong>: 命名冲突 → 自定义 Shader 行为被覆盖。</p>
+<p><strong>Pattern</strong>:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="hlsl"><code><span class="line"><span style="color:#6A737D">// ❌ 错误 - 使用 _VRChat 前缀</span></span>
+<span class="line"><span style="color:#F97583">float4</span><span style="color:#E1E4E8"> _VRChatMyCustomVar;  </span><span style="color:#6A737D">// 可能与未来 VRChat 变量冲突</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// ✅ 正确 - 使用 _Udon 前缀</span></span>
+<span class="line"><span style="color:#F97583">float4</span><span style="color:#E1E4E8"> _UdonMyCustomVar;  </span><span style="color:#6A737D">// 专门用于 Udon SetGlobal</span></span></code></pre>
+<h3 id="146-详细参考">14.6 详细参考</h3>
+<table>
+<thead>
+<tr>
+<th>主题</th>
+<th>文档</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>VRC Graphics 总览</td>
+<td><code>memory/world/udon/vrc-graphics/index.md</code></td>
+</tr>
+<tr>
+<td>VRCAsyncGPUReadback 完整 API</td>
+<td><code>memory/world/udon/vrc-graphics/asyncgpureadback.md</code></td>
+</tr>
+<tr>
+<td><code>_VRChat*</code> 全局变量清单</td>
+<td><code>memory/world/udon/vrc-graphics/vrchat-shader-globals.md</code></td>
+</tr>
+<tr>
+<td>渲染性能优化</td>
+<td><code>memory/world/performance-guide.md</code></td>
+</tr>
+</tbody>
+</table> </div> <p class="kb-source-note" data-astro-cid-lvjzyg5v>
+本文由 VRChat 开发知识库自动整理（官方来源  · 可信度 High  · 最后校对 2026-06-20），
+          遇到与手写教程冲突的地方，以官方文档为最高优先级。
+</p> <section class="comments" id="comments" data-astro-cid-lvjzyg5v> <h2 class="comments__title" data-astro-cid-lvjzyg5v>✦ 旅人留言（0）</h2> <p class="comments__empty" id="commentsEmpty" data-astro-cid-lvjzyg5v>
+还没有旅人留言 —— 有疑问就写在下面，站长都会回复。
+</p> <form class="comment-form" id="commentForm" data-target="kb-concepts-rules-udonsharp-language-limits" data-astro-cid-lvjzyg5v> <p class="comment-form__title" data-astro-cid-lvjzyg5v>写下你的留言</p> <input id="cAuthor" maxlength="20" placeholder="昵称（留空则为「旅人」）" data-astro-cid-lvjzyg5v> <textarea id="cBody" maxlength="1000" required placeholder="想问的问题、想说的感谢都可以（最多 1000 字）" data-astro-cid-lvjzyg5v></textarea> <div class="comment-form__actions" data-astro-cid-lvjzyg5v> <button class="btn btn--primary" type="submit" data-astro-cid-lvjzyg5v>发布留言</button> <span class="form-hint" data-astro-cid-lvjzyg5v>留言保存在本站，站长在写作台里能看到</span> <span class="form-msg" id="cMsg" data-astro-cid-lvjzyg5v></span> </div> </form> </section> <nav class="station-nav" aria-label="站间导航" data-astro-cid-lvjzyg5v> <a href="/STELLASTOPVRC/posts/kb-concepts-rules-udonsharp-deep-pitfalls/" data-astro-cid-lvjzyg5v> <span class="dir" data-astro-cid-lvjzyg5v>← 上一站 · 更新的星光</span> <span class="to" data-astro-cid-lvjzyg5v>Rule Set: UdonSharp Deep Pitfalls</span> </a> <a href="/STELLASTOPVRC/posts/kb-concepts-rules-vrchat-api-exposure/" data-astro-cid-lvjzyg5v> <span class="dir" data-astro-cid-lvjzyg5v>下一站 · 更早的星光 →</span> <span class="to" data-astro-cid-lvjzyg5v>Rule Set: VRChat API Exposure</span> </a> </nav> </div> <aside class="toc" id="toc" hidden> <p class="toc__title">✦ 本页星图</p> <nav id="tocNav" aria-label="文章目录"></nav> </aside> <script type="module">const i=document.querySelector(".prose"),d=document.getElementById("toc"),u=document.getElementById("tocNav"),l=[];if(i&&d&&u){const c=[...i.querySelectorAll("h1, h2, h3")];if(c.length>=3){d.hidden=!1,c.forEach((o,e)=>{o.id||(o.id=`sec-${e}`);const n=document.createElement("a");n.href=`#${o.id}`;const s=(o.textContent??"").replace(/\s+/g," ").trim(),r=s.search(/[：:]/),a=r>=4?s.slice(0,r):s;n.textContent=a.length>40?`${a.slice(0,40)}…`:a,n.title=s,u.appendChild(n),l.push({a:n,h:o})});const t=()=>{let o=l[0];for(const e of l)e.h.getBoundingClientRect().top<=130&&(o=e);for(const e of l)e.a.classList.toggle("is-active",e===o)};addEventListener("scroll",t,{passive:!0}),t()}}document.querySelectorAll(".prose pre").forEach(c=>{const t=document.createElement("button");t.className="code-copy",t.type="button",t.textContent="复制",t.addEventListener("click",async()=>{const o=c.querySelector("code")?.innerText??c.innerText;try{await navigator.clipboard.writeText(o)}catch{const e=document.createElement("textarea");e.value=o,document.body.appendChild(e),e.select(),document.execCommand("copy"),e.remove()}t.textContent="已复制 ✓",t.classList.add("is-ok"),setTimeout(()=>{t.textContent="复制",t.classList.remove("is-ok")},1500)}),c.appendChild(t)});</script> </article>  </main> <footer class="site-footer"> <div class="wrap"> <p class="star-line" aria-hidden="true"> <svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> <svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> </p> <p>星之驿站 StellaStop —— 在虚拟宇宙中，为你保留一座驿站</p> <p class="site-footer__disclaimer">
+该网页目前是测试阶段，仅用于测试，所有内容仅供参考；内容全部为引用互联网当中的信息。
+</p> <p>© 2026 星之驿站 · 由 <a href="https://astro.build">Astro</a> 与星光驱动</p> <p> <a data-desk-login hidden title="写作台：登录 / 注册">登录 / 注册</a> ·
+<a href="/STELLASTOPVRC/announcements/">官方公告</a> ·
+<a href="/STELLASTOPVRC/ai/">问星 AI</a> ·
+<a href="/STELLASTOPVRC/feedback/">旅人留言板</a> </p> </div> </footer> <button class="to-top" id="toTop" aria-label="回到顶部"> <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"> <path d="M12 20V5"></path> <path d="M5.5 11.5 12 5l6.5 6.5"></path> </svg> </button> <script type="module">const e=document.getElementById("toTop");if(e){const t=()=>e.classList.toggle("is-visible",scrollY>480);addEventListener("scroll",t,{passive:!0}),t(),e.addEventListener("click",()=>{const o=matchMedia("(prefers-reduced-motion: reduce)").matches;scrollTo({top:0,behavior:o?"auto":"smooth"})})}</script> <script>(function(){const deskConfigured = "";
+
+      /* 写作台探测（页面尾部执行，DOM 已就绪）：
+         1. 计算写作台地址：站点配置 deskUrl（公网部署时填）> 本机默认 localhost:4322 > 同主机 4322
+         2. 探测 /api/gate/status —— 在线才点亮「登录 / 注册」入口，并复用给验证门横幅
+         3. 不在线则保持隐藏，绝不会把访客拽进内网地址；同时给出一次性「镜像模式」提示 */
+      (function () {
+        var host = location.hostname;
+        var isLocal = host === 'localhost' || host === '127.0.0.1' || host === '[::1]';
+        var desk = deskConfigured ||
+          (isLocal ? 'http://localhost:4322' : location.protocol + '//' + host + ':4322');
+        window.STELLA_DESK = desk;
+
+        function revealLogin() {
+          document.querySelectorAll('[data-desk-login]').forEach(function (a) {
+            a.href = desk + '/admin';
+            a.removeAttribute('hidden');
+          });
+        }
+        function showBanner(css, html, shiftHeader) {
+          var bar = document.createElement('div');
+          bar.style.cssText = css;
+          bar.innerHTML = html;
+          document.body.prepend(bar);
+          if (shiftHeader) {
+            var header = document.querySelector('.site-header');
+            if (header) header.style.marginTop = '42px';
+          }
+        }
+        function hintMirrorMode() {
+          try {
+            if (sessionStorage.getItem('stella-desk-hint')) return;
+            sessionStorage.setItem('stella-desk-hint', '1');
+          } catch (e) { /* 无痕模式等：忽略 */ }
+          var tip = document.createElement('div');
+          tip.style.cssText = 'position:fixed;left:14px;bottom:14px;z-index:9998;max-width:min(92vw,430px);padding:.65rem .9rem;border-radius:12px;background:rgba(18,20,44,.92);border:1px solid rgba(150,142,255,.35);color:#e8e6ff;font-size:.82rem;line-height:1.6;font-family:system-ui,sans-serif;box-shadow:0 8px 30px rgba(0,0,0,.35)';
+          tip.innerHTML = 'ℹ️ 静态镜像模式：登录 / 评论 / AI 等互动功能需要站长写作台在线，当前不可用。' +
+            '<span id="stellaDeskHintClose" style="float:right;cursor:pointer;opacity:.75;font-weight:700;margin-left:.6rem" title="关闭">×</span>';
+          document.body.appendChild(tip);
+          var close = function () { tip.remove(); };
+          tip.querySelector('#stellaDeskHintClose').addEventListener('click', close);
+          setTimeout(close, 9000);
+        }
+
+        try {
+          var ctrl = new AbortController();
+          var timer = setTimeout(function () { ctrl.abort(); }, 2500);
+          fetch(desk + '/api/gate/status', { credentials: 'include', signal: ctrl.signal })
+            .then(function (r) { return r.ok ? r.json() : null; })
+            .then(function (d) {
+              clearTimeout(timer);
+              if (!d) throw new Error('desk-offline');
+              window.STELLA_DESK_OK = true;
+              revealLogin();
+              if (d.regionBlocked) {
+                showBanner(
+                  'position:fixed;top:0;left:0;right:0;z-index:9999;padding:1.2rem;text-align:center;background:#1a0a0a;color:#ff9ed2;font-size:.95rem;border-bottom:2px solid #ff4d6d;font-family:system-ui,sans-serif',
+                  '⛔ 你所在的地区（' + (d.regionCountry || '未知') + '）暂不开放访问。',
+                  false
+                );
+                return;
+              }
+              if (d.enabled && !d.passed) {
+                showBanner(
+                  'position:fixed;top:0;left:0;right:0;z-index:9999;padding:0.7rem;text-align:center;background:linear-gradient(94deg,rgba(143,127,247,.25),rgba(98,200,245,.18));border-bottom:1px solid rgba(150,142,255,.3);color:#f0efff;font-size:.88rem;font-family:system-ui,sans-serif',
+                  '🔒 本站启用了安全验证 —— <a href="' + desk + '/gate?next=' + encodeURIComponent(location.href) + '" style="color:#ffd98e;font-weight:700;text-decoration:underline">点击完成验证</a>，通过后即可使用全部功能（30 天免验）。',
+                  true
+                );
+              }
+            })
+            .catch(function () {
+              clearTimeout(timer);
+              window.STELLA_DESK_OK = false;
+              hintMirrorMode();
+            });
+        } catch (e) { /* 忽略 */ }
+      })();
+    })();</script> </body> </html> <script type="module">const m=document.getElementById("commentForm"),s=document.getElementById("cMsg"),u=`${location.protocol}//${location.hostname}:4322/api/message`;function r(e,t=!1){s&&(s.textContent=e,s.classList.toggle("is-err",t),s.classList.toggle("is-ok",!t))}function y(){const e=new Date,t=n=>String(n).padStart(2,"0");return`${e.getFullYear()}-${t(e.getMonth()+1)}-${t(e.getDate())}`}function f(e){let t=7;for(const n of e)t=(t*31+n.charCodeAt(0))%360;return t}function g(e,t){const n=document.createElement("li");n.className="comment",n.innerHTML=`
+      <span class="comment__avatar"></span>
+      <div class="comment__bubble">
+        <div class="comment__head">
+          <span class="comment__name"></span>
+          <time class="comment__date">${y()}</time>
+        </div>
+        <p class="comment__body"></p>
+      </div>`;const o=n.querySelector(".comment__avatar");return o.style.setProperty("--h",String(f(e))),o.textContent=e.slice(0,1),n.querySelector(".comment__name").textContent=e,n.querySelector(".comment__body").textContent=t,n}m?.addEventListener("submit",async e=>{e.preventDefault();const t=document.getElementById("cBody").value.trim();if(!t)return r("留言内容不能为空哦",!0);const n=document.getElementById("cAuthor").value.trim()||"旅人",o=m.querySelector("button");o&&(o.disabled=!0);try{const c=await fetch(u,{credentials:"include",method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({target:m.dataset.target,kind:"comment",author:n,body:t})}),d=await c.json().catch(()=>({}));if(!c.ok)throw new Error(d.error||`发送失败（${c.status}）`);const l=document.querySelector(".comment-list");l&&l.appendChild(g(n,t)),document.getElementById("commentsEmpty")?.remove(),document.getElementById("cBody").value="",r("留言已发布，感谢支持 ✦");const a=document.querySelector(".comments__title"),i=a?.textContent?.match(/（(\d+)）/);a&&i&&(a.textContent=a.textContent.replace(/（\d+）/,`（${Number(i[1])+1}）`))}catch(c){r(c instanceof TypeError?"写作台没在运行，暂时收不到留言 —— 双击「启动博客.bat」就好":c.message,!0)}finally{o&&(o.disabled=!1)}});</script> 

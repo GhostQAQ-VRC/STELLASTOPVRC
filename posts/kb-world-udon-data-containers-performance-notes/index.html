@@ -1,0 +1,717 @@
+<!DOCTYPE html><html lang="zh-CN"> <head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="generator" content="Astro v5.18.2"><meta name="description" content="Udon VM 是受限的字节码沙箱,DataList / DataDictionary 这类&#34;通用容器&#34;在 Udon 中有显著的性能开销。但本环境无 Unity,无法实测,因此只能基于以下方法给出推断性能:"><meta name="theme-color" content="#070a1c"><meta property="og:title" content="DataList / DataDictionary 性能基准说明 · 星之驿站 StellaStop"><meta property="og:description" content="Udon VM 是受限的字节码沙箱,DataList / DataDictionary 这类&#34;通用容器&#34;在 Udon 中有显著的性能开销。但本环境无 Unity,无法实测,因此只能基于以下方法给出推断性能:"><meta property="og:type" content="website"><meta name="twitter:card" content="summary"><link rel="icon" type="image/svg+xml" href="/STELLASTOPVRC/favicon.svg"><script>
+      // 在渲染前恢复主题与特效档位，避免闪一下默认状态
+      try {
+        document.documentElement.dataset.theme =
+          localStorage.getItem('stella-theme') || 'nebula';
+        document.documentElement.dataset.fx =
+          localStorage.getItem('stella-fx') || 'standard';
+      } catch {
+        /* 隐私模式读不到就算了 */
+      }
+    </script><link rel="stylesheet" href="/STELLASTOPVRC/custom-vars.css"><title>DataList / DataDictionary 性能基准说明 · 星之驿站 StellaStop</title><link rel="stylesheet" href="/STELLASTOPVRC/_astro/about.Bgh6wcGl.css">
+<style>.post-head__meta[data-astro-cid-lvjzyg5v]{color:var(--ink-faint);font-family:var(--font-mono);font-size:.82rem}.post-head[data-astro-cid-lvjzyg5v] .chip-row[data-astro-cid-lvjzyg5v]{margin-top:1rem}.kb-source-note[data-astro-cid-lvjzyg5v]{max-width:760px;margin:2.2rem auto 0;font-size:.82rem;color:var(--ink-faint);border-top:1px dashed var(--line);padding-top:1rem}
+</style></head> <body> <div class="site-notice" id="siteNotice"> <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> <span class="site-notice__text">欢迎来到星之驿站！</span> <button class="site-notice__close" id="noticeClose" type="button" aria-label="关闭公告">
+×
+</button> </div> <a class="skip-link" href="#main">跳到主要内容</a> <canvas id="starfield" aria-hidden="true" data-astro-cid-ra7sfcwn></canvas> <div class="fx-aurora fx-aurora--a" aria-hidden="true" data-astro-cid-ra7sfcwn></div> <div class="fx-aurora fx-aurora--b" aria-hidden="true" data-astro-cid-ra7sfcwn></div>  <script type="module">const u=document.getElementById("starfield");if(u){let F=function(){const n=Math.random();return n<.1?"gold":n<.42?"blue":"white"},v=function(){const n=Math.min(window.devicePixelRatio||1,2);s=window.innerWidth,d=window.innerHeight,u.width=s*n,u.height=d*n,u.style.width=`${s}px`,u.style.height=`${d}px`,t.setTransform(n,0,0,n,0,0);const e=Math.min(190,Math.round(s*d/8500));l=Array.from({length:e},()=>({x:Math.random()*s,y:Math.random()*d,r:r(.4,1.7),base:r(.25,.8),amp:r(.12,.4),speed:r(6e-4,.0022),phase:r(0,Math.PI*2),c:F()})),C=Array.from({length:26},()=>({x:Math.random()*s,y:Math.random()*d,r:r(.9,2.4),vx:r(-.006,.006),vy:r(-.02,-.006),base:r(.2,.5),speed:r(8e-4,.002),phase:r(0,Math.PI*2),c:Math.random()<.5?"gold":"violet"})),c==="off"&&m(0,!0)},D=function(n){const e=Math.random()<.5?1:-1,o=r(Math.PI/7,Math.PI/5),a=r(.45,.75);y.push({x:r(s*.15,s*.85),y:r(-20,d*.3),vx:Math.cos(o)*a*e,vy:Math.sin(o)*a,born:n,life:r(750,1050),len:r(100,170)})},S=function(n){y=y.filter(e=>n-e.born<e.life);for(const e of y){const o=(n-e.born)/e.life,a=e.x+e.vx*(n-e.born),i=e.y+e.vy*(n-e.born),f=o<.15?o/.15:o>.7?(1-o)/.3:1,h=Math.hypot(e.vx,e.vy),x=e.vx/h,g=e.vy/h,b=t.createLinearGradient(a,i,a-x*e.len,i-g*e.len);b.addColorStop(0,`rgba(236,242,255,${(.85*f).toFixed(3)})`),b.addColorStop(1,"rgba(236,242,255,0)"),t.strokeStyle=b,t.lineWidth=1.6,t.lineCap="round",t.beginPath(),t.moveTo(a,i),t.lineTo(a-x*e.len,i-g*e.len),t.stroke()}},B=function(){let o=0;t.lineWidth=.7;for(let a=0;a<l.length&&o<26;a++)for(let i=a+1;i<l.length&&o<26;i++){const f=l[a].x-l[i].x,h=l[a].y-l[i].y,x=f*f+h*h;if(x<16900){const g=(1-Math.sqrt(x)/130)*.17;t.strokeStyle=`rgba(178,170,255,${g.toFixed(3)})`,t.beginPath(),t.moveTo(l[a].x,l[a].y),t.lineTo(l[i].x,l[i].y),t.stroke(),o++}}},X=function(n){for(const e of C){e.x+=e.vx*16,e.y+=e.vy*16,e.y<-12&&(e.y=d+10),e.x<-12&&(e.x=s+10),e.x>s+12&&(e.x=-10);const o=Math.max(.05,e.base+.25*Math.sin(n*e.speed+e.phase)),[a,i,f]=A[e.c];t.beginPath(),t.arc(e.x,e.y,e.r,0,7),t.shadowBlur=9,t.shadowColor=`rgba(${a},${i},${f},0.9)`,t.fillStyle=`rgba(${a},${i},${f},${o.toFixed(3)})`,t.fill()}t.shadowBlur=0},m=function(n,e=!1){t.clearRect(0,0,s,d);for(const o of l){const a=c==="off"?o.base:Math.max(.05,o.base+o.amp*Math.sin(n*o.speed+o.phase)),[i,f,h]=A[o.c];t.beginPath(),t.arc(o.x,o.y,o.r,0,7),o.r>1.25?(t.shadowBlur=7,t.shadowColor=`rgba(${i},${f},${h},0.85)`):t.shadowBlur=0,t.fillStyle=`rgba(${i},${f},${h},${a.toFixed(3)})`,t.fill()}if(t.shadowBlur=0,c!=="off"&&!e){c==="fancy"&&(B(),X(n));const o=c==="fancy"?r(2600,6e3):r(4200,9500);n>P&&(D(n),P=n+o),S(n)}},$=function(n){m(n),M=requestAnimationFrame($)},p=function(){if(c==="off"){m(0,!0);return}cancelAnimationFrame(M),M=requestAnimationFrame($)},w=function(){cancelAnimationFrame(M),t.clearRect(0,0,s,d),m(0,!0)};const t=u.getContext("2d"),k=matchMedia("(prefers-reduced-motion: reduce)").matches,A={white:[240,240,255],blue:[150,215,250],gold:[255,218,150],violet:[178,170,255]};let s=0,d=0,l=[],C=[],y=[],P=2500,M=0,c=document.documentElement.dataset.fx||"standard";k&&(c="off");const r=(n,e)=>n+Math.random()*(e-n);v(),addEventListener("resize",v),document.addEventListener("stella-fx-change",n=>{c=n.detail,c==="off"?w():p()}),c==="off"?m(0,!0):(p(),document.addEventListener("visibilitychange",()=>{document.hidden?w():p()}))}</script> <header class="site-header"> <div class="wrap site-header__inner"> <a class="logo" href="/STELLASTOPVRC/"> <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> <span>星之驿站</span> <span class="logo__romaji">StellaStop</span> </a> <div class="header-right"> <nav class="site-nav" aria-label="站内导航"> <a href="/STELLASTOPVRC/"> 首页 </a><a href="/STELLASTOPVRC/start/"> 新手 </a><a href="/STELLASTOPVRC/posts/"> 教程 </a><a href="/STELLASTOPVRC/videos/"> 视频 </a><a href="/STELLASTOPVRC/resources/"> 资源 </a><a href="/STELLASTOPVRC/booth/"> Booth </a><a href="/STELLASTOPVRC/announcements/"> 公告 </a><a href="/STELLASTOPVRC/ai/"> 问星 </a><a href="/STELLASTOPVRC/changelog/"> 更新日志 </a><a href="/STELLASTOPVRC/about/"> 关于 </a> </nav> <a class="login-link" data-desk-login hidden title="写作台：登录 / 注册后可发教程、传资源">
+登录 / 注册
+</a> <div class="theme-switch"> <button class="theme-switch__btn" id="themeBtn" type="button" aria-haspopup="listbox" aria-expanded="false" aria-label="切换主题配色" title="切换主题配色"> <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"> <path d="M12 3a9 9 0 1 0 9 9c0-1.2-1-2-2.2-2H17a2 2 0 0 1-2-2V6.2C15 5 14.2 4 13 4.4A9 9 0 0 0 12 3Z"></path> <circle cx="7.5" cy="11.5" r="1" fill="currentColor" stroke="none"></circle> <circle cx="10" cy="7.5" r="1" fill="currentColor" stroke="none"></circle> <circle cx="15" cy="7" r="1" fill="currentColor" stroke="none"></circle> </svg> </button> <div class="theme-pop" id="themePop" role="listbox" aria-label="选择主题" hidden> <button class="theme-opt" type="button" role="option" data-theme-value="nebula" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#8f7ff7"></span><span class="dot" style="background:#62c8f5"></span><span class="dot" style="background:#ffd98e"></span> </span> <span class="theme-opt__name">星云 · 蓝紫</span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt" type="button" role="option" data-theme-value="sakura" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#ff8fc7"></span><span class="dot" style="background:#c79bff"></span><span class="dot" style="background:#ffd08e"></span> </span> <span class="theme-opt__name">樱语 · 粉紫</span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt" type="button" role="option" data-theme-value="miku" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#2ed3c2"></span><span class="dot" style="background:#6ea8ff"></span><span class="dot" style="background:#ffe08e"></span> </span> <span class="theme-opt__name">葱色 · 青绿</span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt" type="button" role="option" data-theme-value="ember" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#ffb35c"></span><span class="dot" style="background:#ff7e6b"></span><span class="dot" style="background:#ffd98e"></span> </span> <span class="theme-opt__name">暮金 · 暖橙</span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt" type="button" role="option" data-theme-value="dawn" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#6a5ce8"></span><span class="dot" style="background:#e0568f"></span><span class="dot" style="background:#b8821e"></span> </span> <span class="theme-opt__name">晨星 · 浅色</span> <span class="theme-opt__mark">✦</span> </button> </div> </div> <script type="module">const a=document.getElementById("themeBtn"),n=document.getElementById("themePop");function s(c){document.documentElement.dataset.theme=c;try{localStorage.setItem("stella-theme",c)}catch{}const e=getComputedStyle(document.documentElement).getPropertyValue("--bg-deep").trim();document.querySelector('meta[name="theme-color"]')?.setAttribute("content",e||"#070a1c"),document.querySelectorAll(".theme-opt").forEach(t=>{const d=t.dataset.themeValue===c;t.classList.toggle("is-active",d),t.setAttribute("aria-selected",String(d))})}if(a&&n){const c=document.documentElement.dataset.theme||"nebula";document.querySelectorAll(".theme-opt").forEach(e=>{const t=e.dataset.themeValue===c;e.classList.toggle("is-active",t),e.setAttribute("aria-selected",String(t))}),a.addEventListener("click",e=>{e.stopPropagation();const t=n.hidden;n.hidden=!t,a.setAttribute("aria-expanded",String(t))}),document.addEventListener("click",e=>{!n.hidden&&!e.target.closest(".theme-switch")&&(n.hidden=!0,a.setAttribute("aria-expanded","false"))}),document.addEventListener("keydown",e=>{e.key==="Escape"&&!n.hidden&&(n.hidden=!0,a.setAttribute("aria-expanded","false"),a.focus())}),n.addEventListener("click",e=>{const t=e.target.closest(".theme-opt");t&&(s(t.dataset.themeValue??"nebula"),n.hidden=!0,a.setAttribute("aria-expanded","false"))})}</script> <div class="theme-switch fx-switch"> <button class="theme-switch__btn" id="fxBtn" type="button" aria-haspopup="listbox" aria-expanded="false" aria-label="背景特效设置" title="背景特效设置"> <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"> <path d="M5 3v4M3 5h4M6.5 17.5v3M5 19h3"></path> <path d="M14.5 4.5 16 9l4.5 1.5L16 12l-1.5 4.5L13 12l-4.5-1.5L13 9l1.5-4.5Z"></path> </svg> </button> <div class="theme-pop" id="fxPop" role="listbox" aria-label="背景特效" hidden> <button class="theme-opt fx-opt" type="button" role="option" data-fx-value="off" aria-selected="false"> <span class="fx-opt__body"> <span class="fx-opt__name">关闭特效</span> <span class="fx-opt__hint">最省电</span> </span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt fx-opt" type="button" role="option" data-fx-value="standard" aria-selected="false"> <span class="fx-opt__body"> <span class="fx-opt__name">标准</span> <span class="fx-opt__hint">闪烁星空 + 流星</span> </span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt fx-opt" type="button" role="option" data-fx-value="fancy" aria-selected="false"> <span class="fx-opt__body"> <span class="fx-opt__name">华丽</span> <span class="fx-opt__hint">追加极光 / 星座 / 光尘</span> </span> <span class="theme-opt__mark">✦</span> </button> </div> </div> <script type="module">const n=document.getElementById("fxBtn"),a=document.getElementById("fxPop");function s(d){document.documentElement.dataset.fx=d;try{localStorage.setItem("stella-fx",d)}catch{}document.querySelectorAll("#fxPop .fx-opt").forEach(t=>{const e=t.dataset.fxValue===d;t.classList.toggle("is-active",e),t.setAttribute("aria-selected",String(e))}),document.dispatchEvent(new CustomEvent("stella-fx-change",{detail:d}))}if(n&&a){const d=document.documentElement.dataset.fx||"standard";document.querySelectorAll("#fxPop .fx-opt").forEach(t=>{const e=t.dataset.fxValue===d;t.classList.toggle("is-active",e),t.setAttribute("aria-selected",String(e))}),n.addEventListener("click",t=>{t.stopPropagation();const e=a.hidden;a.hidden=!e,n.setAttribute("aria-expanded",String(e))}),document.addEventListener("click",t=>{!a.hidden&&!t.target.closest(".fx-switch")&&(a.hidden=!0,n.setAttribute("aria-expanded","false"))}),document.addEventListener("keydown",t=>{t.key==="Escape"&&!a.hidden&&(a.hidden=!0,n.setAttribute("aria-expanded","false"),n.focus())}),a.addEventListener("click",t=>{const e=t.target.closest(".fx-opt");e&&(s(e.dataset.fxValue??"standard"),a.hidden=!0,n.setAttribute("aria-expanded","false"))})}</script> </div> </div> </header> <main id="main">  <article class="wrap post-layout" data-astro-cid-lvjzyg5v> <div class="post-main page-fade" data-astro-cid-lvjzyg5v> <header class="post-head" data-astro-cid-lvjzyg5v> <a class="crumb" href="/STELLASTOPVRC/posts/" data-astro-cid-lvjzyg5v>← 返回教程档案</a> <div class="post-head__meta" style="--accent:var(--ink-dim)" data-astro-cid-lvjzyg5v> <span class="badge" data-cat="Udon 世界编程" data-astro-cid-lvjzyg5v>Udon 世界编程</span> <time datetime="2026-11-09" data-astro-cid-lvjzyg5v>2026-11-09</time> <span class="post-head__reading" data-astro-cid-lvjzyg5v>⏱ 约 33 分钟</span>  </div> <h1 class="post-head__title" data-astro-cid-lvjzyg5v>DataList / DataDictionary 性能基准说明</h1> <p class="post-head__lead" data-astro-cid-lvjzyg5v>Udon VM 是受限的字节码沙箱,DataList / DataDictionary 这类&quot;通用容器&quot;在 Udon 中有显著的性能开销。但本环境无 Unity,无法实测,因此只能基于以下方法给出推断性能:</p> <div class="chip-row" data-astro-cid-lvjzyg5v> <a class="chip" href="/STELLASTOPVRC/posts/?tag=%E7%9F%A5%E8%AF%86%E5%BA%93" data-astro-cid-lvjzyg5v> 知识库 </a><a class="chip" href="/STELLASTOPVRC/posts/?tag=world" data-astro-cid-lvjzyg5v> world </a> </div> </header> <div class="prose" data-astro-cid-lvjzyg5v> <hr>
+<h1 id="datalist--datadictionary-性能基准说明">DataList / DataDictionary 性能基准说明</h1>
+<p>Udon VM 是受限的字节码沙箱,DataList / DataDictionary 这类”通用容器”在 Udon 中<strong>有显著的性能开销</strong>。但<strong>本环境无 Unity</strong>,无法实测,因此只能基于以下方法给出<strong>推断</strong>性能:</p>
+<ol>
+<li><strong>Udon VM 字节码分析</strong>:每个方法调用展开为多个 EXTERN 指令</li>
+<li><strong>VRChat 官方文档</strong>:API 复杂度标注(O(1) / O(n) / O(n²))</li>
+<li><strong>第三方社区基准</strong>:XANA 等社区的性能报告(需验证)</li>
+<li><strong>DataToken 类型系统分析</strong>:17 个 TokenType 引入 boxing / unboxing</li>
+</ol>
+<p><strong>诚实声明</strong>:本文档所有具体数字(如 5-10x 慢)都是<strong>方向性估计</strong>,<strong>不应</strong>作为最终优化决策的唯一依据。</p>
+<hr>
+<hr>
+<h1 id="datalist--datadictionary-性能基准说明2-性能开销来源分析vm-字节码层">DataList / DataDictionary 性能基准说明：2. 性能开销来源分析(VM 字节码层)</h1>
+<h3 id="21-datalist-17-个-tokentype--装箱拆箱开销">2.1 DataList 17 个 TokenType → 装箱/拆箱开销</h3>
+<p><strong>DataToken 的设计</strong>:Udon 用 <code>DataToken</code>(类似 <code>object</code>)表示任意类型,内部是一个 8 字节结构体:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>struct DataToken {</span></span>
+<span class="line"><span>    TokenType type;   // 1 byte (类型标签:Int / Float / String / DataList / DataDictionary / ...)</span></span>
+<span class="line"><span>    DataTokenStorage storage;  // 7 bytes (实际数据,小值内联,大值引用)</span></span>
+<span class="line"><span>}</span></span></code></pre>
+<p><strong>TokenType 枚举</strong>(17 个):</p>
+<table>
+<thead>
+<tr>
+<th>类别</th>
+<th>TokenType</th>
+<th>装箱/拆箱?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>数值</td>
+<td><code>Int</code>, <code>Long</code>, <code>Float</code>, <code>Double</code></td>
+<td>小值内联,<strong>无装箱</strong></td>
+</tr>
+<tr>
+<td>文本</td>
+<td><code>String</code></td>
+<td>引用,无装箱</td>
+</tr>
+<tr>
+<td>布尔</td>
+<td><code>Boolean</code></td>
+<td>1 字节内联</td>
+</tr>
+<tr>
+<td>容器</td>
+<td><code>DataList</code>, <code>DataDictionary</code></td>
+<td>引用,无装箱</td>
+</tr>
+<tr>
+<td>字节</td>
+<td><code>Byte</code></td>
+<td>1 字节内联</td>
+</tr>
+<tr>
+<td>二进制</td>
+<td><code>ByteArray</code></td>
+<td>引用</td>
+</tr>
+<tr>
+<td>特殊</td>
+<td><code>Null</code>, <code>Error</code>, <code>None</code>, <code>Reference</code>, <code>Color</code>, <code>Vector*</code>, <code>Quaternion</code></td>
+<td>引用 / 内联</td>
+</tr>
+</tbody>
+</table>
+<p><strong>装箱开销场景</strong>:</p>
+<ul>
+<li><code>dict.SetValue("player", Networking.LocalPlayer)</code> → <code>VRCPlayerApi</code> 装箱为 <code>Reference</code> token</li>
+<li><code>dict.GetValue&#x3C;DataList>(...)</code> → 拆箱为 <code>DataList</code> 引用</li>
+<li><code>dict.GetValue&#x3C;int>(...)</code> → 拆箱为 <code>int</code> 值类型</li>
+</ul>
+<h3 id="22-extern-调用开销">2.2 EXTERN 调用开销</h3>
+<p>Udon 的 DataList / DataDictionary 方法<strong>全部展开为 EXTERN 指令</strong>,每个 EXTERN 包含:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>EXTERN call:</span></span>
+<span class="line"><span>  1. 参数推送(C# 端 stack)</span></span>
+<span class="line"><span>  2. 跨 Udon→C# 边界调用(每次 ~5-10ns)</span></span>
+<span class="line"><span>  3. 类型检查(TokenType 验证)</span></span>
+<span class="line"><span>  4. 实际逻辑(动态分发)</span></span>
+<span class="line"><span>  5. 返回值包装(DataToken 重建)</span></span>
+<span class="line"><span>  6. 跨 C#→Udon 边界返回</span></span></code></pre>
+<p><strong>vs C# <code>List&#x3C;T></code></strong>:</p>
+<ul>
+<li>C# <code>List&#x3C;int>.Add(int)</code> → JIT 编译为内联汇编,直接 push 数组,<strong>1-2 ns</strong></li>
+<li>Udon <code>DataList.Add(int)</code> → EXTERN + TokenType 包装,<strong>~50-100 ns</strong>(推断)</li>
+</ul>
+<h3 id="23-强类型检测">2.3 强类型检测</h3>
+<p>每个方法内部需做 <code>TokenType</code> 验证:</p>
+<ul>
+<li><code>Add(DataToken)</code> → 检查 token 类型(可选),写入底层 <code>object[]</code></li>
+<li><code>dict[key]</code> → 哈希 + 类型检查(若指定 <code>TokenType</code> 参数)</li>
+</ul>
+<p><strong>vs C# <code>Dictionary&#x3C;K, V></code></strong>:</p>
+<ul>
+<li>C# <code>Dictionary&#x3C;string, int></code> → JIT 内联,泛型特化,<strong>~50 ns</strong></li>
+<li>Udon <code>DataDictionary.SetValue</code> → 哈希 + 装箱 + EXTERN,<strong>~300 ns</strong>(推断)</li>
+</ul>
+<hr>
+<hr>
+<h1 id="datalist--datadictionary-性能基准说明3-性能基准推断基于字节码分析">DataList / DataDictionary 性能基准说明：3. 性能基准推断(基于字节码分析)</h1>
+<h3 id="31-datalist-vs-c-listt">3.1 DataList vs C# <code>List&#x3C;T></code></h3>
+<blockquote>
+<p>🔴 <strong>【未实测】</strong> 以下数字为<strong>推断</strong>,基于 Udon EXTERN 开销 + 装箱成本。</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>操作</th>
+<th>C# <code>List&#x3C;T></code>(假设可用)</th>
+<th>Udon <code>DataList</code></th>
+<th>性能比(推断)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Add</code> (int 值)</td>
+<td>~5 ns</td>
+<td>~50-80 ns</td>
+<td><strong>~10-15x 慢</strong></td>
+</tr>
+<tr>
+<td><code>Add</code> (string)</td>
+<td>~10 ns</td>
+<td>~80-120 ns</td>
+<td><strong>~8-12x 慢</strong></td>
+</tr>
+<tr>
+<td><code>Insert</code> (中位)</td>
+<td>~20 ns (O(n))</td>
+<td>~200-400 ns</td>
+<td><strong>~10-20x 慢</strong></td>
+</tr>
+<tr>
+<td><code>RemoveAt</code> (中位)</td>
+<td>~30 ns (O(n))</td>
+<td>~250-500 ns</td>
+<td><strong>~8-15x 慢</strong></td>
+</tr>
+<tr>
+<td><code>Count</code> (属性)</td>
+<td>~1 ns</td>
+<td>~10-20 ns</td>
+<td><strong>~10-20x 慢</strong></td>
+</tr>
+<tr>
+<td><code>Capacity</code> (读)</td>
+<td>~1 ns</td>
+<td>~10-20 ns</td>
+<td><strong>~10-20x 慢</strong></td>
+</tr>
+<tr>
+<td>索引器 <code>list[i]</code> (int)</td>
+<td>~2 ns</td>
+<td>~30-50 ns</td>
+<td><strong>~15-25x 慢</strong></td>
+</tr>
+<tr>
+<td>索引器 <code>list[i]</code> (引用)</td>
+<td>~5 ns</td>
+<td>~50-80 ns</td>
+<td><strong>~10-15x 慢</strong></td>
+</tr>
+</tbody>
+</table>
+<p><strong>综合估计</strong>:<code>DataList</code> 平均比 C# <code>List&#x3C;T></code> <strong>慢 5-10x</strong>。</p>
+<blockquote>
+<p>来源分析:EXTERN 开销(~10x) + 装箱(偶尔) + TokenType 检查(部分路径) = 综合 5-10x</p>
+</blockquote>
+<h3 id="32-datadictionary-vs-c-dictionaryk-v">3.2 DataDictionary vs C# <code>Dictionary&#x3C;K, V></code></h3>
+<table>
+<thead>
+<tr>
+<th>操作</th>
+<th>C# <code>Dictionary&#x3C;K, V></code>(假设可用)</th>
+<th>Udon <code>DataDictionary</code></th>
+<th>性能比(推断)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>TryGetValue</code> (string key)</td>
+<td>~30 ns</td>
+<td>~200-300 ns</td>
+<td><strong>~6-10x 慢</strong></td>
+</tr>
+<tr>
+<td><code>Add</code> / <code>SetValue</code> (string key)</td>
+<td>~40 ns</td>
+<td>~250-400 ns</td>
+<td><strong>~6-10x 慢</strong></td>
+</tr>
+<tr>
+<td><code>ContainsKey</code> (string key)</td>
+<td>~30 ns</td>
+<td>~200-300 ns</td>
+<td><strong>~6-10x 慢</strong></td>
+</tr>
+<tr>
+<td><code>Remove</code> (string key)</td>
+<td>~50 ns</td>
+<td>~300-500 ns</td>
+<td><strong>~6-10x 慢</strong></td>
+</tr>
+<tr>
+<td><code>GetKeys()</code> (缓存命中)</td>
+<td>~100 ns</td>
+<td>~200 ns</td>
+<td><strong>~2x 慢</strong></td>
+</tr>
+<tr>
+<td><code>GetValues()</code> (n=100,重建)</td>
+<td>~200 ns</td>
+<td>~800-1000 ns</td>
+<td><strong>~4-5x 慢</strong></td>
+</tr>
+<tr>
+<td><code>ContainsValue</code> (n=100, 线性)</td>
+<td>~500 ns</td>
+<td>~3000-5000 ns</td>
+<td><strong>~6-10x 慢</strong></td>
+</tr>
+<tr>
+<td>JSON 序列化 (n=50 键值)</td>
+<td>N/A</td>
+<td>~500-5000 ns</td>
+<td>仅 DataDictionary 支持</td>
+</tr>
+</tbody>
+</table>
+<p><strong>综合估计</strong>:<code>DataDictionary</code> 平均比 C# <code>Dictionary&#x3C;K, V></code> <strong>慢 6x</strong>(与现有 <code>data-dictionaries.md</code> §9.1 一致)。</p>
+<p><strong>为什么 6x 而不是 5-10x?</strong></p>
+<ul>
+<li>DataDictionary 内部用 <code>Dictionary&#x3C;string, object></code> 实现</li>
+<li>主要开销 = <strong>2 层 EXTERN</strong>(外层 DataDictionary + 内层 C# Dictionary)+ <strong>TokenType 验证</strong></li>
+<li>哈希 + 等值检查(C# 端)较高效</li>
+</ul>
+<h3 id="33-vrcjson-序列化--反序列化">3.3 VRCJson 序列化 / 反序列化</h3>
+<table>
+<thead>
+<tr>
+<th>数据规模</th>
+<th>序列化时间(推断)</th>
+<th>反序列化时间(推断)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>小 (&#x3C; 100 字符)</td>
+<td>~0.1-0.3 ms</td>
+<td>~0.2-0.5 ms</td>
+</tr>
+<tr>
+<td>中 (1-10 KB)</td>
+<td>~0.5-2 ms</td>
+<td>~1-5 ms</td>
+</tr>
+<tr>
+<td>大 (10-100 KB)</td>
+<td>~5-30 ms</td>
+<td>~10-50 ms</td>
+</tr>
+<tr>
+<td>超大 (> 100 KB)</td>
+<td>~50-500 ms</td>
+<td>~100-1000 ms</td>
+</tr>
+</tbody>
+</table>
+<p><strong>性能瓶颈</strong>:</p>
+<ul>
+<li><code>VRCJson.TrySerializeToJson</code> → 内部用 reflection 遍历 DataList / DataDictionary 树</li>
+<li><code>VRCJson.TryDeserializeFromJson</code> → lazy parse + 反射构造</li>
+<li>嵌套深度 > 5 层后,<strong>反射调用栈深</strong>,性能急剧下降</li>
+</ul>
+<p><strong>实测建议</strong>:</p>
+<ul>
+<li>单次序列化 > 5ms 应考虑分批</li>
+<li>嵌套深度 > 3 层建议扁平化(用 key 路径如 <code>"player.score.level"</code>)</li>
+</ul>
+<hr>
+<hr>
+<h1 id="datalist--datadictionary-性能基准说明4-基准测试方法给未来-agent--创作者">DataList / DataDictionary 性能基准说明：4. 基准测试方法(给未来 Agent / 创作者)</h1>
+<h3 id="41-基础-getset-性能对比">4.1 基础 Get/Set 性能对比</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="csharp"><code><span class="line"><span style="color:#F97583">using</span><span style="color:#B392F0"> VRC</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">SDK3</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">Data</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">using</span><span style="color:#B392F0"> UnityEngine</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// 1000 次 Get/Set 操作时间对比</span></span>
+<span class="line"><span style="color:#F97583">public</span><span style="color:#F97583"> class</span><span style="color:#B392F0"> DataListBenchmark</span><span style="color:#E1E4E8"> : </span><span style="color:#B392F0">UdonSharpBehaviour</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#F97583">    void</span><span style="color:#B392F0"> Start</span><span style="color:#E1E4E8">() {</span></span>
+<span class="line"><span style="color:#F97583">        int</span><span style="color:#B392F0"> n</span><span style="color:#F97583"> =</span><span style="color:#79B8FF"> 1000</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">        var</span><span style="color:#B392F0"> sw</span><span style="color:#F97583"> =</span><span style="color:#F97583"> new</span><span style="color:#B392F0"> System</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">Diagnostics</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">Stopwatch</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#E1E4E8">        </span></span>
+<span class="line"><span style="color:#6A737D">        // 1. DataList int Add</span></span>
+<span class="line"><span style="color:#E1E4E8">        sw.</span><span style="color:#B392F0">Restart</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#B392F0">        DataList</span><span style="color:#B392F0"> list</span><span style="color:#F97583"> =</span><span style="color:#F97583"> new</span><span style="color:#B392F0"> DataList</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#E1E4E8">        list.Capacity </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> n;</span></span>
+<span class="line"><span style="color:#F97583">        for</span><span style="color:#E1E4E8"> (</span><span style="color:#F97583">int</span><span style="color:#B392F0"> i</span><span style="color:#F97583"> =</span><span style="color:#79B8FF"> 0</span><span style="color:#E1E4E8">; i </span><span style="color:#F97583">&#x3C;</span><span style="color:#E1E4E8"> n; i</span><span style="color:#F97583">++</span><span style="color:#E1E4E8">) list.</span><span style="color:#B392F0">Add</span><span style="color:#E1E4E8">(i);</span></span>
+<span class="line"><span style="color:#F97583">        long</span><span style="color:#B392F0"> addTime</span><span style="color:#F97583"> =</span><span style="color:#E1E4E8"> sw.ElapsedMilliseconds;</span></span>
+<span class="line"><span style="color:#E1E4E8">        Debug.</span><span style="color:#B392F0">Log</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">$"DataList Add </span><span style="color:#9ECBFF">{</span><span style="color:#E1E4E8">n</span><span style="color:#9ECBFF">}</span><span style="color:#9ECBFF"> ints: </span><span style="color:#9ECBFF">{</span><span style="color:#E1E4E8">addTime</span><span style="color:#9ECBFF">}</span><span style="color:#9ECBFF">ms"</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#E1E4E8">        </span></span>
+<span class="line"><span style="color:#6A737D">        // 2. DataList 索引访问</span></span>
+<span class="line"><span style="color:#E1E4E8">        sw.</span><span style="color:#B392F0">Restart</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#F97583">        long</span><span style="color:#B392F0"> sum</span><span style="color:#F97583"> =</span><span style="color:#79B8FF"> 0</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">        for</span><span style="color:#E1E4E8"> (</span><span style="color:#F97583">int</span><span style="color:#B392F0"> i</span><span style="color:#F97583"> =</span><span style="color:#79B8FF"> 0</span><span style="color:#E1E4E8">; i </span><span style="color:#F97583">&#x3C;</span><span style="color:#E1E4E8"> n; i</span><span style="color:#F97583">++</span><span style="color:#E1E4E8">) sum </span><span style="color:#F97583">+=</span><span style="color:#E1E4E8"> list[i].Int;</span></span>
+<span class="line"><span style="color:#F97583">        long</span><span style="color:#B392F0"> getTime</span><span style="color:#F97583"> =</span><span style="color:#E1E4E8"> sw.ElapsedMilliseconds;</span></span>
+<span class="line"><span style="color:#E1E4E8">        Debug.</span><span style="color:#B392F0">Log</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">$"DataList Get </span><span style="color:#9ECBFF">{</span><span style="color:#E1E4E8">n</span><span style="color:#9ECBFF">}</span><span style="color:#9ECBFF"> ints: </span><span style="color:#9ECBFF">{</span><span style="color:#E1E4E8">getTime</span><span style="color:#9ECBFF">}</span><span style="color:#9ECBFF">ms"</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#E1E4E8">        </span></span>
+<span class="line"><span style="color:#6A737D">        // 3. DataDictionary 写</span></span>
+<span class="line"><span style="color:#E1E4E8">        sw.</span><span style="color:#B392F0">Restart</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#B392F0">        DataDictionary</span><span style="color:#B392F0"> dict</span><span style="color:#F97583"> =</span><span style="color:#F97583"> new</span><span style="color:#B392F0"> DataDictionary</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#F97583">        for</span><span style="color:#E1E4E8"> (</span><span style="color:#F97583">int</span><span style="color:#B392F0"> i</span><span style="color:#F97583"> =</span><span style="color:#79B8FF"> 0</span><span style="color:#E1E4E8">; i </span><span style="color:#F97583">&#x3C;</span><span style="color:#E1E4E8"> n; i</span><span style="color:#F97583">++</span><span style="color:#E1E4E8">) dict.</span><span style="color:#B392F0">SetValue</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">$"key_</span><span style="color:#9ECBFF">{</span><span style="color:#E1E4E8">i</span><span style="color:#9ECBFF">}</span><span style="color:#9ECBFF">"</span><span style="color:#E1E4E8">, i);</span></span>
+<span class="line"><span style="color:#F97583">        long</span><span style="color:#B392F0"> setTime</span><span style="color:#F97583"> =</span><span style="color:#E1E4E8"> sw.ElapsedMilliseconds;</span></span>
+<span class="line"><span style="color:#E1E4E8">        Debug.</span><span style="color:#B392F0">Log</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">$"DataDict SetValue </span><span style="color:#9ECBFF">{</span><span style="color:#E1E4E8">n</span><span style="color:#9ECBFF">}</span><span style="color:#9ECBFF">: </span><span style="color:#9ECBFF">{</span><span style="color:#E1E4E8">setTime</span><span style="color:#9ECBFF">}</span><span style="color:#9ECBFF">ms"</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#E1E4E8">        </span></span>
+<span class="line"><span style="color:#6A737D">        // 4. DataDictionary 读</span></span>
+<span class="line"><span style="color:#E1E4E8">        sw.</span><span style="color:#B392F0">Restart</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#F97583">        long</span><span style="color:#B392F0"> dictSum</span><span style="color:#F97583"> =</span><span style="color:#79B8FF"> 0</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">        for</span><span style="color:#E1E4E8"> (</span><span style="color:#F97583">int</span><span style="color:#B392F0"> i</span><span style="color:#F97583"> =</span><span style="color:#79B8FF"> 0</span><span style="color:#E1E4E8">; i </span><span style="color:#F97583">&#x3C;</span><span style="color:#E1E4E8"> n; i</span><span style="color:#F97583">++</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#F97583">            if</span><span style="color:#E1E4E8"> (dict.</span><span style="color:#B392F0">TryGetValue</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">$"key_</span><span style="color:#9ECBFF">{</span><span style="color:#E1E4E8">i</span><span style="color:#9ECBFF">}</span><span style="color:#9ECBFF">"</span><span style="color:#E1E4E8">, TokenType.Int, </span><span style="color:#F97583">out</span><span style="color:#B392F0"> DataToken</span><span style="color:#B392F0"> v</span><span style="color:#E1E4E8">)) {</span></span>
+<span class="line"><span style="color:#E1E4E8">                dictSum </span><span style="color:#F97583">+=</span><span style="color:#E1E4E8"> v.Int;</span></span>
+<span class="line"><span style="color:#E1E4E8">            }</span></span>
+<span class="line"><span style="color:#E1E4E8">        }</span></span>
+<span class="line"><span style="color:#F97583">        long</span><span style="color:#B392F0"> getDictTime</span><span style="color:#F97583"> =</span><span style="color:#E1E4E8"> sw.ElapsedMilliseconds;</span></span>
+<span class="line"><span style="color:#E1E4E8">        Debug.</span><span style="color:#B392F0">Log</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">$"DataDict TryGetValue </span><span style="color:#9ECBFF">{</span><span style="color:#E1E4E8">n</span><span style="color:#9ECBFF">}</span><span style="color:#9ECBFF">: </span><span style="color:#9ECBFF">{</span><span style="color:#E1E4E8">getDictTime</span><span style="color:#9ECBFF">}</span><span style="color:#9ECBFF">ms"</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<p><strong>预期输出</strong> (推断,无 Unity 实测):</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>DataList Add 1000 ints: ~50-80ms</span></span>
+<span class="line"><span>DataList Get 1000 ints: ~30-50ms</span></span>
+<span class="line"><span>DataDict SetValue 1000: ~250-400ms</span></span>
+<span class="line"><span>DataDict TryGetValue 1000: ~200-300ms</span></span></code></pre>
+<h3 id="42-嵌套深度-vs-时间关系">4.2 嵌套深度 vs 时间关系</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="csharp"><code><span class="line"><span style="color:#6A737D">// 嵌套深度 vs 序列化时间</span></span>
+<span class="line"><span style="color:#F97583">void</span><span style="color:#B392F0"> TestNestedDepth</span><span style="color:#E1E4E8">() {</span></span>
+<span class="line"><span style="color:#F97583">    int</span><span style="color:#E1E4E8">[] </span><span style="color:#B392F0">depths</span><span style="color:#F97583"> =</span><span style="color:#E1E4E8"> { </span><span style="color:#79B8FF">1</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">2</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">3</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">5</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">10</span><span style="color:#E1E4E8"> };</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span></span>
+<span class="line"><span style="color:#F97583">    foreach</span><span style="color:#E1E4E8"> (</span><span style="color:#F97583">int</span><span style="color:#B392F0"> d</span><span style="color:#F97583"> in</span><span style="color:#E1E4E8"> depths) {</span></span>
+<span class="line"><span style="color:#B392F0">        DataList</span><span style="color:#B392F0"> root</span><span style="color:#F97583"> =</span><span style="color:#F97583"> new</span><span style="color:#B392F0"> DataList</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#B392F0">        DataList</span><span style="color:#B392F0"> current</span><span style="color:#F97583"> =</span><span style="color:#E1E4E8"> root;</span></span>
+<span class="line"><span style="color:#E1E4E8">        </span></span>
+<span class="line"><span style="color:#6A737D">        // 构造 d 层嵌套</span></span>
+<span class="line"><span style="color:#F97583">        for</span><span style="color:#E1E4E8"> (</span><span style="color:#F97583">int</span><span style="color:#B392F0"> i</span><span style="color:#F97583"> =</span><span style="color:#79B8FF"> 0</span><span style="color:#E1E4E8">; i </span><span style="color:#F97583">&#x3C;</span><span style="color:#E1E4E8"> d; i</span><span style="color:#F97583">++</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#B392F0">            DataList</span><span style="color:#B392F0"> inner</span><span style="color:#F97583"> =</span><span style="color:#F97583"> new</span><span style="color:#B392F0"> DataList</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#E1E4E8">            current.</span><span style="color:#B392F0">Add</span><span style="color:#E1E4E8">(inner);</span></span>
+<span class="line"><span style="color:#E1E4E8">            current </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> inner;</span></span>
+<span class="line"><span style="color:#E1E4E8">        }</span></span>
+<span class="line"><span style="color:#E1E4E8">        current.</span><span style="color:#B392F0">Add</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">42</span><span style="color:#E1E4E8">);  </span><span style="color:#6A737D">// 叶子</span></span>
+<span class="line"><span style="color:#E1E4E8">        </span></span>
+<span class="line"><span style="color:#F97583">        var</span><span style="color:#B392F0"> sw</span><span style="color:#F97583"> =</span><span style="color:#E1E4E8"> System.Diagnostics.Stopwatch.</span><span style="color:#B392F0">StartNew</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#F97583">        for</span><span style="color:#E1E4E8"> (</span><span style="color:#F97583">int</span><span style="color:#B392F0"> i</span><span style="color:#F97583"> =</span><span style="color:#79B8FF"> 0</span><span style="color:#E1E4E8">; i </span><span style="color:#F97583">&#x3C;</span><span style="color:#79B8FF"> 100</span><span style="color:#E1E4E8">; i</span><span style="color:#F97583">++</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#E1E4E8">            VRCJson.</span><span style="color:#B392F0">TrySerializeToJson</span><span style="color:#E1E4E8">(root, </span><span style="color:#F97583">out</span><span style="color:#B392F0"> DataToken</span><span style="color:#B392F0"> result</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#E1E4E8">        }</span></span>
+<span class="line"><span style="color:#E1E4E8">        sw.</span><span style="color:#B392F0">Stop</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#E1E4E8">        Debug.</span><span style="color:#B392F0">Log</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">$"Depth </span><span style="color:#9ECBFF">{</span><span style="color:#E1E4E8">d</span><span style="color:#9ECBFF">}</span><span style="color:#9ECBFF"> serialize x100: </span><span style="color:#9ECBFF">{</span><span style="color:#E1E4E8">sw</span><span style="color:#9ECBFF">.</span><span style="color:#E1E4E8">ElapsedMilliseconds</span><span style="color:#9ECBFF">}</span><span style="color:#9ECBFF">ms"</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<p><strong>预期结果</strong>(推断):</p>
+<ul>
+<li>深度 1: ~10ms</li>
+<li>深度 2: ~15ms</li>
+<li>深度 3: ~25ms</li>
+<li>深度 5: ~80ms</li>
+<li>深度 10: ~500ms+ (急剧恶化)</li>
+</ul>
+<h3 id="43-序列化时间-vs-数据大小关系">4.3 序列化时间 vs 数据大小关系</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="csharp"><code><span class="line"><span style="color:#6A737D">// 数据大小 vs 序列化时间</span></span>
+<span class="line"><span style="color:#F97583">void</span><span style="color:#B392F0"> TestSerializeSize</span><span style="color:#E1E4E8">() {</span></span>
+<span class="line"><span style="color:#F97583">    int</span><span style="color:#E1E4E8">[] </span><span style="color:#B392F0">sizes</span><span style="color:#F97583"> =</span><span style="color:#E1E4E8"> { </span><span style="color:#79B8FF">10</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">100</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">1000</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">10000</span><span style="color:#E1E4E8"> };</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span></span>
+<span class="line"><span style="color:#F97583">    foreach</span><span style="color:#E1E4E8"> (</span><span style="color:#F97583">int</span><span style="color:#B392F0"> n</span><span style="color:#F97583"> in</span><span style="color:#E1E4E8"> sizes) {</span></span>
+<span class="line"><span style="color:#B392F0">        DataList</span><span style="color:#B392F0"> list</span><span style="color:#F97583"> =</span><span style="color:#F97583"> new</span><span style="color:#B392F0"> DataList</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#F97583">        for</span><span style="color:#E1E4E8"> (</span><span style="color:#F97583">int</span><span style="color:#B392F0"> i</span><span style="color:#F97583"> =</span><span style="color:#79B8FF"> 0</span><span style="color:#E1E4E8">; i </span><span style="color:#F97583">&#x3C;</span><span style="color:#E1E4E8"> n; i</span><span style="color:#F97583">++</span><span style="color:#E1E4E8">) list.</span><span style="color:#B392F0">Add</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">$"item_</span><span style="color:#9ECBFF">{</span><span style="color:#E1E4E8">i</span><span style="color:#9ECBFF">}</span><span style="color:#9ECBFF">"</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#E1E4E8">        </span></span>
+<span class="line"><span style="color:#F97583">        var</span><span style="color:#B392F0"> sw</span><span style="color:#F97583"> =</span><span style="color:#E1E4E8"> System.Diagnostics.Stopwatch.</span><span style="color:#B392F0">StartNew</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#F97583">        for</span><span style="color:#E1E4E8"> (</span><span style="color:#F97583">int</span><span style="color:#B392F0"> i</span><span style="color:#F97583"> =</span><span style="color:#79B8FF"> 0</span><span style="color:#E1E4E8">; i </span><span style="color:#F97583">&#x3C;</span><span style="color:#79B8FF"> 10</span><span style="color:#E1E4E8">; i</span><span style="color:#F97583">++</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#E1E4E8">            VRCJson.</span><span style="color:#B392F0">TrySerializeToJson</span><span style="color:#E1E4E8">(list, </span><span style="color:#F97583">out</span><span style="color:#B392F0"> DataToken</span><span style="color:#B392F0"> result</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#E1E4E8">        }</span></span>
+<span class="line"><span style="color:#E1E4E8">        sw.</span><span style="color:#B392F0">Stop</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#E1E4E8">        Debug.</span><span style="color:#B392F0">Log</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">$"Size </span><span style="color:#9ECBFF">{</span><span style="color:#E1E4E8">n</span><span style="color:#9ECBFF">}</span><span style="color:#9ECBFF"> serialize x10: </span><span style="color:#9ECBFF">{</span><span style="color:#E1E4E8">sw</span><span style="color:#9ECBFF">.</span><span style="color:#E1E4E8">ElapsedMilliseconds</span><span style="color:#9ECBFF">}</span><span style="color:#9ECBFF">ms"</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<p><strong>预期结果</strong>(推断):</p>
+<ul>
+<li>n=10: ~1ms</li>
+<li>n=100: ~3ms</li>
+<li>n=1000: ~15ms</li>
+<li>n=10000: ~150ms+</li>
+</ul>
+<hr>
+<hr>
+<h1 id="datalist--datadictionary-性能基准说明5-性能优化建议基于原理无需实测">DataList / DataDictionary 性能基准说明：5. 性能优化建议(基于原理,无需实测)</h1>
+<h3 id="51-热路径用原生数组--手动序列化">5.1 热路径用原生数组 + 手动序列化</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="csharp"><code><span class="line"><span style="color:#6A737D">// ❌ 避免:热路径用 DataList(每帧 60Hz)</span></span>
+<span class="line"><span style="color:#F97583">void</span><span style="color:#B392F0"> Update</span><span style="color:#E1E4E8">() {</span></span>
+<span class="line"><span style="color:#E1E4E8">    positions.</span><span style="color:#B392F0">Add</span><span style="color:#E1E4E8">(transform.position);  </span><span style="color:#6A737D">// 装箱 + EXTERN</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// ✅ 推荐:热路径用 Vector3[] + 手动写</span></span>
+<span class="line"><span style="color:#E1E4E8">[</span><span style="color:#B392F0">SerializeField</span><span style="color:#E1E4E8">] </span><span style="color:#F97583">private</span><span style="color:#B392F0"> Vector3</span><span style="color:#E1E4E8">[] </span><span style="color:#B392F0">_positions</span><span style="color:#F97583"> =</span><span style="color:#F97583"> new</span><span style="color:#B392F0"> Vector3</span><span style="color:#E1E4E8">[</span><span style="color:#79B8FF">1000</span><span style="color:#E1E4E8">];</span></span>
+<span class="line"><span style="color:#F97583">private</span><span style="color:#F97583"> int</span><span style="color:#B392F0"> _writeIndex</span><span style="color:#F97583"> =</span><span style="color:#79B8FF"> 0</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">void</span><span style="color:#B392F0"> Update</span><span style="color:#E1E4E8">() {</span></span>
+<span class="line"><span style="color:#E1E4E8">    _positions[_writeIndex </span><span style="color:#F97583">%</span><span style="color:#E1E4E8"> _positions.Length] </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> transform.position;  </span><span style="color:#6A737D">// 直接数组写</span></span>
+<span class="line"><span style="color:#E1E4E8">    _writeIndex</span><span style="color:#F97583">++</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<p><strong>理由</strong>:数组访问 = 1 个 EXTERN,DataList 索引 = 1 个 EXTERN + 边界检查 + 装箱,<strong>3-5x 差</strong>。</p>
+<h3 id="52-大量数据用-byte--bitconverter">5.2 大量数据用 byte[] + BitConverter</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="csharp"><code><span class="line"><span style="color:#6A737D">// ❌ 避免:1000 个 float 用 DataList 持久化</span></span>
+<span class="line"><span style="color:#B392F0">DataList</span><span style="color:#B392F0"> floats</span><span style="color:#F97583"> =</span><span style="color:#F97583"> new</span><span style="color:#B392F0"> DataList</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#F97583">for</span><span style="color:#E1E4E8"> (</span><span style="color:#F97583">int</span><span style="color:#B392F0"> i</span><span style="color:#F97583"> =</span><span style="color:#79B8FF"> 0</span><span style="color:#E1E4E8">; i </span><span style="color:#F97583">&#x3C;</span><span style="color:#79B8FF"> 1000</span><span style="color:#E1E4E8">; i</span><span style="color:#F97583">++</span><span style="color:#E1E4E8">) floats.</span><span style="color:#B392F0">Add</span><span style="color:#E1E4E8">(Mathf.PI </span><span style="color:#F97583">*</span><span style="color:#E1E4E8"> i);</span></span>
+<span class="line"><span style="color:#E1E4E8">PlayerData.</span><span style="color:#B392F0">Set</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"data"</span><span style="color:#E1E4E8">, floats);  </span><span style="color:#6A737D">// 序列化慢</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// ✅ 推荐:用 byte[] 存储</span></span>
+<span class="line"><span style="color:#F97583">byte</span><span style="color:#E1E4E8">[] </span><span style="color:#B392F0">buffer</span><span style="color:#F97583"> =</span><span style="color:#F97583"> new</span><span style="color:#F97583"> byte</span><span style="color:#E1E4E8">[</span><span style="color:#79B8FF">1000</span><span style="color:#F97583"> *</span><span style="color:#79B8FF"> 4</span><span style="color:#E1E4E8">];</span></span>
+<span class="line"><span style="color:#F97583">for</span><span style="color:#E1E4E8"> (</span><span style="color:#F97583">int</span><span style="color:#B392F0"> i</span><span style="color:#F97583"> =</span><span style="color:#79B8FF"> 0</span><span style="color:#E1E4E8">; i </span><span style="color:#F97583">&#x3C;</span><span style="color:#79B8FF"> 1000</span><span style="color:#E1E4E8">; i</span><span style="color:#F97583">++</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#F97583">    byte</span><span style="color:#E1E4E8">[] </span><span style="color:#B392F0">bytes</span><span style="color:#F97583"> =</span><span style="color:#E1E4E8"> System.BitConverter.</span><span style="color:#B392F0">GetBytes</span><span style="color:#E1E4E8">(Mathf.PI </span><span style="color:#F97583">*</span><span style="color:#E1E4E8"> i);</span></span>
+<span class="line"><span style="color:#E1E4E8">    System.Buffer.</span><span style="color:#B392F0">BlockCopy</span><span style="color:#E1E4E8">(bytes, </span><span style="color:#79B8FF">0</span><span style="color:#E1E4E8">, buffer, i </span><span style="color:#F97583">*</span><span style="color:#79B8FF"> 4</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">4</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span>
+<span class="line"><span style="color:#E1E4E8">PlayerData.</span><span style="color:#B392F0">Set</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"data"</span><span style="color:#E1E4E8">, buffer);  </span><span style="color:#6A737D">// 直接存二进制</span></span></code></pre>
+<p><strong>理由</strong>:</p>
+<ul>
+<li>DataList 序列化 = 反射遍历 + 装箱拆箱</li>
+<li>byte[] 序列化 = 直接 memcpy</li>
+<li>性能差 <strong>10-50x</strong>,数据量越大差距越大</li>
+</ul>
+<h3 id="53-避免嵌套-datadictionary嵌套-datalist-更快">5.3 避免嵌套 DataDictionary(嵌套 DataList 更快)</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="csharp"><code><span class="line"><span style="color:#6A737D">// ❌ 避免:嵌套 DataDictionary(每层 6x 开销)</span></span>
+<span class="line"><span style="color:#B392F0">DataDictionary</span><span style="color:#B392F0"> config</span><span style="color:#F97583"> =</span><span style="color:#F97583"> new</span><span style="color:#B392F0"> DataDictionary</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#E1E4E8">config.</span><span style="color:#B392F0">SetValue</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"player"</span><span style="color:#E1E4E8">, </span><span style="color:#F97583">new</span><span style="color:#B392F0"> DataDictionary</span><span style="color:#E1E4E8">());</span></span>
+<span class="line"><span style="color:#E1E4E8">((</span><span style="color:#B392F0">DataDictionary</span><span style="color:#E1E4E8">)config[</span><span style="color:#9ECBFF">"player"</span><span style="color:#E1E4E8">].Reference).</span><span style="color:#B392F0">SetValue</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"score"</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">100</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#E1E4E8">((</span><span style="color:#B392F0">DataDictionary</span><span style="color:#E1E4E8">)config[</span><span style="color:#9ECBFF">"player"</span><span style="color:#E1E4E8">].Reference).</span><span style="color:#B392F0">SetValue</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"level"</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">5</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// ✅ 推荐:扁平化 key 路径</span></span>
+<span class="line"><span style="color:#B392F0">DataDictionary</span><span style="color:#B392F0"> flat</span><span style="color:#F97583"> =</span><span style="color:#F97583"> new</span><span style="color:#B392F0"> DataDictionary</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#E1E4E8">flat.</span><span style="color:#B392F0">SetValue</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"player.score"</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">100</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#E1E4E8">flat.</span><span style="color:#B392F0">SetValue</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"player.level"</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">5</span><span style="color:#E1E4E8">);</span></span></code></pre>
+<p><strong>理由</strong>:</p>
+<ul>
+<li>嵌套 DataDictionary 序列化时需递归遍历,每层 N 个 EXTERN</li>
+<li>扁平化 = 1 层 DataDictionary + O(1) 访问</li>
+<li>嵌套 3 层 ≈ 18x 开销,扁平化 ≈ 6x 开销</li>
+</ul>
+<h3 id="54-缓存-datalistlength">5.4 缓存 DataList.Length</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="csharp"><code><span class="line"><span style="color:#6A737D">// ❌ 避免:循环中每次访问 Count</span></span>
+<span class="line"><span style="color:#F97583">for</span><span style="color:#E1E4E8"> (</span><span style="color:#F97583">int</span><span style="color:#B392F0"> i</span><span style="color:#F97583"> =</span><span style="color:#79B8FF"> 0</span><span style="color:#E1E4E8">; i </span><span style="color:#F97583">&#x3C;</span><span style="color:#E1E4E8"> list.Count; i</span><span style="color:#F97583">++</span><span style="color:#E1E4E8">) {  </span><span style="color:#6A737D">// 每次循环调 Count 属性</span></span>
+<span class="line"><span style="color:#B392F0">    Process</span><span style="color:#E1E4E8">(list[i]);</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// ✅ 推荐:缓存 Count</span></span>
+<span class="line"><span style="color:#F97583">int</span><span style="color:#B392F0"> count</span><span style="color:#F97583"> =</span><span style="color:#E1E4E8"> list.Count;  </span><span style="color:#6A737D">// 1 次访问</span></span>
+<span class="line"><span style="color:#F97583">for</span><span style="color:#E1E4E8"> (</span><span style="color:#F97583">int</span><span style="color:#B392F0"> i</span><span style="color:#F97583"> =</span><span style="color:#79B8FF"> 0</span><span style="color:#E1E4E8">; i </span><span style="color:#F97583">&#x3C;</span><span style="color:#E1E4E8"> count; i</span><span style="color:#F97583">++</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#B392F0">    Process</span><span style="color:#E1E4E8">(list[i]);</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<p><strong>理由</strong>:</p>
+<ul>
+<li><code>Count</code> 属性 = EXTERN 调用(每次 ~10-20ns)</li>
+<li>循环 1000 次 = 1000 次 EXTERN</li>
+<li>缓存后 = 1 次 EXTERN</li>
+</ul>
+<p><strong>节省</strong>:1000 次循环 ≈ 10-20μs(看似小,热路径累积显著)</p>
+<h3 id="55-预分配-capacity">5.5 预分配 Capacity</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="csharp"><code><span class="line"><span style="color:#6A737D">// ❌ 避免:Add 触发自动扩容</span></span>
+<span class="line"><span style="color:#B392F0">DataList</span><span style="color:#B392F0"> list</span><span style="color:#F97583"> =</span><span style="color:#F97583"> new</span><span style="color:#B392F0"> DataList</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#F97583">for</span><span style="color:#E1E4E8"> (</span><span style="color:#F97583">int</span><span style="color:#B392F0"> i</span><span style="color:#F97583"> =</span><span style="color:#79B8FF"> 0</span><span style="color:#E1E4E8">; i </span><span style="color:#F97583">&#x3C;</span><span style="color:#79B8FF"> 100</span><span style="color:#E1E4E8">; i</span><span style="color:#F97583">++</span><span style="color:#E1E4E8">) list.</span><span style="color:#B392F0">Add</span><span style="color:#E1E4E8">(i);  </span><span style="color:#6A737D">// 多次 2x 拷贝</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// ✅ 推荐:预设 Capacity</span></span>
+<span class="line"><span style="color:#B392F0">DataList</span><span style="color:#B392F0"> list</span><span style="color:#F97583"> =</span><span style="color:#F97583"> new</span><span style="color:#B392F0"> DataList</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#E1E4E8">list.Capacity </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> 100</span><span style="color:#E1E4E8">;  </span><span style="color:#6A737D">// 1 次分配</span></span>
+<span class="line"><span style="color:#F97583">for</span><span style="color:#E1E4E8"> (</span><span style="color:#F97583">int</span><span style="color:#B392F0"> i</span><span style="color:#F97583"> =</span><span style="color:#79B8FF"> 0</span><span style="color:#E1E4E8">; i </span><span style="color:#F97583">&#x3C;</span><span style="color:#79B8FF"> 100</span><span style="color:#E1E4E8">; i</span><span style="color:#F97583">++</span><span style="color:#E1E4E8">) list.</span><span style="color:#B392F0">Add</span><span style="color:#E1E4E8">(i);  </span><span style="color:#6A737D">// 无扩容</span></span></code></pre>
+<p><strong>理由</strong>:</p>
+<ul>
+<li><code>Add</code> 超过 Capacity → 自动 2x 扩容,拷贝原数组</li>
+<li>100 个元素 = log₂(100) ≈ 7 次扩容,7 次拷贝</li>
+<li>预设 = 0 次拷贝</li>
+</ul>
+<h3 id="56-避免-containsvalue线性扫描">5.6 避免 ContainsValue(线性扫描)</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="csharp"><code><span class="line"><span style="color:#6A737D">// ❌ 避免:ContainsValue(O(n) 慢)</span></span>
+<span class="line"><span style="color:#F97583">if</span><span style="color:#E1E4E8"> (dict.</span><span style="color:#B392F0">ContainsValue</span><span style="color:#E1E4E8">(targetValue)) { </span><span style="color:#F97583">..</span><span style="color:#E1E4E8">. }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// ✅ 推荐:用 GetKeys() + key 反查(O(1) 哈希)</span></span>
+<span class="line"><span style="color:#B392F0">DataList</span><span style="color:#B392F0"> keys</span><span style="color:#F97583"> =</span><span style="color:#E1E4E8"> dict.</span><span style="color:#B392F0">GetKeys</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#F97583">for</span><span style="color:#E1E4E8"> (</span><span style="color:#F97583">int</span><span style="color:#B392F0"> i</span><span style="color:#F97583"> =</span><span style="color:#79B8FF"> 0</span><span style="color:#E1E4E8">; i </span><span style="color:#F97583">&#x3C;</span><span style="color:#E1E4E8"> keys.Count; i</span><span style="color:#F97583">++</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#F97583">    if</span><span style="color:#E1E4E8"> (dict[keys[i]].String </span><span style="color:#F97583">==</span><span style="color:#E1E4E8"> targetValue) { </span><span style="color:#F97583">..</span><span style="color:#E1E4E8">. }</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<p><strong>理由</strong>:</p>
+<ul>
+<li><code>ContainsValue</code> = 遍历所有值(线性)</li>
+<li>key 反查 = O(1) 哈希</li>
+</ul>
+<h3 id="57-json-序列化分批">5.7 JSON 序列化分批</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="csharp"><code><span class="line"><span style="color:#6A737D">// ❌ 避免:一次性序列化大数据</span></span>
+<span class="line"><span style="color:#B392F0">DataList</span><span style="color:#B392F0"> big</span><span style="color:#F97583"> =</span><span style="color:#F97583"> new</span><span style="color:#B392F0"> DataList</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#F97583">for</span><span style="color:#E1E4E8"> (</span><span style="color:#F97583">int</span><span style="color:#B392F0"> i</span><span style="color:#F97583"> =</span><span style="color:#79B8FF"> 0</span><span style="color:#E1E4E8">; i </span><span style="color:#F97583">&#x3C;</span><span style="color:#79B8FF"> 10000</span><span style="color:#E1E4E8">; i</span><span style="color:#F97583">++</span><span style="color:#E1E4E8">) big.</span><span style="color:#B392F0">Add</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">$"item_</span><span style="color:#9ECBFF">{</span><span style="color:#E1E4E8">i</span><span style="color:#9ECBFF">}</span><span style="color:#9ECBFF"> with some text"</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#E1E4E8">VRCJson.</span><span style="color:#B392F0">TrySerializeToJson</span><span style="color:#E1E4E8">(big, </span><span style="color:#F97583">out</span><span style="color:#B392F0"> DataToken</span><span style="color:#B392F0"> json</span><span style="color:#E1E4E8">);  </span><span style="color:#6A737D">// 慢</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// ✅ 推荐:分批</span></span>
+<span class="line"><span style="color:#F97583">const</span><span style="color:#F97583"> int</span><span style="color:#B392F0"> batchSize</span><span style="color:#F97583"> =</span><span style="color:#79B8FF"> 100</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">for</span><span style="color:#E1E4E8"> (</span><span style="color:#F97583">int</span><span style="color:#B392F0"> batch</span><span style="color:#F97583"> =</span><span style="color:#79B8FF"> 0</span><span style="color:#E1E4E8">; batch </span><span style="color:#F97583">&#x3C;</span><span style="color:#79B8FF"> 100</span><span style="color:#E1E4E8">; batch</span><span style="color:#F97583">++</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#B392F0">    DataList</span><span style="color:#B392F0"> sub</span><span style="color:#F97583"> =</span><span style="color:#F97583"> new</span><span style="color:#B392F0"> DataList</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#F97583">    for</span><span style="color:#E1E4E8"> (</span><span style="color:#F97583">int</span><span style="color:#B392F0"> i</span><span style="color:#F97583"> =</span><span style="color:#79B8FF"> 0</span><span style="color:#E1E4E8">; i </span><span style="color:#F97583">&#x3C;</span><span style="color:#E1E4E8"> batchSize; i</span><span style="color:#F97583">++</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#E1E4E8">        sub.</span><span style="color:#B392F0">Add</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">$"item_</span><span style="color:#9ECBFF">{</span><span style="color:#E1E4E8">batch</span><span style="color:#F97583"> *</span><span style="color:#E1E4E8"> batchSize</span><span style="color:#F97583"> +</span><span style="color:#E1E4E8"> i</span><span style="color:#9ECBFF">}</span><span style="color:#9ECBFF"> with some text"</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"><span style="color:#E1E4E8">    VRCJson.</span><span style="color:#B392F0">TrySerializeToJson</span><span style="color:#E1E4E8">(sub, </span><span style="color:#F97583">out</span><span style="color:#B392F0"> DataToken</span><span style="color:#B392F0"> json</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#6A737D">    // 处理...</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<p><strong>理由</strong>:</p>
+<ul>
+<li>避免单次 > 5ms 卡顿(玩家会感知)</li>
+<li>分散到多帧,VR 帧率稳定</li>
+</ul>
+<hr>
+<hr>
+<h1 id="datalist--datadictionary-性能基准说明6-实测验证清单给未来-agent">DataList / DataDictionary 性能基准说明：6. 实测验证清单(给未来 Agent)</h1>
+<p>如需实测,需准备:</p>
+<h3 id="61-环境要求">6.1 环境要求</h3>
+<ul class="contains-task-list">
+<li class="task-list-item"><input type="checkbox" disabled> Unity 2022.3.22f1</li>
+<li class="task-list-item"><input type="checkbox" disabled> VRChat SDK 3.10.x(Worlds)</li>
+<li class="task-list-item"><input type="checkbox" disabled> ClientSim(本地模拟,无需 VRChat Client)</li>
+<li class="task-list-item"><input type="checkbox" disabled> .NET Profiler(可选,看调用栈)</li>
+<li class="task-list-item"><input type="checkbox" disabled> 至少 1 个测试 World(UdonSharp 脚本可编译)</li>
+</ul>
+<h3 id="62-测试场景">6.2 测试场景</h3>
+<ul class="contains-task-list">
+<li class="task-list-item"><input type="checkbox" disabled> 1000 次 DataList Add(Get/Set)</li>
+<li class="task-list-item"><input type="checkbox" disabled> 1000 次 DataDictionary Add/GetValue</li>
+<li class="task-list-item"><input type="checkbox" disabled> 嵌套 1/2/3/5/10 层 JSON 序列化</li>
+<li class="task-list-item"><input type="checkbox" disabled> 1KB / 10KB / 100KB / 1MB JSON 序列化</li>
+<li class="task-list-item"><input type="checkbox" disabled> ContainsKey vs GetKeys 迭代性能</li>
+<li class="task-list-item"><input type="checkbox" disabled> DataList 索引 vs foreach 性能</li>
+</ul>
+<h3 id="63-报告模板">6.3 报告模板</h3>
+<p>完成实测后,建议在 <code>performance-notes.md</code> 追加”§7. 实测数据”章节,格式:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="markdown"><code><span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">---</span></span>
+<span class="line"></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">---</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#79B8FF;font-weight:bold"># DataList / DataDictionary 性能基准说明：7. 实测数据（模板示例——占位，非实测结果）</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#85E89D">> 测量环境: Unity 2022.3.22f1, VRChat SDK 3.10.x, ClientSim</span></span>
+<span class="line"><span style="color:#85E89D">> 测量日期: YYYY-MM-DD</span></span>
+<span class="line"><span style="color:#85E89D">> 测量者: [Agent 名]</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">| 测试 | 推断 | 实测 | 偏差 |</span></span>
+<span class="line"><span style="color:#E1E4E8">|------|------|------|------|</span></span>
+<span class="line"><span style="color:#E1E4E8">| DataList Add 1000 | 50-80ms | TBD ms | TBD |</span></span>
+<span class="line"><span style="color:#E1E4E8">| ... |</span></span></code></pre>
+<hr>
+<hr>
+<h1 id="datalist--datadictionary-性能基准说明7-与现有文档的关系">DataList / DataDictionary 性能基准说明：7. 与现有文档的关系</h1>
+<table>
+<thead>
+<tr>
+<th>现有文档</th>
+<th>关系</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>data-lists.md</code></td>
+<td>提供 DataList API;本文档补充<strong>性能维度</strong></td>
+</tr>
+<tr>
+<td><code>data-dictionaries.md</code> §9.1</td>
+<td>已包含 DataDictionary 6x 慢的推断;本文档扩展至 DataList</td>
+</tr>
+<tr>
+<td><code>data-tokens.md</code></td>
+<td>解释 17 个 TokenType;本文档 §2.1 引用其类型系统</td>
+</tr>
+<tr>
+<td><code>vrcjson.md</code></td>
+<td>介绍 VRCJson API;本文档 §3.3 推断其性能</td>
+</tr>
+<tr>
+<td><code>byte-and-bit-operations.md</code></td>
+<td>强调用 byte[] 替代 DataList 的核心思路;本文档 §5.2 强化该建议</td>
+</tr>
+<tr>
+<td><code>bit-packed-flags.md</code></td>
+<td>用 int/uint 存多 bool;<strong>本质</strong>与”避免 DataList”一致</td>
+</tr>
+<tr>
+<td><code>performance-guide.md</code></td>
+<td>整体性能指南;本文档是其<strong>数据容器专项</strong></td>
+</tr>
+</tbody>
+</table>
+<hr>
+<hr>
+<h1 id="datalist--datadictionary-性能基准说明8-重要限制声明再次强调">DataList / DataDictionary 性能基准说明：8. 重要限制声明(再次强调)</h1>
+<blockquote>
+<p>🔴 <strong>【未实测】</strong> 本文档中所有性能数字均为推断,<strong>本环境无 Unity 运行时</strong>。</p>
+<p>🔴 <strong>【需 Unity 实测验证】</strong> 任何优化决策需在 <code>Unity 2022.3.22f1 + VRChat SDK 3.10.x + ClientSim</code> 环境中实测。</p>
+<p>🟡 <strong>【方向性建议】</strong> 优化策略(§5)基于<strong>原理</strong>(EXTERN / 装箱 / 反射)推导,<strong>无需实测即可应用</strong>。
+但具体”应该预分配多少 Capacity”等问题需实测。</p>
+<p>✅ <strong>【可信部分】</strong> O(n) / O(1) 复杂度标注(来自官方文档)、JSON 序列化分批建议(基于原理)、避免 ContainsValue(基于 API 语义)——这些<strong>可信</strong>。</p>
+<p>❌ <strong>【不可信部分】</strong> 具体数字(如 5-10x 慢、0.3ms 等)、精确瓶颈百分比——这些<strong>仅作方向性参考</strong>。</p>
+</blockquote>
+<hr>
+<hr>
+<h1 id="datalist--datadictionary-性能基准说明相关页面">DataList / DataDictionary 性能基准说明：相关页面</h1>
+<p>index.md · data-lists.md · data-dictionaries.md · data-tokens.md · vrcjson.md · byte-and-bit-operations.md · ../../../api/data-containers.md · ../../../../concepts/patterns/bit-packed-flags.md · ../../performance-guide.md</p>
+<hr> </div> <p class="kb-source-note" data-astro-cid-lvjzyg5v>
+本文由 VRChat 开发知识库自动整理（社区整理  · 可信度 medium ），
+          遇到与手写教程冲突的地方，以官方文档为最高优先级。
+</p> <section class="comments" id="comments" data-astro-cid-lvjzyg5v> <h2 class="comments__title" data-astro-cid-lvjzyg5v>✦ 旅人留言（0）</h2> <p class="comments__empty" id="commentsEmpty" data-astro-cid-lvjzyg5v>
+还没有旅人留言 —— 有疑问就写在下面，站长都会回复。
+</p> <form class="comment-form" id="commentForm" data-target="kb-world-udon-data-containers-performance-notes" data-astro-cid-lvjzyg5v> <p class="comment-form__title" data-astro-cid-lvjzyg5v>写下你的留言</p> <input id="cAuthor" maxlength="20" placeholder="昵称（留空则为「旅人」）" data-astro-cid-lvjzyg5v> <textarea id="cBody" maxlength="1000" required placeholder="想问的问题、想说的感谢都可以（最多 1000 字）" data-astro-cid-lvjzyg5v></textarea> <div class="comment-form__actions" data-astro-cid-lvjzyg5v> <button class="btn btn--primary" type="submit" data-astro-cid-lvjzyg5v>发布留言</button> <span class="form-hint" data-astro-cid-lvjzyg5v>留言保存在本站，站长在写作台里能看到</span> <span class="form-msg" id="cMsg" data-astro-cid-lvjzyg5v></span> </div> </form> </section> <nav class="station-nav" aria-label="站间导航" data-astro-cid-lvjzyg5v> <a href="/STELLASTOPVRC/posts/kb-world-udon-data-containers-data-tokens/" data-astro-cid-lvjzyg5v> <span class="dir" data-astro-cid-lvjzyg5v>← 上一站 · 更新的星光</span> <span class="to" data-astro-cid-lvjzyg5v>Data Tokens</span> </a> <a href="/STELLASTOPVRC/posts/kb-world-udon-data-containers-vrcjson/" data-astro-cid-lvjzyg5v> <span class="dir" data-astro-cid-lvjzyg5v>下一站 · 更早的星光 →</span> <span class="to" data-astro-cid-lvjzyg5v>VRCJSON</span> </a> </nav> </div> <aside class="toc" id="toc" hidden> <p class="toc__title">✦ 本页星图</p> <nav id="tocNav" aria-label="文章目录"></nav> </aside> <script type="module">const i=document.querySelector(".prose"),d=document.getElementById("toc"),u=document.getElementById("tocNav"),l=[];if(i&&d&&u){const c=[...i.querySelectorAll("h1, h2, h3")];if(c.length>=3){d.hidden=!1,c.forEach((o,e)=>{o.id||(o.id=`sec-${e}`);const n=document.createElement("a");n.href=`#${o.id}`;const s=(o.textContent??"").replace(/\s+/g," ").trim(),r=s.search(/[：:]/),a=r>=4?s.slice(0,r):s;n.textContent=a.length>40?`${a.slice(0,40)}…`:a,n.title=s,u.appendChild(n),l.push({a:n,h:o})});const t=()=>{let o=l[0];for(const e of l)e.h.getBoundingClientRect().top<=130&&(o=e);for(const e of l)e.a.classList.toggle("is-active",e===o)};addEventListener("scroll",t,{passive:!0}),t()}}document.querySelectorAll(".prose pre").forEach(c=>{const t=document.createElement("button");t.className="code-copy",t.type="button",t.textContent="复制",t.addEventListener("click",async()=>{const o=c.querySelector("code")?.innerText??c.innerText;try{await navigator.clipboard.writeText(o)}catch{const e=document.createElement("textarea");e.value=o,document.body.appendChild(e),e.select(),document.execCommand("copy"),e.remove()}t.textContent="已复制 ✓",t.classList.add("is-ok"),setTimeout(()=>{t.textContent="复制",t.classList.remove("is-ok")},1500)}),c.appendChild(t)});</script> </article>  </main> <footer class="site-footer"> <div class="wrap"> <p class="star-line" aria-hidden="true"> <svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> <svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> </p> <p>星之驿站 StellaStop —— 在虚拟宇宙中，为你保留一座驿站</p> <p class="site-footer__disclaimer">
+该网页目前是测试阶段，仅用于测试，所有内容仅供参考；内容全部为引用互联网当中的信息。
+</p> <p>© 2026 星之驿站 · 由 <a href="https://astro.build">Astro</a> 与星光驱动</p> <p> <a data-desk-login hidden title="写作台：登录 / 注册">登录 / 注册</a> ·
+<a href="/STELLASTOPVRC/announcements/">官方公告</a> ·
+<a href="/STELLASTOPVRC/ai/">问星 AI</a> ·
+<a href="/STELLASTOPVRC/feedback/">旅人留言板</a> </p> </div> </footer> <button class="to-top" id="toTop" aria-label="回到顶部"> <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"> <path d="M12 20V5"></path> <path d="M5.5 11.5 12 5l6.5 6.5"></path> </svg> </button> <script type="module">const e=document.getElementById("toTop");if(e){const t=()=>e.classList.toggle("is-visible",scrollY>480);addEventListener("scroll",t,{passive:!0}),t(),e.addEventListener("click",()=>{const o=matchMedia("(prefers-reduced-motion: reduce)").matches;scrollTo({top:0,behavior:o?"auto":"smooth"})})}</script> <script>(function(){const deskConfigured = "";
+
+      /* 写作台探测（页面尾部执行，DOM 已就绪）：
+         1. 计算写作台地址：站点配置 deskUrl（公网部署时填）> 本机默认 localhost:4322 > 同主机 4322
+         2. 探测 /api/gate/status —— 在线才点亮「登录 / 注册」入口，并复用给验证门横幅
+         3. 不在线则保持隐藏，绝不会把访客拽进内网地址；同时给出一次性「镜像模式」提示 */
+      (function () {
+        var host = location.hostname;
+        var isLocal = host === 'localhost' || host === '127.0.0.1' || host === '[::1]';
+        var desk = deskConfigured ||
+          (isLocal ? 'http://localhost:4322' : location.protocol + '//' + host + ':4322');
+        window.STELLA_DESK = desk;
+
+        function revealLogin() {
+          document.querySelectorAll('[data-desk-login]').forEach(function (a) {
+            a.href = desk + '/admin';
+            a.removeAttribute('hidden');
+          });
+        }
+        function showBanner(css, html, shiftHeader) {
+          var bar = document.createElement('div');
+          bar.style.cssText = css;
+          bar.innerHTML = html;
+          document.body.prepend(bar);
+          if (shiftHeader) {
+            var header = document.querySelector('.site-header');
+            if (header) header.style.marginTop = '42px';
+          }
+        }
+        function hintMirrorMode() {
+          try {
+            if (sessionStorage.getItem('stella-desk-hint')) return;
+            sessionStorage.setItem('stella-desk-hint', '1');
+          } catch (e) { /* 无痕模式等：忽略 */ }
+          var tip = document.createElement('div');
+          tip.style.cssText = 'position:fixed;left:14px;bottom:14px;z-index:9998;max-width:min(92vw,430px);padding:.65rem .9rem;border-radius:12px;background:rgba(18,20,44,.92);border:1px solid rgba(150,142,255,.35);color:#e8e6ff;font-size:.82rem;line-height:1.6;font-family:system-ui,sans-serif;box-shadow:0 8px 30px rgba(0,0,0,.35)';
+          tip.innerHTML = 'ℹ️ 静态镜像模式：登录 / 评论 / AI 等互动功能需要站长写作台在线，当前不可用。' +
+            '<span id="stellaDeskHintClose" style="float:right;cursor:pointer;opacity:.75;font-weight:700;margin-left:.6rem" title="关闭">×</span>';
+          document.body.appendChild(tip);
+          var close = function () { tip.remove(); };
+          tip.querySelector('#stellaDeskHintClose').addEventListener('click', close);
+          setTimeout(close, 9000);
+        }
+
+        try {
+          var ctrl = new AbortController();
+          var timer = setTimeout(function () { ctrl.abort(); }, 2500);
+          fetch(desk + '/api/gate/status', { credentials: 'include', signal: ctrl.signal })
+            .then(function (r) { return r.ok ? r.json() : null; })
+            .then(function (d) {
+              clearTimeout(timer);
+              if (!d) throw new Error('desk-offline');
+              window.STELLA_DESK_OK = true;
+              revealLogin();
+              if (d.regionBlocked) {
+                showBanner(
+                  'position:fixed;top:0;left:0;right:0;z-index:9999;padding:1.2rem;text-align:center;background:#1a0a0a;color:#ff9ed2;font-size:.95rem;border-bottom:2px solid #ff4d6d;font-family:system-ui,sans-serif',
+                  '⛔ 你所在的地区（' + (d.regionCountry || '未知') + '）暂不开放访问。',
+                  false
+                );
+                return;
+              }
+              if (d.enabled && !d.passed) {
+                showBanner(
+                  'position:fixed;top:0;left:0;right:0;z-index:9999;padding:0.7rem;text-align:center;background:linear-gradient(94deg,rgba(143,127,247,.25),rgba(98,200,245,.18));border-bottom:1px solid rgba(150,142,255,.3);color:#f0efff;font-size:.88rem;font-family:system-ui,sans-serif',
+                  '🔒 本站启用了安全验证 —— <a href="' + desk + '/gate?next=' + encodeURIComponent(location.href) + '" style="color:#ffd98e;font-weight:700;text-decoration:underline">点击完成验证</a>，通过后即可使用全部功能（30 天免验）。',
+                  true
+                );
+              }
+            })
+            .catch(function () {
+              clearTimeout(timer);
+              window.STELLA_DESK_OK = false;
+              hintMirrorMode();
+            });
+        } catch (e) { /* 忽略 */ }
+      })();
+    })();</script> </body> </html> <script type="module">const m=document.getElementById("commentForm"),s=document.getElementById("cMsg"),u=`${location.protocol}//${location.hostname}:4322/api/message`;function r(e,t=!1){s&&(s.textContent=e,s.classList.toggle("is-err",t),s.classList.toggle("is-ok",!t))}function y(){const e=new Date,t=n=>String(n).padStart(2,"0");return`${e.getFullYear()}-${t(e.getMonth()+1)}-${t(e.getDate())}`}function f(e){let t=7;for(const n of e)t=(t*31+n.charCodeAt(0))%360;return t}function g(e,t){const n=document.createElement("li");n.className="comment",n.innerHTML=`
+      <span class="comment__avatar"></span>
+      <div class="comment__bubble">
+        <div class="comment__head">
+          <span class="comment__name"></span>
+          <time class="comment__date">${y()}</time>
+        </div>
+        <p class="comment__body"></p>
+      </div>`;const o=n.querySelector(".comment__avatar");return o.style.setProperty("--h",String(f(e))),o.textContent=e.slice(0,1),n.querySelector(".comment__name").textContent=e,n.querySelector(".comment__body").textContent=t,n}m?.addEventListener("submit",async e=>{e.preventDefault();const t=document.getElementById("cBody").value.trim();if(!t)return r("留言内容不能为空哦",!0);const n=document.getElementById("cAuthor").value.trim()||"旅人",o=m.querySelector("button");o&&(o.disabled=!0);try{const c=await fetch(u,{credentials:"include",method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({target:m.dataset.target,kind:"comment",author:n,body:t})}),d=await c.json().catch(()=>({}));if(!c.ok)throw new Error(d.error||`发送失败（${c.status}）`);const l=document.querySelector(".comment-list");l&&l.appendChild(g(n,t)),document.getElementById("commentsEmpty")?.remove(),document.getElementById("cBody").value="",r("留言已发布，感谢支持 ✦");const a=document.querySelector(".comments__title"),i=a?.textContent?.match(/（(\d+)）/);a&&i&&(a.textContent=a.textContent.replace(/（\d+）/,`（${Number(i[1])+1}）`))}catch(c){r(c instanceof TypeError?"写作台没在运行，暂时收不到留言 —— 双击「启动博客.bat」就好":c.message,!0)}finally{o&&(o.disabled=!1)}});</script> 

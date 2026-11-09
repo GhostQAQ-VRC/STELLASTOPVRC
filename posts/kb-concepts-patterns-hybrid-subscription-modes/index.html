@@ -1,0 +1,562 @@
+<!DOCTYPE html><html lang="zh-CN"> <head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="generator" content="Astro v5.18.2"><meta name="description" content="VRChat World 中，Udon 对象的来源有 2 种："><meta name="theme-color" content="#070a1c"><meta property="og:title" content="Hybrid Static+Dynamic Subscription (静态+动态双订阅) · 星之驿站 StellaStop"><meta property="og:description" content="VRChat World 中，Udon 对象的来源有 2 种："><meta property="og:type" content="website"><meta name="twitter:card" content="summary"><link rel="icon" type="image/svg+xml" href="/STELLASTOPVRC/favicon.svg"><script>
+      // 在渲染前恢复主题与特效档位，避免闪一下默认状态
+      try {
+        document.documentElement.dataset.theme =
+          localStorage.getItem('stella-theme') || 'nebula';
+        document.documentElement.dataset.fx =
+          localStorage.getItem('stella-fx') || 'standard';
+      } catch {
+        /* 隐私模式读不到就算了 */
+      }
+    </script><link rel="stylesheet" href="/STELLASTOPVRC/custom-vars.css"><title>Hybrid Static+Dynamic Subscription (静态+动态双订阅) · 星之驿站 StellaStop</title><link rel="stylesheet" href="/STELLASTOPVRC/_astro/about.Bgh6wcGl.css">
+<style>.post-head__meta[data-astro-cid-lvjzyg5v]{color:var(--ink-faint);font-family:var(--font-mono);font-size:.82rem}.post-head[data-astro-cid-lvjzyg5v] .chip-row[data-astro-cid-lvjzyg5v]{margin-top:1rem}.kb-source-note[data-astro-cid-lvjzyg5v]{max-width:760px;margin:2.2rem auto 0;font-size:.82rem;color:var(--ink-faint);border-top:1px dashed var(--line);padding-top:1rem}
+</style></head> <body> <div class="site-notice" id="siteNotice"> <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> <span class="site-notice__text">欢迎来到星之驿站！</span> <button class="site-notice__close" id="noticeClose" type="button" aria-label="关闭公告">
+×
+</button> </div> <a class="skip-link" href="#main">跳到主要内容</a> <canvas id="starfield" aria-hidden="true" data-astro-cid-ra7sfcwn></canvas> <div class="fx-aurora fx-aurora--a" aria-hidden="true" data-astro-cid-ra7sfcwn></div> <div class="fx-aurora fx-aurora--b" aria-hidden="true" data-astro-cid-ra7sfcwn></div>  <script type="module">const u=document.getElementById("starfield");if(u){let F=function(){const n=Math.random();return n<.1?"gold":n<.42?"blue":"white"},v=function(){const n=Math.min(window.devicePixelRatio||1,2);s=window.innerWidth,d=window.innerHeight,u.width=s*n,u.height=d*n,u.style.width=`${s}px`,u.style.height=`${d}px`,t.setTransform(n,0,0,n,0,0);const e=Math.min(190,Math.round(s*d/8500));l=Array.from({length:e},()=>({x:Math.random()*s,y:Math.random()*d,r:r(.4,1.7),base:r(.25,.8),amp:r(.12,.4),speed:r(6e-4,.0022),phase:r(0,Math.PI*2),c:F()})),C=Array.from({length:26},()=>({x:Math.random()*s,y:Math.random()*d,r:r(.9,2.4),vx:r(-.006,.006),vy:r(-.02,-.006),base:r(.2,.5),speed:r(8e-4,.002),phase:r(0,Math.PI*2),c:Math.random()<.5?"gold":"violet"})),c==="off"&&m(0,!0)},D=function(n){const e=Math.random()<.5?1:-1,o=r(Math.PI/7,Math.PI/5),a=r(.45,.75);y.push({x:r(s*.15,s*.85),y:r(-20,d*.3),vx:Math.cos(o)*a*e,vy:Math.sin(o)*a,born:n,life:r(750,1050),len:r(100,170)})},S=function(n){y=y.filter(e=>n-e.born<e.life);for(const e of y){const o=(n-e.born)/e.life,a=e.x+e.vx*(n-e.born),i=e.y+e.vy*(n-e.born),f=o<.15?o/.15:o>.7?(1-o)/.3:1,h=Math.hypot(e.vx,e.vy),x=e.vx/h,g=e.vy/h,b=t.createLinearGradient(a,i,a-x*e.len,i-g*e.len);b.addColorStop(0,`rgba(236,242,255,${(.85*f).toFixed(3)})`),b.addColorStop(1,"rgba(236,242,255,0)"),t.strokeStyle=b,t.lineWidth=1.6,t.lineCap="round",t.beginPath(),t.moveTo(a,i),t.lineTo(a-x*e.len,i-g*e.len),t.stroke()}},B=function(){let o=0;t.lineWidth=.7;for(let a=0;a<l.length&&o<26;a++)for(let i=a+1;i<l.length&&o<26;i++){const f=l[a].x-l[i].x,h=l[a].y-l[i].y,x=f*f+h*h;if(x<16900){const g=(1-Math.sqrt(x)/130)*.17;t.strokeStyle=`rgba(178,170,255,${g.toFixed(3)})`,t.beginPath(),t.moveTo(l[a].x,l[a].y),t.lineTo(l[i].x,l[i].y),t.stroke(),o++}}},X=function(n){for(const e of C){e.x+=e.vx*16,e.y+=e.vy*16,e.y<-12&&(e.y=d+10),e.x<-12&&(e.x=s+10),e.x>s+12&&(e.x=-10);const o=Math.max(.05,e.base+.25*Math.sin(n*e.speed+e.phase)),[a,i,f]=A[e.c];t.beginPath(),t.arc(e.x,e.y,e.r,0,7),t.shadowBlur=9,t.shadowColor=`rgba(${a},${i},${f},0.9)`,t.fillStyle=`rgba(${a},${i},${f},${o.toFixed(3)})`,t.fill()}t.shadowBlur=0},m=function(n,e=!1){t.clearRect(0,0,s,d);for(const o of l){const a=c==="off"?o.base:Math.max(.05,o.base+o.amp*Math.sin(n*o.speed+o.phase)),[i,f,h]=A[o.c];t.beginPath(),t.arc(o.x,o.y,o.r,0,7),o.r>1.25?(t.shadowBlur=7,t.shadowColor=`rgba(${i},${f},${h},0.85)`):t.shadowBlur=0,t.fillStyle=`rgba(${i},${f},${h},${a.toFixed(3)})`,t.fill()}if(t.shadowBlur=0,c!=="off"&&!e){c==="fancy"&&(B(),X(n));const o=c==="fancy"?r(2600,6e3):r(4200,9500);n>P&&(D(n),P=n+o),S(n)}},$=function(n){m(n),M=requestAnimationFrame($)},p=function(){if(c==="off"){m(0,!0);return}cancelAnimationFrame(M),M=requestAnimationFrame($)},w=function(){cancelAnimationFrame(M),t.clearRect(0,0,s,d),m(0,!0)};const t=u.getContext("2d"),k=matchMedia("(prefers-reduced-motion: reduce)").matches,A={white:[240,240,255],blue:[150,215,250],gold:[255,218,150],violet:[178,170,255]};let s=0,d=0,l=[],C=[],y=[],P=2500,M=0,c=document.documentElement.dataset.fx||"standard";k&&(c="off");const r=(n,e)=>n+Math.random()*(e-n);v(),addEventListener("resize",v),document.addEventListener("stella-fx-change",n=>{c=n.detail,c==="off"?w():p()}),c==="off"?m(0,!0):(p(),document.addEventListener("visibilitychange",()=>{document.hidden?w():p()}))}</script> <header class="site-header"> <div class="wrap site-header__inner"> <a class="logo" href="/STELLASTOPVRC/"> <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> <span>星之驿站</span> <span class="logo__romaji">StellaStop</span> </a> <div class="header-right"> <nav class="site-nav" aria-label="站内导航"> <a href="/STELLASTOPVRC/"> 首页 </a><a href="/STELLASTOPVRC/start/"> 新手 </a><a href="/STELLASTOPVRC/posts/"> 教程 </a><a href="/STELLASTOPVRC/videos/"> 视频 </a><a href="/STELLASTOPVRC/resources/"> 资源 </a><a href="/STELLASTOPVRC/booth/"> Booth </a><a href="/STELLASTOPVRC/announcements/"> 公告 </a><a href="/STELLASTOPVRC/ai/"> 问星 </a><a href="/STELLASTOPVRC/changelog/"> 更新日志 </a><a href="/STELLASTOPVRC/about/"> 关于 </a> </nav> <a class="login-link" data-desk-login hidden title="写作台：登录 / 注册后可发教程、传资源">
+登录 / 注册
+</a> <div class="theme-switch"> <button class="theme-switch__btn" id="themeBtn" type="button" aria-haspopup="listbox" aria-expanded="false" aria-label="切换主题配色" title="切换主题配色"> <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"> <path d="M12 3a9 9 0 1 0 9 9c0-1.2-1-2-2.2-2H17a2 2 0 0 1-2-2V6.2C15 5 14.2 4 13 4.4A9 9 0 0 0 12 3Z"></path> <circle cx="7.5" cy="11.5" r="1" fill="currentColor" stroke="none"></circle> <circle cx="10" cy="7.5" r="1" fill="currentColor" stroke="none"></circle> <circle cx="15" cy="7" r="1" fill="currentColor" stroke="none"></circle> </svg> </button> <div class="theme-pop" id="themePop" role="listbox" aria-label="选择主题" hidden> <button class="theme-opt" type="button" role="option" data-theme-value="nebula" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#8f7ff7"></span><span class="dot" style="background:#62c8f5"></span><span class="dot" style="background:#ffd98e"></span> </span> <span class="theme-opt__name">星云 · 蓝紫</span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt" type="button" role="option" data-theme-value="sakura" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#ff8fc7"></span><span class="dot" style="background:#c79bff"></span><span class="dot" style="background:#ffd08e"></span> </span> <span class="theme-opt__name">樱语 · 粉紫</span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt" type="button" role="option" data-theme-value="miku" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#2ed3c2"></span><span class="dot" style="background:#6ea8ff"></span><span class="dot" style="background:#ffe08e"></span> </span> <span class="theme-opt__name">葱色 · 青绿</span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt" type="button" role="option" data-theme-value="ember" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#ffb35c"></span><span class="dot" style="background:#ff7e6b"></span><span class="dot" style="background:#ffd98e"></span> </span> <span class="theme-opt__name">暮金 · 暖橙</span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt" type="button" role="option" data-theme-value="dawn" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#6a5ce8"></span><span class="dot" style="background:#e0568f"></span><span class="dot" style="background:#b8821e"></span> </span> <span class="theme-opt__name">晨星 · 浅色</span> <span class="theme-opt__mark">✦</span> </button> </div> </div> <script type="module">const a=document.getElementById("themeBtn"),n=document.getElementById("themePop");function s(c){document.documentElement.dataset.theme=c;try{localStorage.setItem("stella-theme",c)}catch{}const e=getComputedStyle(document.documentElement).getPropertyValue("--bg-deep").trim();document.querySelector('meta[name="theme-color"]')?.setAttribute("content",e||"#070a1c"),document.querySelectorAll(".theme-opt").forEach(t=>{const d=t.dataset.themeValue===c;t.classList.toggle("is-active",d),t.setAttribute("aria-selected",String(d))})}if(a&&n){const c=document.documentElement.dataset.theme||"nebula";document.querySelectorAll(".theme-opt").forEach(e=>{const t=e.dataset.themeValue===c;e.classList.toggle("is-active",t),e.setAttribute("aria-selected",String(t))}),a.addEventListener("click",e=>{e.stopPropagation();const t=n.hidden;n.hidden=!t,a.setAttribute("aria-expanded",String(t))}),document.addEventListener("click",e=>{!n.hidden&&!e.target.closest(".theme-switch")&&(n.hidden=!0,a.setAttribute("aria-expanded","false"))}),document.addEventListener("keydown",e=>{e.key==="Escape"&&!n.hidden&&(n.hidden=!0,a.setAttribute("aria-expanded","false"),a.focus())}),n.addEventListener("click",e=>{const t=e.target.closest(".theme-opt");t&&(s(t.dataset.themeValue??"nebula"),n.hidden=!0,a.setAttribute("aria-expanded","false"))})}</script> <div class="theme-switch fx-switch"> <button class="theme-switch__btn" id="fxBtn" type="button" aria-haspopup="listbox" aria-expanded="false" aria-label="背景特效设置" title="背景特效设置"> <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"> <path d="M5 3v4M3 5h4M6.5 17.5v3M5 19h3"></path> <path d="M14.5 4.5 16 9l4.5 1.5L16 12l-1.5 4.5L13 12l-4.5-1.5L13 9l1.5-4.5Z"></path> </svg> </button> <div class="theme-pop" id="fxPop" role="listbox" aria-label="背景特效" hidden> <button class="theme-opt fx-opt" type="button" role="option" data-fx-value="off" aria-selected="false"> <span class="fx-opt__body"> <span class="fx-opt__name">关闭特效</span> <span class="fx-opt__hint">最省电</span> </span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt fx-opt" type="button" role="option" data-fx-value="standard" aria-selected="false"> <span class="fx-opt__body"> <span class="fx-opt__name">标准</span> <span class="fx-opt__hint">闪烁星空 + 流星</span> </span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt fx-opt" type="button" role="option" data-fx-value="fancy" aria-selected="false"> <span class="fx-opt__body"> <span class="fx-opt__name">华丽</span> <span class="fx-opt__hint">追加极光 / 星座 / 光尘</span> </span> <span class="theme-opt__mark">✦</span> </button> </div> </div> <script type="module">const n=document.getElementById("fxBtn"),a=document.getElementById("fxPop");function s(d){document.documentElement.dataset.fx=d;try{localStorage.setItem("stella-fx",d)}catch{}document.querySelectorAll("#fxPop .fx-opt").forEach(t=>{const e=t.dataset.fxValue===d;t.classList.toggle("is-active",e),t.setAttribute("aria-selected",String(e))}),document.dispatchEvent(new CustomEvent("stella-fx-change",{detail:d}))}if(n&&a){const d=document.documentElement.dataset.fx||"standard";document.querySelectorAll("#fxPop .fx-opt").forEach(t=>{const e=t.dataset.fxValue===d;t.classList.toggle("is-active",e),t.setAttribute("aria-selected",String(e))}),n.addEventListener("click",t=>{t.stopPropagation();const e=a.hidden;a.hidden=!e,n.setAttribute("aria-expanded",String(e))}),document.addEventListener("click",t=>{!a.hidden&&!t.target.closest(".fx-switch")&&(a.hidden=!0,n.setAttribute("aria-expanded","false"))}),document.addEventListener("keydown",t=>{t.key==="Escape"&&!a.hidden&&(a.hidden=!0,n.setAttribute("aria-expanded","false"),n.focus())}),a.addEventListener("click",t=>{const e=t.target.closest(".fx-opt");e&&(s(e.dataset.fxValue??"standard"),a.hidden=!0,n.setAttribute("aria-expanded","false"))})}</script> </div> </div> </header> <main id="main">  <article class="wrap post-layout" data-astro-cid-lvjzyg5v> <div class="post-main page-fade" data-astro-cid-lvjzyg5v> <header class="post-head" data-astro-cid-lvjzyg5v> <a class="crumb" href="/STELLASTOPVRC/posts/" data-astro-cid-lvjzyg5v>← 返回教程档案</a> <div class="post-head__meta" style="--accent:var(--ink-dim)" data-astro-cid-lvjzyg5v> <span class="badge" data-cat="设计模式" data-astro-cid-lvjzyg5v>设计模式</span> <time datetime="2026-06-20" data-astro-cid-lvjzyg5v>2026-06-20</time> <span class="post-head__reading" data-astro-cid-lvjzyg5v>⏱ 约 24 分钟</span>  </div> <h1 class="post-head__title" data-astro-cid-lvjzyg5v>Hybrid Static+Dynamic Subscription (静态+动态双订阅)</h1> <p class="post-head__lead" data-astro-cid-lvjzyg5v>VRChat World 中，Udon 对象的来源有 2 种：</p> <div class="chip-row" data-astro-cid-lvjzyg5v> <a class="chip" href="/STELLASTOPVRC/posts/?tag=%E7%9F%A5%E8%AF%86%E5%BA%93" data-astro-cid-lvjzyg5v> 知识库 </a><a class="chip" href="/STELLASTOPVRC/posts/?tag=concepts" data-astro-cid-lvjzyg5v> concepts </a> </div> </header> <div class="prose" data-astro-cid-lvjzyg5v> <h1 id="pattern-hybrid-staticdynamic-subscription-静态动态双订阅">Pattern: Hybrid Static+Dynamic Subscription (静态+动态双订阅)</h1>
+<hr>
+<h2 id="problem--context">Problem / Context</h2>
+<p>VRChat World 中，<strong>Udon 对象的来源有 2 种</strong>：</p>
+<table>
+<thead>
+<tr>
+<th>来源</th>
+<th>时机</th>
+<th>例子</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>场景常驻对象</strong></td>
+<td>场景加载时已存在</td>
+<td>场景中的 NPC / 门 / 机关 / UI</td>
+</tr>
+<tr>
+<td><strong>运行时生成对象</strong></td>
+<td>玩家交互后才存在</td>
+<td>Pool 出来的子弹 / 动态生成的敌人 / 容器中的 UI</td>
+</tr>
+</tbody>
+</table>
+<p><strong>痛点</strong>：</p>
+<ul>
+<li>❌ 只支持静态订阅：动态对象无法注册（实例化时错过扫描时机）</li>
+<li>❌ 只支持动态订阅：场景常驻对象每次都手动 Subscribe 麻烦</li>
+<li>❌ 两套 API 维护成本高</li>
+</ul>
+<p>Sardinal 场景：场景里的 50 个 NPC（静态订阅）+ 玩家动态生成的 20 个 Pool 敌人（动态订阅），都需响应 <code>OnCombatEvent</code>。</p>
+<hr>
+<h2 id="udon-constraints-影响">Udon Constraints 影响</h2>
+<table>
+<thead>
+<tr>
+<th>约束</th>
+<th>影响</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>无运行时反射</td>
+<td>静态订阅必须在 Editor 期”穷举”完成</td>
+</tr>
+<tr>
+<td>无 <code>Instantiate</code> 引用稳定</td>
+<td>动态对象每次 <code>new</code> 都是新引用，订阅表需手动管理</td>
+</tr>
+<tr>
+<td>无 <code>FindObjectsOfType</code> 在 Udon</td>
+<td>动态对象不能反向查找订阅表</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="solution">Solution</h2>
+<p><strong>核心思想</strong>：<strong>静态订阅</strong>靠 Editor 反射（场景加载时自动注册），<strong>动态订阅</strong>靠运行时 API（<code>Subscribe</code> / <code>Unsubscribe</code>）。两套共用同一个订阅表 + 同一套发布机制。</p>
+<h3 id="关键机制">关键机制</h3>
+<h4 id="1-sardinalshim-双-10-字段设计">1. SardinalShim 双 10 字段设计</h4>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="csharp"><code><span class="line"><span style="color:#6A737D">// SardinalShim.cs</span></span>
+<span class="line"><span style="color:#E1E4E8">[</span><span style="color:#B392F0">Inject</span><span style="color:#E1E4E8">, </span><span style="color:#B392F0">SerializeField</span><span style="color:#E1E4E8">, </span><span style="color:#B392F0">HideInInspector</span><span style="color:#E1E4E8">] </span><span style="color:#F97583">int</span><span style="color:#B392F0"> _0</span><span style="color:#E1E4E8">;        </span><span style="color:#6A737D">// 总订阅主题数</span></span>
+<span class="line"><span style="color:#E1E4E8">[</span><span style="color:#B392F0">Inject</span><span style="color:#E1E4E8">, </span><span style="color:#B392F0">SerializeField</span><span style="color:#E1E4E8">, </span><span style="color:#B392F0">HideInInspector</span><span style="color:#E1E4E8">] </span><span style="color:#F97583">string</span><span style="color:#E1E4E8">[] </span><span style="color:#B392F0">_1</span><span style="color:#E1E4E8">;   </span><span style="color:#6A737D">// 主题签名（MD5）</span></span>
+<span class="line"><span style="color:#E1E4E8">[</span><span style="color:#B392F0">Inject</span><span style="color:#E1E4E8">, </span><span style="color:#B392F0">SerializeField</span><span style="color:#E1E4E8">, </span><span style="color:#B392F0">HideInInspector</span><span style="color:#E1E4E8">] </span><span style="color:#F97583">long</span><span style="color:#E1E4E8">[] </span><span style="color:#B392F0">_2</span><span style="color:#E1E4E8">;     </span><span style="color:#6A737D">// Udon TypeID</span></span>
+<span class="line"><span style="color:#E1E4E8">[</span><span style="color:#B392F0">Inject</span><span style="color:#E1E4E8">, </span><span style="color:#B392F0">SerializeField</span><span style="color:#E1E4E8">, </span><span style="color:#B392F0">HideInInspector</span><span style="color:#E1E4E8">] </span><span style="color:#F97583">string</span><span style="color:#E1E4E8">[] </span><span style="color:#B392F0">_3</span><span style="color:#E1E4E8">;   </span><span style="color:#6A737D">// 方法符号</span></span>
+<span class="line"><span style="color:#E1E4E8">[</span><span style="color:#B392F0">Inject</span><span style="color:#E1E4E8">, </span><span style="color:#B392F0">SerializeField</span><span style="color:#E1E4E8">, </span><span style="color:#B392F0">HideInInspector</span><span style="color:#E1E4E8">] </span><span style="color:#F97583">string</span><span style="color:#E1E4E8">[][] </span><span style="color:#B392F0">_4</span><span style="color:#E1E4E8">; </span><span style="color:#6A737D">// 参数符号</span></span>
+<span class="line"><span style="color:#E1E4E8">[</span><span style="color:#B392F0">Inject</span><span style="color:#E1E4E8">, </span><span style="color:#B392F0">SerializeField</span><span style="color:#E1E4E8">, </span><span style="color:#B392F0">HideInInspector</span><span style="color:#E1E4E8">] </span><span style="color:#F97583">string</span><span style="color:#E1E4E8">[][] </span><span style="color:#B392F0">_5</span><span style="color:#E1E4E8">; </span><span style="color:#6A737D">// 参数类型</span></span>
+<span class="line"><span style="color:#E1E4E8">[</span><span style="color:#B392F0">Inject</span><span style="color:#E1E4E8">, </span><span style="color:#B392F0">SerializeField</span><span style="color:#E1E4E8">, </span><span style="color:#B392F0">HideInInspector</span><span style="color:#E1E4E8">] </span><span style="color:#F97583">bool</span><span style="color:#E1E4E8">[] </span><span style="color:#B392F0">_6</span><span style="color:#E1E4E8">;     </span><span style="color:#6A737D">// Networked</span></span>
+<span class="line"><span style="color:#E1E4E8">[</span><span style="color:#B392F0">Inject</span><span style="color:#E1E4E8">, </span><span style="color:#B392F0">SerializeField</span><span style="color:#E1E4E8">, </span><span style="color:#B392F0">HideInInspector</span><span style="color:#E1E4E8">] </span><span style="color:#F97583">int</span><span style="color:#E1E4E8">[] </span><span style="color:#B392F0">_7</span><span style="color:#E1E4E8">;      </span><span style="color:#6A737D">// ⭐ 动态订阅数（每主题独立计数）</span></span>
+<span class="line"><span style="color:#E1E4E8">[</span><span style="color:#B392F0">Inject</span><span style="color:#E1E4E8">, </span><span style="color:#B392F0">SerializeField</span><span style="color:#E1E4E8">, </span><span style="color:#B392F0">HideInInspector</span><span style="color:#E1E4E8">] </span><span style="color:#F97583">object</span><span style="color:#E1E4E8">[][] </span><span style="color:#B392F0">_8</span><span style="color:#E1E4E8">; </span><span style="color:#6A737D">// 频道</span></span>
+<span class="line"><span style="color:#E1E4E8">[</span><span style="color:#B392F0">Inject</span><span style="color:#E1E4E8">, </span><span style="color:#B392F0">SerializeField</span><span style="color:#E1E4E8">, </span><span style="color:#B392F0">HideInInspector</span><span style="color:#E1E4E8">] </span><span style="color:#B392F0">IUdonEventReceiver</span><span style="color:#E1E4E8">[][] </span><span style="color:#B392F0">_9</span><span style="color:#E1E4E8">; </span><span style="color:#6A737D">// 接收者（含静态 + 动态）</span></span></code></pre>
+<p><strong>关键</strong>：</p>
+<ul>
+<li><code>_7[i]</code> 初始 = 静态订阅者数（Editor 注入）</li>
+<li><code>_9[i]</code> 初始 = 静态订阅者列表</li>
+<li>动态订阅时 <code>_7[i]++</code> + 数组扩容 + 把动态订阅者追加到 <code>_9[i]</code></li>
+</ul>
+<h4 id="2-静态订阅editor-端一次性">2. 静态订阅（Editor 端一次性）</h4>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="csharp"><code><span class="line"><span style="color:#6A737D">// Editor: SardinalResolver.BuildSubscriberData</span></span>
+<span class="line"><span style="color:#F97583">static</span><span style="color:#B392F0"> SubscriberData</span><span style="color:#E1E4E8">[] </span><span style="color:#B392F0">BuildSubscriberData</span><span style="color:#E1E4E8">(</span><span style="color:#B392F0">Scene</span><span style="color:#B392F0"> scene</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#F97583">    return</span><span style="color:#E1E4E8"> subscriberSchema</span></span>
+<span class="line"><span style="color:#E1E4E8">        .</span><span style="color:#B392F0">SelectMany</span><span style="color:#E1E4E8">(</span><span style="color:#B392F0">schema</span><span style="color:#F97583"> =></span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#F97583">            return</span><span style="color:#E1E4E8"> scene.</span><span style="color:#B392F0">GetRootGameObjects</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"><span style="color:#E1E4E8">                .</span><span style="color:#B392F0">SelectMany</span><span style="color:#E1E4E8">(</span><span style="color:#B392F0">x</span><span style="color:#F97583"> =></span><span style="color:#E1E4E8"> x.</span><span style="color:#B392F0">GetComponentsInChildren</span><span style="color:#E1E4E8">(schema.Type, </span><span style="color:#79B8FF">true</span><span style="color:#E1E4E8">))  </span><span style="color:#6A737D">// 扫描场景</span></span>
+<span class="line"><span style="color:#E1E4E8">                .</span><span style="color:#B392F0">OfType</span><span style="color:#E1E4E8">&#x3C;</span><span style="color:#B392F0">UdonSharpBehaviour</span><span style="color:#E1E4E8">>()</span></span>
+<span class="line"><span style="color:#E1E4E8">                .</span><span style="color:#B392F0">Select</span><span style="color:#E1E4E8">(</span><span style="color:#B392F0">x</span><span style="color:#F97583"> =></span><span style="color:#E1E4E8"> UdonSharpEditorUtility.</span><span style="color:#B392F0">GetBackingUdonBehaviour</span><span style="color:#E1E4E8">(x))</span></span>
+<span class="line"><span style="color:#E1E4E8">                .</span><span style="color:#B392F0">Select</span><span style="color:#E1E4E8">(</span><span style="color:#B392F0">x</span><span style="color:#F97583"> =></span><span style="color:#F97583"> new</span><span style="color:#B392F0"> SubscriberData</span><span style="color:#E1E4E8">(schema.Signature, x, schema.Channel, </span><span style="color:#79B8FF">0</span><span style="color:#E1E4E8">))</span></span>
+<span class="line"><span style="color:#E1E4E8">                .</span><span style="color:#B392F0">ToArray</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#E1E4E8">        })</span></span>
+<span class="line"><span style="color:#E1E4E8">        .</span><span style="color:#B392F0">ToArray</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<p>→ 场景加载时（<code>SceneContainerBuilt</code> 钩子），所有 <code>UdonSharpBehaviour</code> + 类型匹配的 <code>[Subscriber]</code> 方法自动注册。</p>
+<h4 id="3-动态订阅运行时-api">3. 动态订阅（运行时 API）</h4>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="csharp"><code><span class="line"><span style="color:#6A737D">// SignalExtensions.cs</span></span>
+<span class="line"><span style="color:#F97583">public</span><span style="color:#F97583"> static</span><span style="color:#F97583"> void</span><span style="color:#B392F0"> Subscribe</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">this</span><span style="color:#B392F0"> Signal</span><span style="color:#B392F0"> self</span><span style="color:#E1E4E8">, </span><span style="color:#B392F0">UdonSharpBehaviour</span><span style="color:#B392F0"> subscriber</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#F97583">    var</span><span style="color:#B392F0"> _self</span><span style="color:#F97583"> =</span><span style="color:#E1E4E8"> (</span><span style="color:#F97583">object</span><span style="color:#E1E4E8">[])(</span><span style="color:#F97583">object</span><span style="color:#E1E4E8">)self;</span></span>
+<span class="line"><span style="color:#F97583">    var</span><span style="color:#B392F0"> _sardinal</span><span style="color:#F97583"> =</span><span style="color:#E1E4E8"> (</span><span style="color:#B392F0">SardinalShim</span><span style="color:#E1E4E8">)_self[</span><span style="color:#79B8FF">0</span><span style="color:#E1E4E8">];</span></span>
+<span class="line"><span style="color:#F97583">    var</span><span style="color:#B392F0"> _topic</span><span style="color:#F97583"> =</span><span style="color:#E1E4E8"> (</span><span style="color:#F97583">string</span><span style="color:#E1E4E8">)_self[</span><span style="color:#79B8FF">1</span><span style="color:#E1E4E8">];</span></span>
+<span class="line"><span style="color:#F97583">    var</span><span style="color:#B392F0"> _channel</span><span style="color:#F97583"> =</span><span style="color:#E1E4E8"> _self[</span><span style="color:#79B8FF">2</span><span style="color:#E1E4E8">];</span></span>
+<span class="line"><span style="color:#E1E4E8">    _sardinal.</span><span style="color:#B392F0">Subscribe</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">$"</span><span style="color:#9ECBFF">{</span><span style="color:#E1E4E8">_topic</span><span style="color:#9ECBFF">}</span><span style="color:#9ECBFF">."</span><span style="color:#E1E4E8">, _channel, subscriber);  </span><span style="color:#6A737D">// 转发到 Shim</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// SardinalShim.Subscribe</span></span>
+<span class="line"><span style="color:#F97583">internal</span><span style="color:#F97583"> void</span><span style="color:#B392F0"> Subscribe</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">string</span><span style="color:#B392F0"> topic</span><span style="color:#E1E4E8">, </span><span style="color:#F97583">object</span><span style="color:#B392F0"> channel</span><span style="color:#E1E4E8">, </span><span style="color:#B392F0">UdonSharpBehaviour</span><span style="color:#B392F0"> subscriber</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#F97583">    var</span><span style="color:#B392F0"> udonId</span><span style="color:#F97583"> =</span><span style="color:#E1E4E8"> subscriber.</span><span style="color:#B392F0">GetUdonTypeID</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#F97583">    var</span><span style="color:#B392F0"> receiver</span><span style="color:#F97583"> =</span><span style="color:#E1E4E8"> (</span><span style="color:#B392F0">IUdonEventReceiver</span><span style="color:#E1E4E8">)(</span><span style="color:#F97583">object</span><span style="color:#E1E4E8">)subscriber;</span></span>
+<span class="line"><span style="color:#F97583">    for</span><span style="color:#E1E4E8"> (</span><span style="color:#F97583">var</span><span style="color:#B392F0"> i</span><span style="color:#F97583"> =</span><span style="color:#79B8FF"> 0</span><span style="color:#E1E4E8">; i </span><span style="color:#F97583">&#x3C;</span><span style="color:#E1E4E8"> _0; i</span><span style="color:#F97583">++</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#F97583">        if</span><span style="color:#E1E4E8"> (_2[i] </span><span style="color:#F97583">!=</span><span style="color:#E1E4E8"> udonId) </span><span style="color:#F97583">continue</span><span style="color:#E1E4E8">;             </span><span style="color:#6A737D">// 1. Type 匹配</span></span>
+<span class="line"><span style="color:#F97583">        if</span><span style="color:#E1E4E8"> (</span><span style="color:#F97583">!</span><span style="color:#E1E4E8">_1[i].</span><span style="color:#B392F0">StartsWith</span><span style="color:#E1E4E8">(topic)) </span><span style="color:#F97583">continue</span><span style="color:#E1E4E8">;     </span><span style="color:#6A737D">// 2. 主题匹配</span></span>
+<span class="line"><span style="color:#F97583">        if</span><span style="color:#E1E4E8"> (Array.</span><span style="color:#B392F0">IndexOf</span><span style="color:#E1E4E8">(_9[i], receiver) </span><span style="color:#F97583">>=</span><span style="color:#79B8FF"> 0</span><span style="color:#E1E4E8">) </span><span style="color:#F97583">continue</span><span style="color:#E1E4E8">;  </span><span style="color:#6A737D">// 3. 防重复</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">        // 4. 扩容：count+1 + 数组拷贝</span></span>
+<span class="line"><span style="color:#F97583">        var</span><span style="color:#B392F0"> newCount</span><span style="color:#F97583"> =</span><span style="color:#E1E4E8"> _7[i] </span><span style="color:#F97583">+</span><span style="color:#79B8FF"> 1</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">        var</span><span style="color:#B392F0"> newChannels</span><span style="color:#F97583"> =</span><span style="color:#F97583"> new</span><span style="color:#F97583"> object</span><span style="color:#E1E4E8">[newCount];</span></span>
+<span class="line"><span style="color:#E1E4E8">        Array.</span><span style="color:#B392F0">Copy</span><span style="color:#E1E4E8">(_8[i], newChannels, _7[i]);</span></span>
+<span class="line"><span style="color:#E1E4E8">        newChannels[_7[i]] </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> channel;</span></span>
+<span class="line"><span style="color:#E1E4E8">        _8[i] </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> newChannels;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">        var</span><span style="color:#B392F0"> newReceivers</span><span style="color:#F97583"> =</span><span style="color:#F97583"> new</span><span style="color:#B392F0"> IUdonEventReceiver</span><span style="color:#E1E4E8">[newCount];</span></span>
+<span class="line"><span style="color:#E1E4E8">        Array.</span><span style="color:#B392F0">Copy</span><span style="color:#E1E4E8">(_9[i], newReceivers, _7[i]);</span></span>
+<span class="line"><span style="color:#E1E4E8">        newReceivers[_7[i]] </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> receiver;</span></span>
+<span class="line"><span style="color:#E1E4E8">        _9[i] </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> newReceivers;</span></span>
+<span class="line"><span style="color:#E1E4E8">        _7[i] </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> newCount;</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<h4 id="4-动态取消订阅">4. 动态取消订阅</h4>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="csharp"><code><span class="line"><span style="color:#6A737D">// SardinalShim.Unsubscribe</span></span>
+<span class="line"><span style="color:#F97583">internal</span><span style="color:#F97583"> void</span><span style="color:#B392F0"> Unsubscribe</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">string</span><span style="color:#B392F0"> topic</span><span style="color:#E1E4E8">, </span><span style="color:#B392F0">UdonSharpBehaviour</span><span style="color:#B392F0"> subscriber</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#F97583">    var</span><span style="color:#B392F0"> udonId</span><span style="color:#F97583"> =</span><span style="color:#E1E4E8"> subscriber.</span><span style="color:#B392F0">GetUdonTypeID</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#F97583">    var</span><span style="color:#B392F0"> receiver</span><span style="color:#F97583"> =</span><span style="color:#E1E4E8"> (</span><span style="color:#B392F0">IUdonEventReceiver</span><span style="color:#E1E4E8">)(</span><span style="color:#F97583">object</span><span style="color:#E1E4E8">)subscriber;</span></span>
+<span class="line"><span style="color:#F97583">    for</span><span style="color:#E1E4E8"> (</span><span style="color:#F97583">var</span><span style="color:#B392F0"> i</span><span style="color:#F97583"> =</span><span style="color:#79B8FF"> 0</span><span style="color:#E1E4E8">; i </span><span style="color:#F97583">&#x3C;</span><span style="color:#E1E4E8"> _0; i</span><span style="color:#F97583">++</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#F97583">        if</span><span style="color:#E1E4E8"> (_2[i] </span><span style="color:#F97583">!=</span><span style="color:#E1E4E8"> udonId) </span><span style="color:#F97583">continue</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">        if</span><span style="color:#E1E4E8"> (</span><span style="color:#F97583">!</span><span style="color:#E1E4E8">_1[i].</span><span style="color:#B392F0">StartsWith</span><span style="color:#E1E4E8">(topic)) </span><span style="color:#F97583">continue</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">        var</span><span style="color:#B392F0"> dest</span><span style="color:#F97583"> =</span><span style="color:#E1E4E8"> Array.</span><span style="color:#B392F0">IndexOf</span><span style="color:#E1E4E8">(_9[i], receiver);</span></span>
+<span class="line"><span style="color:#F97583">        if</span><span style="color:#E1E4E8"> (dest </span><span style="color:#F97583">&#x3C;</span><span style="color:#79B8FF"> 0</span><span style="color:#E1E4E8">) </span><span style="color:#F97583">continue</span><span style="color:#E1E4E8">;  </span><span style="color:#6A737D">// 未订阅</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">        // 移除：缩容 + 双数组拷贝</span></span>
+<span class="line"><span style="color:#F97583">        var</span><span style="color:#B392F0"> newCount</span><span style="color:#F97583"> =</span><span style="color:#E1E4E8"> _7[i] </span><span style="color:#F97583">-</span><span style="color:#79B8FF"> 1</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">        var</span><span style="color:#B392F0"> src</span><span style="color:#F97583"> =</span><span style="color:#E1E4E8"> dest </span><span style="color:#F97583">+</span><span style="color:#79B8FF"> 1</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">        var</span><span style="color:#B392F0"> length</span><span style="color:#F97583"> =</span><span style="color:#E1E4E8"> newCount </span><span style="color:#F97583">-</span><span style="color:#E1E4E8"> dest;</span></span>
+<span class="line"><span style="color:#F97583">        var</span><span style="color:#B392F0"> newChannels</span><span style="color:#F97583"> =</span><span style="color:#F97583"> new</span><span style="color:#F97583"> object</span><span style="color:#E1E4E8">[newCount];</span></span>
+<span class="line"><span style="color:#E1E4E8">        Array.</span><span style="color:#B392F0">Copy</span><span style="color:#E1E4E8">(_8[i], </span><span style="color:#79B8FF">0</span><span style="color:#E1E4E8">, newChannels, </span><span style="color:#79B8FF">0</span><span style="color:#E1E4E8">, dest);</span></span>
+<span class="line"><span style="color:#E1E4E8">        Array.</span><span style="color:#B392F0">Copy</span><span style="color:#E1E4E8">(_8[i], src, newChannels, dest, length);</span></span>
+<span class="line"><span style="color:#E1E4E8">        _8[i] </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> newChannels;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">        var</span><span style="color:#B392F0"> newReceivers</span><span style="color:#F97583"> =</span><span style="color:#F97583"> new</span><span style="color:#B392F0"> IUdonEventReceiver</span><span style="color:#E1E4E8">[newCount];</span></span>
+<span class="line"><span style="color:#E1E4E8">        Array.</span><span style="color:#B392F0">Copy</span><span style="color:#E1E4E8">(_9[i], </span><span style="color:#79B8FF">0</span><span style="color:#E1E4E8">, newReceivers, </span><span style="color:#79B8FF">0</span><span style="color:#E1E4E8">, dest);</span></span>
+<span class="line"><span style="color:#E1E4E8">        Array.</span><span style="color:#B392F0">Copy</span><span style="color:#E1E4E8">(_9[i], src, newReceivers, dest, length);</span></span>
+<span class="line"><span style="color:#E1E4E8">        _9[i] </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> newReceivers;</span></span>
+<span class="line"><span style="color:#E1E4E8">        _7[i] </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> newCount;</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<h4 id="5-统一发布不区分静态动态">5. 统一发布（不区分静态/动态）</h4>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="csharp"><code><span class="line"><span style="color:#6A737D">// SardinalShim.Publish</span></span>
+<span class="line"><span style="color:#F97583">internal</span><span style="color:#F97583"> void</span><span style="color:#B392F0"> Publish</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">string</span><span style="color:#B392F0"> topic</span><span style="color:#E1E4E8">, </span><span style="color:#F97583">object</span><span style="color:#B392F0"> channel</span><span style="color:#E1E4E8">, </span><span style="color:#F97583">params</span><span style="color:#F97583"> object</span><span style="color:#E1E4E8">[] </span><span style="color:#B392F0">args</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#6A737D">    // ... 找 idx</span></span>
+<span class="line"><span style="color:#F97583">    for</span><span style="color:#E1E4E8"> (</span><span style="color:#F97583">var</span><span style="color:#B392F0"> i</span><span style="color:#F97583"> =</span><span style="color:#79B8FF"> 0</span><span style="color:#E1E4E8">; i </span><span style="color:#F97583">&#x3C;</span><span style="color:#E1E4E8"> _7[idx]; i</span><span style="color:#F97583">++</span><span style="color:#E1E4E8">) {  </span><span style="color:#6A737D">// _7[idx] 包含静态 + 动态</span></span>
+<span class="line"><span style="color:#6A737D">        // ... 频道过滤</span></span>
+<span class="line"><span style="color:#6A737D">        // ... SetProgramVariable + SendCustomEvent</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<p>→ <strong>完全统一</strong>：发布方不需知道订阅方是静态还是动态。</p>
+<hr>
+<h2 id="networking-model">Networking Model</h2>
+<table>
+<thead>
+<tr>
+<th>维度</th>
+<th>取值</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>State Owner</td>
+<td>Editor 拥有静态，Runtime 拥有动态</td>
+</tr>
+<tr>
+<td>Source of Truth</td>
+<td><code>_7</code> 计数器 + <code>_8</code>/<code>_9</code> 数组</td>
+</tr>
+<tr>
+<td>Sync Type</td>
+<td>N/A（本地）</td>
+</tr>
+<tr>
+<td>Synced Variables</td>
+<td>无</td>
+</tr>
+<tr>
+<td>Mutation Path</td>
+<td>Editor 注入（静态）+ <code>Subscribe</code> / <code>Unsubscribe</code>（动态）</td>
+</tr>
+<tr>
+<td>Ownership Path</td>
+<td>无</td>
+</tr>
+<tr>
+<td>Serialization Path</td>
+<td>无</td>
+</tr>
+<tr>
+<td>Receive Path</td>
+<td><code>SendCustomEvent</code>（静态 + 动态都走同一路径）</td>
+</tr>
+<tr>
+<td>Late Joiner</td>
+<td>静态自动（场景一致）；动态需手动</td>
+</tr>
+<tr>
+<td>Conflict Strategy</td>
+<td>防重复订阅（<code>Array.IndexOf</code>）</td>
+</tr>
+<tr>
+<td>Bandwidth Budget</td>
+<td>0</td>
+</tr>
+<tr>
+<td>Failure Mode</td>
+<td>动态对象销毁时未 Unsubscribe → 死引用 + 内存泄漏</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="implementation-sketch">Implementation Sketch</h2>
+<h3 id="简化版双模式订阅">简化版：双模式订阅</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="csharp"><code><span class="line"><span style="color:#6A737D">// === Subscriber 计数 + 数组 ===</span></span>
+<span class="line"><span style="color:#F97583">int</span><span style="color:#E1E4E8">[] </span><span style="color:#B392F0">_subscriberCount</span><span style="color:#E1E4E8">;          </span><span style="color:#6A737D">// 每主题订阅数（含静态+动态）</span></span>
+<span class="line"><span style="color:#F97583">object</span><span style="color:#E1E4E8">[][] </span><span style="color:#B392F0">_channels</span><span style="color:#E1E4E8">;            </span><span style="color:#6A737D">// 频道（可选）</span></span>
+<span class="line"><span style="color:#B392F0">IUdonEventReceiver</span><span style="color:#E1E4E8">[][] </span><span style="color:#B392F0">_subs</span><span style="color:#E1E4E8">;    </span><span style="color:#6A737D">// 接收者（含静态+动态）</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// === 静态初始化（编译期）===</span></span>
+<span class="line"><span style="color:#F97583">void</span><span style="color:#B392F0"> InitStatic</span><span style="color:#E1E4E8">(</span><span style="color:#B392F0">UdonSharpBehaviour</span><span style="color:#E1E4E8">[] </span><span style="color:#B392F0">sceneObjs</span><span style="color:#E1E4E8">, </span><span style="color:#F97583">string</span><span style="color:#B392F0"> topic</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#F97583">    var</span><span style="color:#B392F0"> count</span><span style="color:#F97583"> =</span><span style="color:#E1E4E8"> sceneObjs.Length;</span></span>
+<span class="line"><span style="color:#E1E4E8">    _subscriberCount[topic] </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> count;  </span><span style="color:#6A737D">// 初始 = 静态数</span></span>
+<span class="line"><span style="color:#E1E4E8">    _channels[topic] </span><span style="color:#F97583">=</span><span style="color:#F97583"> new</span><span style="color:#F97583"> object</span><span style="color:#E1E4E8">[count];</span></span>
+<span class="line"><span style="color:#E1E4E8">    _subs[topic] </span><span style="color:#F97583">=</span><span style="color:#F97583"> new</span><span style="color:#B392F0"> IUdonEventReceiver</span><span style="color:#E1E4E8">[count];</span></span>
+<span class="line"><span style="color:#F97583">    for</span><span style="color:#E1E4E8"> (</span><span style="color:#F97583">var</span><span style="color:#B392F0"> i</span><span style="color:#F97583"> =</span><span style="color:#79B8FF"> 0</span><span style="color:#E1E4E8">; i </span><span style="color:#F97583">&#x3C;</span><span style="color:#E1E4E8"> count; i</span><span style="color:#F97583">++</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#E1E4E8">        _subs[topic][i] </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> (</span><span style="color:#B392F0">IUdonEventReceiver</span><span style="color:#E1E4E8">)sceneObjs[i];</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// === 动态订阅（运行时）===</span></span>
+<span class="line"><span style="color:#F97583">public</span><span style="color:#F97583"> void</span><span style="color:#B392F0"> SubscribeDynamic</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">string</span><span style="color:#B392F0"> topic</span><span style="color:#E1E4E8">, </span><span style="color:#B392F0">UdonSharpBehaviour</span><span style="color:#B392F0"> sub</span><span style="color:#E1E4E8">, </span><span style="color:#F97583">object</span><span style="color:#B392F0"> ch</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#F97583">    var</span><span style="color:#B392F0"> newCount</span><span style="color:#F97583"> =</span><span style="color:#E1E4E8"> _subscriberCount[topic] </span><span style="color:#F97583">+</span><span style="color:#79B8FF"> 1</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">    var</span><span style="color:#B392F0"> newSubs</span><span style="color:#F97583"> =</span><span style="color:#F97583"> new</span><span style="color:#B392F0"> IUdonEventReceiver</span><span style="color:#E1E4E8">[newCount];</span></span>
+<span class="line"><span style="color:#E1E4E8">    Array.</span><span style="color:#B392F0">Copy</span><span style="color:#E1E4E8">(_subs[topic], newSubs, _subscriberCount[topic]);</span></span>
+<span class="line"><span style="color:#E1E4E8">    newSubs[_subscriberCount[topic]] </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> (</span><span style="color:#B392F0">IUdonEventReceiver</span><span style="color:#E1E4E8">)sub;</span></span>
+<span class="line"><span style="color:#E1E4E8">    _subs[topic] </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> newSubs;</span></span>
+<span class="line"><span style="color:#6A737D">    // 同步处理 _channels</span></span>
+<span class="line"><span style="color:#E1E4E8">    _subscriberCount[topic] </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> newCount;</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// === 动态取消 ===</span></span>
+<span class="line"><span style="color:#F97583">public</span><span style="color:#F97583"> void</span><span style="color:#B392F0"> UnsubscribeDynamic</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">string</span><span style="color:#B392F0"> topic</span><span style="color:#E1E4E8">, </span><span style="color:#B392F0">UdonSharpBehaviour</span><span style="color:#B392F0"> sub</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#F97583">    var</span><span style="color:#B392F0"> dest</span><span style="color:#F97583"> =</span><span style="color:#E1E4E8"> Array.</span><span style="color:#B392F0">IndexOf</span><span style="color:#E1E4E8">(_subs[topic], sub);</span></span>
+<span class="line"><span style="color:#F97583">    if</span><span style="color:#E1E4E8"> (dest </span><span style="color:#F97583">&#x3C;</span><span style="color:#79B8FF"> 0</span><span style="color:#E1E4E8">) </span><span style="color:#F97583">return</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#6A737D">    // 缩容 + Array.Copy（同 Sardinal）</span></span>
+<span class="line"><span style="color:#6A737D">    // ...</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// === 统一发布 ===</span></span>
+<span class="line"><span style="color:#F97583">public</span><span style="color:#F97583"> void</span><span style="color:#B392F0"> Publish</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">string</span><span style="color:#B392F0"> topic</span><span style="color:#E1E4E8">, </span><span style="color:#F97583">object</span><span style="color:#B392F0"> channel</span><span style="color:#E1E4E8">, </span><span style="color:#F97583">params</span><span style="color:#F97583"> object</span><span style="color:#E1E4E8">[] </span><span style="color:#B392F0">args</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#F97583">    var</span><span style="color:#B392F0"> count</span><span style="color:#F97583"> =</span><span style="color:#E1E4E8"> _subscriberCount[topic];</span></span>
+<span class="line"><span style="color:#F97583">    for</span><span style="color:#E1E4E8"> (</span><span style="color:#F97583">var</span><span style="color:#B392F0"> i</span><span style="color:#F97583"> =</span><span style="color:#79B8FF"> 0</span><span style="color:#E1E4E8">; i </span><span style="color:#F97583">&#x3C;</span><span style="color:#E1E4E8"> count; i</span><span style="color:#F97583">++</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#F97583">        if</span><span style="color:#E1E4E8"> (channel </span><span style="color:#F97583">!=</span><span style="color:#79B8FF"> null</span><span style="color:#F97583"> &#x26;&#x26;</span><span style="color:#E1E4E8"> _channels[topic][i] </span><span style="color:#F97583">!=</span><span style="color:#79B8FF"> null</span></span>
+<span class="line"><span style="color:#F97583">            &#x26;&#x26;</span><span style="color:#F97583"> !</span><span style="color:#E1E4E8">_channels[topic][i].</span><span style="color:#B392F0">Equals</span><span style="color:#E1E4E8">(channel))</span></span>
+<span class="line"><span style="color:#F97583">            continue</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">        var</span><span style="color:#B392F0"> sub</span><span style="color:#F97583"> =</span><span style="color:#E1E4E8"> _subs[topic][i];</span></span>
+<span class="line"><span style="color:#F97583">        for</span><span style="color:#E1E4E8"> (</span><span style="color:#F97583">var</span><span style="color:#B392F0"> j</span><span style="color:#F97583"> =</span><span style="color:#79B8FF"> 0</span><span style="color:#E1E4E8">; j </span><span style="color:#F97583">&#x3C;</span><span style="color:#E1E4E8"> args.Length; j</span><span style="color:#F97583">++</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#E1E4E8">            sub.</span><span style="color:#B392F0">SetProgramVariable</span><span style="color:#E1E4E8">(_paramSymbols[topic][j], args[j]);</span></span>
+<span class="line"><span style="color:#E1E4E8">        sub.</span><span style="color:#B392F0">SendCustomEvent</span><span style="color:#E1E4E8">(_methodSymbols[topic]);</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<hr>
+<h2 id="when-to-use">When To Use</h2>
+<p>✅ <strong>适用</strong>：</p>
+<ul>
+<li>混合场景常驻 + 动态生成对象（绝大多数 VRChat World）</li>
+<li>静态对象订阅主题稳定（不需运行时变更）</li>
+<li>动态对象生命周期可控（销毁时 Unsubscribe）</li>
+</ul>
+<p>❌ <strong>不适用</strong>：</p>
+<ul>
+<li>全部静态 → 只用静态订阅即可</li>
+<li>全部动态 → 只用动态 API 即可</li>
+<li>动态对象高频创建/销毁（每次 Subscribe 都有 O(n) 拷贝成本）→ 考虑用对象池 + 一次性 Subscribe</li>
+</ul>
+<hr>
+<h2 id="性能开销">性能开销</h2>
+<table>
+<thead>
+<tr>
+<th>操作</th>
+<th>开销</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>静态订阅（编译期）</td>
+<td>0（一次性）</td>
+</tr>
+<tr>
+<td>动态 Subscribe</td>
+<td>O(当前订阅数) — <code>_7[i]++</code> + <code>Array.Copy</code> × 2 数组</td>
+</tr>
+<tr>
+<td>动态 Unsubscribe</td>
+<td>O(当前订阅数) — <code>Array.IndexOf</code> + 缩容 + <code>Array.Copy</code> × 2</td>
+</tr>
+<tr>
+<td>Publish</td>
+<td>O(总订阅数) — 不区分静态/动态</td>
+</tr>
+<tr>
+<td>内存</td>
+<td>每订阅者 1 个 <code>IUdonEventReceiver</code> 引用（4-8 字节）</td>
+</tr>
+</tbody>
+</table>
+<p><strong>对比纯静态</strong>：</p>
+<ul>
+<li>100 个订阅者中 50 静态 + 50 动态</li>
+<li>动态 Subscribe 100 次：每次 ~50 次 Array.Copy（O(当前)）</li>
+<li>总成本 ~50×100 = 5000 次拷贝 = 几十 µs（一次性）</li>
+</ul>
+<p><strong>对比纯动态</strong>：</p>
+<ul>
+<li>纯动态每次都要手动 Subscribe → 重复开发 + 容易漏</li>
+</ul>
+<p>→ <strong>混合模式是最实用的方案</strong>。</p>
+<hr>
+<h2 id="关键约束">关键约束</h2>
+<table>
+<thead>
+<tr>
+<th>约束</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>动态订阅 O(n) 扩容</strong></td>
+<td>高频 Subscribe/Unsubscribe 会卡（n > 1000 时明显）</td>
+</tr>
+<tr>
+<td><strong>未 Unsubscribe 内存泄漏</strong></td>
+<td>动态对象销毁时必须 Unsubscribe，否则订阅表持有死引用</td>
+</tr>
+<tr>
+<td><strong>静态订阅不可运行时变更</strong></td>
+<td>修改 <code>[Subscriber]</code> 后必须重新 Build</td>
+</tr>
+<tr>
+<td><strong><code>_9</code> 数组扩容会触发 GC</strong></td>
+<td>Sardinal 没优化，可用 <code>List&#x3C;T></code>（Udon 部分支持）替代</td>
+</tr>
+<tr>
+<td><strong>静态 + 动态顺序未保证</strong></td>
+<td>同一主题订阅者被调用顺序不可预测（依赖数组存储顺序）</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="防止内存泄漏的最佳实践">防止内存泄漏的最佳实践</h2>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="csharp"><code><span class="line"><span style="color:#6A737D">// ✅ 推荐：OnDestroy 中 Unsubscribe</span></span>
+<span class="line"><span style="color:#F97583">public</span><span style="color:#F97583"> class</span><span style="color:#B392F0"> PooledBullet</span><span style="color:#E1E4E8"> : </span><span style="color:#B392F0">UdonSharpBehaviour</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#E1E4E8">    [</span><span style="color:#B392F0">SerializeField</span><span style="color:#E1E4E8">] </span><span style="color:#B392F0">Signal</span><span style="color:#B392F0"> signal</span><span style="color:#F97583"> =</span><span style="color:#F97583"> new</span><span style="color:#B392F0"> Signal</span><span style="color:#E1E4E8">&#x3C;</span><span style="color:#B392F0">BulletHit</span><span style="color:#E1E4E8">>();</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">    public</span><span style="color:#F97583"> override</span><span style="color:#F97583"> void</span><span style="color:#B392F0"> OnEnable</span><span style="color:#E1E4E8">() {</span></span>
+<span class="line"><span style="color:#E1E4E8">        signal.</span><span style="color:#B392F0">Subscribe</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">this</span><span style="color:#E1E4E8">);  </span><span style="color:#6A737D">// 启用时订阅</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">    public</span><span style="color:#F97583"> override</span><span style="color:#F97583"> void</span><span style="color:#B392F0"> OnDisable</span><span style="color:#E1E4E8">() {</span></span>
+<span class="line"><span style="color:#E1E4E8">        signal.</span><span style="color:#B392F0">Unsubscribe</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">this</span><span style="color:#E1E4E8">);  </span><span style="color:#6A737D">// 禁用时取消</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// ⚠️ 必须配对：Subscribe 和 Unsubscribe 次数一致</span></span></code></pre>
+<p><strong>坑</strong>：</p>
+<ul>
+<li>容器/Pool 中对象多次启用/禁用 → 必须成对 Subscribe/Unsubscribe</li>
+<li>场景销毁时 Unity 自动调用 OnDisable，但 OnDestroy 不保证在 OnDisable 之后</li>
+</ul>
+<hr>
+<h2 id="项目实例">项目实例</h2>
+<table>
+<thead>
+<tr>
+<th>项目</th>
+<th>用法</th>
+<th>变体</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Sardinal</strong></td>
+<td><code>_7</code> 计数 + <code>_9</code> 数组 + Editor 静态注入</td>
+<td>完整</td>
+</tr>
+<tr>
+<td>自建消息总线</td>
+<td>单一 <code>Subscribe</code> API（不区分）</td>
+<td>简化</td>
+</tr>
+<tr>
+<td>静态事件系统</td>
+<td>仅 <code>OnEnable</code> 注册 + <code>OnDisable</code> 注销</td>
+<td>简化</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="与其他模式的关系">与其他模式的关系</h2>
+<table>
+<thead>
+<tr>
+<th>模式</th>
+<th>关系</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Inherited Subscriber</strong></td>
+<td>静态订阅自动包含基类继承的订阅者</td>
+</tr>
+<tr>
+<td><strong>Channel Routing</strong></td>
+<td>静态 + 动态订阅都可指定 channel</td>
+</tr>
+<tr>
+<td><strong>Build-Time vs Runtime Separation</strong></td>
+<td>静态订阅数据来自 Editor 注入</td>
+</tr>
+<tr>
+<td><strong>IID Object Identity</strong></td>
+<td>动态订阅时用 Udon Type ID 快速过滤</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="关联文档">关联文档</h2>
+<ul>
+<li><code>memory/sources/sardinal.md</code> — 项目溯源</li>
+<li><code>memory/patterns/channel-routing.md</code> — 配套频道路由</li>
+<li><code>memory/patterns/inherited-subscriber.md</code> — 配套基类继承</li>
+<li><code>memory/patterns/build-time-vs-runtime-separation.md</code> — 静态订阅数据来源</li>
+<li><code>memory/patterns/iid-object-identity.md</code> — 动态订阅类型匹配</li>
+<li><code>memory/FACT.md</code> § Sardinal</li>
+</ul> </div> <p class="kb-source-note" data-astro-cid-lvjzyg5v>
+本文由 VRChat 开发知识库自动整理（社区整理  · 可信度 High  · 最后校对 2026-06-20），
+          遇到与手写教程冲突的地方，以官方文档为最高优先级。
+</p> <section class="comments" id="comments" data-astro-cid-lvjzyg5v> <h2 class="comments__title" data-astro-cid-lvjzyg5v>✦ 旅人留言（0）</h2> <p class="comments__empty" id="commentsEmpty" data-astro-cid-lvjzyg5v>
+还没有旅人留言 —— 有疑问就写在下面，站长都会回复。
+</p> <form class="comment-form" id="commentForm" data-target="kb-concepts-patterns-hybrid-subscription-modes" data-astro-cid-lvjzyg5v> <p class="comment-form__title" data-astro-cid-lvjzyg5v>写下你的留言</p> <input id="cAuthor" maxlength="20" placeholder="昵称（留空则为「旅人」）" data-astro-cid-lvjzyg5v> <textarea id="cBody" maxlength="1000" required placeholder="想问的问题、想说的感谢都可以（最多 1000 字）" data-astro-cid-lvjzyg5v></textarea> <div class="comment-form__actions" data-astro-cid-lvjzyg5v> <button class="btn btn--primary" type="submit" data-astro-cid-lvjzyg5v>发布留言</button> <span class="form-hint" data-astro-cid-lvjzyg5v>留言保存在本站，站长在写作台里能看到</span> <span class="form-msg" id="cMsg" data-astro-cid-lvjzyg5v></span> </div> </form> </section> <nav class="station-nav" aria-label="站间导航" data-astro-cid-lvjzyg5v> <a href="/STELLASTOPVRC/posts/kb-concepts-patterns-hash-based-dispatch/" data-astro-cid-lvjzyg5v> <span class="dir" data-astro-cid-lvjzyg5v>← 上一站 · 更新的星光</span> <span class="to" data-astro-cid-lvjzyg5v>Hash-Based Method Dispatch (哈希方法分派)</span> </a> <a href="/STELLASTOPVRC/posts/kb-concepts-patterns-iid-object-identity/" data-astro-cid-lvjzyg5v> <span class="dir" data-astro-cid-lvjzyg5v>下一站 · 更早的星光 →</span> <span class="to" data-astro-cid-lvjzyg5v>IID Object Identity (整数身份映射)</span> </a> </nav> </div> <aside class="toc" id="toc" hidden> <p class="toc__title">✦ 本页星图</p> <nav id="tocNav" aria-label="文章目录"></nav> </aside> <script type="module">const i=document.querySelector(".prose"),d=document.getElementById("toc"),u=document.getElementById("tocNav"),l=[];if(i&&d&&u){const c=[...i.querySelectorAll("h1, h2, h3")];if(c.length>=3){d.hidden=!1,c.forEach((o,e)=>{o.id||(o.id=`sec-${e}`);const n=document.createElement("a");n.href=`#${o.id}`;const s=(o.textContent??"").replace(/\s+/g," ").trim(),r=s.search(/[：:]/),a=r>=4?s.slice(0,r):s;n.textContent=a.length>40?`${a.slice(0,40)}…`:a,n.title=s,u.appendChild(n),l.push({a:n,h:o})});const t=()=>{let o=l[0];for(const e of l)e.h.getBoundingClientRect().top<=130&&(o=e);for(const e of l)e.a.classList.toggle("is-active",e===o)};addEventListener("scroll",t,{passive:!0}),t()}}document.querySelectorAll(".prose pre").forEach(c=>{const t=document.createElement("button");t.className="code-copy",t.type="button",t.textContent="复制",t.addEventListener("click",async()=>{const o=c.querySelector("code")?.innerText??c.innerText;try{await navigator.clipboard.writeText(o)}catch{const e=document.createElement("textarea");e.value=o,document.body.appendChild(e),e.select(),document.execCommand("copy"),e.remove()}t.textContent="已复制 ✓",t.classList.add("is-ok"),setTimeout(()=>{t.textContent="复制",t.classList.remove("is-ok")},1500)}),c.appendChild(t)});</script> </article>  </main> <footer class="site-footer"> <div class="wrap"> <p class="star-line" aria-hidden="true"> <svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> <svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> </p> <p>星之驿站 StellaStop —— 在虚拟宇宙中，为你保留一座驿站</p> <p class="site-footer__disclaimer">
+该网页目前是测试阶段，仅用于测试，所有内容仅供参考；内容全部为引用互联网当中的信息。
+</p> <p>© 2026 星之驿站 · 由 <a href="https://astro.build">Astro</a> 与星光驱动</p> <p> <a data-desk-login hidden title="写作台：登录 / 注册">登录 / 注册</a> ·
+<a href="/STELLASTOPVRC/announcements/">官方公告</a> ·
+<a href="/STELLASTOPVRC/ai/">问星 AI</a> ·
+<a href="/STELLASTOPVRC/feedback/">旅人留言板</a> </p> </div> </footer> <button class="to-top" id="toTop" aria-label="回到顶部"> <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"> <path d="M12 20V5"></path> <path d="M5.5 11.5 12 5l6.5 6.5"></path> </svg> </button> <script type="module">const e=document.getElementById("toTop");if(e){const t=()=>e.classList.toggle("is-visible",scrollY>480);addEventListener("scroll",t,{passive:!0}),t(),e.addEventListener("click",()=>{const o=matchMedia("(prefers-reduced-motion: reduce)").matches;scrollTo({top:0,behavior:o?"auto":"smooth"})})}</script> <script>(function(){const deskConfigured = "";
+
+      /* 写作台探测（页面尾部执行，DOM 已就绪）：
+         1. 计算写作台地址：站点配置 deskUrl（公网部署时填）> 本机默认 localhost:4322 > 同主机 4322
+         2. 探测 /api/gate/status —— 在线才点亮「登录 / 注册」入口，并复用给验证门横幅
+         3. 不在线则保持隐藏，绝不会把访客拽进内网地址；同时给出一次性「镜像模式」提示 */
+      (function () {
+        var host = location.hostname;
+        var isLocal = host === 'localhost' || host === '127.0.0.1' || host === '[::1]';
+        var desk = deskConfigured ||
+          (isLocal ? 'http://localhost:4322' : location.protocol + '//' + host + ':4322');
+        window.STELLA_DESK = desk;
+
+        function revealLogin() {
+          document.querySelectorAll('[data-desk-login]').forEach(function (a) {
+            a.href = desk + '/admin';
+            a.removeAttribute('hidden');
+          });
+        }
+        function showBanner(css, html, shiftHeader) {
+          var bar = document.createElement('div');
+          bar.style.cssText = css;
+          bar.innerHTML = html;
+          document.body.prepend(bar);
+          if (shiftHeader) {
+            var header = document.querySelector('.site-header');
+            if (header) header.style.marginTop = '42px';
+          }
+        }
+        function hintMirrorMode() {
+          try {
+            if (sessionStorage.getItem('stella-desk-hint')) return;
+            sessionStorage.setItem('stella-desk-hint', '1');
+          } catch (e) { /* 无痕模式等：忽略 */ }
+          var tip = document.createElement('div');
+          tip.style.cssText = 'position:fixed;left:14px;bottom:14px;z-index:9998;max-width:min(92vw,430px);padding:.65rem .9rem;border-radius:12px;background:rgba(18,20,44,.92);border:1px solid rgba(150,142,255,.35);color:#e8e6ff;font-size:.82rem;line-height:1.6;font-family:system-ui,sans-serif;box-shadow:0 8px 30px rgba(0,0,0,.35)';
+          tip.innerHTML = 'ℹ️ 静态镜像模式：登录 / 评论 / AI 等互动功能需要站长写作台在线，当前不可用。' +
+            '<span id="stellaDeskHintClose" style="float:right;cursor:pointer;opacity:.75;font-weight:700;margin-left:.6rem" title="关闭">×</span>';
+          document.body.appendChild(tip);
+          var close = function () { tip.remove(); };
+          tip.querySelector('#stellaDeskHintClose').addEventListener('click', close);
+          setTimeout(close, 9000);
+        }
+
+        try {
+          var ctrl = new AbortController();
+          var timer = setTimeout(function () { ctrl.abort(); }, 2500);
+          fetch(desk + '/api/gate/status', { credentials: 'include', signal: ctrl.signal })
+            .then(function (r) { return r.ok ? r.json() : null; })
+            .then(function (d) {
+              clearTimeout(timer);
+              if (!d) throw new Error('desk-offline');
+              window.STELLA_DESK_OK = true;
+              revealLogin();
+              if (d.regionBlocked) {
+                showBanner(
+                  'position:fixed;top:0;left:0;right:0;z-index:9999;padding:1.2rem;text-align:center;background:#1a0a0a;color:#ff9ed2;font-size:.95rem;border-bottom:2px solid #ff4d6d;font-family:system-ui,sans-serif',
+                  '⛔ 你所在的地区（' + (d.regionCountry || '未知') + '）暂不开放访问。',
+                  false
+                );
+                return;
+              }
+              if (d.enabled && !d.passed) {
+                showBanner(
+                  'position:fixed;top:0;left:0;right:0;z-index:9999;padding:0.7rem;text-align:center;background:linear-gradient(94deg,rgba(143,127,247,.25),rgba(98,200,245,.18));border-bottom:1px solid rgba(150,142,255,.3);color:#f0efff;font-size:.88rem;font-family:system-ui,sans-serif',
+                  '🔒 本站启用了安全验证 —— <a href="' + desk + '/gate?next=' + encodeURIComponent(location.href) + '" style="color:#ffd98e;font-weight:700;text-decoration:underline">点击完成验证</a>，通过后即可使用全部功能（30 天免验）。',
+                  true
+                );
+              }
+            })
+            .catch(function () {
+              clearTimeout(timer);
+              window.STELLA_DESK_OK = false;
+              hintMirrorMode();
+            });
+        } catch (e) { /* 忽略 */ }
+      })();
+    })();</script> </body> </html> <script type="module">const m=document.getElementById("commentForm"),s=document.getElementById("cMsg"),u=`${location.protocol}//${location.hostname}:4322/api/message`;function r(e,t=!1){s&&(s.textContent=e,s.classList.toggle("is-err",t),s.classList.toggle("is-ok",!t))}function y(){const e=new Date,t=n=>String(n).padStart(2,"0");return`${e.getFullYear()}-${t(e.getMonth()+1)}-${t(e.getDate())}`}function f(e){let t=7;for(const n of e)t=(t*31+n.charCodeAt(0))%360;return t}function g(e,t){const n=document.createElement("li");n.className="comment",n.innerHTML=`
+      <span class="comment__avatar"></span>
+      <div class="comment__bubble">
+        <div class="comment__head">
+          <span class="comment__name"></span>
+          <time class="comment__date">${y()}</time>
+        </div>
+        <p class="comment__body"></p>
+      </div>`;const o=n.querySelector(".comment__avatar");return o.style.setProperty("--h",String(f(e))),o.textContent=e.slice(0,1),n.querySelector(".comment__name").textContent=e,n.querySelector(".comment__body").textContent=t,n}m?.addEventListener("submit",async e=>{e.preventDefault();const t=document.getElementById("cBody").value.trim();if(!t)return r("留言内容不能为空哦",!0);const n=document.getElementById("cAuthor").value.trim()||"旅人",o=m.querySelector("button");o&&(o.disabled=!0);try{const c=await fetch(u,{credentials:"include",method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({target:m.dataset.target,kind:"comment",author:n,body:t})}),d=await c.json().catch(()=>({}));if(!c.ok)throw new Error(d.error||`发送失败（${c.status}）`);const l=document.querySelector(".comment-list");l&&l.appendChild(g(n,t)),document.getElementById("commentsEmpty")?.remove(),document.getElementById("cBody").value="",r("留言已发布，感谢支持 ✦");const a=document.querySelector(".comments__title"),i=a?.textContent?.match(/（(\d+)）/);a&&i&&(a.textContent=a.textContent.replace(/（\d+）/,`（${Number(i[1])+1}）`))}catch(c){r(c instanceof TypeError?"写作台没在运行，暂时收不到留言 —— 双击「启动博客.bat」就好":c.message,!0)}finally{o&&(o.disabled=!1)}});</script> 

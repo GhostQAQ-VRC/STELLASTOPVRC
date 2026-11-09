@@ -1,0 +1,802 @@
+<!DOCTYPE html><html lang="zh-CN"> <head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="generator" content="Astro v5.18.2"><meta name="description" content="高效的 Networking 是流畅多人体验的基础。设计不当的网络同步会导致 带宽飙升、卡顿、状态不一致。本文档汇总官方推荐的 10 条带宽优化规则 和 对象池 / 合并序列化 等关键策略。"><meta name="theme-color" content="#070a1c"><meta property="og:title" content="Performance Considerations 性能优化 · 星之驿站 StellaStop"><meta property="og:description" content="高效的 Networking 是流畅多人体验的基础。设计不当的网络同步会导致 带宽飙升、卡顿、状态不一致。本文档汇总官方推荐的 10 条带宽优化规则 和 对象池 / 合并序列化 等关键策略。"><meta property="og:type" content="website"><meta name="twitter:card" content="summary"><link rel="icon" type="image/svg+xml" href="/STELLASTOPVRC/favicon.svg"><script>
+      // 在渲染前恢复主题与特效档位，避免闪一下默认状态
+      try {
+        document.documentElement.dataset.theme =
+          localStorage.getItem('stella-theme') || 'nebula';
+        document.documentElement.dataset.fx =
+          localStorage.getItem('stella-fx') || 'standard';
+      } catch {
+        /* 隐私模式读不到就算了 */
+      }
+    </script><link rel="stylesheet" href="/STELLASTOPVRC/custom-vars.css"><title>Performance Considerations 性能优化 · 星之驿站 StellaStop</title><link rel="stylesheet" href="/STELLASTOPVRC/_astro/about.Bgh6wcGl.css">
+<style>.post-head__meta[data-astro-cid-lvjzyg5v]{color:var(--ink-faint);font-family:var(--font-mono);font-size:.82rem}.post-head[data-astro-cid-lvjzyg5v] .chip-row[data-astro-cid-lvjzyg5v]{margin-top:1rem}.kb-source-note[data-astro-cid-lvjzyg5v]{max-width:760px;margin:2.2rem auto 0;font-size:.82rem;color:var(--ink-faint);border-top:1px dashed var(--line);padding-top:1rem}
+</style></head> <body> <div class="site-notice" id="siteNotice"> <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> <span class="site-notice__text">欢迎来到星之驿站！</span> <button class="site-notice__close" id="noticeClose" type="button" aria-label="关闭公告">
+×
+</button> </div> <a class="skip-link" href="#main">跳到主要内容</a> <canvas id="starfield" aria-hidden="true" data-astro-cid-ra7sfcwn></canvas> <div class="fx-aurora fx-aurora--a" aria-hidden="true" data-astro-cid-ra7sfcwn></div> <div class="fx-aurora fx-aurora--b" aria-hidden="true" data-astro-cid-ra7sfcwn></div>  <script type="module">const u=document.getElementById("starfield");if(u){let F=function(){const n=Math.random();return n<.1?"gold":n<.42?"blue":"white"},v=function(){const n=Math.min(window.devicePixelRatio||1,2);s=window.innerWidth,d=window.innerHeight,u.width=s*n,u.height=d*n,u.style.width=`${s}px`,u.style.height=`${d}px`,t.setTransform(n,0,0,n,0,0);const e=Math.min(190,Math.round(s*d/8500));l=Array.from({length:e},()=>({x:Math.random()*s,y:Math.random()*d,r:r(.4,1.7),base:r(.25,.8),amp:r(.12,.4),speed:r(6e-4,.0022),phase:r(0,Math.PI*2),c:F()})),C=Array.from({length:26},()=>({x:Math.random()*s,y:Math.random()*d,r:r(.9,2.4),vx:r(-.006,.006),vy:r(-.02,-.006),base:r(.2,.5),speed:r(8e-4,.002),phase:r(0,Math.PI*2),c:Math.random()<.5?"gold":"violet"})),c==="off"&&m(0,!0)},D=function(n){const e=Math.random()<.5?1:-1,o=r(Math.PI/7,Math.PI/5),a=r(.45,.75);y.push({x:r(s*.15,s*.85),y:r(-20,d*.3),vx:Math.cos(o)*a*e,vy:Math.sin(o)*a,born:n,life:r(750,1050),len:r(100,170)})},S=function(n){y=y.filter(e=>n-e.born<e.life);for(const e of y){const o=(n-e.born)/e.life,a=e.x+e.vx*(n-e.born),i=e.y+e.vy*(n-e.born),f=o<.15?o/.15:o>.7?(1-o)/.3:1,h=Math.hypot(e.vx,e.vy),x=e.vx/h,g=e.vy/h,b=t.createLinearGradient(a,i,a-x*e.len,i-g*e.len);b.addColorStop(0,`rgba(236,242,255,${(.85*f).toFixed(3)})`),b.addColorStop(1,"rgba(236,242,255,0)"),t.strokeStyle=b,t.lineWidth=1.6,t.lineCap="round",t.beginPath(),t.moveTo(a,i),t.lineTo(a-x*e.len,i-g*e.len),t.stroke()}},B=function(){let o=0;t.lineWidth=.7;for(let a=0;a<l.length&&o<26;a++)for(let i=a+1;i<l.length&&o<26;i++){const f=l[a].x-l[i].x,h=l[a].y-l[i].y,x=f*f+h*h;if(x<16900){const g=(1-Math.sqrt(x)/130)*.17;t.strokeStyle=`rgba(178,170,255,${g.toFixed(3)})`,t.beginPath(),t.moveTo(l[a].x,l[a].y),t.lineTo(l[i].x,l[i].y),t.stroke(),o++}}},X=function(n){for(const e of C){e.x+=e.vx*16,e.y+=e.vy*16,e.y<-12&&(e.y=d+10),e.x<-12&&(e.x=s+10),e.x>s+12&&(e.x=-10);const o=Math.max(.05,e.base+.25*Math.sin(n*e.speed+e.phase)),[a,i,f]=A[e.c];t.beginPath(),t.arc(e.x,e.y,e.r,0,7),t.shadowBlur=9,t.shadowColor=`rgba(${a},${i},${f},0.9)`,t.fillStyle=`rgba(${a},${i},${f},${o.toFixed(3)})`,t.fill()}t.shadowBlur=0},m=function(n,e=!1){t.clearRect(0,0,s,d);for(const o of l){const a=c==="off"?o.base:Math.max(.05,o.base+o.amp*Math.sin(n*o.speed+o.phase)),[i,f,h]=A[o.c];t.beginPath(),t.arc(o.x,o.y,o.r,0,7),o.r>1.25?(t.shadowBlur=7,t.shadowColor=`rgba(${i},${f},${h},0.85)`):t.shadowBlur=0,t.fillStyle=`rgba(${i},${f},${h},${a.toFixed(3)})`,t.fill()}if(t.shadowBlur=0,c!=="off"&&!e){c==="fancy"&&(B(),X(n));const o=c==="fancy"?r(2600,6e3):r(4200,9500);n>P&&(D(n),P=n+o),S(n)}},$=function(n){m(n),M=requestAnimationFrame($)},p=function(){if(c==="off"){m(0,!0);return}cancelAnimationFrame(M),M=requestAnimationFrame($)},w=function(){cancelAnimationFrame(M),t.clearRect(0,0,s,d),m(0,!0)};const t=u.getContext("2d"),k=matchMedia("(prefers-reduced-motion: reduce)").matches,A={white:[240,240,255],blue:[150,215,250],gold:[255,218,150],violet:[178,170,255]};let s=0,d=0,l=[],C=[],y=[],P=2500,M=0,c=document.documentElement.dataset.fx||"standard";k&&(c="off");const r=(n,e)=>n+Math.random()*(e-n);v(),addEventListener("resize",v),document.addEventListener("stella-fx-change",n=>{c=n.detail,c==="off"?w():p()}),c==="off"?m(0,!0):(p(),document.addEventListener("visibilitychange",()=>{document.hidden?w():p()}))}</script> <header class="site-header"> <div class="wrap site-header__inner"> <a class="logo" href="/STELLASTOPVRC/"> <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> <span>星之驿站</span> <span class="logo__romaji">StellaStop</span> </a> <div class="header-right"> <nav class="site-nav" aria-label="站内导航"> <a href="/STELLASTOPVRC/"> 首页 </a><a href="/STELLASTOPVRC/start/"> 新手 </a><a href="/STELLASTOPVRC/posts/"> 教程 </a><a href="/STELLASTOPVRC/videos/"> 视频 </a><a href="/STELLASTOPVRC/resources/"> 资源 </a><a href="/STELLASTOPVRC/booth/"> Booth </a><a href="/STELLASTOPVRC/announcements/"> 公告 </a><a href="/STELLASTOPVRC/ai/"> 问星 </a><a href="/STELLASTOPVRC/changelog/"> 更新日志 </a><a href="/STELLASTOPVRC/about/"> 关于 </a> </nav> <a class="login-link" data-desk-login hidden title="写作台：登录 / 注册后可发教程、传资源">
+登录 / 注册
+</a> <div class="theme-switch"> <button class="theme-switch__btn" id="themeBtn" type="button" aria-haspopup="listbox" aria-expanded="false" aria-label="切换主题配色" title="切换主题配色"> <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"> <path d="M12 3a9 9 0 1 0 9 9c0-1.2-1-2-2.2-2H17a2 2 0 0 1-2-2V6.2C15 5 14.2 4 13 4.4A9 9 0 0 0 12 3Z"></path> <circle cx="7.5" cy="11.5" r="1" fill="currentColor" stroke="none"></circle> <circle cx="10" cy="7.5" r="1" fill="currentColor" stroke="none"></circle> <circle cx="15" cy="7" r="1" fill="currentColor" stroke="none"></circle> </svg> </button> <div class="theme-pop" id="themePop" role="listbox" aria-label="选择主题" hidden> <button class="theme-opt" type="button" role="option" data-theme-value="nebula" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#8f7ff7"></span><span class="dot" style="background:#62c8f5"></span><span class="dot" style="background:#ffd98e"></span> </span> <span class="theme-opt__name">星云 · 蓝紫</span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt" type="button" role="option" data-theme-value="sakura" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#ff8fc7"></span><span class="dot" style="background:#c79bff"></span><span class="dot" style="background:#ffd08e"></span> </span> <span class="theme-opt__name">樱语 · 粉紫</span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt" type="button" role="option" data-theme-value="miku" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#2ed3c2"></span><span class="dot" style="background:#6ea8ff"></span><span class="dot" style="background:#ffe08e"></span> </span> <span class="theme-opt__name">葱色 · 青绿</span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt" type="button" role="option" data-theme-value="ember" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#ffb35c"></span><span class="dot" style="background:#ff7e6b"></span><span class="dot" style="background:#ffd98e"></span> </span> <span class="theme-opt__name">暮金 · 暖橙</span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt" type="button" role="option" data-theme-value="dawn" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#6a5ce8"></span><span class="dot" style="background:#e0568f"></span><span class="dot" style="background:#b8821e"></span> </span> <span class="theme-opt__name">晨星 · 浅色</span> <span class="theme-opt__mark">✦</span> </button> </div> </div> <script type="module">const a=document.getElementById("themeBtn"),n=document.getElementById("themePop");function s(c){document.documentElement.dataset.theme=c;try{localStorage.setItem("stella-theme",c)}catch{}const e=getComputedStyle(document.documentElement).getPropertyValue("--bg-deep").trim();document.querySelector('meta[name="theme-color"]')?.setAttribute("content",e||"#070a1c"),document.querySelectorAll(".theme-opt").forEach(t=>{const d=t.dataset.themeValue===c;t.classList.toggle("is-active",d),t.setAttribute("aria-selected",String(d))})}if(a&&n){const c=document.documentElement.dataset.theme||"nebula";document.querySelectorAll(".theme-opt").forEach(e=>{const t=e.dataset.themeValue===c;e.classList.toggle("is-active",t),e.setAttribute("aria-selected",String(t))}),a.addEventListener("click",e=>{e.stopPropagation();const t=n.hidden;n.hidden=!t,a.setAttribute("aria-expanded",String(t))}),document.addEventListener("click",e=>{!n.hidden&&!e.target.closest(".theme-switch")&&(n.hidden=!0,a.setAttribute("aria-expanded","false"))}),document.addEventListener("keydown",e=>{e.key==="Escape"&&!n.hidden&&(n.hidden=!0,a.setAttribute("aria-expanded","false"),a.focus())}),n.addEventListener("click",e=>{const t=e.target.closest(".theme-opt");t&&(s(t.dataset.themeValue??"nebula"),n.hidden=!0,a.setAttribute("aria-expanded","false"))})}</script> <div class="theme-switch fx-switch"> <button class="theme-switch__btn" id="fxBtn" type="button" aria-haspopup="listbox" aria-expanded="false" aria-label="背景特效设置" title="背景特效设置"> <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"> <path d="M5 3v4M3 5h4M6.5 17.5v3M5 19h3"></path> <path d="M14.5 4.5 16 9l4.5 1.5L16 12l-1.5 4.5L13 12l-4.5-1.5L13 9l1.5-4.5Z"></path> </svg> </button> <div class="theme-pop" id="fxPop" role="listbox" aria-label="背景特效" hidden> <button class="theme-opt fx-opt" type="button" role="option" data-fx-value="off" aria-selected="false"> <span class="fx-opt__body"> <span class="fx-opt__name">关闭特效</span> <span class="fx-opt__hint">最省电</span> </span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt fx-opt" type="button" role="option" data-fx-value="standard" aria-selected="false"> <span class="fx-opt__body"> <span class="fx-opt__name">标准</span> <span class="fx-opt__hint">闪烁星空 + 流星</span> </span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt fx-opt" type="button" role="option" data-fx-value="fancy" aria-selected="false"> <span class="fx-opt__body"> <span class="fx-opt__name">华丽</span> <span class="fx-opt__hint">追加极光 / 星座 / 光尘</span> </span> <span class="theme-opt__mark">✦</span> </button> </div> </div> <script type="module">const n=document.getElementById("fxBtn"),a=document.getElementById("fxPop");function s(d){document.documentElement.dataset.fx=d;try{localStorage.setItem("stella-fx",d)}catch{}document.querySelectorAll("#fxPop .fx-opt").forEach(t=>{const e=t.dataset.fxValue===d;t.classList.toggle("is-active",e),t.setAttribute("aria-selected",String(e))}),document.dispatchEvent(new CustomEvent("stella-fx-change",{detail:d}))}if(n&&a){const d=document.documentElement.dataset.fx||"standard";document.querySelectorAll("#fxPop .fx-opt").forEach(t=>{const e=t.dataset.fxValue===d;t.classList.toggle("is-active",e),t.setAttribute("aria-selected",String(e))}),n.addEventListener("click",t=>{t.stopPropagation();const e=a.hidden;a.hidden=!e,n.setAttribute("aria-expanded",String(e))}),document.addEventListener("click",t=>{!a.hidden&&!t.target.closest(".fx-switch")&&(a.hidden=!0,n.setAttribute("aria-expanded","false"))}),document.addEventListener("keydown",t=>{t.key==="Escape"&&!a.hidden&&(a.hidden=!0,n.setAttribute("aria-expanded","false"),n.focus())}),a.addEventListener("click",t=>{const e=t.target.closest(".fx-opt");e&&(s(e.dataset.fxValue??"standard"),a.hidden=!0,n.setAttribute("aria-expanded","false"))})}</script> </div> </div> </header> <main id="main">  <article class="wrap post-layout" data-astro-cid-lvjzyg5v> <div class="post-main page-fade" data-astro-cid-lvjzyg5v> <header class="post-head" data-astro-cid-lvjzyg5v> <a class="crumb" href="/STELLASTOPVRC/posts/" data-astro-cid-lvjzyg5v>← 返回教程档案</a> <div class="post-head__meta" style="--accent:var(--ink-dim)" data-astro-cid-lvjzyg5v> <span class="badge" data-cat="Udon 世界编程" data-astro-cid-lvjzyg5v>Udon 世界编程</span> <time datetime="2026-11-09" data-astro-cid-lvjzyg5v>2026-11-09</time> <span class="post-head__reading" data-astro-cid-lvjzyg5v>⏱ 约 29 分钟</span>  </div> <h1 class="post-head__title" data-astro-cid-lvjzyg5v>Performance Considerations 性能优化</h1> <p class="post-head__lead" data-astro-cid-lvjzyg5v>高效的 Networking 是流畅多人体验的基础。设计不当的网络同步会导致 带宽飙升、卡顿、状态不一致。本文档汇总官方推荐的 10 条带宽优化规则 和 对象池 / 合并序列化 等关键策略。</p> <div class="chip-row" data-astro-cid-lvjzyg5v> <a class="chip" href="/STELLASTOPVRC/posts/?tag=%E7%9F%A5%E8%AF%86%E5%BA%93" data-astro-cid-lvjzyg5v> 知识库 </a><a class="chip" href="/STELLASTOPVRC/posts/?tag=world" data-astro-cid-lvjzyg5v> world </a> </div> </header> <div class="prose" data-astro-cid-lvjzyg5v> <hr>
+<h1 id="performance-considerations-性能优化">Performance Considerations 性能优化</h1>
+<p>高效的 Networking 是流畅多人体验的基础。设计不当的网络同步会导致 <strong>带宽飙升、卡顿、状态不一致</strong>。本文档汇总官方推荐的 <strong>10 条带宽优化规则</strong> 和 <strong>对象池 / 合并序列化</strong> 等关键策略。</p>
+<blockquote>
+<p><strong>核心原则</strong>:<strong>Networking 不是免费的</strong>——每字节、每同步、每事件都消耗配额。</p>
+</blockquote>
+<hr>
+<hr>
+<h1 id="performance-considerations-性能优化带宽限制再次强调">Performance Considerations 性能优化：带宽限制(再次强调)</h1>
+<blockquote>
+<p>⚠️ 这些数字是 <strong>所有 Udon 行为共享的硬上限</strong>。</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>限制类型</th>
+<th>数值</th>
+<th>超出后果</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>总带宽</strong></td>
+<td><strong>~11 KB/s</strong></td>
+<td><code>IsClogged = true</code>,全局拥塞</td>
+</tr>
+<tr>
+<td><strong>Manual Sync</strong></td>
+<td><strong>280,496 bytes/serialization</strong></td>
+<td>事件缓存、延迟发送</td>
+</tr>
+<tr>
+<td><strong>Continuous Sync</strong></td>
+<td><strong>~200 bytes/serialization</strong></td>
+<td>序列化 <strong>直接失败</strong></td>
+</tr>
+<tr>
+<td><strong>Network Event 参数</strong></td>
+<td>16 KB/event</td>
+<td>内部拆分</td>
+</tr>
+<tr>
+<td><strong>总吞吐(Events)</strong></td>
+<td>~18 KB/s</td>
+<td>实际可用 8-10 KB/s</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<hr>
+<h1 id="performance-considerations-性能优化variables-vs-events何时用哪个">Performance Considerations 性能优化：Variables vs Events:何时用哪个</h1>
+<h3 id="variables同步数据适用场景">Variables(同步数据)适用场景</h3>
+<table>
+<thead>
+<tr>
+<th>场景</th>
+<th>示例</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Late Joiner 需要的状态</td>
+<td>门开/关、玩家分数</td>
+</tr>
+<tr>
+<td>离散状态</td>
+<td>回合阶段、玩家等级</td>
+</tr>
+<tr>
+<td>关键数据</td>
+<td>排行榜、游戏结果</td>
+</tr>
+<tr>
+<td>需要 Owner 写入的</td>
+<td>玩家私人数据</td>
+</tr>
+</tbody>
+</table>
+<h3 id="events瞬时动作适用场景">Events(瞬时动作)适用场景</h3>
+<table>
+<thead>
+<tr>
+<th>场景</th>
+<th>示例</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>临时视觉</td>
+<td>粒子、音效、震动</td>
+</tr>
+<tr>
+<td>触发动画</td>
+<td>一次性 Play()</td>
+</tr>
+<tr>
+<td>发射子弹</td>
+<td>子弹事件</td>
+</tr>
+<tr>
+<td>UI 提示</td>
+<td>浮动伤害数字</td>
+</tr>
+</tbody>
+</table>
+<h3 id="反模式用-event-同步状态">反模式:用 Event 同步状态</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="csharp"><code><span class="line"><span style="color:#6A737D">// ❌ 致命错误</span></span>
+<span class="line"><span style="color:#F97583">public</span><span style="color:#F97583"> class</span><span style="color:#B392F0"> Door</span><span style="color:#E1E4E8"> : </span><span style="color:#B392F0">UdonSharpBehaviour</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#F97583">    public</span><span style="color:#F97583"> void</span><span style="color:#B392F0"> Interact</span><span style="color:#E1E4E8">() {</span></span>
+<span class="line"><span style="color:#B392F0">        SendCustomNetworkEvent</span><span style="color:#E1E4E8">(NetworkEventTarget.All, </span><span style="color:#F97583">nameof</span><span style="color:#E1E4E8">(OpenDoor));</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span></span>
+<span class="line"><span style="color:#F97583">    public</span><span style="color:#F97583"> void</span><span style="color:#B392F0"> OpenDoor</span><span style="color:#E1E4E8">() {</span></span>
+<span class="line"><span style="color:#E1E4E8">        animator.</span><span style="color:#B392F0">SetBool</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"IsOpen"</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">true</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span>
+<span class="line"><span style="color:#6A737D">// Late Joiner:门是关的(Event 不会重放)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// ✅ 正确</span></span>
+<span class="line"><span style="color:#E1E4E8">[</span><span style="color:#B392F0">UdonBehaviourSyncMode</span><span style="color:#E1E4E8">(BehaviourSyncMode.Manual)]</span></span>
+<span class="line"><span style="color:#F97583">public</span><span style="color:#F97583"> class</span><span style="color:#B392F0"> Door</span><span style="color:#E1E4E8"> : </span><span style="color:#B392F0">UdonSharpBehaviour</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#E1E4E8">    [</span><span style="color:#B392F0">UdonSynced</span><span style="color:#E1E4E8">] </span><span style="color:#F97583">private</span><span style="color:#F97583"> bool</span><span style="color:#B392F0"> _isOpen</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span></span>
+<span class="line"><span style="color:#F97583">    public</span><span style="color:#F97583"> void</span><span style="color:#B392F0"> Interact</span><span style="color:#E1E4E8">() {</span></span>
+<span class="line"><span style="color:#F97583">        if</span><span style="color:#E1E4E8"> (Networking.</span><span style="color:#B392F0">IsOwner</span><span style="color:#E1E4E8">(gameObject)) {</span></span>
+<span class="line"><span style="color:#E1E4E8">            _isOpen </span><span style="color:#F97583">=</span><span style="color:#F97583"> !</span><span style="color:#E1E4E8">_isOpen;</span></span>
+<span class="line"><span style="color:#B392F0">            RequestSerialization</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#E1E4E8">        }</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<hr>
+<hr>
+<h1 id="performance-considerations-性能优化10-条带宽优化规则">Performance Considerations 性能优化：10 条带宽优化规则</h1>
+<h3 id="规则-1避免不必要的同步">规则 1:避免不必要的同步</h3>
+<table>
+<thead>
+<tr>
+<th>操作</th>
+<th>影响</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>❌ 每帧同步位置</td>
+<td>浪费 200B/帧 × 30fps = 6KB/s</td>
+</tr>
+<tr>
+<td>✅ 插值/外推</td>
+<td>减少同步频率,客户端平滑</td>
+</tr>
+<tr>
+<td>❌ 同步物理 Rigidbody</td>
+<td>除非必要,不用网络同步物理</td>
+</tr>
+<tr>
+<td>✅ 用 VRCObjectSync</td>
+<td>VRChat 内部优化通道</td>
+</tr>
+<tr>
+<td>❌ 频繁小幅更新</td>
+<td>占用配额</td>
+</tr>
+<tr>
+<td>✅ 阈值变化才同步</td>
+<td>减少 90%+ 序列化次数</td>
+</tr>
+</tbody>
+</table>
+<p><strong>代码示例</strong>:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="csharp"><code><span class="line"><span style="color:#6A737D">// ❌ 每帧同步</span></span>
+<span class="line"><span style="color:#F97583">void</span><span style="color:#B392F0"> Update</span><span style="color:#E1E4E8">() {</span></span>
+<span class="line"><span style="color:#F97583">    if</span><span style="color:#E1E4E8"> (Networking.</span><span style="color:#B392F0">IsOwner</span><span style="color:#E1E4E8">(gameObject)) {</span></span>
+<span class="line"><span style="color:#E1E4E8">        _position </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> transform.position;</span></span>
+<span class="line"><span style="color:#B392F0">        RequestSerialization</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// ✅ 阈值同步</span></span>
+<span class="line"><span style="color:#F97583">private</span><span style="color:#F97583"> const</span><span style="color:#F97583"> float</span><span style="color:#B392F0"> THRESHOLD</span><span style="color:#F97583"> =</span><span style="color:#79B8FF"> 0.1f</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">private</span><span style="color:#B392F0"> Vector3</span><span style="color:#B392F0"> _lastSynced</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">void</span><span style="color:#B392F0"> Update</span><span style="color:#E1E4E8">() {</span></span>
+<span class="line"><span style="color:#F97583">    if</span><span style="color:#E1E4E8"> (Networking.</span><span style="color:#B392F0">IsOwner</span><span style="color:#E1E4E8">(gameObject)) {</span></span>
+<span class="line"><span style="color:#F97583">        if</span><span style="color:#E1E4E8"> (Vector3.</span><span style="color:#B392F0">Distance</span><span style="color:#E1E4E8">(transform.position, _lastSynced) </span><span style="color:#F97583">></span><span style="color:#E1E4E8"> THRESHOLD) {</span></span>
+<span class="line"><span style="color:#E1E4E8">            _position </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> transform.position;</span></span>
+<span class="line"><span style="color:#E1E4E8">            _lastSynced </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> _position;</span></span>
+<span class="line"><span style="color:#B392F0">            RequestSerialization</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#E1E4E8">        }</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<h3 id="规则-2使用正确的-sync-mode">规则 2:使用正确的 Sync Mode</h3>
+<table>
+<thead>
+<tr>
+<th>场景</th>
+<th>推荐模式</th>
+<th>原因</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>门开/关</td>
+<td><strong>Manual</strong></td>
+<td>离散状态,变化稀疏</td>
+</tr>
+<tr>
+<td>玩家位置</td>
+<td><strong>Continuous</strong>(或 VRCObjectSync)</td>
+<td>高频变化</td>
+</tr>
+<tr>
+<td>积分板</td>
+<td><strong>Manual</strong></td>
+<td>关键数据</td>
+</tr>
+<tr>
+<td>进度条</td>
+<td><strong>Continuous</strong></td>
+<td>平滑过渡</td>
+</tr>
+<tr>
+<td>临时分数</td>
+<td><strong>Manual</strong></td>
+<td>偶发更新</td>
+</tr>
+</tbody>
+</table>
+<h3 id="规则-3用位域压缩多个-bool">规则 3:用位域压缩多个 bool</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="csharp"><code><span class="line"><span style="color:#6A737D">// ❌ 8 个 bool = 8 bytes</span></span>
+<span class="line"><span style="color:#E1E4E8">[</span><span style="color:#B392F0">UdonSynced</span><span style="color:#E1E4E8">] </span><span style="color:#F97583">private</span><span style="color:#F97583"> bool</span><span style="color:#B392F0"> _active</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">[</span><span style="color:#B392F0">UdonSynced</span><span style="color:#E1E4E8">] </span><span style="color:#F97583">private</span><span style="color:#F97583"> bool</span><span style="color:#B392F0"> _hidden</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">[</span><span style="color:#B392F0">UdonSynced</span><span style="color:#E1E4E8">] </span><span style="color:#F97583">private</span><span style="color:#F97583"> bool</span><span style="color:#B392F0"> _locked</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">[</span><span style="color:#B392F0">UdonSynced</span><span style="color:#E1E4E8">] </span><span style="color:#F97583">private</span><span style="color:#F97583"> bool</span><span style="color:#B392F0"> _marked</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#6A737D">// ... 5 个更多</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// ✅ 1 个 byte = 8 个 bool</span></span>
+<span class="line"><span style="color:#E1E4E8">[</span><span style="color:#B392F0">UdonSynced</span><span style="color:#E1E4E8">] </span><span style="color:#F97583">private</span><span style="color:#F97583"> byte</span><span style="color:#B392F0"> _flags</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#6A737D">// bit0 = active</span></span>
+<span class="line"><span style="color:#6A737D">// bit1 = hidden</span></span>
+<span class="line"><span style="color:#6A737D">// bit2 = locked</span></span>
+<span class="line"><span style="color:#6A737D">// ...</span></span></code></pre>
+<blockquote>
+<p>节省 7 bytes/同步 × 频率 = <strong>巨大带宽节省</strong>。</p>
+</blockquote>
+<h3 id="规则-4避免同步不必要的精度">规则 4:避免同步不必要的精度</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="csharp"><code><span class="line"><span style="color:#6A737D">// ❌ 同步完整 Vector3(12 bytes)</span></span>
+<span class="line"><span style="color:#E1E4E8">[</span><span style="color:#B392F0">UdonSynced</span><span style="color:#E1E4E8">] </span><span style="color:#F97583">private</span><span style="color:#B392F0"> Vector3</span><span style="color:#B392F0"> _position</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// ✅ 同步压缩的 short(2-6 bytes)</span></span>
+<span class="line"><span style="color:#E1E4E8">[</span><span style="color:#B392F0">UdonSynced</span><span style="color:#E1E4E8">] </span><span style="color:#F97583">private</span><span style="color:#F97583"> int</span><span style="color:#B392F0"> _posX</span><span style="color:#E1E4E8">;  </span><span style="color:#6A737D">// 4 bytes</span></span>
+<span class="line"><span style="color:#E1E4E8">[</span><span style="color:#B392F0">UdonSynced</span><span style="color:#E1E4E8">] </span><span style="color:#F97583">private</span><span style="color:#F97583"> int</span><span style="color:#B392F0"> _posY</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">[</span><span style="color:#B392F0">UdonSynced</span><span style="color:#E1E4E8">] </span><span style="color:#F97583">private</span><span style="color:#F97583"> int</span><span style="color:#B392F0"> _posZ</span><span style="color:#E1E4E8">;</span></span></code></pre>
+<blockquote>
+<p>对于网格位置,<strong><code>int</code> 比 <code>Vector3</code> 节省 0%</strong>,但对于小范围坐标(0-100),用 <code>byte</code>(0-255)更省。</p>
+</blockquote>
+<h3 id="规则-5分组合并变量">规则 5:分组合并变量</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="csharp"><code><span class="line"><span style="color:#6A737D">// ❌ 5 个独立 byte</span></span>
+<span class="line"><span style="color:#E1E4E8">[</span><span style="color:#B392F0">UdonSynced</span><span style="color:#E1E4E8">] </span><span style="color:#F97583">private</span><span style="color:#F97583"> byte</span><span style="color:#B392F0"> _health</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">[</span><span style="color:#B392F0">UdonSynced</span><span style="color:#E1E4E8">] </span><span style="color:#F97583">private</span><span style="color:#F97583"> byte</span><span style="color:#B392F0"> _mana</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">[</span><span style="color:#B392F0">UdonSynced</span><span style="color:#E1E4E8">] </span><span style="color:#F97583">private</span><span style="color:#F97583"> byte</span><span style="color:#B392F0"> _stamina</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">[</span><span style="color:#B392F0">UdonSynced</span><span style="color:#E1E4E8">] </span><span style="color:#F97583">private</span><span style="color:#F97583"> byte</span><span style="color:#B392F0"> _armor</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">[</span><span style="color:#B392F0">UdonSynced</span><span style="color:#E1E4E8">] </span><span style="color:#F97583">private</span><span style="color:#F97583"> byte</span><span style="color:#B392F0"> _level</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// ✅ 用结构体 / 数组</span></span>
+<span class="line"><span style="color:#E1E4E8">[</span><span style="color:#B392F0">UdonSynced</span><span style="color:#E1E4E8">] </span><span style="color:#F97583">private</span><span style="color:#F97583"> byte</span><span style="color:#E1E4E8">[] </span><span style="color:#B392F0">_stats</span><span style="color:#F97583"> =</span><span style="color:#F97583"> new</span><span style="color:#F97583"> byte</span><span style="color:#E1E4E8">[</span><span style="color:#79B8FF">5</span><span style="color:#E1E4E8">];</span></span>
+<span class="line"><span style="color:#6A737D">// _stats[0] = health, _stats[1] = mana, ...</span></span>
+<span class="line"><span style="color:#6A737D">// 一次序列化 = 1 长度前缀 + 5 bytes = 9 bytes</span></span>
+<span class="line"><span style="color:#6A737D">// vs 5 个独立 byte = 5 * (1 + 1) = 10 bytes</span></span></code></pre>
+<blockquote>
+<p>当 <code>OnPreSerialization</code> 触发一次时,合并同步可以减少 5 个独立序列化的开销。</p>
+</blockquote>
+<h3 id="规则-6用-vrcobjectsync-同步物理">规则 6:用 VRCObjectSync 同步物理</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="csharp"><code><span class="line"><span style="color:#6A737D">// ❌ 手写位置同步(占用配额)</span></span>
+<span class="line"><span style="color:#E1E4E8">[</span><span style="color:#B392F0">UdonSynced</span><span style="color:#E1E4E8">(UdonSyncMode.Smooth)] </span><span style="color:#F97583">private</span><span style="color:#B392F0"> Vector3</span><span style="color:#B392F0"> _position</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">[</span><span style="color:#B392F0">UdonSynced</span><span style="color:#E1E4E8">(UdonSyncMode.Smooth)] </span><span style="color:#F97583">private</span><span style="color:#B392F0"> Quaternion</span><span style="color:#B392F0"> _rotation</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">void</span><span style="color:#B392F0"> Update</span><span style="color:#E1E4E8">() {</span></span>
+<span class="line"><span style="color:#F97583">    if</span><span style="color:#E1E4E8"> (Networking.</span><span style="color:#B392F0">IsOwner</span><span style="color:#E1E4E8">(gameObject)) {</span></span>
+<span class="line"><span style="color:#E1E4E8">        _position </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> transform.position;</span></span>
+<span class="line"><span style="color:#E1E4E8">        _rotation </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> transform.rotation;</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// ✅ 用 VRCObjectSync(VRChat 内部优化)</span></span>
+<span class="line"><span style="color:#F97583">public</span><span style="color:#F97583"> class</span><span style="color:#B392F0"> PhysicsObject</span><span style="color:#E1E4E8"> : </span><span style="color:#B392F0">UdonSharpBehaviour</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#6A737D">    // VRCObjectSync 自动处理,无需 synced 变量</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<blockquote>
+<p>VRCObjectSync 使用 <strong>专用网络通道</strong>(不走 synced 变量配额)。</p>
+</blockquote>
+<h3 id="规则-7network-event-节流">规则 7:Network Event 节流</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="csharp"><code><span class="line"><span style="color:#6A737D">// ❌ 无限制事件</span></span>
+<span class="line"><span style="color:#F97583">public</span><span style="color:#F97583"> void</span><span style="color:#B392F0"> Fire</span><span style="color:#E1E4E8">() {</span></span>
+<span class="line"><span style="color:#B392F0">    SendCustomNetworkEvent</span><span style="color:#E1E4E8">(NetworkEventTarget.All, </span><span style="color:#F97583">nameof</span><span style="color:#E1E4E8">(PlayEffect));</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// ✅ 显式速率限制</span></span>
+<span class="line"><span style="color:#E1E4E8">[</span><span style="color:#B392F0">NetworkCallable</span><span style="color:#E1E4E8">(maxEventsPerSecond</span><span style="color:#F97583">:</span><span style="color:#79B8FF"> 5</span><span style="color:#E1E4E8">)]</span></span>
+<span class="line"><span style="color:#F97583">public</span><span style="color:#F97583"> void</span><span style="color:#B392F0"> PlayEffect</span><span style="color:#E1E4E8">() { </span><span style="color:#6A737D">/* ... */</span><span style="color:#E1E4E8"> }</span></span></code></pre>
+<blockquote>
+<p>默认 5/s,推荐 <strong>尽可能低</strong>(防滥用)。</p>
+</blockquote>
+<h3 id="规则-8本地优先的视觉效果">规则 8:本地优先的视觉效果</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="csharp"><code><span class="line"><span style="color:#6A737D">// ❌ 网络事件触发本地效果</span></span>
+<span class="line"><span style="color:#F97583">public</span><span style="color:#F97583"> void</span><span style="color:#B392F0"> OnLocalHit</span><span style="color:#E1E4E8">() {</span></span>
+<span class="line"><span style="color:#B392F0">    SendCustomNetworkEvent</span><span style="color:#E1E4E8">(NetworkEventTarget.All, </span><span style="color:#F97583">nameof</span><span style="color:#E1E4E8">(PlayHitEffect));</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">public</span><span style="color:#F97583"> void</span><span style="color:#B392F0"> PlayHitEffect</span><span style="color:#E1E4E8">() {</span></span>
+<span class="line"><span style="color:#E1E4E8">    particleSystem.</span><span style="color:#B392F0">Emit</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">50</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// ✅ 本地 + 远端分离</span></span>
+<span class="line"><span style="color:#F97583">public</span><span style="color:#F97583"> void</span><span style="color:#B392F0"> OnLocalHit</span><span style="color:#E1E4E8">() {</span></span>
+<span class="line"><span style="color:#6A737D">    // 本地立即播放(零延迟)</span></span>
+<span class="line"><span style="color:#B392F0">    PlayHitEffect</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#6A737D">    // 远端稍后播放</span></span>
+<span class="line"><span style="color:#B392F0">    SendCustomNetworkEvent</span><span style="color:#E1E4E8">(NetworkEventTarget.Others, </span><span style="color:#F97583">nameof</span><span style="color:#E1E4E8">(PlayHitEffect));</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<blockquote>
+<p>关键:本地效果 <strong>不需要走网络</strong>,Owners 永远本地立即触发,只给远端发 Event。</p>
+</blockquote>
+<h3 id="规则-9合并连续修改">规则 9:合并连续修改</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="csharp"><code><span class="line"><span style="color:#6A737D">// ❌ 多次小修改 + 多次序列化</span></span>
+<span class="line"><span style="color:#F97583">public</span><span style="color:#F97583"> void</span><span style="color:#B392F0"> SetState</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">int</span><span style="color:#B392F0"> a</span><span style="color:#E1E4E8">, </span><span style="color:#F97583">int</span><span style="color:#B392F0"> b</span><span style="color:#E1E4E8">, </span><span style="color:#F97583">int</span><span style="color:#B392F0"> c</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#E1E4E8">    _a </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> a;</span></span>
+<span class="line"><span style="color:#B392F0">    RequestSerialization</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#E1E4E8">    _b </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> b;</span></span>
+<span class="line"><span style="color:#B392F0">    RequestSerialization</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#E1E4E8">    _c </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> c;</span></span>
+<span class="line"><span style="color:#B392F0">    RequestSerialization</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// ✅ 一次性修改 + 一次序列化</span></span>
+<span class="line"><span style="color:#F97583">public</span><span style="color:#F97583"> void</span><span style="color:#B392F0"> SetState</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">int</span><span style="color:#B392F0"> a</span><span style="color:#E1E4E8">, </span><span style="color:#F97583">int</span><span style="color:#B392F0"> b</span><span style="color:#E1E4E8">, </span><span style="color:#F97583">int</span><span style="color:#B392F0"> c</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#E1E4E8">    _a </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> a;</span></span>
+<span class="line"><span style="color:#E1E4E8">    _b </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> b;</span></span>
+<span class="line"><span style="color:#E1E4E8">    _c </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> c;</span></span>
+<span class="line"><span style="color:#B392F0">    RequestSerialization</span><span style="color:#E1E4E8">();  </span><span style="color:#6A737D">// 只触发一次</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<blockquote>
+<p><strong>多次 <code>RequestSerialization()</code> 不会</strong> 合并——每次都立即尝试发送。</p>
+</blockquote>
+<h3 id="规则-10监控--降级">规则 10:监控 + 降级</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="csharp"><code><span class="line"><span style="color:#F97583">void</span><span style="color:#B392F0"> Update</span><span style="color:#E1E4E8">() {</span></span>
+<span class="line"><span style="color:#F97583">    if</span><span style="color:#E1E4E8"> (Networking.IsClogged) {</span></span>
+<span class="line"><span style="color:#6A737D">        // 降级</span></span>
+<span class="line"><span style="color:#E1E4E8">        particleSystem.</span><span style="color:#B392F0">Stop</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#E1E4E8">        highQualitySync.enabled </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> false</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">    } </span><span style="color:#F97583">else</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#6A737D">        // 恢复</span></span>
+<span class="line"><span style="color:#F97583">        if</span><span style="color:#E1E4E8"> (</span><span style="color:#F97583">!</span><span style="color:#E1E4E8">particleSystem.isPlaying) particleSystem.</span><span style="color:#B392F0">Play</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#E1E4E8">        highQualitySync.enabled </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> true</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<blockquote>
+<p><code>IsClogged</code> 是网络健康的 <strong>实时指示器</strong>,应作为降级开关。</p>
+</blockquote>
+<hr>
+<hr>
+<h1 id="performance-considerations-性能优化对象池object-pool同步">Performance Considerations 性能优化：对象池(Object Pool)同步</h1>
+<blockquote>
+<p>详见 <code>network-components.md</code>。这里补充性能相关。</p>
+</blockquote>
+<h3 id="为什么用对象池">为什么用对象池?</h3>
+<table>
+<thead>
+<tr>
+<th>优势</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>避免运行时 instantiate</td>
+<td>实例化消耗大</td>
+</tr>
+<tr>
+<td>减少同步对象数</td>
+<td>池内对象状态由 Pool 管理</td>
+</tr>
+<tr>
+<td>自动 Late Joiner 同步</td>
+<td>Pool 内部处理</td>
+</tr>
+<tr>
+<td>性能可预测</td>
+<td>池大小固定,带宽稳定</td>
+</tr>
+</tbody>
+</table>
+<h3 id="实现模式">实现模式</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="csharp"><code><span class="line"><span style="color:#E1E4E8">[</span><span style="color:#B392F0">UdonBehaviourSyncMode</span><span style="color:#E1E4E8">(BehaviourSyncMode.Manual)]</span></span>
+<span class="line"><span style="color:#F97583">public</span><span style="color:#F97583"> class</span><span style="color:#B392F0"> BulletManager</span><span style="color:#E1E4E8"> : </span><span style="color:#B392F0">UdonSharpBehaviour</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#E1E4E8">    [</span><span style="color:#B392F0">SerializeField</span><span style="color:#E1E4E8">] </span><span style="color:#F97583">private</span><span style="color:#B392F0"> VRCObjectPool</span><span style="color:#B392F0"> bulletPool</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">    [</span><span style="color:#B392F0">SerializeField</span><span style="color:#E1E4E8">] </span><span style="color:#F97583">private</span><span style="color:#F97583"> int</span><span style="color:#B392F0"> poolSize</span><span style="color:#F97583"> =</span><span style="color:#79B8FF"> 32</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">    [</span><span style="color:#B392F0">UdonSynced</span><span style="color:#E1E4E8">] </span><span style="color:#F97583">private</span><span style="color:#F97583"> int</span><span style="color:#B392F0"> _activeCount</span><span style="color:#E1E4E8">;  </span><span style="color:#6A737D">// 仅统计,不存对象引用</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span></span>
+<span class="line"><span style="color:#E1E4E8">    [</span><span style="color:#B392F0">NetworkCallable</span><span style="color:#E1E4E8">(maxEventsPerSecond</span><span style="color:#F97583">:</span><span style="color:#79B8FF"> 30</span><span style="color:#E1E4E8">)]</span></span>
+<span class="line"><span style="color:#F97583">    public</span><span style="color:#F97583"> void</span><span style="color:#B392F0"> FireBullet</span><span style="color:#E1E4E8">(</span><span style="color:#B392F0">Vector3</span><span style="color:#B392F0"> origin</span><span style="color:#E1E4E8">, </span><span style="color:#B392F0">Vector3</span><span style="color:#B392F0"> direction</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#F97583">        if</span><span style="color:#E1E4E8"> (</span><span style="color:#F97583">!</span><span style="color:#E1E4E8">Networking.</span><span style="color:#B392F0">IsOwner</span><span style="color:#E1E4E8">(gameObject)) </span><span style="color:#F97583">return</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">        </span></span>
+<span class="line"><span style="color:#B392F0">        GameObject</span><span style="color:#B392F0"> bullet</span><span style="color:#F97583"> =</span><span style="color:#E1E4E8"> bulletPool.</span><span style="color:#B392F0">TryToSpawn</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#F97583">        if</span><span style="color:#E1E4E8"> (bullet </span><span style="color:#F97583">==</span><span style="color:#79B8FF"> null</span><span style="color:#E1E4E8">) </span><span style="color:#F97583">return</span><span style="color:#E1E4E8">;  </span><span style="color:#6A737D">// 池耗尽</span></span>
+<span class="line"><span style="color:#E1E4E8">        </span></span>
+<span class="line"><span style="color:#E1E4E8">        bullet.transform.position </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> origin;</span></span>
+<span class="line"><span style="color:#E1E4E8">        bullet.transform.forward </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> direction;</span></span>
+<span class="line"><span style="color:#E1E4E8">        bullet.</span><span style="color:#B392F0">SetActive</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">true</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#E1E4E8">        </span></span>
+<span class="line"><span style="color:#E1E4E8">        _activeCount</span><span style="color:#F97583">++</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#6A737D">        // 不需要 RequestSerialization(对象状态由 Pool 自动同步)</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span></span>
+<span class="line"><span style="color:#E1E4E8">    [</span><span style="color:#B392F0">NetworkCallable</span><span style="color:#E1E4E8">(maxEventsPerSecond</span><span style="color:#F97583">:</span><span style="color:#79B8FF"> 30</span><span style="color:#E1E4E8">)]</span></span>
+<span class="line"><span style="color:#F97583">    public</span><span style="color:#F97583"> void</span><span style="color:#B392F0"> ReturnBullet</span><span style="color:#E1E4E8">(</span><span style="color:#B392F0">GameObject</span><span style="color:#B392F0"> bullet</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#F97583">        if</span><span style="color:#E1E4E8"> (</span><span style="color:#F97583">!</span><span style="color:#E1E4E8">Networking.</span><span style="color:#B392F0">IsOwner</span><span style="color:#E1E4E8">(gameObject)) </span><span style="color:#F97583">return</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">        bulletPool.</span><span style="color:#B392F0">Return</span><span style="color:#E1E4E8">(bullet);</span></span>
+<span class="line"><span style="color:#E1E4E8">        _activeCount</span><span style="color:#F97583">--</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<hr>
+<hr>
+<h1 id="performance-considerations-性能优化合并序列化batch-serialization">Performance Considerations 性能优化：合并序列化(Batch Serialization)</h1>
+<blockquote>
+<p>在 <code>OnPreSerialization</code> 中一次性打包所有需要同步的数据。</p>
+</blockquote>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="csharp"><code><span class="line"><span style="color:#E1E4E8">[</span><span style="color:#B392F0">UdonBehaviourSyncMode</span><span style="color:#E1E4E8">(BehaviourSyncMode.Manual)]</span></span>
+<span class="line"><span style="color:#F97583">public</span><span style="color:#F97583"> class</span><span style="color:#B392F0"> BatchedData</span><span style="color:#E1E4E8"> : </span><span style="color:#B392F0">UdonSharpBehaviour</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#E1E4E8">    [</span><span style="color:#B392F0">UdonSynced</span><span style="color:#E1E4E8">] </span><span style="color:#F97583">private</span><span style="color:#F97583"> byte</span><span style="color:#E1E4E8">[] </span><span style="color:#B392F0">_batchData</span><span style="color:#F97583"> =</span><span style="color:#F97583"> new</span><span style="color:#F97583"> byte</span><span style="color:#E1E4E8">[</span><span style="color:#79B8FF">64</span><span style="color:#E1E4E8">];</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span></span>
+<span class="line"><span style="color:#6A737D">    // 各种状态</span></span>
+<span class="line"><span style="color:#F97583">    private</span><span style="color:#F97583"> bool</span><span style="color:#B392F0"> _isActive</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">    private</span><span style="color:#F97583"> byte</span><span style="color:#B392F0"> _health</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">    private</span><span style="color:#F97583"> byte</span><span style="color:#B392F0"> _mana</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span></span>
+<span class="line"><span style="color:#F97583">    public</span><span style="color:#F97583"> override</span><span style="color:#F97583"> void</span><span style="color:#B392F0"> OnPreSerialization</span><span style="color:#E1E4E8">() {</span></span>
+<span class="line"><span style="color:#6A737D">        // 一次性打包所有状态</span></span>
+<span class="line"><span style="color:#E1E4E8">        _batchData[</span><span style="color:#79B8FF">0</span><span style="color:#E1E4E8">] </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> (</span><span style="color:#F97583">byte</span><span style="color:#E1E4E8">)(_isActive </span><span style="color:#F97583">?</span><span style="color:#79B8FF"> 1</span><span style="color:#F97583"> :</span><span style="color:#79B8FF"> 0</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#E1E4E8">        _batchData[</span><span style="color:#79B8FF">1</span><span style="color:#E1E4E8">] </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> _health;</span></span>
+<span class="line"><span style="color:#E1E4E8">        _batchData[</span><span style="color:#79B8FF">2</span><span style="color:#E1E4E8">] </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> _mana;</span></span>
+<span class="line"><span style="color:#6A737D">        // 剩余 61 bytes 备用</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span></span>
+<span class="line"><span style="color:#F97583">    public</span><span style="color:#F97583"> override</span><span style="color:#F97583"> void</span><span style="color:#B392F0"> OnDeserialization</span><span style="color:#E1E4E8">() {</span></span>
+<span class="line"><span style="color:#6A737D">        // 一次性解包</span></span>
+<span class="line"><span style="color:#E1E4E8">        _isActive </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> _batchData[</span><span style="color:#79B8FF">0</span><span style="color:#E1E4E8">] </span><span style="color:#F97583">==</span><span style="color:#79B8FF"> 1</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">        _health </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> _batchData[</span><span style="color:#79B8FF">1</span><span style="color:#E1E4E8">];</span></span>
+<span class="line"><span style="color:#E1E4E8">        _mana </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> _batchData[</span><span style="color:#79B8FF">2</span><span style="color:#E1E4E8">];</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<blockquote>
+<p><strong>单次序列化</strong> 发送 64 bytes,vs 3 个独立变量可能 3-5 次序列化 = 3-15 bytes + 多次开销。</p>
+</blockquote>
+<hr>
+<hr>
+<h1 id="performance-considerations-性能优化ownership--object-sync-性能">Performance Considerations 性能优化：Ownership &#x26; Object Sync 性能</h1>
+<h3 id="最小化所有权转移">最小化所有权转移</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="csharp"><code><span class="line"><span style="color:#6A737D">// ❌ 频繁转移</span></span>
+<span class="line"><span style="color:#F97583">public</span><span style="color:#F97583"> override</span><span style="color:#F97583"> void</span><span style="color:#B392F0"> Interact</span><span style="color:#E1E4E8">() {</span></span>
+<span class="line"><span style="color:#E1E4E8">    Networking.</span><span style="color:#B392F0">SetOwner</span><span style="color:#E1E4E8">(Networking.LocalPlayer, gameObject);</span></span>
+<span class="line"><span style="color:#E1E4E8">    _state </span><span style="color:#F97583">=</span><span style="color:#F97583"> !</span><span style="color:#E1E4E8">_state;</span></span>
+<span class="line"><span style="color:#B392F0">    RequestSerialization</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// ✅ Owner 模式</span></span>
+<span class="line"><span style="color:#F97583">public</span><span style="color:#F97583"> override</span><span style="color:#F97583"> void</span><span style="color:#B392F0"> Interact</span><span style="color:#E1E4E8">() {</span></span>
+<span class="line"><span style="color:#B392F0">    SendCustomNetworkEvent</span><span style="color:#E1E4E8">(NetworkEventTarget.Owner, </span><span style="color:#F97583">nameof</span><span style="color:#E1E4E8">(RequestToggle));</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">[</span><span style="color:#B392F0">NetworkCallable</span><span style="color:#E1E4E8">]</span></span>
+<span class="line"><span style="color:#F97583">public</span><span style="color:#F97583"> void</span><span style="color:#B392F0"> RequestToggle</span><span style="color:#E1E4E8">() {</span></span>
+<span class="line"><span style="color:#F97583">    if</span><span style="color:#E1E4E8"> (</span><span style="color:#F97583">!</span><span style="color:#E1E4E8">Networking.</span><span style="color:#B392F0">IsOwner</span><span style="color:#E1E4E8">(gameObject)) </span><span style="color:#F97583">return</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">    _state </span><span style="color:#F97583">=</span><span style="color:#F97583"> !</span><span style="color:#E1E4E8">_state;</span></span>
+<span class="line"><span style="color:#B392F0">    RequestSerialization</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<blockquote>
+<p>所有权转移涉及 <strong>网络消息</strong>(延迟 + 带宽),应最小化。</p>
+</blockquote>
+<hr>
+<hr>
+<h1 id="performance-considerations-性能优化测试--调试性能">Performance Considerations 性能优化：测试 &#x26; 调试性能</h1>
+<h3 id="监控方式">监控方式</h3>
+<table>
+<thead>
+<tr>
+<th>工具</th>
+<th>用法</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>World Debug Views</strong></td>
+<td>实时显示每对象字节数</td>
+</tr>
+<tr>
+<td><strong>Network Stats API</strong></td>
+<td>程序化访问详细指标</td>
+</tr>
+<tr>
+<td><strong>Debug.Log</strong></td>
+<td>记录 <code>OnPostSerialization.byteCount</code></td>
+</tr>
+<tr>
+<td><strong>ClientSim</strong></td>
+<td>Editor 模拟多个玩家</td>
+</tr>
+</tbody>
+</table>
+<h3 id="关键指标">关键指标</h3>
+<table>
+<thead>
+<tr>
+<th>指标</th>
+<th>健康值</th>
+<th>警告</th>
+<th>危险</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>BytesOutAverage</code></td>
+<td>&#x3C; 2 KB/s</td>
+<td>2-8 KB/s</td>
+<td>> 11 KB/s</td>
+</tr>
+<tr>
+<td><code>IsClogged</code> 时间占比</td>
+<td>&#x3C; 1%</td>
+<td>1-10%</td>
+<td>> 10%</td>
+</tr>
+<tr>
+<td>单对象 <code>TotalBytes</code></td>
+<td>&#x3C; 1 KB/s</td>
+<td>1-5 KB/s</td>
+<td>> 10 KB/s</td>
+</tr>
+<tr>
+<td><code>ReliableEventsInOutboundQueue</code></td>
+<td>0-5</td>
+<td>5-20</td>
+<td>> 20</td>
+</tr>
+</tbody>
+</table>
+<h3 id="性能测试模式">性能测试模式</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="csharp"><code><span class="line"><span style="color:#E1E4E8">[</span><span style="color:#B392F0">UdonBehaviourSyncMode</span><span style="color:#E1E4E8">(BehaviourSyncMode.Manual)]</span></span>
+<span class="line"><span style="color:#F97583">public</span><span style="color:#F97583"> class</span><span style="color:#B392F0"> PerformanceTestObject</span><span style="color:#E1E4E8"> : </span><span style="color:#B392F0">UdonSharpBehaviour</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#E1E4E8">    [</span><span style="color:#B392F0">UdonSynced</span><span style="color:#E1E4E8">] </span><span style="color:#F97583">private</span><span style="color:#B392F0"> Vector3</span><span style="color:#B392F0"> _position</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">    [</span><span style="color:#B392F0">UdonSynced</span><span style="color:#E1E4E8">] </span><span style="color:#F97583">private</span><span style="color:#B392F0"> Quaternion</span><span style="color:#B392F0"> _rotation</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">    [</span><span style="color:#B392F0">UdonSynced</span><span style="color:#E1E4E8">] </span><span style="color:#F97583">private</span><span style="color:#F97583"> int</span><span style="color:#B392F0"> _counter</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span></span>
+<span class="line"><span style="color:#F97583">    private</span><span style="color:#F97583"> int</span><span style="color:#B392F0"> _localUpdateCount</span><span style="color:#F97583"> =</span><span style="color:#79B8FF"> 0</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">    private</span><span style="color:#F97583"> float</span><span style="color:#B392F0"> _lastReportTime</span><span style="color:#F97583"> =</span><span style="color:#79B8FF"> 0</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span></span>
+<span class="line"><span style="color:#F97583">    void</span><span style="color:#B392F0"> Update</span><span style="color:#E1E4E8">() {</span></span>
+<span class="line"><span style="color:#F97583">        if</span><span style="color:#E1E4E8"> (Networking.</span><span style="color:#B392F0">IsOwner</span><span style="color:#E1E4E8">(gameObject)) {</span></span>
+<span class="line"><span style="color:#E1E4E8">            transform.</span><span style="color:#B392F0">Rotate</span><span style="color:#E1E4E8">(Vector3.up, </span><span style="color:#79B8FF">1f</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#E1E4E8">            _position </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> transform.position;</span></span>
+<span class="line"><span style="color:#E1E4E8">            _rotation </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> transform.rotation;</span></span>
+<span class="line"><span style="color:#E1E4E8">            _counter</span><span style="color:#F97583">++</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">            </span></span>
+<span class="line"><span style="color:#F97583">            if</span><span style="color:#E1E4E8"> (Time.time </span><span style="color:#F97583">-</span><span style="color:#E1E4E8"> _lastReportTime </span><span style="color:#F97583">></span><span style="color:#79B8FF"> 1.0f</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#E1E4E8">                Debug.</span><span style="color:#B392F0">Log</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">$"[Perf] Updates/sec: </span><span style="color:#9ECBFF">{</span><span style="color:#E1E4E8">_localUpdateCount</span><span style="color:#9ECBFF">}</span><span style="color:#9ECBFF">"</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#E1E4E8">                _localUpdateCount </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> 0</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">                _lastReportTime </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> Time.time;</span></span>
+<span class="line"><span style="color:#E1E4E8">            }</span></span>
+<span class="line"><span style="color:#E1E4E8">            _localUpdateCount</span><span style="color:#F97583">++</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">            </span></span>
+<span class="line"><span style="color:#B392F0">            RequestSerialization</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#E1E4E8">        }</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<hr>
+<hr>
+<h1 id="performance-considerations-性能优化性能优化清单发布前">Performance Considerations 性能优化：性能优化清单(发布前)</h1>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>□ 所有 synced 数组已初始化</span></span>
+<span class="line"><span>□ 用 [UdonSynced] 替代 Network Event 同步状态</span></span>
+<span class="line"><span>□ 高频变化用 Continuous(200B 上限)或 VRCObjectSync</span></span>
+<span class="line"><span>□ 离散状态用 Manual(280KB 上限)+ RequestSerialization</span></span>
+<span class="line"><span>□ 多 bool 用 byte 位域压缩</span></span>
+<span class="line"><span>□ 物理对象用 VRCObjectSync</span></span>
+<span class="line"><span>□ Network Event 设速率限制(尽可能低)</span></span>
+<span class="line"><span>□ 监控 IsClogged,有降级方案</span></span>
+<span class="line"><span>□ 检查所有 OnPreSerialization 不做重计算</span></span>
+<span class="line"><span>□ 玩家列表等动态数据用 synced 数组</span></span>
+<span class="line"><span>□ 跨平台字段保持一致</span></span>
+<span class="line"><span>□ Build &#x26; Test 测试 2+ 玩家</span></span>
+<span class="line"><span>□ 监控 Debug Menu 6 数据</span></span></code></pre>
+<hr>
+<hr>
+<h1 id="performance-considerations-性能优化风险与陷阱">Performance Considerations 性能优化：风险与陷阱</h1>
+<table>
+<thead>
+<tr>
+<th>风险</th>
+<th>严重度</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>超出带宽上限</td>
+<td>🔴 Critical</td>
+<td>数据丢失、玩家看到不同步</td>
+</tr>
+<tr>
+<td>用 Event 同步状态</td>
+<td>🔴 Critical</td>
+<td>Late Joiner 看不到</td>
+</tr>
+<tr>
+<td>频繁 SetOwner</td>
+<td>🟠 High</td>
+<td>引入延迟,带宽浪费</td>
+</tr>
+<tr>
+<td>数组未初始化</td>
+<td>🔴 Critical</td>
+<td>静默失败</td>
+</tr>
+<tr>
+<td>Debug.Log 过多</td>
+<td>🟠 High</td>
+<td>消耗带宽配额</td>
+</tr>
+<tr>
+<td>高频 Manual 序列化</td>
+<td>🟠 High</td>
+<td>占用带宽</td>
+</tr>
+<tr>
+<td>未做跨平台测试</td>
+<td>🟠 High</td>
+<td>PC/Quest 字段不匹配</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<hr>
+<h1 id="performance-considerations-性能优化相关知识库">Performance Considerations 性能优化：相关知识库</h1>
+<table>
+<thead>
+<tr>
+<th>文档</th>
+<th>关系</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>entities/world/udon/networking/index</td>
+<td>Networking 概述</td>
+</tr>
+<tr>
+<td>entities/world/udon/networking/variables</td>
+<td>同步变量类型</td>
+</tr>
+<tr>
+<td>entities/world/udon/networking/events</td>
+<td>Network Event 速率限制</td>
+</tr>
+<tr>
+<td>entities/world/udon/networking/ownership</td>
+<td>所有权与性能</td>
+</tr>
+<tr>
+<td>entities/world/udon/networking/network-components</td>
+<td>VRCObjectSync/ObjectPool</td>
+</tr>
+<tr>
+<td>entities/world/udon/networking/network-details</td>
+<td>内部字节细节</td>
+</tr>
+<tr>
+<td>concepts/patterns/bit-packed-flags</td>
+<td>位域压缩模式</td>
+</tr>
+<tr>
+<td>concepts/patterns/advanced-sync-patterns</td>
+<td>高级同步模式</td>
+</tr>
+<tr>
+<td>entities/api/networking</td>
+<td>API 速查</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<hr>
+<h1 id="performance-considerations-性能优化相关页面">Performance Considerations 性能优化：相关页面</h1>
+<p>index.md · variables.md · events.md · ownership.md · network-components.md · network-details.md · ../../../../concepts/patterns/bit-packed-flags.md · ../../../../concepts/patterns/advanced-sync-patterns.md · ../../../api/networking.md</p>
+<hr> </div> <p class="kb-source-note" data-astro-cid-lvjzyg5v>
+本文由 VRChat 开发知识库自动整理（社区整理  · 可信度 medium ），
+          遇到与手写教程冲突的地方，以官方文档为最高优先级。
+</p> <section class="comments" id="comments" data-astro-cid-lvjzyg5v> <h2 class="comments__title" data-astro-cid-lvjzyg5v>✦ 旅人留言（0）</h2> <p class="comments__empty" id="commentsEmpty" data-astro-cid-lvjzyg5v>
+还没有旅人留言 —— 有疑问就写在下面，站长都会回复。
+</p> <form class="comment-form" id="commentForm" data-target="kb-world-udon-networking-performance" data-astro-cid-lvjzyg5v> <p class="comment-form__title" data-astro-cid-lvjzyg5v>写下你的留言</p> <input id="cAuthor" maxlength="20" placeholder="昵称（留空则为「旅人」）" data-astro-cid-lvjzyg5v> <textarea id="cBody" maxlength="1000" required placeholder="想问的问题、想说的感谢都可以（最多 1000 字）" data-astro-cid-lvjzyg5v></textarea> <div class="comment-form__actions" data-astro-cid-lvjzyg5v> <button class="btn btn--primary" type="submit" data-astro-cid-lvjzyg5v>发布留言</button> <span class="form-hint" data-astro-cid-lvjzyg5v>留言保存在本站，站长在写作台里能看到</span> <span class="form-msg" id="cMsg" data-astro-cid-lvjzyg5v></span> </div> </form> </section> <nav class="station-nav" aria-label="站间导航" data-astro-cid-lvjzyg5v> <a href="/STELLASTOPVRC/posts/kb-world-udon-networking-patterns/" data-astro-cid-lvjzyg5v> <span class="dir" data-astro-cid-lvjzyg5v>← 上一站 · 更新的星光</span> <span class="to" data-astro-cid-lvjzyg5v>Networking Patterns</span> </a> <a href="/STELLASTOPVRC/posts/kb-world-udon-networking-tools-network-id-utility/" data-astro-cid-lvjzyg5v> <span class="dir" data-astro-cid-lvjzyg5v>下一站 · 更早的星光 →</span> <span class="to" data-astro-cid-lvjzyg5v>Network ID Utility | VRChat Creation</span> </a> </nav> </div> <aside class="toc" id="toc" hidden> <p class="toc__title">✦ 本页星图</p> <nav id="tocNav" aria-label="文章目录"></nav> </aside> <script type="module">const i=document.querySelector(".prose"),d=document.getElementById("toc"),u=document.getElementById("tocNav"),l=[];if(i&&d&&u){const c=[...i.querySelectorAll("h1, h2, h3")];if(c.length>=3){d.hidden=!1,c.forEach((o,e)=>{o.id||(o.id=`sec-${e}`);const n=document.createElement("a");n.href=`#${o.id}`;const s=(o.textContent??"").replace(/\s+/g," ").trim(),r=s.search(/[：:]/),a=r>=4?s.slice(0,r):s;n.textContent=a.length>40?`${a.slice(0,40)}…`:a,n.title=s,u.appendChild(n),l.push({a:n,h:o})});const t=()=>{let o=l[0];for(const e of l)e.h.getBoundingClientRect().top<=130&&(o=e);for(const e of l)e.a.classList.toggle("is-active",e===o)};addEventListener("scroll",t,{passive:!0}),t()}}document.querySelectorAll(".prose pre").forEach(c=>{const t=document.createElement("button");t.className="code-copy",t.type="button",t.textContent="复制",t.addEventListener("click",async()=>{const o=c.querySelector("code")?.innerText??c.innerText;try{await navigator.clipboard.writeText(o)}catch{const e=document.createElement("textarea");e.value=o,document.body.appendChild(e),e.select(),document.execCommand("copy"),e.remove()}t.textContent="已复制 ✓",t.classList.add("is-ok"),setTimeout(()=>{t.textContent="复制",t.classList.remove("is-ok")},1500)}),c.appendChild(t)});</script> </article>  </main> <footer class="site-footer"> <div class="wrap"> <p class="star-line" aria-hidden="true"> <svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> <svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> </p> <p>星之驿站 StellaStop —— 在虚拟宇宙中，为你保留一座驿站</p> <p class="site-footer__disclaimer">
+该网页目前是测试阶段，仅用于测试，所有内容仅供参考；内容全部为引用互联网当中的信息。
+</p> <p>© 2026 星之驿站 · 由 <a href="https://astro.build">Astro</a> 与星光驱动</p> <p> <a data-desk-login hidden title="写作台：登录 / 注册">登录 / 注册</a> ·
+<a href="/STELLASTOPVRC/announcements/">官方公告</a> ·
+<a href="/STELLASTOPVRC/ai/">问星 AI</a> ·
+<a href="/STELLASTOPVRC/feedback/">旅人留言板</a> </p> </div> </footer> <button class="to-top" id="toTop" aria-label="回到顶部"> <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"> <path d="M12 20V5"></path> <path d="M5.5 11.5 12 5l6.5 6.5"></path> </svg> </button> <script type="module">const e=document.getElementById("toTop");if(e){const t=()=>e.classList.toggle("is-visible",scrollY>480);addEventListener("scroll",t,{passive:!0}),t(),e.addEventListener("click",()=>{const o=matchMedia("(prefers-reduced-motion: reduce)").matches;scrollTo({top:0,behavior:o?"auto":"smooth"})})}</script> <script>(function(){const deskConfigured = "";
+
+      /* 写作台探测（页面尾部执行，DOM 已就绪）：
+         1. 计算写作台地址：站点配置 deskUrl（公网部署时填）> 本机默认 localhost:4322 > 同主机 4322
+         2. 探测 /api/gate/status —— 在线才点亮「登录 / 注册」入口，并复用给验证门横幅
+         3. 不在线则保持隐藏，绝不会把访客拽进内网地址；同时给出一次性「镜像模式」提示 */
+      (function () {
+        var host = location.hostname;
+        var isLocal = host === 'localhost' || host === '127.0.0.1' || host === '[::1]';
+        var desk = deskConfigured ||
+          (isLocal ? 'http://localhost:4322' : location.protocol + '//' + host + ':4322');
+        window.STELLA_DESK = desk;
+
+        function revealLogin() {
+          document.querySelectorAll('[data-desk-login]').forEach(function (a) {
+            a.href = desk + '/admin';
+            a.removeAttribute('hidden');
+          });
+        }
+        function showBanner(css, html, shiftHeader) {
+          var bar = document.createElement('div');
+          bar.style.cssText = css;
+          bar.innerHTML = html;
+          document.body.prepend(bar);
+          if (shiftHeader) {
+            var header = document.querySelector('.site-header');
+            if (header) header.style.marginTop = '42px';
+          }
+        }
+        function hintMirrorMode() {
+          try {
+            if (sessionStorage.getItem('stella-desk-hint')) return;
+            sessionStorage.setItem('stella-desk-hint', '1');
+          } catch (e) { /* 无痕模式等：忽略 */ }
+          var tip = document.createElement('div');
+          tip.style.cssText = 'position:fixed;left:14px;bottom:14px;z-index:9998;max-width:min(92vw,430px);padding:.65rem .9rem;border-radius:12px;background:rgba(18,20,44,.92);border:1px solid rgba(150,142,255,.35);color:#e8e6ff;font-size:.82rem;line-height:1.6;font-family:system-ui,sans-serif;box-shadow:0 8px 30px rgba(0,0,0,.35)';
+          tip.innerHTML = 'ℹ️ 静态镜像模式：登录 / 评论 / AI 等互动功能需要站长写作台在线，当前不可用。' +
+            '<span id="stellaDeskHintClose" style="float:right;cursor:pointer;opacity:.75;font-weight:700;margin-left:.6rem" title="关闭">×</span>';
+          document.body.appendChild(tip);
+          var close = function () { tip.remove(); };
+          tip.querySelector('#stellaDeskHintClose').addEventListener('click', close);
+          setTimeout(close, 9000);
+        }
+
+        try {
+          var ctrl = new AbortController();
+          var timer = setTimeout(function () { ctrl.abort(); }, 2500);
+          fetch(desk + '/api/gate/status', { credentials: 'include', signal: ctrl.signal })
+            .then(function (r) { return r.ok ? r.json() : null; })
+            .then(function (d) {
+              clearTimeout(timer);
+              if (!d) throw new Error('desk-offline');
+              window.STELLA_DESK_OK = true;
+              revealLogin();
+              if (d.regionBlocked) {
+                showBanner(
+                  'position:fixed;top:0;left:0;right:0;z-index:9999;padding:1.2rem;text-align:center;background:#1a0a0a;color:#ff9ed2;font-size:.95rem;border-bottom:2px solid #ff4d6d;font-family:system-ui,sans-serif',
+                  '⛔ 你所在的地区（' + (d.regionCountry || '未知') + '）暂不开放访问。',
+                  false
+                );
+                return;
+              }
+              if (d.enabled && !d.passed) {
+                showBanner(
+                  'position:fixed;top:0;left:0;right:0;z-index:9999;padding:0.7rem;text-align:center;background:linear-gradient(94deg,rgba(143,127,247,.25),rgba(98,200,245,.18));border-bottom:1px solid rgba(150,142,255,.3);color:#f0efff;font-size:.88rem;font-family:system-ui,sans-serif',
+                  '🔒 本站启用了安全验证 —— <a href="' + desk + '/gate?next=' + encodeURIComponent(location.href) + '" style="color:#ffd98e;font-weight:700;text-decoration:underline">点击完成验证</a>，通过后即可使用全部功能（30 天免验）。',
+                  true
+                );
+              }
+            })
+            .catch(function () {
+              clearTimeout(timer);
+              window.STELLA_DESK_OK = false;
+              hintMirrorMode();
+            });
+        } catch (e) { /* 忽略 */ }
+      })();
+    })();</script> </body> </html> <script type="module">const m=document.getElementById("commentForm"),s=document.getElementById("cMsg"),u=`${location.protocol}//${location.hostname}:4322/api/message`;function r(e,t=!1){s&&(s.textContent=e,s.classList.toggle("is-err",t),s.classList.toggle("is-ok",!t))}function y(){const e=new Date,t=n=>String(n).padStart(2,"0");return`${e.getFullYear()}-${t(e.getMonth()+1)}-${t(e.getDate())}`}function f(e){let t=7;for(const n of e)t=(t*31+n.charCodeAt(0))%360;return t}function g(e,t){const n=document.createElement("li");n.className="comment",n.innerHTML=`
+      <span class="comment__avatar"></span>
+      <div class="comment__bubble">
+        <div class="comment__head">
+          <span class="comment__name"></span>
+          <time class="comment__date">${y()}</time>
+        </div>
+        <p class="comment__body"></p>
+      </div>`;const o=n.querySelector(".comment__avatar");return o.style.setProperty("--h",String(f(e))),o.textContent=e.slice(0,1),n.querySelector(".comment__name").textContent=e,n.querySelector(".comment__body").textContent=t,n}m?.addEventListener("submit",async e=>{e.preventDefault();const t=document.getElementById("cBody").value.trim();if(!t)return r("留言内容不能为空哦",!0);const n=document.getElementById("cAuthor").value.trim()||"旅人",o=m.querySelector("button");o&&(o.disabled=!0);try{const c=await fetch(u,{credentials:"include",method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({target:m.dataset.target,kind:"comment",author:n,body:t})}),d=await c.json().catch(()=>({}));if(!c.ok)throw new Error(d.error||`发送失败（${c.status}）`);const l=document.querySelector(".comment-list");l&&l.appendChild(g(n,t)),document.getElementById("commentsEmpty")?.remove(),document.getElementById("cBody").value="",r("留言已发布，感谢支持 ✦");const a=document.querySelector(".comments__title"),i=a?.textContent?.match(/（(\d+)）/);a&&i&&(a.textContent=a.textContent.replace(/（\d+）/,`（${Number(i[1])+1}）`))}catch(c){r(c instanceof TypeError?"写作台没在运行，暂时收不到留言 —— 双击「启动博客.bat」就好":c.message,!0)}finally{o&&(o.disabled=!1)}});</script> 

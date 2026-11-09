@@ -1,0 +1,575 @@
+<!DOCTYPE html><html lang="zh-CN"> <head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="generator" content="Astro v5.18.2"><meta name="description" content="1. 启用 AF 或 Visual AF"><meta name="theme-color" content="#070a1c"><meta property="og:title" content="Integral 相机参数详解（Aperture/Zoom/Focus/Exposure/SS） · 星之驿站 StellaStop"><meta property="og:description" content="1. 启用 AF 或 Visual AF"><meta property="og:type" content="website"><meta name="twitter:card" content="summary"><link rel="icon" type="image/svg+xml" href="/STELLASTOPVRC/favicon.svg"><script>
+      // 在渲染前恢复主题与特效档位，避免闪一下默认状态
+      try {
+        document.documentElement.dataset.theme =
+          localStorage.getItem('stella-theme') || 'nebula';
+        document.documentElement.dataset.fx =
+          localStorage.getItem('stella-fx') || 'standard';
+      } catch {
+        /* 隐私模式读不到就算了 */
+      }
+    </script><link rel="stylesheet" href="/STELLASTOPVRC/custom-vars.css"><title>Integral 相机参数详解（Aperture/Zoom/Focus/Exposure/SS） · 星之驿站 StellaStop</title><link rel="stylesheet" href="/STELLASTOPVRC/_astro/about.Bgh6wcGl.css">
+<style>.post-head__meta[data-astro-cid-lvjzyg5v]{color:var(--ink-faint);font-family:var(--font-mono);font-size:.82rem}.post-head[data-astro-cid-lvjzyg5v] .chip-row[data-astro-cid-lvjzyg5v]{margin-top:1rem}.kb-source-note[data-astro-cid-lvjzyg5v]{max-width:760px;margin:2.2rem auto 0;font-size:.82rem;color:var(--ink-faint);border-top:1px dashed var(--line);padding-top:1rem}
+</style></head> <body> <div class="site-notice" id="siteNotice"> <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> <span class="site-notice__text">欢迎来到星之驿站！</span> <button class="site-notice__close" id="noticeClose" type="button" aria-label="关闭公告">
+×
+</button> </div> <a class="skip-link" href="#main">跳到主要内容</a> <canvas id="starfield" aria-hidden="true" data-astro-cid-ra7sfcwn></canvas> <div class="fx-aurora fx-aurora--a" aria-hidden="true" data-astro-cid-ra7sfcwn></div> <div class="fx-aurora fx-aurora--b" aria-hidden="true" data-astro-cid-ra7sfcwn></div>  <script type="module">const u=document.getElementById("starfield");if(u){let F=function(){const n=Math.random();return n<.1?"gold":n<.42?"blue":"white"},v=function(){const n=Math.min(window.devicePixelRatio||1,2);s=window.innerWidth,d=window.innerHeight,u.width=s*n,u.height=d*n,u.style.width=`${s}px`,u.style.height=`${d}px`,t.setTransform(n,0,0,n,0,0);const e=Math.min(190,Math.round(s*d/8500));l=Array.from({length:e},()=>({x:Math.random()*s,y:Math.random()*d,r:r(.4,1.7),base:r(.25,.8),amp:r(.12,.4),speed:r(6e-4,.0022),phase:r(0,Math.PI*2),c:F()})),C=Array.from({length:26},()=>({x:Math.random()*s,y:Math.random()*d,r:r(.9,2.4),vx:r(-.006,.006),vy:r(-.02,-.006),base:r(.2,.5),speed:r(8e-4,.002),phase:r(0,Math.PI*2),c:Math.random()<.5?"gold":"violet"})),c==="off"&&m(0,!0)},D=function(n){const e=Math.random()<.5?1:-1,o=r(Math.PI/7,Math.PI/5),a=r(.45,.75);y.push({x:r(s*.15,s*.85),y:r(-20,d*.3),vx:Math.cos(o)*a*e,vy:Math.sin(o)*a,born:n,life:r(750,1050),len:r(100,170)})},S=function(n){y=y.filter(e=>n-e.born<e.life);for(const e of y){const o=(n-e.born)/e.life,a=e.x+e.vx*(n-e.born),i=e.y+e.vy*(n-e.born),f=o<.15?o/.15:o>.7?(1-o)/.3:1,h=Math.hypot(e.vx,e.vy),x=e.vx/h,g=e.vy/h,b=t.createLinearGradient(a,i,a-x*e.len,i-g*e.len);b.addColorStop(0,`rgba(236,242,255,${(.85*f).toFixed(3)})`),b.addColorStop(1,"rgba(236,242,255,0)"),t.strokeStyle=b,t.lineWidth=1.6,t.lineCap="round",t.beginPath(),t.moveTo(a,i),t.lineTo(a-x*e.len,i-g*e.len),t.stroke()}},B=function(){let o=0;t.lineWidth=.7;for(let a=0;a<l.length&&o<26;a++)for(let i=a+1;i<l.length&&o<26;i++){const f=l[a].x-l[i].x,h=l[a].y-l[i].y,x=f*f+h*h;if(x<16900){const g=(1-Math.sqrt(x)/130)*.17;t.strokeStyle=`rgba(178,170,255,${g.toFixed(3)})`,t.beginPath(),t.moveTo(l[a].x,l[a].y),t.lineTo(l[i].x,l[i].y),t.stroke(),o++}}},X=function(n){for(const e of C){e.x+=e.vx*16,e.y+=e.vy*16,e.y<-12&&(e.y=d+10),e.x<-12&&(e.x=s+10),e.x>s+12&&(e.x=-10);const o=Math.max(.05,e.base+.25*Math.sin(n*e.speed+e.phase)),[a,i,f]=A[e.c];t.beginPath(),t.arc(e.x,e.y,e.r,0,7),t.shadowBlur=9,t.shadowColor=`rgba(${a},${i},${f},0.9)`,t.fillStyle=`rgba(${a},${i},${f},${o.toFixed(3)})`,t.fill()}t.shadowBlur=0},m=function(n,e=!1){t.clearRect(0,0,s,d);for(const o of l){const a=c==="off"?o.base:Math.max(.05,o.base+o.amp*Math.sin(n*o.speed+o.phase)),[i,f,h]=A[o.c];t.beginPath(),t.arc(o.x,o.y,o.r,0,7),o.r>1.25?(t.shadowBlur=7,t.shadowColor=`rgba(${i},${f},${h},0.85)`):t.shadowBlur=0,t.fillStyle=`rgba(${i},${f},${h},${a.toFixed(3)})`,t.fill()}if(t.shadowBlur=0,c!=="off"&&!e){c==="fancy"&&(B(),X(n));const o=c==="fancy"?r(2600,6e3):r(4200,9500);n>P&&(D(n),P=n+o),S(n)}},$=function(n){m(n),M=requestAnimationFrame($)},p=function(){if(c==="off"){m(0,!0);return}cancelAnimationFrame(M),M=requestAnimationFrame($)},w=function(){cancelAnimationFrame(M),t.clearRect(0,0,s,d),m(0,!0)};const t=u.getContext("2d"),k=matchMedia("(prefers-reduced-motion: reduce)").matches,A={white:[240,240,255],blue:[150,215,250],gold:[255,218,150],violet:[178,170,255]};let s=0,d=0,l=[],C=[],y=[],P=2500,M=0,c=document.documentElement.dataset.fx||"standard";k&&(c="off");const r=(n,e)=>n+Math.random()*(e-n);v(),addEventListener("resize",v),document.addEventListener("stella-fx-change",n=>{c=n.detail,c==="off"?w():p()}),c==="off"?m(0,!0):(p(),document.addEventListener("visibilitychange",()=>{document.hidden?w():p()}))}</script> <header class="site-header"> <div class="wrap site-header__inner"> <a class="logo" href="/STELLASTOPVRC/"> <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> <span>星之驿站</span> <span class="logo__romaji">StellaStop</span> </a> <div class="header-right"> <nav class="site-nav" aria-label="站内导航"> <a href="/STELLASTOPVRC/"> 首页 </a><a href="/STELLASTOPVRC/start/"> 新手 </a><a href="/STELLASTOPVRC/posts/"> 教程 </a><a href="/STELLASTOPVRC/videos/"> 视频 </a><a href="/STELLASTOPVRC/resources/"> 资源 </a><a href="/STELLASTOPVRC/booth/"> Booth </a><a href="/STELLASTOPVRC/announcements/"> 公告 </a><a href="/STELLASTOPVRC/ai/"> 问星 </a><a href="/STELLASTOPVRC/changelog/"> 更新日志 </a><a href="/STELLASTOPVRC/about/"> 关于 </a> </nav> <a class="login-link" data-desk-login hidden title="写作台：登录 / 注册后可发教程、传资源">
+登录 / 注册
+</a> <div class="theme-switch"> <button class="theme-switch__btn" id="themeBtn" type="button" aria-haspopup="listbox" aria-expanded="false" aria-label="切换主题配色" title="切换主题配色"> <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"> <path d="M12 3a9 9 0 1 0 9 9c0-1.2-1-2-2.2-2H17a2 2 0 0 1-2-2V6.2C15 5 14.2 4 13 4.4A9 9 0 0 0 12 3Z"></path> <circle cx="7.5" cy="11.5" r="1" fill="currentColor" stroke="none"></circle> <circle cx="10" cy="7.5" r="1" fill="currentColor" stroke="none"></circle> <circle cx="15" cy="7" r="1" fill="currentColor" stroke="none"></circle> </svg> </button> <div class="theme-pop" id="themePop" role="listbox" aria-label="选择主题" hidden> <button class="theme-opt" type="button" role="option" data-theme-value="nebula" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#8f7ff7"></span><span class="dot" style="background:#62c8f5"></span><span class="dot" style="background:#ffd98e"></span> </span> <span class="theme-opt__name">星云 · 蓝紫</span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt" type="button" role="option" data-theme-value="sakura" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#ff8fc7"></span><span class="dot" style="background:#c79bff"></span><span class="dot" style="background:#ffd08e"></span> </span> <span class="theme-opt__name">樱语 · 粉紫</span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt" type="button" role="option" data-theme-value="miku" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#2ed3c2"></span><span class="dot" style="background:#6ea8ff"></span><span class="dot" style="background:#ffe08e"></span> </span> <span class="theme-opt__name">葱色 · 青绿</span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt" type="button" role="option" data-theme-value="ember" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#ffb35c"></span><span class="dot" style="background:#ff7e6b"></span><span class="dot" style="background:#ffd98e"></span> </span> <span class="theme-opt__name">暮金 · 暖橙</span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt" type="button" role="option" data-theme-value="dawn" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#6a5ce8"></span><span class="dot" style="background:#e0568f"></span><span class="dot" style="background:#b8821e"></span> </span> <span class="theme-opt__name">晨星 · 浅色</span> <span class="theme-opt__mark">✦</span> </button> </div> </div> <script type="module">const a=document.getElementById("themeBtn"),n=document.getElementById("themePop");function s(c){document.documentElement.dataset.theme=c;try{localStorage.setItem("stella-theme",c)}catch{}const e=getComputedStyle(document.documentElement).getPropertyValue("--bg-deep").trim();document.querySelector('meta[name="theme-color"]')?.setAttribute("content",e||"#070a1c"),document.querySelectorAll(".theme-opt").forEach(t=>{const d=t.dataset.themeValue===c;t.classList.toggle("is-active",d),t.setAttribute("aria-selected",String(d))})}if(a&&n){const c=document.documentElement.dataset.theme||"nebula";document.querySelectorAll(".theme-opt").forEach(e=>{const t=e.dataset.themeValue===c;e.classList.toggle("is-active",t),e.setAttribute("aria-selected",String(t))}),a.addEventListener("click",e=>{e.stopPropagation();const t=n.hidden;n.hidden=!t,a.setAttribute("aria-expanded",String(t))}),document.addEventListener("click",e=>{!n.hidden&&!e.target.closest(".theme-switch")&&(n.hidden=!0,a.setAttribute("aria-expanded","false"))}),document.addEventListener("keydown",e=>{e.key==="Escape"&&!n.hidden&&(n.hidden=!0,a.setAttribute("aria-expanded","false"),a.focus())}),n.addEventListener("click",e=>{const t=e.target.closest(".theme-opt");t&&(s(t.dataset.themeValue??"nebula"),n.hidden=!0,a.setAttribute("aria-expanded","false"))})}</script> <div class="theme-switch fx-switch"> <button class="theme-switch__btn" id="fxBtn" type="button" aria-haspopup="listbox" aria-expanded="false" aria-label="背景特效设置" title="背景特效设置"> <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"> <path d="M5 3v4M3 5h4M6.5 17.5v3M5 19h3"></path> <path d="M14.5 4.5 16 9l4.5 1.5L16 12l-1.5 4.5L13 12l-4.5-1.5L13 9l1.5-4.5Z"></path> </svg> </button> <div class="theme-pop" id="fxPop" role="listbox" aria-label="背景特效" hidden> <button class="theme-opt fx-opt" type="button" role="option" data-fx-value="off" aria-selected="false"> <span class="fx-opt__body"> <span class="fx-opt__name">关闭特效</span> <span class="fx-opt__hint">最省电</span> </span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt fx-opt" type="button" role="option" data-fx-value="standard" aria-selected="false"> <span class="fx-opt__body"> <span class="fx-opt__name">标准</span> <span class="fx-opt__hint">闪烁星空 + 流星</span> </span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt fx-opt" type="button" role="option" data-fx-value="fancy" aria-selected="false"> <span class="fx-opt__body"> <span class="fx-opt__name">华丽</span> <span class="fx-opt__hint">追加极光 / 星座 / 光尘</span> </span> <span class="theme-opt__mark">✦</span> </button> </div> </div> <script type="module">const n=document.getElementById("fxBtn"),a=document.getElementById("fxPop");function s(d){document.documentElement.dataset.fx=d;try{localStorage.setItem("stella-fx",d)}catch{}document.querySelectorAll("#fxPop .fx-opt").forEach(t=>{const e=t.dataset.fxValue===d;t.classList.toggle("is-active",e),t.setAttribute("aria-selected",String(e))}),document.dispatchEvent(new CustomEvent("stella-fx-change",{detail:d}))}if(n&&a){const d=document.documentElement.dataset.fx||"standard";document.querySelectorAll("#fxPop .fx-opt").forEach(t=>{const e=t.dataset.fxValue===d;t.classList.toggle("is-active",e),t.setAttribute("aria-selected",String(e))}),n.addEventListener("click",t=>{t.stopPropagation();const e=a.hidden;a.hidden=!e,n.setAttribute("aria-expanded",String(e))}),document.addEventListener("click",t=>{!a.hidden&&!t.target.closest(".fx-switch")&&(a.hidden=!0,n.setAttribute("aria-expanded","false"))}),document.addEventListener("keydown",t=>{t.key==="Escape"&&!a.hidden&&(a.hidden=!0,n.setAttribute("aria-expanded","false"),n.focus())}),a.addEventListener("click",t=>{const e=t.target.closest(".fx-opt");e&&(s(e.dataset.fxValue??"standard"),a.hidden=!0,n.setAttribute("aria-expanded","false"))})}</script> </div> </div> </header> <main id="main">  <article class="wrap post-layout" data-astro-cid-lvjzyg5v> <div class="post-main page-fade" data-astro-cid-lvjzyg5v> <header class="post-head" data-astro-cid-lvjzyg5v> <a class="crumb" href="/STELLASTOPVRC/posts/" data-astro-cid-lvjzyg5v>← 返回教程档案</a> <div class="post-head__meta" style="--accent:var(--ink-dim)" data-astro-cid-lvjzyg5v> <span class="badge" data-cat="Avatar 虚拟形象" data-astro-cid-lvjzyg5v>Avatar 虚拟形象</span> <time datetime="2026-07-04" data-astro-cid-lvjzyg5v>2026-07-04</time> <span class="post-head__reading" data-astro-cid-lvjzyg5v>⏱ 约 13 分钟</span>  </div> <h1 class="post-head__title" data-astro-cid-lvjzyg5v>Integral 相机参数详解（Aperture/Zoom/Focus/Exposure/SS）</h1> <p class="post-head__lead" data-astro-cid-lvjzyg5v>1. 启用 AF 或 Visual AF</p> <div class="chip-row" data-astro-cid-lvjzyg5v> <a class="chip" href="/STELLASTOPVRC/posts/?tag=%E7%9F%A5%E8%AF%86%E5%BA%93" data-astro-cid-lvjzyg5v> 知识库 </a><a class="chip" href="/STELLASTOPVRC/posts/?tag=avatar" data-astro-cid-lvjzyg5v> avatar </a> </div> </header> <div class="prose" data-astro-cid-lvjzyg5v> <h1 id="integral-相机参数详解">Integral 相机参数详解</h1>
+<blockquote>
+<p><strong>范围</strong>: Integral 相机插件的所有参数（Aperture/Zoom/Focus/Exposure/SS）
+<strong>主文档</strong>: <a href="https://suzufactory.booth.pm/items/4724145">Integral（SuzuFactory Booth）</a>（插件概述、安装、特殊效果等）
+<strong>来源</strong>: 笔记/06-integral/06 + 08</p>
+</blockquote>
+<hr>
+<h2 id="0-速查表">0. 速查表</h2>
+<table>
+<thead>
+<tr>
+<th>想了解…</th>
+<th>跳转</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Aperture 光圈机制（Integral 独特：抖动合成）</td>
+<td>§1</td>
+</tr>
+<tr>
+<td>Zoom 焦距（6 预设 + Value）</td>
+<td>§2</td>
+</tr>
+<tr>
+<td>Focus 对焦（MF/AF/Visual AF 三模式）</td>
+<td>§3</td>
+</tr>
+<tr>
+<td>Exposure 曝光（与 ISO 无关）</td>
+<td>§4</td>
+</tr>
+<tr>
+<td>SS 快门速度（Set + Tune）</td>
+<td>§5</td>
+</tr>
+<tr>
+<td>与 VirtualLens2 对比</td>
+<td>§6</td>
+</tr>
+<tr>
+<td>与现实摄影三要素对比</td>
+<td>§7</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="1-aperture-光圈">1. Aperture 光圈</h2>
+<h3 id="11-现实-vs-integral-对比">1.1 现实 vs Integral 对比</h3>
+<table>
+<thead>
+<tr>
+<th>维度</th>
+<th>现实相机</th>
+<th>Integral</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>物理意义</td>
+<td>镜头口径大小</td>
+<td>决定景深</td>
+</tr>
+<tr>
+<td>副作用</td>
+<td>影响进光量</td>
+<td>❌ <strong>不影响画面亮度</strong></td>
+</tr>
+<tr>
+<td>实现方式</td>
+<td>光圈叶片调整</td>
+<td><strong>“在镜头有效口径范围内变化相机位置进行多重曝光拍摄”</strong></td>
+</tr>
+</tbody>
+</table>
+<p><strong>关键引用</strong>：</p>
+<blockquote>
+<p>Integral 为了模拟景深效果，采用了”在镜头有效口径范围内<strong>变化相机位置</strong>进行多重曝光拍摄”的方法。通过对这种”剧烈抖动”的画面长时间曝光，最终形成带有景深效果的照片。</p>
+</blockquote>
+<h3 id="12-重要约束">1.2 重要约束</h3>
+<ul>
+<li><strong>仅当 Composition 构图模式为 Normal 时该功能才会正常工作</strong></li>
+<li>Aperture 值越大 → 背景抖动越剧烈</li>
+<li>值过大 → 会带动对焦对象一起抖动</li>
+<li>取景器上看到”剧烈抖动”是<strong>正常现象</strong>，不是 bug</li>
+</ul>
+<h3 id="13-对焦对象交互">1.3 对焦对象交互</h3>
+<blockquote>
+<p>您用模型的手指触碰取景器，可以选择对焦对象。此时，您的对焦对象不会移动，而背景会抖动。</p>
+</blockquote>
+<p><strong>实现机制</strong>：</p>
+<ul>
+<li>手指触碰取景器 → 记录对焦对象位置</li>
+<li>多帧抖动时，<strong>对焦对象的位置补偿</strong></li>
+<li>累积曝光后 → 对焦对象清晰，背景抖动模糊</li>
+</ul>
+<h3 id="14-与-virtuallens2-对比">1.4 与 VirtualLens2 对比</h3>
+<table>
+<thead>
+<tr>
+<th>维度</th>
+<th>Integral（抖动合成）</th>
+<th>VirtualLens2（Shader 模拟）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>实现</td>
+<td>长曝光 + 相机位置变化</td>
+<td>自有 DoF 模拟引擎</td>
+</tr>
+<tr>
+<td>视觉效果</td>
+<td>“准确” 的物理模拟</td>
+<td>高质量 + 稳定</td>
+</tr>
+<tr>
+<td>性能</td>
+<td>高（多帧累积）</td>
+<td>中等（Shader 计算）</td>
+</tr>
+<tr>
+<td>适用</td>
+<td>长曝光创作</td>
+<td>实时预览</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="2-zoom-焦距">2. Zoom 焦距</h2>
+<table>
+<thead>
+<tr>
+<th>属性</th>
+<th>值</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>单位</td>
+<td>35mm 全画幅等效</td>
+</tr>
+<tr>
+<td>范围</td>
+<td>6 个预设值 + 手动 Value 调整</td>
+</tr>
+<tr>
+<td>显示</td>
+<td>当前焦距会显示在取景器上</td>
+</tr>
+<tr>
+<td>作用</td>
+<td>焦距越大，视角越窄，照片像被放大</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="3-focus-对焦3-种模式">3. Focus 对焦（3 种模式）</h2>
+<h3 id="31-模式对比">3.1 模式对比</h3>
+<table>
+<thead>
+<tr>
+<th>模式</th>
+<th>简称</th>
+<th>焦点设置方式</th>
+<th>适用场景</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>MF（Manual Focus）</strong></td>
+<td>手动对焦</td>
+<td>需要手动指定焦点位置</td>
+<td>精确对焦固定对象</td>
+</tr>
+<tr>
+<td><strong>AF（Auto Focus）</strong></td>
+<td>自动对焦</td>
+<td>左手食指<strong>触摸取景器</strong></td>
+<td>一般对焦场景</td>
+</tr>
+<tr>
+<td><strong>Visual AF（视觉自动对焦）</strong></td>
+<td>视觉自动对焦</td>
+<td>同 AF（左手食指触摸）</td>
+<td><strong>半透明物体对焦</strong></td>
+</tr>
+</tbody>
+</table>
+<h3 id="32-visual-af-特别说明">3.2 Visual AF 特别说明</h3>
+<p><strong>关键引用</strong>：</p>
+<blockquote>
+<p>注意：使用 Visual AF（视觉自动对焦）时，即使是 <strong>ZWrite 为 Off 的半透明材质</strong>（如一些半透明物体），也能够作为对焦目标。</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>维度</th>
+<th>AF</th>
+<th>Visual AF</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>半透明材质（ZWrite Off）</td>
+<td>❌ 不可作为对焦目标</td>
+<td>✅ 可作为对焦目标</td>
+</tr>
+<tr>
+<td>完全透明材质</td>
+<td>❌ 不可对焦</td>
+<td>❌ 不可对焦</td>
+</tr>
+<tr>
+<td>对焦精度</td>
+<td>高</td>
+<td><strong>大多数情况下低于普通 AF</strong></td>
+</tr>
+<tr>
+<td>焦点设置方式</td>
+<td>左手食指触摸取景器</td>
+<td>左手食指触摸取景器</td>
+</tr>
+</tbody>
+</table>
+<h3 id="33-关键技术概念">3.3 关键技术概念</h3>
+<table>
+<thead>
+<tr>
+<th>概念</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>ZWrite</strong></td>
+<td>Z 缓冲写入，决定物体是否参与深度计算</td>
+</tr>
+<tr>
+<td><strong>ZWrite Off</strong></td>
+<td>关闭 Z 写入，常用于透明物体</td>
+</tr>
+<tr>
+<td><strong>半透明 vs 完全透明</strong></td>
+<td>半透明（Alpha &#x3C; 1）有部分信息可被识别；完全透明（Alpha = 0）无法识别</td>
+</tr>
+</tbody>
+</table>
+<h3 id="34-焦点设置交互">3.4 焦点设置交互</h3>
+<p><strong>关键引用</strong>：</p>
+<blockquote>
+<p>焦点位置可通过用左手的食指<strong>触摸取景器</strong>来进行更改。</p>
+</blockquote>
+<p><strong>操作流程</strong>：</p>
+<ol>
+<li>启用 AF 或 Visual AF</li>
+<li>左手食指触碰取景器</li>
+<li>系统识别触碰位置对应的 3D 物体作为焦点</li>
+<li>相机对准该焦点</li>
+</ol>
+<h3 id="35-pause-af-暂停对焦">3.5 Pause AF 暂停对焦</h3>
+<p>在 Shoot 菜单中，<strong>Pause AF</strong> 是一个独立按钮：</p>
+<ul>
+<li>停止 AF（自动对焦）功能</li>
+<li><strong>将焦点固定</strong></li>
+<li>避免拍摄过程中焦点变动导致的画面问题</li>
+</ul>
+<blockquote>
+<p>停止 AF（自动对焦）功能，并将焦点固定。可避免在拍摄过程中焦点变动导致的画面问题。</p>
+</blockquote>
+<hr>
+<h2 id="4-exposure-曝光">4. Exposure 曝光</h2>
+<p><strong>关键引用</strong>：</p>
+<blockquote>
+<p>在 Integral 中，曝光这个按钮直接影响取景<strong>画面整体的亮度</strong>。这与真实的相机成像不一样——<strong>Integral 中没有 ISO 这个概念</strong>，曝光的时间长短和光圈大小也不会影响画面的亮度。所以，您理解成在 PS 中直接调节亮度即可。</p>
+</blockquote>
+<h3 id="41-与现实相机对比">4.1 与现实相机对比</h3>
+<table>
+<thead>
+<tr>
+<th>现实三要素</th>
+<th>Integral 对应</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>光圈</td>
+<td>Aperture（仅景深）</td>
+</tr>
+<tr>
+<td>快门</td>
+<td>SS（影响长曝光累积）</td>
+</tr>
+<tr>
+<td>ISO</td>
+<td>❌ 不存在</td>
+</tr>
+<tr>
+<td>亮度调节</td>
+<td>Exposure（独立参数）</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="5-ss-快门速度">5. SS 快门速度</h2>
+<table>
+<thead>
+<tr>
+<th>功能</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Set 设定</strong></td>
+<td>直接设置快门速度</td>
+</tr>
+<tr>
+<td><strong>Tune 微调</strong></td>
+<td>对当前快门速度进行更精细的调整</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="6-selfie-自拍翻转--auto-level-自动水平">6. Selfie 自拍翻转 + Auto Level 自动水平</h2>
+<h3 id="61-selfie-自拍翻转">6.1 Selfie 自拍翻转</h3>
+<p>翻转相机方向，就像手机的”启用前置摄像头”。</p>
+<h3 id="62-auto-level-自动水平">6.2 Auto Level 自动水平</h3>
+<p><strong>基础行为</strong>：</p>
+<blockquote>
+<p>启用后，相机会自动调整朝向，使相机的”上方”与世界坐标系的上方向一致。也就是说，照片始终保持垂直于地面的方向，无论你的身体姿势或头部方向如何。</p>
+</blockquote>
+<p><strong>三个方向选项</strong>：</p>
+<table>
+<thead>
+<tr>
+<th>选项</th>
+<th>行为</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Right（右）</strong></td>
+<td>启用 Auto Level 的同时，相机会<strong>右旋一个角度</strong>再进行对齐</td>
+</tr>
+<tr>
+<td><strong>Up（上）</strong></td>
+<td>以<strong>正常方向</strong>启用 Auto Level，不进行旋转</td>
+</tr>
+<tr>
+<td><strong>Left（左）</strong></td>
+<td>启用 Auto Level 的同时，相机会<strong>左旋一个角度</strong>再进行对齐</td>
+</tr>
+</tbody>
+</table>
+<p><strong>取消</strong>：若要取消 Auto Level 功能，<strong>再次点击当前已启用的按钮</strong>即可。</p>
+<p><strong>重要发现</strong>：Auto Level <strong>实际上是 VRChat 原相机的 Anchor + 自动水平功能</strong>。这是第三方相机插件的标准实现。</p>
+<hr>
+<h2 id="7-摄影三要素对比">7. 摄影三要素对比</h2>
+<h3 id="71-现实摄影三要素">7.1 现实摄影三要素</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>光圈（Aperture） + 快门（Shutter Speed） + ISO（感光度） = 正确曝光</span></span></code></pre>
+<h3 id="72-integral-三要素">7.2 Integral 三要素</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>Aperture（仅景深） + SS（仅长曝光累积） + ❌ 无 ISO = 间接通过 Exposure 控制亮度</span></span></code></pre>
+<h3 id="73-virtuallens2-三要素">7.3 VirtualLens2 三要素</h3>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>单位</th>
+<th>范围</th>
+<th>同步</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Zoom</td>
+<td>35mm 等效焦距（mm）</td>
+<td>“最小焦距” 到 “最大焦距”</td>
+<td>可远程同步</td>
+</tr>
+<tr>
+<td>Aperture</td>
+<td>F 值（如 f/1.4）</td>
+<td>“最小 F” 到 “最大 F”</td>
+<td>可远程同步</td>
+</tr>
+<tr>
+<td>Exposure</td>
+<td>EV（Exposure Value）</td>
+<td>“曝光范围”</td>
+<td>50% = 0EV 默认；可远程同步</td>
+</tr>
+</tbody>
+</table>
+<h3 id="74-三个工具对比">7.4 三个工具对比</h3>
+<table>
+<thead>
+<tr>
+<th>维度</th>
+<th>现实</th>
+<th>Integral</th>
+<th>VirtualLens2</th>
+<th>VRCLens</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>光圈</td>
+<td>物理口径 + 景深 + 亮度</td>
+<td>仅景深（抖动合成）</td>
+<td>景深（Shader 模拟）</td>
+<td>景深</td>
+</tr>
+<tr>
+<td>快门</td>
+<td>时间 + 亮度</td>
+<td>仅累积帧数</td>
+<td>N/A</td>
+<td>N/A</td>
+</tr>
+<tr>
+<td>ISO</td>
+<td>感光度</td>
+<td>❌ 不存在</td>
+<td>N/A</td>
+<td>曝光补偿</td>
+</tr>
+<tr>
+<td>曝光/亮度</td>
+<td>受三要素共同影响</td>
+<td><strong>独立 Exposure 按钮</strong></td>
+<td>EV 曝光补偿</td>
+<td>曝光补偿</td>
+</tr>
+<tr>
+<td>对焦</td>
+<td>MF/AF</td>
+<td>MF/AF/Visual AF</td>
+<td>AF (AI 脸/瞳)</td>
+<td>AF (Avatar 检测)</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="相关文档">相关文档</h2>
+<h3 id="内部知识库">内部知识库</h3>
+<ul>
+<li><a href="https://suzufactory.booth.pm/items/4724145">Integral（SuzuFactory Booth）</a> - Integral 主文档（含兼容性、安装、特殊效果）</li>
+<li><a href="/STELLASTOPVRC/posts/kb-world-vrc-camera-settings/">vrc-camera-settings</a> - VRCCameraSettings（含 Anchor 模式）</li>
+<li><a href="/STELLASTOPVRC/posts/kb-avatar-modular-avatar/">modular-avatar</a> - MA 必需依赖</li>
+<li><a href="/STELLASTOPVRC/posts/kb-avatar-vrcfury-reference/">vrcfury-reference</a> - VRCFury 参考</li>
+</ul>
+<h3 id="外部资源">外部资源</h3>
+<ul>
+<li><strong>VirtualLens2 Features</strong>: <a href="https://vlens2.logilabo.dev/en/about/">https://vlens2.logilabo.dev/en/about/</a></li>
+<li><strong>VRCLens 最新版</strong>: <a href="https://forum.ripper.store/topic/17280/latest-version-of-vrclens">https://forum.ripper.store/topic/17280/latest-version-of-vrclens</a></li>
+</ul>
+<hr>
+<p><strong>最后更新</strong>: 2026-07-04
+<strong>维护者</strong>: Knowledge Curator Agent
+<strong>状态</strong>: ✅ 活跃</p>
+<hr>
+<h2 id="相关页面">相关页面</h2>
+<p><a href="https://suzufactory.booth.pm/items/4724145">Integral（SuzuFactory Booth）</a> · <a href="/STELLASTOPVRC/posts/kb-world-vrc-camera-settings/">world/vrc-camera-settings.md</a> · <a href="/STELLASTOPVRC/posts/kb-world-performance-guide/">world/performance-guide.md</a></p> </div> <p class="kb-source-note" data-astro-cid-lvjzyg5v>
+本文由 VRChat 开发知识库自动整理（社区整理  · 可信度 Medium  · 最后校对 2026-07-04），
+          遇到与手写教程冲突的地方，以官方文档为最高优先级。
+</p> <section class="comments" id="comments" data-astro-cid-lvjzyg5v> <h2 class="comments__title" data-astro-cid-lvjzyg5v>✦ 旅人留言（0）</h2> <p class="comments__empty" id="commentsEmpty" data-astro-cid-lvjzyg5v>
+还没有旅人留言 —— 有疑问就写在下面，站长都会回复。
+</p> <form class="comment-form" id="commentForm" data-target="kb-avatar-integral-camera-params" data-astro-cid-lvjzyg5v> <p class="comment-form__title" data-astro-cid-lvjzyg5v>写下你的留言</p> <input id="cAuthor" maxlength="20" placeholder="昵称（留空则为「旅人」）" data-astro-cid-lvjzyg5v> <textarea id="cBody" maxlength="1000" required placeholder="想问的问题、想说的感谢都可以（最多 1000 字）" data-astro-cid-lvjzyg5v></textarea> <div class="comment-form__actions" data-astro-cid-lvjzyg5v> <button class="btn btn--primary" type="submit" data-astro-cid-lvjzyg5v>发布留言</button> <span class="form-hint" data-astro-cid-lvjzyg5v>留言保存在本站，站长在写作台里能看到</span> <span class="form-msg" id="cMsg" data-astro-cid-lvjzyg5v></span> </div> </form> </section> <nav class="station-nav" aria-label="站间导航" data-astro-cid-lvjzyg5v> <a href="/STELLASTOPVRC/posts/kb-avatar-free-avatar-resources/" data-astro-cid-lvjzyg5v> <span class="dir" data-astro-cid-lvjzyg5v>← 上一站 · 更新的星光</span> <span class="to" data-astro-cid-lvjzyg5v>免费 Avatar 资源索引(2026)</span> </a> <a href="/STELLASTOPVRC/posts/kb-avatar-index/" data-astro-cid-lvjzyg5v> <span class="dir" data-astro-cid-lvjzyg5v>下一站 · 更早的星光 →</span> <span class="to" data-astro-cid-lvjzyg5v>Avatar Domain — Knowledge Base</span> </a> </nav> </div> <aside class="toc" id="toc" hidden> <p class="toc__title">✦ 本页星图</p> <nav id="tocNav" aria-label="文章目录"></nav> </aside> <script type="module">const i=document.querySelector(".prose"),d=document.getElementById("toc"),u=document.getElementById("tocNav"),l=[];if(i&&d&&u){const c=[...i.querySelectorAll("h1, h2, h3")];if(c.length>=3){d.hidden=!1,c.forEach((o,e)=>{o.id||(o.id=`sec-${e}`);const n=document.createElement("a");n.href=`#${o.id}`;const s=(o.textContent??"").replace(/\s+/g," ").trim(),r=s.search(/[：:]/),a=r>=4?s.slice(0,r):s;n.textContent=a.length>40?`${a.slice(0,40)}…`:a,n.title=s,u.appendChild(n),l.push({a:n,h:o})});const t=()=>{let o=l[0];for(const e of l)e.h.getBoundingClientRect().top<=130&&(o=e);for(const e of l)e.a.classList.toggle("is-active",e===o)};addEventListener("scroll",t,{passive:!0}),t()}}document.querySelectorAll(".prose pre").forEach(c=>{const t=document.createElement("button");t.className="code-copy",t.type="button",t.textContent="复制",t.addEventListener("click",async()=>{const o=c.querySelector("code")?.innerText??c.innerText;try{await navigator.clipboard.writeText(o)}catch{const e=document.createElement("textarea");e.value=o,document.body.appendChild(e),e.select(),document.execCommand("copy"),e.remove()}t.textContent="已复制 ✓",t.classList.add("is-ok"),setTimeout(()=>{t.textContent="复制",t.classList.remove("is-ok")},1500)}),c.appendChild(t)});</script> </article>  </main> <footer class="site-footer"> <div class="wrap"> <p class="star-line" aria-hidden="true"> <svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> <svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> </p> <p>星之驿站 StellaStop —— 在虚拟宇宙中，为你保留一座驿站</p> <p class="site-footer__disclaimer">
+该网页目前是测试阶段，仅用于测试，所有内容仅供参考；内容全部为引用互联网当中的信息。
+</p> <p>© 2026 星之驿站 · 由 <a href="https://astro.build">Astro</a> 与星光驱动</p> <p> <a data-desk-login hidden title="写作台：登录 / 注册">登录 / 注册</a> ·
+<a href="/STELLASTOPVRC/announcements/">官方公告</a> ·
+<a href="/STELLASTOPVRC/ai/">问星 AI</a> ·
+<a href="/STELLASTOPVRC/feedback/">旅人留言板</a> </p> </div> </footer> <button class="to-top" id="toTop" aria-label="回到顶部"> <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"> <path d="M12 20V5"></path> <path d="M5.5 11.5 12 5l6.5 6.5"></path> </svg> </button> <script type="module">const e=document.getElementById("toTop");if(e){const t=()=>e.classList.toggle("is-visible",scrollY>480);addEventListener("scroll",t,{passive:!0}),t(),e.addEventListener("click",()=>{const o=matchMedia("(prefers-reduced-motion: reduce)").matches;scrollTo({top:0,behavior:o?"auto":"smooth"})})}</script> <script>(function(){const deskConfigured = "";
+
+      /* 写作台探测（页面尾部执行，DOM 已就绪）：
+         1. 计算写作台地址：站点配置 deskUrl（公网部署时填）> 本机默认 localhost:4322 > 同主机 4322
+         2. 探测 /api/gate/status —— 在线才点亮「登录 / 注册」入口，并复用给验证门横幅
+         3. 不在线则保持隐藏，绝不会把访客拽进内网地址；同时给出一次性「镜像模式」提示 */
+      (function () {
+        var host = location.hostname;
+        var isLocal = host === 'localhost' || host === '127.0.0.1' || host === '[::1]';
+        var desk = deskConfigured ||
+          (isLocal ? 'http://localhost:4322' : location.protocol + '//' + host + ':4322');
+        window.STELLA_DESK = desk;
+
+        function revealLogin() {
+          document.querySelectorAll('[data-desk-login]').forEach(function (a) {
+            a.href = desk + '/admin';
+            a.removeAttribute('hidden');
+          });
+        }
+        function showBanner(css, html, shiftHeader) {
+          var bar = document.createElement('div');
+          bar.style.cssText = css;
+          bar.innerHTML = html;
+          document.body.prepend(bar);
+          if (shiftHeader) {
+            var header = document.querySelector('.site-header');
+            if (header) header.style.marginTop = '42px';
+          }
+        }
+        function hintMirrorMode() {
+          try {
+            if (sessionStorage.getItem('stella-desk-hint')) return;
+            sessionStorage.setItem('stella-desk-hint', '1');
+          } catch (e) { /* 无痕模式等：忽略 */ }
+          var tip = document.createElement('div');
+          tip.style.cssText = 'position:fixed;left:14px;bottom:14px;z-index:9998;max-width:min(92vw,430px);padding:.65rem .9rem;border-radius:12px;background:rgba(18,20,44,.92);border:1px solid rgba(150,142,255,.35);color:#e8e6ff;font-size:.82rem;line-height:1.6;font-family:system-ui,sans-serif;box-shadow:0 8px 30px rgba(0,0,0,.35)';
+          tip.innerHTML = 'ℹ️ 静态镜像模式：登录 / 评论 / AI 等互动功能需要站长写作台在线，当前不可用。' +
+            '<span id="stellaDeskHintClose" style="float:right;cursor:pointer;opacity:.75;font-weight:700;margin-left:.6rem" title="关闭">×</span>';
+          document.body.appendChild(tip);
+          var close = function () { tip.remove(); };
+          tip.querySelector('#stellaDeskHintClose').addEventListener('click', close);
+          setTimeout(close, 9000);
+        }
+
+        try {
+          var ctrl = new AbortController();
+          var timer = setTimeout(function () { ctrl.abort(); }, 2500);
+          fetch(desk + '/api/gate/status', { credentials: 'include', signal: ctrl.signal })
+            .then(function (r) { return r.ok ? r.json() : null; })
+            .then(function (d) {
+              clearTimeout(timer);
+              if (!d) throw new Error('desk-offline');
+              window.STELLA_DESK_OK = true;
+              revealLogin();
+              if (d.regionBlocked) {
+                showBanner(
+                  'position:fixed;top:0;left:0;right:0;z-index:9999;padding:1.2rem;text-align:center;background:#1a0a0a;color:#ff9ed2;font-size:.95rem;border-bottom:2px solid #ff4d6d;font-family:system-ui,sans-serif',
+                  '⛔ 你所在的地区（' + (d.regionCountry || '未知') + '）暂不开放访问。',
+                  false
+                );
+                return;
+              }
+              if (d.enabled && !d.passed) {
+                showBanner(
+                  'position:fixed;top:0;left:0;right:0;z-index:9999;padding:0.7rem;text-align:center;background:linear-gradient(94deg,rgba(143,127,247,.25),rgba(98,200,245,.18));border-bottom:1px solid rgba(150,142,255,.3);color:#f0efff;font-size:.88rem;font-family:system-ui,sans-serif',
+                  '🔒 本站启用了安全验证 —— <a href="' + desk + '/gate?next=' + encodeURIComponent(location.href) + '" style="color:#ffd98e;font-weight:700;text-decoration:underline">点击完成验证</a>，通过后即可使用全部功能（30 天免验）。',
+                  true
+                );
+              }
+            })
+            .catch(function () {
+              clearTimeout(timer);
+              window.STELLA_DESK_OK = false;
+              hintMirrorMode();
+            });
+        } catch (e) { /* 忽略 */ }
+      })();
+    })();</script> </body> </html> <script type="module">const m=document.getElementById("commentForm"),s=document.getElementById("cMsg"),u=`${location.protocol}//${location.hostname}:4322/api/message`;function r(e,t=!1){s&&(s.textContent=e,s.classList.toggle("is-err",t),s.classList.toggle("is-ok",!t))}function y(){const e=new Date,t=n=>String(n).padStart(2,"0");return`${e.getFullYear()}-${t(e.getMonth()+1)}-${t(e.getDate())}`}function f(e){let t=7;for(const n of e)t=(t*31+n.charCodeAt(0))%360;return t}function g(e,t){const n=document.createElement("li");n.className="comment",n.innerHTML=`
+      <span class="comment__avatar"></span>
+      <div class="comment__bubble">
+        <div class="comment__head">
+          <span class="comment__name"></span>
+          <time class="comment__date">${y()}</time>
+        </div>
+        <p class="comment__body"></p>
+      </div>`;const o=n.querySelector(".comment__avatar");return o.style.setProperty("--h",String(f(e))),o.textContent=e.slice(0,1),n.querySelector(".comment__name").textContent=e,n.querySelector(".comment__body").textContent=t,n}m?.addEventListener("submit",async e=>{e.preventDefault();const t=document.getElementById("cBody").value.trim();if(!t)return r("留言内容不能为空哦",!0);const n=document.getElementById("cAuthor").value.trim()||"旅人",o=m.querySelector("button");o&&(o.disabled=!0);try{const c=await fetch(u,{credentials:"include",method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({target:m.dataset.target,kind:"comment",author:n,body:t})}),d=await c.json().catch(()=>({}));if(!c.ok)throw new Error(d.error||`发送失败（${c.status}）`);const l=document.querySelector(".comment-list");l&&l.appendChild(g(n,t)),document.getElementById("commentsEmpty")?.remove(),document.getElementById("cBody").value="",r("留言已发布，感谢支持 ✦");const a=document.querySelector(".comments__title"),i=a?.textContent?.match(/（(\d+)）/);a&&i&&(a.textContent=a.textContent.replace(/（\d+）/,`（${Number(i[1])+1}）`))}catch(c){r(c instanceof TypeError?"写作台没在运行，暂时收不到留言 —— 双击「启动博客.bat」就好":c.message,!0)}finally{o&&(o.disabled=!1)}});</script> 

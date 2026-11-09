@@ -1,0 +1,1670 @@
+<!DOCTYPE html><html lang="zh-CN"> <head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="generator" content="Astro v5.18.2"><meta name="description" content="详细文档：index（16个文件）"><meta name="theme-color" content="#070a1c"><meta property="og:title" content="Avatar Shader 知识库索引 · 星之驿站 StellaStop"><meta property="og:description" content="详细文档：index（16个文件）"><meta property="og:type" content="website"><meta name="twitter:card" content="summary"><link rel="icon" type="image/svg+xml" href="/STELLASTOPVRC/favicon.svg"><script>
+      // 在渲染前恢复主题与特效档位，避免闪一下默认状态
+      try {
+        document.documentElement.dataset.theme =
+          localStorage.getItem('stella-theme') || 'nebula';
+        document.documentElement.dataset.fx =
+          localStorage.getItem('stella-fx') || 'standard';
+      } catch {
+        /* 隐私模式读不到就算了 */
+      }
+    </script><link rel="stylesheet" href="/STELLASTOPVRC/custom-vars.css"><title>Avatar Shader 知识库索引 · 星之驿站 StellaStop</title><link rel="stylesheet" href="/STELLASTOPVRC/_astro/about.Bgh6wcGl.css">
+<style>.post-head__meta[data-astro-cid-lvjzyg5v]{color:var(--ink-faint);font-family:var(--font-mono);font-size:.82rem}.post-head[data-astro-cid-lvjzyg5v] .chip-row[data-astro-cid-lvjzyg5v]{margin-top:1rem}.kb-source-note[data-astro-cid-lvjzyg5v]{max-width:760px;margin:2.2rem auto 0;font-size:.82rem;color:var(--ink-faint);border-top:1px dashed var(--line);padding-top:1rem}
+</style></head> <body> <div class="site-notice" id="siteNotice"> <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> <span class="site-notice__text">欢迎来到星之驿站！</span> <button class="site-notice__close" id="noticeClose" type="button" aria-label="关闭公告">
+×
+</button> </div> <a class="skip-link" href="#main">跳到主要内容</a> <canvas id="starfield" aria-hidden="true" data-astro-cid-ra7sfcwn></canvas> <div class="fx-aurora fx-aurora--a" aria-hidden="true" data-astro-cid-ra7sfcwn></div> <div class="fx-aurora fx-aurora--b" aria-hidden="true" data-astro-cid-ra7sfcwn></div>  <script type="module">const u=document.getElementById("starfield");if(u){let F=function(){const n=Math.random();return n<.1?"gold":n<.42?"blue":"white"},v=function(){const n=Math.min(window.devicePixelRatio||1,2);s=window.innerWidth,d=window.innerHeight,u.width=s*n,u.height=d*n,u.style.width=`${s}px`,u.style.height=`${d}px`,t.setTransform(n,0,0,n,0,0);const e=Math.min(190,Math.round(s*d/8500));l=Array.from({length:e},()=>({x:Math.random()*s,y:Math.random()*d,r:r(.4,1.7),base:r(.25,.8),amp:r(.12,.4),speed:r(6e-4,.0022),phase:r(0,Math.PI*2),c:F()})),C=Array.from({length:26},()=>({x:Math.random()*s,y:Math.random()*d,r:r(.9,2.4),vx:r(-.006,.006),vy:r(-.02,-.006),base:r(.2,.5),speed:r(8e-4,.002),phase:r(0,Math.PI*2),c:Math.random()<.5?"gold":"violet"})),c==="off"&&m(0,!0)},D=function(n){const e=Math.random()<.5?1:-1,o=r(Math.PI/7,Math.PI/5),a=r(.45,.75);y.push({x:r(s*.15,s*.85),y:r(-20,d*.3),vx:Math.cos(o)*a*e,vy:Math.sin(o)*a,born:n,life:r(750,1050),len:r(100,170)})},S=function(n){y=y.filter(e=>n-e.born<e.life);for(const e of y){const o=(n-e.born)/e.life,a=e.x+e.vx*(n-e.born),i=e.y+e.vy*(n-e.born),f=o<.15?o/.15:o>.7?(1-o)/.3:1,h=Math.hypot(e.vx,e.vy),x=e.vx/h,g=e.vy/h,b=t.createLinearGradient(a,i,a-x*e.len,i-g*e.len);b.addColorStop(0,`rgba(236,242,255,${(.85*f).toFixed(3)})`),b.addColorStop(1,"rgba(236,242,255,0)"),t.strokeStyle=b,t.lineWidth=1.6,t.lineCap="round",t.beginPath(),t.moveTo(a,i),t.lineTo(a-x*e.len,i-g*e.len),t.stroke()}},B=function(){let o=0;t.lineWidth=.7;for(let a=0;a<l.length&&o<26;a++)for(let i=a+1;i<l.length&&o<26;i++){const f=l[a].x-l[i].x,h=l[a].y-l[i].y,x=f*f+h*h;if(x<16900){const g=(1-Math.sqrt(x)/130)*.17;t.strokeStyle=`rgba(178,170,255,${g.toFixed(3)})`,t.beginPath(),t.moveTo(l[a].x,l[a].y),t.lineTo(l[i].x,l[i].y),t.stroke(),o++}}},X=function(n){for(const e of C){e.x+=e.vx*16,e.y+=e.vy*16,e.y<-12&&(e.y=d+10),e.x<-12&&(e.x=s+10),e.x>s+12&&(e.x=-10);const o=Math.max(.05,e.base+.25*Math.sin(n*e.speed+e.phase)),[a,i,f]=A[e.c];t.beginPath(),t.arc(e.x,e.y,e.r,0,7),t.shadowBlur=9,t.shadowColor=`rgba(${a},${i},${f},0.9)`,t.fillStyle=`rgba(${a},${i},${f},${o.toFixed(3)})`,t.fill()}t.shadowBlur=0},m=function(n,e=!1){t.clearRect(0,0,s,d);for(const o of l){const a=c==="off"?o.base:Math.max(.05,o.base+o.amp*Math.sin(n*o.speed+o.phase)),[i,f,h]=A[o.c];t.beginPath(),t.arc(o.x,o.y,o.r,0,7),o.r>1.25?(t.shadowBlur=7,t.shadowColor=`rgba(${i},${f},${h},0.85)`):t.shadowBlur=0,t.fillStyle=`rgba(${i},${f},${h},${a.toFixed(3)})`,t.fill()}if(t.shadowBlur=0,c!=="off"&&!e){c==="fancy"&&(B(),X(n));const o=c==="fancy"?r(2600,6e3):r(4200,9500);n>P&&(D(n),P=n+o),S(n)}},$=function(n){m(n),M=requestAnimationFrame($)},p=function(){if(c==="off"){m(0,!0);return}cancelAnimationFrame(M),M=requestAnimationFrame($)},w=function(){cancelAnimationFrame(M),t.clearRect(0,0,s,d),m(0,!0)};const t=u.getContext("2d"),k=matchMedia("(prefers-reduced-motion: reduce)").matches,A={white:[240,240,255],blue:[150,215,250],gold:[255,218,150],violet:[178,170,255]};let s=0,d=0,l=[],C=[],y=[],P=2500,M=0,c=document.documentElement.dataset.fx||"standard";k&&(c="off");const r=(n,e)=>n+Math.random()*(e-n);v(),addEventListener("resize",v),document.addEventListener("stella-fx-change",n=>{c=n.detail,c==="off"?w():p()}),c==="off"?m(0,!0):(p(),document.addEventListener("visibilitychange",()=>{document.hidden?w():p()}))}</script> <header class="site-header"> <div class="wrap site-header__inner"> <a class="logo" href="/STELLASTOPVRC/"> <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> <span>星之驿站</span> <span class="logo__romaji">StellaStop</span> </a> <div class="header-right"> <nav class="site-nav" aria-label="站内导航"> <a href="/STELLASTOPVRC/"> 首页 </a><a href="/STELLASTOPVRC/start/"> 新手 </a><a href="/STELLASTOPVRC/posts/"> 教程 </a><a href="/STELLASTOPVRC/videos/"> 视频 </a><a href="/STELLASTOPVRC/resources/"> 资源 </a><a href="/STELLASTOPVRC/booth/"> Booth </a><a href="/STELLASTOPVRC/announcements/"> 公告 </a><a href="/STELLASTOPVRC/ai/"> 问星 </a><a href="/STELLASTOPVRC/changelog/"> 更新日志 </a><a href="/STELLASTOPVRC/about/"> 关于 </a> </nav> <a class="login-link" data-desk-login hidden title="写作台：登录 / 注册后可发教程、传资源">
+登录 / 注册
+</a> <div class="theme-switch"> <button class="theme-switch__btn" id="themeBtn" type="button" aria-haspopup="listbox" aria-expanded="false" aria-label="切换主题配色" title="切换主题配色"> <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"> <path d="M12 3a9 9 0 1 0 9 9c0-1.2-1-2-2.2-2H17a2 2 0 0 1-2-2V6.2C15 5 14.2 4 13 4.4A9 9 0 0 0 12 3Z"></path> <circle cx="7.5" cy="11.5" r="1" fill="currentColor" stroke="none"></circle> <circle cx="10" cy="7.5" r="1" fill="currentColor" stroke="none"></circle> <circle cx="15" cy="7" r="1" fill="currentColor" stroke="none"></circle> </svg> </button> <div class="theme-pop" id="themePop" role="listbox" aria-label="选择主题" hidden> <button class="theme-opt" type="button" role="option" data-theme-value="nebula" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#8f7ff7"></span><span class="dot" style="background:#62c8f5"></span><span class="dot" style="background:#ffd98e"></span> </span> <span class="theme-opt__name">星云 · 蓝紫</span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt" type="button" role="option" data-theme-value="sakura" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#ff8fc7"></span><span class="dot" style="background:#c79bff"></span><span class="dot" style="background:#ffd08e"></span> </span> <span class="theme-opt__name">樱语 · 粉紫</span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt" type="button" role="option" data-theme-value="miku" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#2ed3c2"></span><span class="dot" style="background:#6ea8ff"></span><span class="dot" style="background:#ffe08e"></span> </span> <span class="theme-opt__name">葱色 · 青绿</span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt" type="button" role="option" data-theme-value="ember" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#ffb35c"></span><span class="dot" style="background:#ff7e6b"></span><span class="dot" style="background:#ffd98e"></span> </span> <span class="theme-opt__name">暮金 · 暖橙</span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt" type="button" role="option" data-theme-value="dawn" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#6a5ce8"></span><span class="dot" style="background:#e0568f"></span><span class="dot" style="background:#b8821e"></span> </span> <span class="theme-opt__name">晨星 · 浅色</span> <span class="theme-opt__mark">✦</span> </button> </div> </div> <script type="module">const a=document.getElementById("themeBtn"),n=document.getElementById("themePop");function s(c){document.documentElement.dataset.theme=c;try{localStorage.setItem("stella-theme",c)}catch{}const e=getComputedStyle(document.documentElement).getPropertyValue("--bg-deep").trim();document.querySelector('meta[name="theme-color"]')?.setAttribute("content",e||"#070a1c"),document.querySelectorAll(".theme-opt").forEach(t=>{const d=t.dataset.themeValue===c;t.classList.toggle("is-active",d),t.setAttribute("aria-selected",String(d))})}if(a&&n){const c=document.documentElement.dataset.theme||"nebula";document.querySelectorAll(".theme-opt").forEach(e=>{const t=e.dataset.themeValue===c;e.classList.toggle("is-active",t),e.setAttribute("aria-selected",String(t))}),a.addEventListener("click",e=>{e.stopPropagation();const t=n.hidden;n.hidden=!t,a.setAttribute("aria-expanded",String(t))}),document.addEventListener("click",e=>{!n.hidden&&!e.target.closest(".theme-switch")&&(n.hidden=!0,a.setAttribute("aria-expanded","false"))}),document.addEventListener("keydown",e=>{e.key==="Escape"&&!n.hidden&&(n.hidden=!0,a.setAttribute("aria-expanded","false"),a.focus())}),n.addEventListener("click",e=>{const t=e.target.closest(".theme-opt");t&&(s(t.dataset.themeValue??"nebula"),n.hidden=!0,a.setAttribute("aria-expanded","false"))})}</script> <div class="theme-switch fx-switch"> <button class="theme-switch__btn" id="fxBtn" type="button" aria-haspopup="listbox" aria-expanded="false" aria-label="背景特效设置" title="背景特效设置"> <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"> <path d="M5 3v4M3 5h4M6.5 17.5v3M5 19h3"></path> <path d="M14.5 4.5 16 9l4.5 1.5L16 12l-1.5 4.5L13 12l-4.5-1.5L13 9l1.5-4.5Z"></path> </svg> </button> <div class="theme-pop" id="fxPop" role="listbox" aria-label="背景特效" hidden> <button class="theme-opt fx-opt" type="button" role="option" data-fx-value="off" aria-selected="false"> <span class="fx-opt__body"> <span class="fx-opt__name">关闭特效</span> <span class="fx-opt__hint">最省电</span> </span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt fx-opt" type="button" role="option" data-fx-value="standard" aria-selected="false"> <span class="fx-opt__body"> <span class="fx-opt__name">标准</span> <span class="fx-opt__hint">闪烁星空 + 流星</span> </span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt fx-opt" type="button" role="option" data-fx-value="fancy" aria-selected="false"> <span class="fx-opt__body"> <span class="fx-opt__name">华丽</span> <span class="fx-opt__hint">追加极光 / 星座 / 光尘</span> </span> <span class="theme-opt__mark">✦</span> </button> </div> </div> <script type="module">const n=document.getElementById("fxBtn"),a=document.getElementById("fxPop");function s(d){document.documentElement.dataset.fx=d;try{localStorage.setItem("stella-fx",d)}catch{}document.querySelectorAll("#fxPop .fx-opt").forEach(t=>{const e=t.dataset.fxValue===d;t.classList.toggle("is-active",e),t.setAttribute("aria-selected",String(e))}),document.dispatchEvent(new CustomEvent("stella-fx-change",{detail:d}))}if(n&&a){const d=document.documentElement.dataset.fx||"standard";document.querySelectorAll("#fxPop .fx-opt").forEach(t=>{const e=t.dataset.fxValue===d;t.classList.toggle("is-active",e),t.setAttribute("aria-selected",String(e))}),n.addEventListener("click",t=>{t.stopPropagation();const e=a.hidden;a.hidden=!e,n.setAttribute("aria-expanded",String(e))}),document.addEventListener("click",t=>{!a.hidden&&!t.target.closest(".fx-switch")&&(a.hidden=!0,n.setAttribute("aria-expanded","false"))}),document.addEventListener("keydown",t=>{t.key==="Escape"&&!a.hidden&&(a.hidden=!0,n.setAttribute("aria-expanded","false"),n.focus())}),a.addEventListener("click",t=>{const e=t.target.closest(".fx-opt");e&&(s(e.dataset.fxValue??"standard"),a.hidden=!0,n.setAttribute("aria-expanded","false"))})}</script> </div> </div> </header> <main id="main">  <article class="wrap post-layout" data-astro-cid-lvjzyg5v> <div class="post-main page-fade" data-astro-cid-lvjzyg5v> <header class="post-head" data-astro-cid-lvjzyg5v> <a class="crumb" href="/STELLASTOPVRC/posts/" data-astro-cid-lvjzyg5v>← 返回教程档案</a> <div class="post-head__meta" style="--accent:var(--ink-dim)" data-astro-cid-lvjzyg5v> <span class="badge" data-cat="Shader 着色器" data-astro-cid-lvjzyg5v>Shader 着色器</span> <time datetime="2026-07-04" data-astro-cid-lvjzyg5v>2026-07-04</time> <span class="post-head__reading" data-astro-cid-lvjzyg5v>⏱ 约 48 分钟</span>  </div> <h1 class="post-head__title" data-astro-cid-lvjzyg5v>Avatar Shader 知识库索引</h1> <p class="post-head__lead" data-astro-cid-lvjzyg5v>详细文档：index（16个文件）</p> <div class="chip-row" data-astro-cid-lvjzyg5v> <a class="chip" href="/STELLASTOPVRC/posts/?tag=%E7%9F%A5%E8%AF%86%E5%BA%93" data-astro-cid-lvjzyg5v> 知识库 </a><a class="chip" href="/STELLASTOPVRC/posts/?tag=avatar" data-astro-cid-lvjzyg5v> avatar </a> </div> </header> <div class="prose" data-astro-cid-lvjzyg5v> <h1 id="avatar-shader-知识库索引">Avatar Shader 知识库索引</h1>
+<blockquote>
+<p>记录 Avatar 制作中常用的着色器及其配置知识</p>
+<p><strong>最后更新</strong>: 2026-07-01
+<strong>来源</strong>: Agent 会话 Shader 分析结果整合 + 2026-07-01 Poiyomi 完整文档入库</p>
+</blockquote>
+<hr>
+<h2 id="快速检索按用途分类">快速检索：按用途分类</h2>
+<blockquote>
+<p>🎯 <strong>一键定位</strong>：根据你的需求选择对应分类</p>
+</blockquote>
+<h3 id="-vrchat-官方默认-shader202612-重要变更">🔔 VRChat 官方默认 Shader(2026.1.2+ 重要变更)</h3>
+<table>
+<thead>
+<tr>
+<th>Shader</th>
+<th>状态</th>
+<th>重要变更</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Toon Standard</strong></td>
+<td>Avatar 默认</td>
+<td>2026-02-19 起 <code>RenderType</code> = <code>Opaque</code>(原 Transparent)</td>
+</tr>
+<tr>
+<td><strong>Toon Standard Outline</strong></td>
+<td>Avatar 默认变体</td>
+<td>同上</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>影响</strong>:依赖 Transparent 渲染顺序的旧 Avatar 可能看起来不同。Opaque 通常性能更好、深度正确。
+<strong>官方原话</strong>(Developer Update 2026-02-19):“Our Toon Standard shaders, including the Outline variants, now set ‘RenderType’ = ‘Opaque’ in both client and SDK.” — 来源: <a href="https://ask.vrchat.com/t/developer-update-19-february-2026/47849">VRChat Developer Update — 19 February 2026</a></p>
+</blockquote>
+<h3 id="-avatar-专用-shadervrchat-改模首选">🎭 Avatar 专用 Shader（VRChat 改模首选）</h3>
+<table>
+<thead>
+<tr>
+<th>Shader</th>
+<th>核心优势</th>
+<th>文档</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>lilToon</strong></td>
+<td>30%+ 市场占有率、功能最全面、预设丰富</td>
+<td><code>liltoon/</code></td>
+</tr>
+<tr>
+<td><strong>Poiyomi</strong></td>
+<td>VRChat 主流 Toon、5 个变体(Nano→Tera)、模块化系统、AudioLink、LTCGI</td>
+<td>`<a href="https://www.poiyomi.com/">Poiyomi Shaders 官方文档</a> ⭐NEW</td>
+</tr>
+<tr>
+<td><strong>SCSS</strong></td>
+<td>双阴影系统、UV 服装切换零 Draw Call、Matcap 最灵活</td>
+<td><code>scss.md</code></td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>📌 特点：Avatar 动态骨骼优化、Expression Menu 集成、Quest 详细指南</p>
+</blockquote>
+<hr>
+<h3 id="-world-专用-shaderworld-开发首选">🌍 World 专用 Shader（World 开发首选）</h3>
+<table>
+<thead>
+<tr>
+<th>Shader</th>
+<th>核心优势</th>
+<th>文档</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>ORL Shaders</strong></td>
+<td>40+ 模块化 Shader、Configurable 系统、VFX 特效库</td>
+<td><code>orl/</code></td>
+</tr>
+<tr>
+<td><strong>Filamented</strong></td>
+<td>Standard 一键替换、Fresnel 修复、VRC Light Volumes</td>
+<td><code>filamented/</code></td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>📌 特点：非 Avatar 专用，无 DynamicBone 优化；面向 World 环境/VFX/PBR 需求</p>
+</blockquote>
+<hr>
+<h3 id="-通用-shaderavatar--world-皆可">🔧 通用 Shader（Avatar + World 皆可）</h3>
+<table>
+<thead>
+<tr>
+<th>Shader</th>
+<th>核心优势</th>
+<th>文档</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>UnlitWF</strong></td>
+<td>Fur/Water/Grass/Gem 专业效果、BRP+URP 双支持</td>
+<td><code>unlitwf/index.md</code></td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>📌 特点：基于 Unlit 扩展，效果专业；需根据平台选择变体</p>
+</blockquote>
+<hr>
+<h3 id="-其他-shader参考">📦 其他 Shader（参考）</h3>
+<table>
+<thead>
+<tr>
+<th>Shader</th>
+<th>定位</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Poiyomi Shaders</strong></td>
+<td>Avatar Toon(主流)</td>
+<td>65 个文档已完整入库,涵盖 5 个 Shader 变体(Nano/Micro/Mega/Giga/Tera)、Pro 高级功能、模块化系统 → `<a href="https://www.poiyomi.com/">Poiyomi Shaders 官方文档</a> ⭐2026-07-01 完成</td>
+</tr>
+<tr>
+<td><strong>z3y/shaders</strong></td>
+<td>World PBR 高级</td>
+<td>LTCGI/Bakery 完整集成，暂未详细分析</td>
+</tr>
+<tr>
+<td><strong>GeneLit</strong></td>
+<td>World PBR 高级</td>
+<td>Clearcoat/Sheen 等高级特性，暂未详细分析</td>
+</tr>
+<tr>
+<td><strong>Graphlit</strong></td>
+<td>World 节点编辑器</td>
+<td>Google Filament 节点式编辑，暂未详细分析</td>
+</tr>
+<tr>
+<td><strong>Toon Standard (VRChat 官方)</strong></td>
+<td>Avatar 默认卡通</td>
+<td>2026-02-19 起 RenderType = Opaque(从 Transparent 变更),有 Outline 变体</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="目录">目录</h2>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>avatar/shader/</span></span>
+<span class="line"><span>├── index.md                    ← 本索引文件（含用途分类快速检索）</span></span>
+<span class="line"><span>│</span></span>
+<span class="line"><span>├── 🎭 Avatar 专用</span></span>
+<span class="line"><span>├── liltoon/                    ← lilToon（30%+ VRChat 模型使用）</span></span>
+<span class="line"><span>│   ├── index.md               ← lilToon 总览</span></span>
+<span class="line"><span>│   ├── overview.md            ← 概述与特性</span></span>
+<span class="line"><span>│   ├── installation.md        ← 安装与配置</span></span>
+<span class="line"><span>│   ├── render-modes.md        ← 渲染模式详解</span></span>
+<span class="line"><span>│   ├── basic-settings.md      ← 基本设置</span></span>
+<span class="line"><span>│   ├── color-settings.md      ← 颜色与阴影设置</span></span>
+<span class="line"><span>│   ├── reflection-settings.md  ← 反射与光泽设置</span></span>
+<span class="line"><span>│   ├── advanced-settings.md    ← 扩展功能设置</span></span>
+<span class="line"><span>│   ├── outline.md             ← 轮廓线设置</span></span>
+<span class="line"><span>│   ├── fur.md                 ← 毛发设置</span></span>
+<span class="line"><span>│   ├── stencil.md             ← Stencil 设置</span></span>
+<span class="line"><span>│   ├── audiolink.md           ← AudioLink 集成</span></span>
+<span class="line"><span>│   ├── dissolve.md            ← Dissolve 效果</span></span>
+<span class="line"><span>│   ├── optimization.md        ← 优化指南</span></span>
+<span class="line"><span>│   ├── vrchat-specific.md     ← VRChat 特定配置</span></span>
+<span class="line"><span>│   ├── troubleshooting.md      ← 常见问题解决</span></span>
+<span class="line"><span>│   └── variations.md          ← 着色器变体</span></span>
+<span class="line"><span>├── scss.md                    ← SCSS（双阴影系统/UV服装切换）</span></span>
+<span class="line"><span>│</span></span>
+<span class="line"><span>├── 🎭 Poiyomi Shaders ⭐2026-07-01 完整入库</span></span>
+<span class="line"><span>├── [Poiyomi Shaders 官方文档](https://www.poiyomi.com/)  ← Poiyomi 65 个文档主索引</span></span>
+<span class="line"><span>│</span></span>
+<span class="line"><span>├── 🌍 World 专用</span></span>
+<span class="line"><span>├── orl/                       ← ORL Shaders（模块化着色器套件）</span></span>
+<span class="line"><span>│   ├── index.md              ← ORL 总览</span></span>
+<span class="line"><span>│   ├── overview.md           ← 项目概览与安装</span></span>
+<span class="line"><span>│   ├── shader-list.md        ← 详细 Shader 列表</span></span>
+<span class="line"><span>│   ├── configurable.md       ← Configurable 模块化系统</span></span>
+<span class="line"><span>│   └── 对比 → comparisons/orl-comparison.md</span></span>
+<span class="line"><span>├── filamented/                ← Filamented（Google Filament PBR 替代）</span></span>
+<span class="line"><span>│   ├── index.md              ← Filamented 总览</span></span>
+<span class="line"><span>│   ├── overview.md           ← 项目概览</span></span>
+<span class="line"><span>│   ├── pbr-improvements.md   ← PBR 改进详解</span></span>
+<span class="line"><span>│   └── 对比 → comparisons/filamented-comparison.md</span></span>
+<span class="line"><span>│</span></span>
+<span class="line"><span>├── 🔧 通用（Avatar + World）</span></span>
+<span class="line"><span>├── unlitwf/                   ← UnlitWF（Unlit 扩展专业效果）</span></span>
+<span class="line"><span>│   └── index.md              ← UnlitWF 总览、Shader 家族、效果系统</span></span>
+<span class="line"><span>│</span></span>
+<span class="line"><span>└── 📦 其他</span></span>
+<span class="line"><span>└── other-shaders.md          ← 其他着色器（Graphlit 等）</span></span></code></pre>
+<hr>
+<h2 id="shader-总览对比表">Shader 总览对比表</h2>
+<table>
+<thead>
+<tr>
+<th>Shader</th>
+<th>用途</th>
+<th>市场占有率</th>
+<th>许可证</th>
+<th>渲染管线</th>
+<th>活跃度</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>lilToon</strong></td>
+<td>🎭 Avatar</td>
+<td>30%+ VRChat</td>
+<td>MIT</td>
+<td>BRP/URP/HDRP</td>
+<td>⭐⭐⭐⭐⭐</td>
+</tr>
+<tr>
+<td><strong>Poiyomi</strong></td>
+<td>🎭 Avatar(Toon)</td>
+<td>VRChat 主流</td>
+<td>Patreon</td>
+<td>BRP</td>
+<td>⭐⭐⭐⭐⭐</td>
+</tr>
+<tr>
+<td><strong>SCSS</strong></td>
+<td>🎭 Avatar</td>
+<td>较低</td>
+<td>MIT</td>
+<td>BRP Only</td>
+<td>⭐⭐⭐</td>
+</tr>
+<tr>
+<td><strong>ORL Shaders</strong></td>
+<td>🌍 World</td>
+<td>较高</td>
+<td>MIT</td>
+<td>BRP</td>
+<td>⭐⭐⭐⭐</td>
+</tr>
+<tr>
+<td><strong>Filamented</strong></td>
+<td>🌍 World</td>
+<td>较小众</td>
+<td>Apache 2.0</td>
+<td>BRP</td>
+<td>⭐⭐⭐</td>
+</tr>
+<tr>
+<td><strong>UnlitWF</strong></td>
+<td>🔧 通用</td>
+<td>较小众</td>
+<td>zlib</td>
+<td>BRP/URP</td>
+<td>⭐⭐⭐⭐⭐</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="一avatar-专用-shader">一、Avatar 专用 Shader</h2>
+<h3 id="11-liltoon主流首选">1.1 lilToon(主流首选)</h3>
+<table>
+<thead>
+<tr>
+<th>属性</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>定位</strong></td>
+<td>VRChat 改模界主流 Toon Shader,功能全面、社区资源最丰富</td>
+</tr>
+<tr>
+<td><strong>文档</strong></td>
+<td><a href="https://lilxyzw.github.io/lilToon/ja_JP/">https://lilxyzw.github.io/lilToon/ja_JP/</a></td>
+</tr>
+<tr>
+<td><strong>VCC 安装</strong></td>
+<td><code>https://lilxyzw.github.io/vpm-repos/vpm.json</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>核心特性</strong>：</p>
+<ul>
+<li>✨ <strong>简单 (Easy)</strong>: 预设一键设置、色调校正、自定义预设保存</li>
+<li>🎨 <strong>美观 (Beautiful)</strong>: 动漫渲染、抗锯齿、白飞防止、半透明穿透防止</li>
+<li>🎈 <strong>轻量 (Lightweight)</strong>: 编辑器自动优化、Build Size 最小化、Avatar 容量削减</li>
+<li>🔑 <strong>稳定 (Stable)</strong>: 全 Unity 照明支持、Standard Shader 相似亮度</li>
+</ul>
+<p><strong>优势</strong>：</p>
+<ul>
+<li>✅ 全渲染管线支持（BRP/URP/HDRP）</li>
+<li>✅ 功能最全面（fur/dissolve/stencil 等）</li>
+<li>✅ 社区资源最丰富（教程/预设最多）</li>
+<li>✅ 新手友好（一键预设）</li>
+<li>✅ 详细 Quest 优化指南</li>
+</ul>
+<p><strong>劣势</strong>：</p>
+<ul>
+<li>❌ 无 Configurable 模块化</li>
+<li>❌ AudioLink 需手动配置</li>
+<li>❌ 非 World 首选</li>
+</ul>
+<p><strong>适用场景</strong>：</p>
+<ul>
+<li>VRChat Avatar 通用选择</li>
+<li>新手入门首选</li>
+<li>需要大量社区资源/教程</li>
+<li>Quest Avatar 优化</li>
+</ul>
+<p><strong>详细文档</strong>：index（16个文件）</p>
+<hr>
+<h3 id="12-scsssilents-cel-shading-shader">1.2 SCSS（Silent’s Cel Shading Shader）</h3>
+<table>
+<thead>
+<tr>
+<th>属性</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>定位</strong></td>
+<td>功能全面的 Cel Shading 工具箱</td>
+</tr>
+<tr>
+<td><strong>许可证</strong></td>
+<td>MIT License</td>
+</tr>
+<tr>
+<td><strong>仓库</strong></td>
+<td><a href="https://github.com/s-ilent/scss">https://github.com/s-ilent/scss</a></td>
+</tr>
+<tr>
+<td><strong>文档</strong></td>
+<td><a href="https://gitlab.com/s-ilent/SCSS/-/wikis/Manual/Setting-Overview">https://gitlab.com/s-ilent/SCSS/-/wikis/Manual/Setting-Overview</a></td>
+</tr>
+</tbody>
+</table>
+<p><strong>核心特性</strong>：</p>
+<ul>
+<li>🎨 <strong>双阴影系统</strong>: Lightramp（纹理）+ Crosstone（参数）</li>
+<li>👔 <strong>UV Inventory System</strong>: 零额外 Draw Call 服装切换</li>
+<li>✨ <strong>4 槽位 Matcap</strong>: World/Tangent 空间（VR 优化）</li>
+<li>📐 <strong>VR 优化 Outline</strong>: 距离自适应 + 顶点色控制</li>
+<li>🎵 <strong>AudioLink</strong>: 每频段独立配置</li>
+</ul>
+<p><strong>优势</strong>：</p>
+<ul>
+<li>✅ 双阴影系统业界领先</li>
+<li>✅ UV 服装切换零额外 draw call</li>
+<li>✅ Matcap 系统最灵活（多槽位+多模式）</li>
+<li>✅ VR Outline 优化完善</li>
+<li>✅ 开源透明（MIT License）</li>
+</ul>
+<p><strong>劣势</strong>：</p>
+<ul>
+<li>❌ 仅支持 BRP（不支持 URP/HDRP）</li>
+<li>❌ 无一键预设（需手动配置）</li>
+<li>❌ 学习曲线较高（设置项繁多）</li>
+<li>❌ 文档分散（GitLab Wiki）</li>
+<li>❌ 社区资源较少</li>
+</ul>
+<p><strong>服装切换对比</strong>：</p>
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>Draw Calls</th>
+<th>性能</th>
+<th>限制</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>SCSS UV 切换</strong></td>
+<td>1</td>
+<td>最低</td>
+<td>需要 UV 编辑</td>
+</tr>
+<tr>
+<td>分离网格</td>
+<td>N+1</td>
+<td>较高</td>
+<td>合并后更优</td>
+</tr>
+<tr>
+<td>ShapeKeys</td>
+<td>-</td>
+<td>最高</td>
+<td>每激活都昂贵</td>
+</tr>
+<tr>
+<td>材质槽+隐形</td>
+<td>N+1</td>
+<td>较高</td>
+<td>每槽=1 drawcall</td>
+</tr>
+</tbody>
+</table>
+<p><strong>适用场景</strong>：</p>
+<ul>
+<li>需要精细 Matcap 控制的 Avatar</li>
+<li>服装切换需求（高效零 Draw Call）</li>
+<li>复杂 Outline 控制</li>
+<li>双色调系统（Crosstone）</li>
+</ul>
+<p><strong>详细文档</strong>：<a href="/STELLASTOPVRC/posts/kb-avatar-shader-scss/">scss</a></p>
+<hr>
+<h3 id="13-poiyomi-shadersvrchat-avatar-主流">1.3 Poiyomi Shaders（VRChat Avatar 主流）</h3>
+<blockquote>
+<p>⭐ <strong>2026-07-01 完成完整入库</strong> — 65 个文档从 <a href="https://www.poiyomi.com/intro">https://www.poiyomi.com/intro</a> 系统化下载</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>属性</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>定位</strong></td>
+<td>VRChat Avatar 主流 Toon Shader,5 个变体覆盖 PC → Quest → 顶级效果</td>
+</tr>
+<tr>
+<td><strong>许可证</strong></td>
+<td>Patreon 订阅(免费 Toon 版可用,Pro 完整版 $10/月+)</td>
+</tr>
+<tr>
+<td><strong>官网</strong></td>
+<td><a href="https://www.poiyomi.com/">https://www.poiyomi.com/</a></td>
+</tr>
+<tr>
+<td><strong>安装</strong></td>
+<td>VCC / ALCOM / 直接下载</td>
+</tr>
+<tr>
+<td><strong>文档版本</strong></td>
+<td>10.0(2026-07-01 抓取)</td>
+</tr>
+<tr>
+<td><strong>本地文档</strong></td>
+<td>`<a href="https://www.poiyomi.com/">Poiyomi Shaders 官方文档</a> 个 .md 文件)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>核心特性</strong>：</p>
+<ul>
+<li>🎨 <strong>5 个 Shader 变体</strong>: Nano(轻量) / Micro(Quest) / Mega(通用) / Giga(PC) / Tera(顶级)</li>
+<li>🎵 <strong>AudioLink 完整集成</strong>: Bass/Low Mid/High Mid/Treble/Volume 五频段,AL Spectrum 可视化</li>
+<li>🧩 <strong>模块化 Shader 系统</strong>(Pro): Module Definition + Template Collection,共享材质池</li>
+<li>🌍 <strong>LTCGI 集成</strong>: Linearly Transformed Cosines Global Illumination</li>
+<li>🎭 <strong>Thry Editor UI</strong>: Search/Presets/Material Linking/VRAM/Texture Packer</li>
+<li>🖼️ <strong>全局遮罩</strong>: 4 槽 × 4 通道 = 16 通道遮罩系统</li>
+<li>🎨 <strong>全局主题</strong>: 4 主题(OKLab/HSV 色空间)</li>
+<li>📐 <strong>9 种 Lighting Type</strong>: Texture Ramp / Multilayer Math / Wrapped / Skin / ShadeMap / Flat / Realistic / Cloth / SDF</li>
+<li>💎 <strong>专业效果</strong>: Fur(31 层) / ShatterWave / Geometric Dissolve / Voronoi / Constellation / Internal Parallax</li>
+</ul>
+<p><strong>优势</strong>：</p>
+<ul>
+<li>✅ VRChat 主流(与 lilToon 并列第一梯队)</li>
+<li>✅ Shader 变体分级清晰(Quest 优化独立变体)</li>
+<li>✅ Thry Editor 是 VRChat 社区事实标准 UI 框架</li>
+<li>✅ 模块化系统(Pro)可大幅减少重复工作</li>
+<li>✅ 完整 AudioLink 支持(无需手动配置)</li>
+<li>✅ 风格化效果丰富(可做出 lilToon 难以达到的效果)</li>
+<li>✅ 内建 VRC Light Volumes / LTCGI 集成</li>
+<li>✅ Patreon 订阅模式,持续高频更新</li>
+</ul>
+<p><strong>劣势</strong>：</p>
+<ul>
+<li>❌ 部分高级功能需 Pro 订阅($10/月+)</li>
+<li>❌ Pro vs Toon 功能差异需注意</li>
+<li>❌ 文档分散(主站 + Thry 站)</li>
+<li>❌ 配置项极多,学习曲线高</li>
+<li>❌ 仅支持 BRP(不支持 URP/HDRP)</li>
+</ul>
+<p><strong>适用场景</strong>：</p>
+<ul>
+<li>VRChat Avatar 通用选择(与 lilToon 平行)</li>
+<li>Quest Avatar 优化(用 Micro 变体)</li>
+<li>风格化效果需求(发光/溶解/星空/几何溶解)</li>
+<li>需要模块化 Shader 系统的团队/复杂 Avatar</li>
+<li>AudioLink 驱动的音乐 Avatar</li>
+<li>大量重复材质的项目(用 Modular Shader System)</li>
+</ul>
+<p><strong>Pro vs Toon 关键差异</strong>：</p>
+<table>
+<thead>
+<tr>
+<th>特性</th>
+<th>Toon(免费)</th>
+<th>Pro($10+/月)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>5 变体 + 基础效果</td>
+<td>✅</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>Modular Shader System</td>
+<td>❌</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>Poiyomi Fur(1-31 层)</td>
+<td>❌</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>ShatterWave</td>
+<td>❌</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>Geometric Dissolve</td>
+<td>❌</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>Constellation</td>
+<td>❌</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>Voronoi 3D</td>
+<td>❌</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>Internal Parallax</td>
+<td>❌</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>Lil Fur(LilToon 风格)</td>
+<td>✅</td>
+<td>✅</td>
+</tr>
+</tbody>
+</table>
+<p><strong>详细文档</strong>：`<a href="https://www.poiyomi.com/">Poiyomi Shaders 官方文档</a> 个 .md 文件)</p>
+<ul>
+<li>一级分类 16 个: 概述/反射光照/AudioLink/颜色材质/顶点操作/灯光阴影/编辑器/模块化/UV/后期处理/毛发几何/特效/几何抓取/VolumeColor/着色样式/TPS</li>
+</ul>
+<hr>
+<h2 id="二world-通用-shader">二、World 通用 Shader</h2>
+<h3 id="21-orl-shaders模块化着色器套件">2.1 ORL Shaders（模块化着色器套件）</h3>
+<table>
+<thead>
+<tr>
+<th>属性</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>定位</strong></td>
+<td>VRChat World 通用模块化着色器套件(非 Avatar 专用)</td>
+</tr>
+<tr>
+<td><strong>许可证</strong></td>
+<td>MIT License</td>
+</tr>
+<tr>
+<td><strong>仓库</strong></td>
+<td><a href="https://github.com/orels1/orels-Unity-Shaders">https://github.com/orels1/orels-Unity-Shaders</a></td>
+</tr>
+<tr>
+<td><strong>文档</strong></td>
+<td><a href="https://shaders.orels.sh">https://shaders.orels.sh</a></td>
+</tr>
+<tr>
+<td><strong>VCC 安装</strong></td>
+<td><code>https://orels1.github.io/orels-Unity-Shaders/index.json</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>核心特性</strong>：</p>
+<ul>
+<li>🎛️ <strong>Configurable Shader</strong>: 可自由组合功能模块</li>
+<li>🎨 <strong>40+ Shader</strong>: Standard PBR / Toon / VFX / UI</li>
+<li>🎵 <strong>AudioLink 内置</strong>: 5 种模式（Band/UV/Waveform/Bar/Pulse）</li>
+<li>💡 <strong>VRChat 深度集成</strong>: Shader Fallback / VRCLightVolumes / Camera View</li>
+<li>✨ <strong>丰富 VFX</strong>: Shield / Laser / Clouds / Dissolve / Glitch</li>
+</ul>
+<p><strong>Shader 分类</strong>：</p>
+<table>
+<thead>
+<tr>
+<th>类别</th>
+<th>数量</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Standard Shaders (PBR)</td>
+<td>22</td>
+<td>基础 PBR + 功能扩展</td>
+</tr>
+<tr>
+<td>Toon Shaders</td>
+<td>3</td>
+<td>卡通渲染（v1/v2）</td>
+</tr>
+<tr>
+<td>Special Shaders</td>
+<td>1</td>
+<td>积雪覆盖</td>
+</tr>
+<tr>
+<td>VFX Shaders</td>
+<td>9</td>
+<td>视觉效果特效</td>
+</tr>
+<tr>
+<td>UI Shaders</td>
+<td>5</td>
+<td>UI 专用着色器</td>
+</tr>
+</tbody>
+</table>
+<p><strong>优势</strong>：</p>
+<ul>
+<li>✅ Configurable 模块化系统（自由组合功能）</li>
+<li>✅ 丰富的 VFX 特效库（护盾/激光/云等）</li>
+<li>✅ 内置 AudioLink 支持（5种模式）</li>
+<li>✅ VRCLightVolumes 集成</li>
+<li>✅ 专业的 PBR 实现（Parallax OM / GSAA / Mobile Tonemapping）</li>
+</ul>
+<p><strong>劣势</strong>：</p>
+<ul>
+<li>❌ 非 Avatar 专用（DynamicBone 未优化）</li>
+<li>❌ Quest 兼容性无明确分级</li>
+<li>❌ Toon Shader 功能较少</li>
+<li>❌ 学习曲线（Generator 工具）</li>
+</ul>
+<p><strong>适用场景</strong>：</p>
+<ul>
+<li>World 环境构建（地面/墙壁/建筑）</li>
+<li>复杂材质组合（Configurable 系统）</li>
+<li>AudioLink 音频响应效果</li>
+<li>VFX 特效（护盾/激光/故障等）</li>
+<li>需要 LTCGI / AreaLit 光照的 World</li>
+</ul>
+<p><strong>详细文档</strong>：index（4个文件）</p>
+<hr>
+<h3 id="22-filamentedgoogle-filament-pbr-替代">2.2 Filamented（Google Filament PBR 替代）</h3>
+<table>
+<thead>
+<tr>
+<th>属性</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>定位</strong></td>
+<td>Google Filament PBR 计算，Standard 替代</td>
+</tr>
+<tr>
+<td><strong>许可证</strong></td>
+<td>Apache License 2.0</td>
+</tr>
+<tr>
+<td><strong>仓库</strong></td>
+<td><a href="https://gitlab.com/s-ilent/filamented">https://gitlab.com/s-ilent/filamented</a></td>
+</tr>
+<tr>
+<td><strong>Unity 版本</strong></td>
+<td>2022.3+</td>
+</tr>
+</tbody>
+</table>
+<p><strong>核心特性</strong>：</p>
+<ul>
+<li>🔧 <strong>100% 属性兼容</strong>: 与 Standard 一键切换，无需重新制作材质</li>
+<li>✨ <strong>改进的 Fresnel</strong>: 非金属不再过度反射</li>
+<li>🌟 <strong>Specular Occlusion</strong>: Exposure 遮挡修正</li>
+<li>💡 <strong>VRC Light Volumes</strong>: 完整支持</li>
+</ul>
+<p><strong>优势</strong>：</p>
+<ul>
+<li>✅ 最小侵入性（Standard 一键替换）</li>
+<li>✅ 改进的 Fresnel 计算</li>
+<li>✅ Specular Occlusion</li>
+<li>✅ VRC Light Volumes 完整支持</li>
+<li>✅ 零迁移成本</li>
+</ul>
+<p><strong>劣势</strong>：</p>
+<ul>
+<li>❌ 无 Anisotropy（切线方向高光拉伸）</li>
+<li>❌ 无 Subsurface（次表面散射）</li>
+<li>❌ 无 Clearcoat（清漆层）</li>
+<li>❌ 无 LTCGI（Area Lights）</li>
+<li>❌ 社区较小</li>
+</ul>
+<p><strong>适用场景</strong>：</p>
+<ul>
+<li>World 静态物体需要精确 PBR</li>
+<li>从 Standard 升级，期望最小侵入性</li>
+<li>需要 VRC Light Volumes 但不需要重型 Shader</li>
+</ul>
+<p><strong>与其他 PBR Shader 对比</strong>：</p>
+<table>
+<thead>
+<tr>
+<th>特性</th>
+<th>Filamented</th>
+<th>z3y/shaders</th>
+<th>GeneLit</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Fresnel 修复</td>
+<td>✅</td>
+<td>✅</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>Specular Occlusion</td>
+<td>✅</td>
+<td>✅</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>Anisotropy</td>
+<td>❌</td>
+<td>✅</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>Subsurface</td>
+<td>❌</td>
+<td>✅</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>LTCGI</td>
+<td>❌</td>
+<td>✅</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>复杂度</td>
+<td>低</td>
+<td>中</td>
+<td>高</td>
+</tr>
+</tbody>
+</table>
+<p><strong>详细文档</strong>：index（4个文件）</p>
+<hr>
+<h2 id="三unlit-扩展-shader">三、Unlit 扩展 Shader</h2>
+<h3 id="31-unlitwf-shader-suite专业效果套件">3.1 UnlitWF Shader Suite（专业效果套件）</h3>
+<table>
+<thead>
+<tr>
+<th>属性</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>定位</strong></td>
+<td>基于 Unlit 的专业效果 Shader 套件</td>
+</tr>
+<tr>
+<td><strong>许可证</strong></td>
+<td>zlib License</td>
+</tr>
+<tr>
+<td><strong>仓库</strong></td>
+<td><a href="https://github.com/whiteflare/Unlit_WF_ShaderSuite">https://github.com/whiteflare/Unlit_WF_ShaderSuite</a></td>
+</tr>
+<tr>
+<td><strong>Releases</strong></td>
+<td>102(持续维护)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>核心架构 - drawing struct 模式</strong>：</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="hlsl"><code><span class="line"><span style="color:#F97583">struct</span><span style="color:#E1E4E8"> drawing {</span></span>
+<span class="line"><span style="color:#F97583">    float4</span><span style="color:#E1E4E8"> color;         </span><span style="color:#6A737D">// 主颜色</span></span>
+<span class="line"><span style="color:#F97583">    float3</span><span style="color:#E1E4E8"> ws_vertex;     </span><span style="color:#6A737D">// 世界空间位置</span></span>
+<span class="line"><span style="color:#F97583">    float3</span><span style="color:#E1E4E8"> ws_normal;     </span><span style="color:#6A737D">// 世界空间法线</span></span>
+<span class="line"><span style="color:#F97583">    float3</span><span style="color:#E1E4E8"> light_color;   </span><span style="color:#6A737D">// 光照颜色</span></span>
+<span class="line"><span style="color:#E1E4E8">};</span></span></code></pre>
+<p><strong>效果链式调用</strong>：每个 <code>draw*()</code> 函数修改 <code>drawing</code> struct，实现模块化效果组合。</p>
+<p><strong>Shader 家族</strong>：</p>
+<table>
+<thead>
+<tr>
+<th>家族</th>
+<th>特点</th>
+<th>使用场景</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Base UnToon</td>
+<td>基础 Toon 着色，完整效果链</td>
+<td>通用 Avatar</td>
+</tr>
+<tr>
+<td>PowerCap</td>
+<td>增强 Matcap，多个 Matcap 槽位</td>
+<td>高级视觉效果</td>
+</tr>
+<tr>
+<td>TriShade</td>
+<td>三层阴影渐变</td>
+<td>细腻阴影控制</td>
+</tr>
+<tr>
+<td>Tessellation</td>
+<td>硬件细分，平滑模型</td>
+<td>高精度模型</td>
+</tr>
+<tr>
+<td>Outline</td>
+<td>内置轮廓线渲染</td>
+<td>需要描边的模型</td>
+</tr>
+</tbody>
+</table>
+<p><strong>专业效果系统</strong>：</p>
+<table>
+<thead>
+<tr>
+<th>效果</th>
+<th>说明</th>
+<th>变体</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>FakeFur</strong></td>
+<td>Geometry Shader 生成毛发（1-6层）</td>
+<td>TransCutout/Transparent/Mix/FurOnly</td>
+</tr>
+<tr>
+<td><strong>Water</strong></td>
+<td>波浪+焦散+Cubemap 反射</td>
+<td>Standard/Refracted/Opaque/Caustics</td>
+</tr>
+<tr>
+<td><strong>Grass</strong></td>
+<td>风力模拟+高度染色</td>
+<td>WORLD_Y/UV/VERTEX_COLOR/MASK</td>
+</tr>
+<tr>
+<td><strong>Gem</strong></td>
+<td>Flake 效果+双面渲染</td>
+<td>Transparent/Opaque</td>
+</tr>
+<tr>
+<td><strong>Particle</strong></td>
+<td>帧动画+顶点色混合</td>
+<td>Multiple blend modes</td>
+</tr>
+</tbody>
+</table>
+<p><strong>4 种透明度模式</strong>：</p>
+<table>
+<thead>
+<tr>
+<th>模式</th>
+<th>Queue</th>
+<th>适用场景</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Opaque</strong></td>
+<td>Geometry</td>
+<td>实体对象</td>
+</tr>
+<tr>
+<td><strong>TransCutout</strong></td>
+<td>AlphaTest</td>
+<td>叶子、头发</td>
+</tr>
+<tr>
+<td><strong>Transparent</strong></td>
+<td>Transparent</td>
+<td>标准透明</td>
+</tr>
+<tr>
+<td><strong>Transparent3Pass</strong></td>
+<td>Transparent</td>
+<td>玻璃、水</td>
+</tr>
+</tbody>
+</table>
+<p><strong>优势</strong>：</p>
+<ul>
+<li>✅ drawing struct 模式使效果可组合、可复用</li>
+<li>✅ 统一前缀命名规范（<code>_TX2_/_MT_/_TS_/_TR_/_NM_/_HL_/_ES_</code>）</li>
+<li>✅ 4 种透明度模式覆盖所有场景</li>
+<li>✅ 跨平台抽象（BRP/URP 兼容层）</li>
+<li>✅ 丰富的专业效果（Fur/Water/Grass/Gem/Particle）</li>
+<li>✅ Editor 工具完善</li>
+<li>✅ 持续维护（102 releases）</li>
+</ul>
+<p><strong>劣势</strong>：</p>
+<ul>
+<li>❌ 基于 Unlit（不是真正的 PBR）</li>
+<li>❌ FakeFur 需要 SM5.0（不支持 Quest/移动端）</li>
+<li>❌ 文档语言（日语为主）</li>
+<li>❌ 社区规模较小</li>
+</ul>
+<p><strong>适用场景</strong>：</p>
+<ul>
+<li>需要 Fur（毛发）/ Water（水面）/ Grass（草地）/ Gem（宝石）特效</li>
+<li>独特 Toon 效果需求（非标准 PBR）</li>
+<li>与 lilToon 形成互补的专业效果选择</li>
+</ul>
+<p><strong>详细文档</strong>：index</p>
+<hr>
+<h2 id="四完整功能对比矩阵">四、完整功能对比矩阵</h2>
+<h3 id="41-avatar-核心功能">4.1 Avatar 核心功能</h3>
+<table>
+<thead>
+<tr>
+<th>功能</th>
+<th>lilToon</th>
+<th>Poiyomi</th>
+<th>SCSS</th>
+<th>UnlitWF</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Toon 阴影</strong></td>
+<td>✅ 阶梯/平滑</td>
+<td>✅ 9 种样式</td>
+<td>✅ 双阴影系统</td>
+<td>✅ 阶梯阴影</td>
+<td>Poiyomi 选择最丰富</td>
+</tr>
+<tr>
+<td><strong>Outline</strong></td>
+<td>✅ 内置</td>
+<td>✅ 多种</td>
+<td>✅ VR 优化</td>
+<td>✅ 多种模式</td>
+<td>各有优势</td>
+</tr>
+<tr>
+<td><strong>Fur 毛发</strong></td>
+<td>✅ 噪声采样</td>
+<td>✅ 1-31 层</td>
+<td>❌</td>
+<td>✅ Geometry</td>
+<td>Poiyomi 层级最多</td>
+</tr>
+<tr>
+<td><strong>Water</strong></td>
+<td>⚠️ 基础</td>
+<td>❌</td>
+<td>❌</td>
+<td>✅ 波浪+焦散</td>
+<td>UnlitWF 最完整</td>
+</tr>
+<tr>
+<td><strong>Gem</strong></td>
+<td>⚠️ 折射</td>
+<td>❌</td>
+<td>❌</td>
+<td>✅ Flake 效果</td>
+<td>UnlitWF 独特</td>
+</tr>
+<tr>
+<td><strong>Grass</strong></td>
+<td>❌</td>
+<td>❌</td>
+<td>❌</td>
+<td>✅ 风力模拟</td>
+<td>UnlitWF 独有</td>
+</tr>
+<tr>
+<td><strong>PBR 支持</strong></td>
+<td>✅ 完整</td>
+<td>✅ 完整</td>
+<td>❌</td>
+<td>⚠️ 有限</td>
+<td>lilToon/Poiyomi 最完善</td>
+</tr>
+<tr>
+<td><strong>Matcap</strong></td>
+<td>✅</td>
+<td>✅</td>
+<td>✅ 多槽位</td>
+<td>✅ 多种模式</td>
+<td>SCSS 最灵活</td>
+</tr>
+<tr>
+<td><strong>Dissolve</strong></td>
+<td>✅</td>
+<td>✅ 4+ 几何</td>
+<td>✅</td>
+<td>✅</td>
+<td>Poiyomi 最丰富</td>
+</tr>
+<tr>
+<td><strong>Stencil</strong></td>
+<td>✅</td>
+<td>✅</td>
+<td>⚠️</td>
+<td>✅</td>
+<td>lilToon 最完善</td>
+</tr>
+<tr>
+<td><strong>AudioLink</strong></td>
+<td>⚠️ 手动</td>
+<td>✅ 完整</td>
+<td>✅ 每频段</td>
+<td>❌</td>
+<td>Poiyomi 最完整</td>
+</tr>
+<tr>
+<td><strong>Modular System</strong></td>
+<td>❌</td>
+<td>✅ Pro</td>
+<td>❌</td>
+<td>❌</td>
+<td>Poiyomi 独有</td>
+</tr>
+</tbody>
+</table>
+<h3 id="42-world平台支持">4.2 World/平台支持</h3>
+<table>
+<thead>
+<tr>
+<th>维度</th>
+<th>lilToon</th>
+<th>Poiyomi</th>
+<th>SCSS</th>
+<th>ORL</th>
+<th>Filamented</th>
+<th>UnlitWF</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>BRP</strong></td>
+<td>✅</td>
+<td>✅</td>
+<td>✅</td>
+<td>✅</td>
+<td>✅</td>
+<td>✅</td>
+</tr>
+<tr>
+<td><strong>URP</strong></td>
+<td>✅</td>
+<td>❌</td>
+<td>❌</td>
+<td>❌</td>
+<td>❌</td>
+<td>✅</td>
+</tr>
+<tr>
+<td><strong>HDRP</strong></td>
+<td>✅</td>
+<td>❌</td>
+<td>❌</td>
+<td>❌</td>
+<td>❌</td>
+<td>❌</td>
+</tr>
+<tr>
+<td><strong>Quest 支持</strong></td>
+<td>✅ 详细指南</td>
+<td>✅ Micro 变体</td>
+<td>✅</td>
+<td>⚠️ 无分级</td>
+<td>⚠️</td>
+<td>✅ Mobile 变体</td>
+</tr>
+<tr>
+<td><strong>AudioLink</strong></td>
+<td>⚠️ 手动</td>
+<td>✅ 5 频段</td>
+<td>✅ 每频段</td>
+<td>✅ 5种模式</td>
+<td>❌</td>
+<td>❌</td>
+</tr>
+<tr>
+<td><strong>VRCLightVolumes</strong></td>
+<td>❌</td>
+<td>✅</td>
+<td>❌</td>
+<td>✅</td>
+<td>✅</td>
+<td>✅ v2.0.1+</td>
+</tr>
+<tr>
+<td><strong>LTCGI</strong></td>
+<td>❌</td>
+<td>✅</td>
+<td>❌</td>
+<td>❌</td>
+<td>❌</td>
+<td>❌</td>
+</tr>
+</tbody>
+</table>
+<h3 id="43-社区与资源">4.3 社区与资源</h3>
+<table>
+<thead>
+<tr>
+<th>维度</th>
+<th>lilToon</th>
+<th>Poiyomi</th>
+<th>SCSS</th>
+<th>ORL</th>
+<th>Filamented</th>
+<th>UnlitWF</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>市场占有率</strong></td>
+<td>30%+</td>
+<td>主流(Toon 端最高)</td>
+<td>较低</td>
+<td>较高</td>
+<td>较小众</td>
+<td>较小众</td>
+</tr>
+<tr>
+<td><strong>社区活跃度</strong></td>
+<td>⭐⭐⭐⭐⭐</td>
+<td>⭐⭐⭐⭐⭐</td>
+<td>⭐⭐⭐</td>
+<td>⭐⭐⭐⭐</td>
+<td>⭐⭐⭐</td>
+<td>⭐⭐⭐⭐⭐</td>
+</tr>
+<tr>
+<td><strong>文档质量</strong></td>
+<td>⭐⭐⭐⭐⭐</td>
+<td>⭐⭐⭐⭐⭐(65 文档已入库)</td>
+<td>⭐⭐⭐</td>
+<td>⭐⭐⭐⭐</td>
+<td>⭐⭐⭐</td>
+<td>⭐⭐⭐</td>
+</tr>
+<tr>
+<td><strong>预设/教程</strong></td>
+<td>丰富</td>
+<td>丰富(Discord 社区)</td>
+<td>较少</td>
+<td>良好</td>
+<td>有限</td>
+<td>有限</td>
+</tr>
+<tr>
+<td><strong>许可证</strong></td>
+<td>MIT</td>
+<td>Patreon 订阅</td>
+<td>MIT</td>
+<td>MIT</td>
+<td>Apache 2.0</td>
+<td>zlib</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="五选择指南">五、选择指南</h2>
+<h3 id="51-按场景推荐">5.1 按场景推荐</h3>
+<table>
+<thead>
+<tr>
+<th>场景</th>
+<th>推荐 Shader</th>
+<th>原因</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>VRChat Avatar 通用</strong></td>
+<td>lilToon / Poiyomi</td>
+<td>两者并列第一梯队；lilToon 预设全,Poiyomi 风格化强</td>
+</tr>
+<tr>
+<td><strong>Cel Shader 优先</strong></td>
+<td>SCSS</td>
+<td>双阴影系统、UV 服装切换</td>
+</tr>
+<tr>
+<td><strong>风格化 Toon 效果</strong></td>
+<td>Poiyomi</td>
+<td>9 种 Lighting Type、几何溶解、星空、Voronoi</td>
+</tr>
+<tr>
+<td><strong>Quest Avatar 优化</strong></td>
+<td>Poiyomi Micro / lilToon</td>
+<td>独立 Micro 变体,完整 Quest 优化</td>
+</tr>
+<tr>
+<td><strong>独特效果需求</strong></td>
+<td>UnlitWF</td>
+<td>Fur/Water/Grass/Gem 专业系统</td>
+</tr>
+<tr>
+<td><strong>日系动漫风格</strong></td>
+<td>SCSS / lilToon</td>
+<td>专用 Cel Shader</td>
+</tr>
+<tr>
+<td><strong>水/宝石特效</strong></td>
+<td>UnlitWF</td>
+<td>专用效果系统</td>
+</tr>
+<tr>
+<td><strong>World 环境构建</strong></td>
+<td>ORL Shaders</td>
+<td>模块化、丰富的 PBR 功能</td>
+</tr>
+<tr>
+<td><strong>World VFX 特效</strong></td>
+<td>ORL Shaders</td>
+<td>Shield/Laser/Clouds 专属</td>
+</tr>
+<tr>
+<td><strong>Standard 升级</strong></td>
+<td>Filamented</td>
+<td>零成本迁移、现代 PBR</td>
+</tr>
+<tr>
+<td><strong>需要 LTCGI/AreaLit</strong></td>
+<td>ORL / Poiyomi / z3y/shaders</td>
+<td>三者均支持</td>
+</tr>
+<tr>
+<td><strong>模块化材质</strong></td>
+<td>Poiyomi Pro(Modular Shader)</td>
+<td>共享材质池,减少重复</td>
+</tr>
+</tbody>
+</table>
+<h3 id="52-按用户类型推荐">5.2 按用户类型推荐</h3>
+<table>
+<thead>
+<tr>
+<th>用户类型</th>
+<th>推荐 Shader</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>新手用户</strong></td>
+<td>lilToon</td>
+<td>一键预设，简单上手</td>
+</tr>
+<tr>
+<td><strong>进阶用户</strong></td>
+<td>Poiyomi / SCSS + lilToon</td>
+<td>风格化强 + 精细控制</td>
+</tr>
+<tr>
+<td><strong>专业 Avatar 创作者</strong></td>
+<td>Poiyomi Pro / SCSS / UnlitWF</td>
+<td>风格化/独特效果 + 高端控制</td>
+</tr>
+<tr>
+<td><strong>音乐驱动 Avatar</strong></td>
+<td>Poiyomi Pro</td>
+<td>完整 AudioLink 集成</td>
+</tr>
+<tr>
+<td><strong>World 开发者</strong></td>
+<td>ORL Shaders</td>
+<td>模块化 + VFX 丰富</td>
+</tr>
+<tr>
+<td><strong>PBR 升级需求</strong></td>
+<td>Filamented</td>
+<td>最小侵入性</td>
+</tr>
+</tbody>
+</table>
+<h3 id="53-互补使用建议">5.3 互补使用建议</h3>
+<table>
+<thead>
+<tr>
+<th>项目部分</th>
+<th>推荐 Shader</th>
+<th>组合方式</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Avatar 身体</strong></td>
+<td>lilToon / Poiyomi</td>
+<td>双阴影 + SSS + 优化</td>
+</tr>
+<tr>
+<td><strong>Avatar 服装</strong></td>
+<td>SCSS 或 Poiyomi</td>
+<td>UV 切换或模块化</td>
+</tr>
+<tr>
+<td><strong>Avatar 特效</strong></td>
+<td>Poiyomi Pro / UnlitWF</td>
+<td>Fur/Dissolve/Geometric 专业系统</td>
+</tr>
+<tr>
+<td><strong>音乐驱动 Avatar</strong></td>
+<td>Poiyomi Pro</td>
+<td>完整 AudioLink 集成</td>
+</tr>
+<tr>
+<td><strong>World 环境</strong></td>
+<td>ORL Standard</td>
+<td>PBR + Parallax + Details</td>
+</tr>
+<tr>
+<td><strong>World VFX</strong></td>
+<td>ORL VFX</td>
+<td>Shield + Laser + Clouds</td>
+</tr>
+<tr>
+<td><strong>共享特效</strong></td>
+<td>ORL Dissolve / Poiyomi Geometric Dissolve</td>
+<td>溶解效果通用</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="六知识库状态">六、知识库状态</h2>
+<table>
+<thead>
+<tr>
+<th>Shader</th>
+<th>文档状态</th>
+<th>分析完成度</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>lilToon</strong></td>
+<td>✅ 完整(17个文件)</td>
+<td>100%</td>
+</tr>
+<tr>
+<td><strong>Poiyomi</strong></td>
+<td>✅ 完整(8个文件本地，覆盖官方 65 文档)⭐2026-07-01</td>
+<td>100%</td>
+</tr>
+<tr>
+<td><strong>SCSS</strong></td>
+<td>✅ 完整(1个文件 + 详细分析)</td>
+<td>100%</td>
+</tr>
+<tr>
+<td><strong>ORL Shaders</strong></td>
+<td>✅ 完整(4个文件)</td>
+<td>100%</td>
+</tr>
+<tr>
+<td><strong>Filamented</strong></td>
+<td>✅ 完整(3个文件)</td>
+<td>100%</td>
+</tr>
+<tr>
+<td><strong>UnlitWF</strong></td>
+<td>✅ 完整(1个文件 + 详细分析)</td>
+<td>100%</td>
+</tr>
+<tr>
+<td><strong>z3y/shaders</strong></td>
+<td>✅ 对比已覆盖</td>
+<td>功能矩阵见 <a href="/STELLASTOPVRC/posts/kb-comparisons-filamented-comparison/">../../comparisons/filamented-comparison</a></td>
+</tr>
+<tr>
+<td><strong>GeneLit</strong></td>
+<td>✅ 对比已覆盖</td>
+<td>功能矩阵见 <a href="/STELLASTOPVRC/posts/kb-comparisons-filamented-comparison/">../../comparisons/filamented-comparison</a></td>
+</tr>
+<tr>
+<td><strong>Graphlit</strong></td>
+<td>✅ 对比已覆盖</td>
+<td>功能矩阵见 <a href="/STELLASTOPVRC/posts/kb-comparisons-filamented-comparison/">../../comparisons/filamented-comparison</a></td>
+</tr>
+<tr>
+<td><strong>Toon Standard</strong></td>
+<td>⚠️ 仅有 RenderType=Opaque 变更记录(2026-02-19)</td>
+<td>官方默认,无详细配置文档</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="七相关文档">七、相关文档</h2>
+<ul>
+<li><a href="/STELLASTOPVRC/posts/kb-avatar-performance-rank/">performance-rank</a> — Avatar 性能排名</li>
+<li><a href="/STELLASTOPVRC/posts/kb-avatar-optimization-guide/">optimization-guide</a> — Avatar 优化指南</li>
+<li><a href="/STELLASTOPVRC/posts/kb-avatar-ndmf-tools/">ndmf-tools</a> — NDMF 工具链</li>
+<li>index — World Shader 知识库</li>
+<li>index — Bakery 光照烘焙</li>
+</ul>
+<h2 id="八跨域兼容性注意事项">八、跨域兼容性注意事项</h2>
+<h3 id="81-多相机架构与-uv-计算-shader-的不兼容-️-2026-07-04-新增">8.1 多相机架构与 UV 计算 Shader 的不兼容 ⚠️ 2026-07-04 新增</h3>
+<blockquote>
+<p>📌 <strong>来源</strong>: <a href="/STELLASTOPVRC/posts/kb-concepts-hybrid-avatar-camera-plugins/">avatar-camera-plugins</a> (Flex Fisheye Lens Q&#x26;A Q4)</p>
+</blockquote>
+<p><strong>问题描述</strong>:</p>
+<ul>
+<li>某些 Avatar 摄影工具(典型: Flex Fisheye Lens)使用<strong>双相机架构</strong>捕捉鱼眼效果</li>
+<li>这类插件与<strong>基于屏幕 UV 计算的 Shader 不兼容</strong></li>
+<li>两个摄像头的 UV 拼接会导致基于 UV 的 Shader 计算错误</li>
+</ul>
+<p><strong>受影响的 Shader 类型</strong>:</p>
+<ul>
+<li>后处理类(基于屏幕 UV)</li>
+<li>全屏效果类</li>
+<li>任何 <code>_ScreenParams</code> / <code>ComputeScreenPos</code> 计算</li>
+</ul>
+<p><strong>Workaround</strong>:</p>
+<ul>
+<li>减少 <code>[SceenSize]</code>(如果插件支持)</li>
+<li>仅使用单摄像头模式</li>
+<li>接受图像质量降低</li>
+</ul>
+<p><strong>世界搭建建议</strong>:</p>
+<ul>
+<li>创作者应在 World 中考虑这些摄影工具的兼容性</li>
+<li>关键视觉特效避免过度依赖屏幕 UV 计算</li>
+<li>LOD 设计需考虑超广角相机会触发更远物体的 LOD 切换</li>
+</ul>
+<h3 id="82-相关文档">8.2 相关文档</h3>
+<ul>
+<li><a href="/STELLASTOPVRC/posts/kb-concepts-hybrid-avatar-camera-plugins/">avatar-camera-plugins</a> — Avatar 端摄影工具索引(包含完整的多相机兼容性说明)</li>
+</ul>
+<hr>
+<h2 id="九sdk-内置-toon-shader2026-07-04-来自-22-7f6ff">九、SDK 内置 Toon Shader(2026-07-04 来自 22-7f6ff)</h2>
+<blockquote>
+<p>[FACT] <strong>来源</strong>: <a href="https://creators.vrchat.com/platforms/android/quest-content-limitations">https://creators.vrchat.com/platforms/android/quest-content-limitations</a> + <a href="https://ask.vrchat.com/t/developer-update-april-24-2025/43071">https://ask.vrchat.com/t/developer-update-april-24-2025/43071</a> + <a href="https://wiki.vrchat.com/wiki/Shaders">https://wiki.vrchat.com/wiki/Shaders</a>
+<strong>P 等级</strong>: P1</p>
+</blockquote>
+<h3 id="91-toon-standard2025-04-24-新增推荐">9.1 Toon Standard(2025-04-24 新增,推荐)⭐</h3>
+<blockquote>
+<p>[FACT] <strong>VRChat 官方 Dev Update</strong>: “we will have a new shader named Toon Standard… provide a powerful baseline that can run well on all hardware configurations that VRChat supports.”</p>
+</blockquote>
+<ul>
+<li><strong>路径</strong>: <code>VRChat/Mobile/Toon Standard</code></li>
+<li><strong>平台</strong>: PC + Quest 全部支持</li>
+<li><strong>特性</strong>:
+<ul>
+<li>Detail Maps</li>
+<li>Emission</li>
+<li>Occlusion</li>
+<li>Rim Light</li>
+<li>动画 Hue Shift</li>
+<li>Custom Shadow Ramps(自定义阴影渐变)</li>
+<li>Matcap(球形贴图)</li>
+<li>Mask 纹理(多通道打包)</li>
+</ul>
+</li>
+<li><strong>限制</strong>: 不支持透明(transparency)、实时阴影</li>
+<li><strong>2026.1.2 变更</strong>: <code>RenderType</code> = <code>Opaque</code>(原 Transparent)</li>
+</ul>
+<h3 id="92-toon-lit老-2026-仍可用-功能较弱">9.2 Toon Lit(老, 2026 仍可用, 功能较弱)</h3>
+<blockquote>
+<p>[FACT] <strong>官方描述</strong>: “Toon Lit is a very basic flat shader consisting of one feature: no shading is performed, whatsoever and is instead rendered flat.”</p>
+</blockquote>
+<ul>
+<li><strong>路径</strong>: <code>VRChat/Mobile/Toon Lit</code></li>
+<li><strong>平台</strong>: PC + Quest 全部支持</li>
+<li><strong>特性</strong>: <strong>基础平面着色</strong>, 无阴影</li>
+<li><strong>限制</strong>:
+<ul>
+<li>无 Detail Maps</li>
+<li>无 Emission</li>
+<li>无 Rim Light</li>
+<li>无 Custom Shadow Ramps</li>
+<li><strong>无光照计算</strong>(完全平面)</li>
+</ul>
+</li>
+<li><strong>推荐度</strong>: 🟡 仅作兜底(无 Toon Standard 时的备选)</li>
+</ul>
+<h3 id="93-toon-standard-vs-toon-lit-对比">9.3 Toon Standard vs Toon Lit 对比</h3>
+<table>
+<thead>
+<tr>
+<th>特性</th>
+<th>Toon Standard(新)</th>
+<th>Toon Lit(老)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>平台</td>
+<td>PC + Quest</td>
+<td>PC + Quest</td>
+</tr>
+<tr>
+<td>阴影</td>
+<td>✅ Custom Ramps</td>
+<td>❌ 无</td>
+</tr>
+<tr>
+<td>Detail Maps</td>
+<td>✅</td>
+<td>❌</td>
+</tr>
+<tr>
+<td>Emission</td>
+<td>✅</td>
+<td>❌</td>
+</tr>
+<tr>
+<td>Rim Light</td>
+<td>✅</td>
+<td>❌</td>
+</tr>
+<tr>
+<td>Hue Shift</td>
+<td>✅ 动画</td>
+<td>❌</td>
+</tr>
+<tr>
+<td>Matcap</td>
+<td>✅</td>
+<td>❌</td>
+</tr>
+<tr>
+<td>透明</td>
+<td>❌</td>
+<td>❌</td>
+</tr>
+<tr>
+<td>推荐度</td>
+<td>⭐ 首选</td>
+<td>🟡 兜底</td>
+</tr>
+</tbody>
+</table>
+<h3 id="94-相关文档">9.4 相关文档</h3>
+<p>详见: <code>[avatar-upload-getting-started](/posts/kb-avatar-avatar-upload-getting-started/) §5.3</code></p>
+<hr> </div> <p class="kb-source-note" data-astro-cid-lvjzyg5v>
+本文由 VRChat 开发知识库自动整理（整理  · 可信度 Medium  · 最后校对 2026-07-04），
+          遇到与手写教程冲突的地方，以官方文档为最高优先级。
+</p> <section class="comments" id="comments" data-astro-cid-lvjzyg5v> <h2 class="comments__title" data-astro-cid-lvjzyg5v>✦ 旅人留言（0）</h2> <p class="comments__empty" id="commentsEmpty" data-astro-cid-lvjzyg5v>
+还没有旅人留言 —— 有疑问就写在下面，站长都会回复。
+</p> <form class="comment-form" id="commentForm" data-target="kb-avatar-shader-index" data-astro-cid-lvjzyg5v> <p class="comment-form__title" data-astro-cid-lvjzyg5v>写下你的留言</p> <input id="cAuthor" maxlength="20" placeholder="昵称（留空则为「旅人」）" data-astro-cid-lvjzyg5v> <textarea id="cBody" maxlength="1000" required placeholder="想问的问题、想说的感谢都可以（最多 1000 字）" data-astro-cid-lvjzyg5v></textarea> <div class="comment-form__actions" data-astro-cid-lvjzyg5v> <button class="btn btn--primary" type="submit" data-astro-cid-lvjzyg5v>发布留言</button> <span class="form-hint" data-astro-cid-lvjzyg5v>留言保存在本站，站长在写作台里能看到</span> <span class="form-msg" id="cMsg" data-astro-cid-lvjzyg5v></span> </div> </form> </section> <nav class="station-nav" aria-label="站间导航" data-astro-cid-lvjzyg5v> <a href="/STELLASTOPVRC/posts/kb-avatar-legal-and-licensing/" data-astro-cid-lvjzyg5v> <span class="dir" data-astro-cid-lvjzyg5v>← 上一站 · 更新的星光</span> <span class="to" data-astro-cid-lvjzyg5v>VRC 创作者法律合规总览</span> </a> <a href="/STELLASTOPVRC/posts/kb-avatar-shader-poiyomi-index/" data-astro-cid-lvjzyg5v> <span class="dir" data-astro-cid-lvjzyg5v>下一站 · 更早的星光 →</span> <span class="to" data-astro-cid-lvjzyg5v>Poiyomi Shaders 知识库索引</span> </a> </nav> </div> <aside class="toc" id="toc" hidden> <p class="toc__title">✦ 本页星图</p> <nav id="tocNav" aria-label="文章目录"></nav> </aside> <script type="module">const i=document.querySelector(".prose"),d=document.getElementById("toc"),u=document.getElementById("tocNav"),l=[];if(i&&d&&u){const c=[...i.querySelectorAll("h1, h2, h3")];if(c.length>=3){d.hidden=!1,c.forEach((o,e)=>{o.id||(o.id=`sec-${e}`);const n=document.createElement("a");n.href=`#${o.id}`;const s=(o.textContent??"").replace(/\s+/g," ").trim(),r=s.search(/[：:]/),a=r>=4?s.slice(0,r):s;n.textContent=a.length>40?`${a.slice(0,40)}…`:a,n.title=s,u.appendChild(n),l.push({a:n,h:o})});const t=()=>{let o=l[0];for(const e of l)e.h.getBoundingClientRect().top<=130&&(o=e);for(const e of l)e.a.classList.toggle("is-active",e===o)};addEventListener("scroll",t,{passive:!0}),t()}}document.querySelectorAll(".prose pre").forEach(c=>{const t=document.createElement("button");t.className="code-copy",t.type="button",t.textContent="复制",t.addEventListener("click",async()=>{const o=c.querySelector("code")?.innerText??c.innerText;try{await navigator.clipboard.writeText(o)}catch{const e=document.createElement("textarea");e.value=o,document.body.appendChild(e),e.select(),document.execCommand("copy"),e.remove()}t.textContent="已复制 ✓",t.classList.add("is-ok"),setTimeout(()=>{t.textContent="复制",t.classList.remove("is-ok")},1500)}),c.appendChild(t)});</script> </article>  </main> <footer class="site-footer"> <div class="wrap"> <p class="star-line" aria-hidden="true"> <svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> <svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> </p> <p>星之驿站 StellaStop —— 在虚拟宇宙中，为你保留一座驿站</p> <p class="site-footer__disclaimer">
+该网页目前是测试阶段，仅用于测试，所有内容仅供参考；内容全部为引用互联网当中的信息。
+</p> <p>© 2026 星之驿站 · 由 <a href="https://astro.build">Astro</a> 与星光驱动</p> <p> <a data-desk-login hidden title="写作台：登录 / 注册">登录 / 注册</a> ·
+<a href="/STELLASTOPVRC/announcements/">官方公告</a> ·
+<a href="/STELLASTOPVRC/ai/">问星 AI</a> ·
+<a href="/STELLASTOPVRC/feedback/">旅人留言板</a> </p> </div> </footer> <button class="to-top" id="toTop" aria-label="回到顶部"> <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"> <path d="M12 20V5"></path> <path d="M5.5 11.5 12 5l6.5 6.5"></path> </svg> </button> <script type="module">const e=document.getElementById("toTop");if(e){const t=()=>e.classList.toggle("is-visible",scrollY>480);addEventListener("scroll",t,{passive:!0}),t(),e.addEventListener("click",()=>{const o=matchMedia("(prefers-reduced-motion: reduce)").matches;scrollTo({top:0,behavior:o?"auto":"smooth"})})}</script> <script>(function(){const deskConfigured = "";
+
+      /* 写作台探测（页面尾部执行，DOM 已就绪）：
+         1. 计算写作台地址：站点配置 deskUrl（公网部署时填）> 本机默认 localhost:4322 > 同主机 4322
+         2. 探测 /api/gate/status —— 在线才点亮「登录 / 注册」入口，并复用给验证门横幅
+         3. 不在线则保持隐藏，绝不会把访客拽进内网地址；同时给出一次性「镜像模式」提示 */
+      (function () {
+        var host = location.hostname;
+        var isLocal = host === 'localhost' || host === '127.0.0.1' || host === '[::1]';
+        var desk = deskConfigured ||
+          (isLocal ? 'http://localhost:4322' : location.protocol + '//' + host + ':4322');
+        window.STELLA_DESK = desk;
+
+        function revealLogin() {
+          document.querySelectorAll('[data-desk-login]').forEach(function (a) {
+            a.href = desk + '/admin';
+            a.removeAttribute('hidden');
+          });
+        }
+        function showBanner(css, html, shiftHeader) {
+          var bar = document.createElement('div');
+          bar.style.cssText = css;
+          bar.innerHTML = html;
+          document.body.prepend(bar);
+          if (shiftHeader) {
+            var header = document.querySelector('.site-header');
+            if (header) header.style.marginTop = '42px';
+          }
+        }
+        function hintMirrorMode() {
+          try {
+            if (sessionStorage.getItem('stella-desk-hint')) return;
+            sessionStorage.setItem('stella-desk-hint', '1');
+          } catch (e) { /* 无痕模式等：忽略 */ }
+          var tip = document.createElement('div');
+          tip.style.cssText = 'position:fixed;left:14px;bottom:14px;z-index:9998;max-width:min(92vw,430px);padding:.65rem .9rem;border-radius:12px;background:rgba(18,20,44,.92);border:1px solid rgba(150,142,255,.35);color:#e8e6ff;font-size:.82rem;line-height:1.6;font-family:system-ui,sans-serif;box-shadow:0 8px 30px rgba(0,0,0,.35)';
+          tip.innerHTML = 'ℹ️ 静态镜像模式：登录 / 评论 / AI 等互动功能需要站长写作台在线，当前不可用。' +
+            '<span id="stellaDeskHintClose" style="float:right;cursor:pointer;opacity:.75;font-weight:700;margin-left:.6rem" title="关闭">×</span>';
+          document.body.appendChild(tip);
+          var close = function () { tip.remove(); };
+          tip.querySelector('#stellaDeskHintClose').addEventListener('click', close);
+          setTimeout(close, 9000);
+        }
+
+        try {
+          var ctrl = new AbortController();
+          var timer = setTimeout(function () { ctrl.abort(); }, 2500);
+          fetch(desk + '/api/gate/status', { credentials: 'include', signal: ctrl.signal })
+            .then(function (r) { return r.ok ? r.json() : null; })
+            .then(function (d) {
+              clearTimeout(timer);
+              if (!d) throw new Error('desk-offline');
+              window.STELLA_DESK_OK = true;
+              revealLogin();
+              if (d.regionBlocked) {
+                showBanner(
+                  'position:fixed;top:0;left:0;right:0;z-index:9999;padding:1.2rem;text-align:center;background:#1a0a0a;color:#ff9ed2;font-size:.95rem;border-bottom:2px solid #ff4d6d;font-family:system-ui,sans-serif',
+                  '⛔ 你所在的地区（' + (d.regionCountry || '未知') + '）暂不开放访问。',
+                  false
+                );
+                return;
+              }
+              if (d.enabled && !d.passed) {
+                showBanner(
+                  'position:fixed;top:0;left:0;right:0;z-index:9999;padding:0.7rem;text-align:center;background:linear-gradient(94deg,rgba(143,127,247,.25),rgba(98,200,245,.18));border-bottom:1px solid rgba(150,142,255,.3);color:#f0efff;font-size:.88rem;font-family:system-ui,sans-serif',
+                  '🔒 本站启用了安全验证 —— <a href="' + desk + '/gate?next=' + encodeURIComponent(location.href) + '" style="color:#ffd98e;font-weight:700;text-decoration:underline">点击完成验证</a>，通过后即可使用全部功能（30 天免验）。',
+                  true
+                );
+              }
+            })
+            .catch(function () {
+              clearTimeout(timer);
+              window.STELLA_DESK_OK = false;
+              hintMirrorMode();
+            });
+        } catch (e) { /* 忽略 */ }
+      })();
+    })();</script> </body> </html> <script type="module">const m=document.getElementById("commentForm"),s=document.getElementById("cMsg"),u=`${location.protocol}//${location.hostname}:4322/api/message`;function r(e,t=!1){s&&(s.textContent=e,s.classList.toggle("is-err",t),s.classList.toggle("is-ok",!t))}function y(){const e=new Date,t=n=>String(n).padStart(2,"0");return`${e.getFullYear()}-${t(e.getMonth()+1)}-${t(e.getDate())}`}function f(e){let t=7;for(const n of e)t=(t*31+n.charCodeAt(0))%360;return t}function g(e,t){const n=document.createElement("li");n.className="comment",n.innerHTML=`
+      <span class="comment__avatar"></span>
+      <div class="comment__bubble">
+        <div class="comment__head">
+          <span class="comment__name"></span>
+          <time class="comment__date">${y()}</time>
+        </div>
+        <p class="comment__body"></p>
+      </div>`;const o=n.querySelector(".comment__avatar");return o.style.setProperty("--h",String(f(e))),o.textContent=e.slice(0,1),n.querySelector(".comment__name").textContent=e,n.querySelector(".comment__body").textContent=t,n}m?.addEventListener("submit",async e=>{e.preventDefault();const t=document.getElementById("cBody").value.trim();if(!t)return r("留言内容不能为空哦",!0);const n=document.getElementById("cAuthor").value.trim()||"旅人",o=m.querySelector("button");o&&(o.disabled=!0);try{const c=await fetch(u,{credentials:"include",method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({target:m.dataset.target,kind:"comment",author:n,body:t})}),d=await c.json().catch(()=>({}));if(!c.ok)throw new Error(d.error||`发送失败（${c.status}）`);const l=document.querySelector(".comment-list");l&&l.appendChild(g(n,t)),document.getElementById("commentsEmpty")?.remove(),document.getElementById("cBody").value="",r("留言已发布，感谢支持 ✦");const a=document.querySelector(".comments__title"),i=a?.textContent?.match(/（(\d+)）/);a&&i&&(a.textContent=a.textContent.replace(/（\d+）/,`（${Number(i[1])+1}）`))}catch(c){r(c instanceof TypeError?"写作台没在运行，暂时收不到留言 —— 双击「启动博客.bat」就好":c.message,!0)}finally{o&&(o.disabled=!1)}});</script> 

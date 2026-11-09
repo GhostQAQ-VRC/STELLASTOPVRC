@@ -1,0 +1,753 @@
+<!DOCTYPE html><html lang="zh-CN"> <head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="generator" content="Astro v5.18.2"><meta name="description" content="本文档汇总创作者最常写的 VRCTween 模式,每个模式都给出完整可编译的 UdonSharp 代码,以及已知陷阱与性能注意事项。"><meta name="theme-color" content="#070a1c"><meta property="og:title" content="VRCTween 常用模式 · 星之驿站 StellaStop"><meta property="og:description" content="本文档汇总创作者最常写的 VRCTween 模式,每个模式都给出完整可编译的 UdonSharp 代码,以及已知陷阱与性能注意事项。"><meta property="og:type" content="website"><meta name="twitter:card" content="summary"><link rel="icon" type="image/svg+xml" href="/STELLASTOPVRC/favicon.svg"><script>
+      // 在渲染前恢复主题与特效档位，避免闪一下默认状态
+      try {
+        document.documentElement.dataset.theme =
+          localStorage.getItem('stella-theme') || 'nebula';
+        document.documentElement.dataset.fx =
+          localStorage.getItem('stella-fx') || 'standard';
+      } catch {
+        /* 隐私模式读不到就算了 */
+      }
+    </script><link rel="stylesheet" href="/STELLASTOPVRC/custom-vars.css"><title>VRCTween 常用模式 · 星之驿站 StellaStop</title><link rel="stylesheet" href="/STELLASTOPVRC/_astro/about.Bgh6wcGl.css">
+<style>.post-head__meta[data-astro-cid-lvjzyg5v]{color:var(--ink-faint);font-family:var(--font-mono);font-size:.82rem}.post-head[data-astro-cid-lvjzyg5v] .chip-row[data-astro-cid-lvjzyg5v]{margin-top:1rem}.kb-source-note[data-astro-cid-lvjzyg5v]{max-width:760px;margin:2.2rem auto 0;font-size:.82rem;color:var(--ink-faint);border-top:1px dashed var(--line);padding-top:1rem}
+</style></head> <body> <div class="site-notice" id="siteNotice"> <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> <span class="site-notice__text">欢迎来到星之驿站！</span> <button class="site-notice__close" id="noticeClose" type="button" aria-label="关闭公告">
+×
+</button> </div> <a class="skip-link" href="#main">跳到主要内容</a> <canvas id="starfield" aria-hidden="true" data-astro-cid-ra7sfcwn></canvas> <div class="fx-aurora fx-aurora--a" aria-hidden="true" data-astro-cid-ra7sfcwn></div> <div class="fx-aurora fx-aurora--b" aria-hidden="true" data-astro-cid-ra7sfcwn></div>  <script type="module">const u=document.getElementById("starfield");if(u){let F=function(){const n=Math.random();return n<.1?"gold":n<.42?"blue":"white"},v=function(){const n=Math.min(window.devicePixelRatio||1,2);s=window.innerWidth,d=window.innerHeight,u.width=s*n,u.height=d*n,u.style.width=`${s}px`,u.style.height=`${d}px`,t.setTransform(n,0,0,n,0,0);const e=Math.min(190,Math.round(s*d/8500));l=Array.from({length:e},()=>({x:Math.random()*s,y:Math.random()*d,r:r(.4,1.7),base:r(.25,.8),amp:r(.12,.4),speed:r(6e-4,.0022),phase:r(0,Math.PI*2),c:F()})),C=Array.from({length:26},()=>({x:Math.random()*s,y:Math.random()*d,r:r(.9,2.4),vx:r(-.006,.006),vy:r(-.02,-.006),base:r(.2,.5),speed:r(8e-4,.002),phase:r(0,Math.PI*2),c:Math.random()<.5?"gold":"violet"})),c==="off"&&m(0,!0)},D=function(n){const e=Math.random()<.5?1:-1,o=r(Math.PI/7,Math.PI/5),a=r(.45,.75);y.push({x:r(s*.15,s*.85),y:r(-20,d*.3),vx:Math.cos(o)*a*e,vy:Math.sin(o)*a,born:n,life:r(750,1050),len:r(100,170)})},S=function(n){y=y.filter(e=>n-e.born<e.life);for(const e of y){const o=(n-e.born)/e.life,a=e.x+e.vx*(n-e.born),i=e.y+e.vy*(n-e.born),f=o<.15?o/.15:o>.7?(1-o)/.3:1,h=Math.hypot(e.vx,e.vy),x=e.vx/h,g=e.vy/h,b=t.createLinearGradient(a,i,a-x*e.len,i-g*e.len);b.addColorStop(0,`rgba(236,242,255,${(.85*f).toFixed(3)})`),b.addColorStop(1,"rgba(236,242,255,0)"),t.strokeStyle=b,t.lineWidth=1.6,t.lineCap="round",t.beginPath(),t.moveTo(a,i),t.lineTo(a-x*e.len,i-g*e.len),t.stroke()}},B=function(){let o=0;t.lineWidth=.7;for(let a=0;a<l.length&&o<26;a++)for(let i=a+1;i<l.length&&o<26;i++){const f=l[a].x-l[i].x,h=l[a].y-l[i].y,x=f*f+h*h;if(x<16900){const g=(1-Math.sqrt(x)/130)*.17;t.strokeStyle=`rgba(178,170,255,${g.toFixed(3)})`,t.beginPath(),t.moveTo(l[a].x,l[a].y),t.lineTo(l[i].x,l[i].y),t.stroke(),o++}}},X=function(n){for(const e of C){e.x+=e.vx*16,e.y+=e.vy*16,e.y<-12&&(e.y=d+10),e.x<-12&&(e.x=s+10),e.x>s+12&&(e.x=-10);const o=Math.max(.05,e.base+.25*Math.sin(n*e.speed+e.phase)),[a,i,f]=A[e.c];t.beginPath(),t.arc(e.x,e.y,e.r,0,7),t.shadowBlur=9,t.shadowColor=`rgba(${a},${i},${f},0.9)`,t.fillStyle=`rgba(${a},${i},${f},${o.toFixed(3)})`,t.fill()}t.shadowBlur=0},m=function(n,e=!1){t.clearRect(0,0,s,d);for(const o of l){const a=c==="off"?o.base:Math.max(.05,o.base+o.amp*Math.sin(n*o.speed+o.phase)),[i,f,h]=A[o.c];t.beginPath(),t.arc(o.x,o.y,o.r,0,7),o.r>1.25?(t.shadowBlur=7,t.shadowColor=`rgba(${i},${f},${h},0.85)`):t.shadowBlur=0,t.fillStyle=`rgba(${i},${f},${h},${a.toFixed(3)})`,t.fill()}if(t.shadowBlur=0,c!=="off"&&!e){c==="fancy"&&(B(),X(n));const o=c==="fancy"?r(2600,6e3):r(4200,9500);n>P&&(D(n),P=n+o),S(n)}},$=function(n){m(n),M=requestAnimationFrame($)},p=function(){if(c==="off"){m(0,!0);return}cancelAnimationFrame(M),M=requestAnimationFrame($)},w=function(){cancelAnimationFrame(M),t.clearRect(0,0,s,d),m(0,!0)};const t=u.getContext("2d"),k=matchMedia("(prefers-reduced-motion: reduce)").matches,A={white:[240,240,255],blue:[150,215,250],gold:[255,218,150],violet:[178,170,255]};let s=0,d=0,l=[],C=[],y=[],P=2500,M=0,c=document.documentElement.dataset.fx||"standard";k&&(c="off");const r=(n,e)=>n+Math.random()*(e-n);v(),addEventListener("resize",v),document.addEventListener("stella-fx-change",n=>{c=n.detail,c==="off"?w():p()}),c==="off"?m(0,!0):(p(),document.addEventListener("visibilitychange",()=>{document.hidden?w():p()}))}</script> <header class="site-header"> <div class="wrap site-header__inner"> <a class="logo" href="/STELLASTOPVRC/"> <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> <span>星之驿站</span> <span class="logo__romaji">StellaStop</span> </a> <div class="header-right"> <nav class="site-nav" aria-label="站内导航"> <a href="/STELLASTOPVRC/"> 首页 </a><a href="/STELLASTOPVRC/start/"> 新手 </a><a href="/STELLASTOPVRC/posts/"> 教程 </a><a href="/STELLASTOPVRC/videos/"> 视频 </a><a href="/STELLASTOPVRC/resources/"> 资源 </a><a href="/STELLASTOPVRC/booth/"> Booth </a><a href="/STELLASTOPVRC/announcements/"> 公告 </a><a href="/STELLASTOPVRC/ai/"> 问星 </a><a href="/STELLASTOPVRC/changelog/"> 更新日志 </a><a href="/STELLASTOPVRC/about/"> 关于 </a> </nav> <a class="login-link" data-desk-login hidden title="写作台：登录 / 注册后可发教程、传资源">
+登录 / 注册
+</a> <div class="theme-switch"> <button class="theme-switch__btn" id="themeBtn" type="button" aria-haspopup="listbox" aria-expanded="false" aria-label="切换主题配色" title="切换主题配色"> <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"> <path d="M12 3a9 9 0 1 0 9 9c0-1.2-1-2-2.2-2H17a2 2 0 0 1-2-2V6.2C15 5 14.2 4 13 4.4A9 9 0 0 0 12 3Z"></path> <circle cx="7.5" cy="11.5" r="1" fill="currentColor" stroke="none"></circle> <circle cx="10" cy="7.5" r="1" fill="currentColor" stroke="none"></circle> <circle cx="15" cy="7" r="1" fill="currentColor" stroke="none"></circle> </svg> </button> <div class="theme-pop" id="themePop" role="listbox" aria-label="选择主题" hidden> <button class="theme-opt" type="button" role="option" data-theme-value="nebula" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#8f7ff7"></span><span class="dot" style="background:#62c8f5"></span><span class="dot" style="background:#ffd98e"></span> </span> <span class="theme-opt__name">星云 · 蓝紫</span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt" type="button" role="option" data-theme-value="sakura" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#ff8fc7"></span><span class="dot" style="background:#c79bff"></span><span class="dot" style="background:#ffd08e"></span> </span> <span class="theme-opt__name">樱语 · 粉紫</span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt" type="button" role="option" data-theme-value="miku" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#2ed3c2"></span><span class="dot" style="background:#6ea8ff"></span><span class="dot" style="background:#ffe08e"></span> </span> <span class="theme-opt__name">葱色 · 青绿</span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt" type="button" role="option" data-theme-value="ember" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#ffb35c"></span><span class="dot" style="background:#ff7e6b"></span><span class="dot" style="background:#ffd98e"></span> </span> <span class="theme-opt__name">暮金 · 暖橙</span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt" type="button" role="option" data-theme-value="dawn" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#6a5ce8"></span><span class="dot" style="background:#e0568f"></span><span class="dot" style="background:#b8821e"></span> </span> <span class="theme-opt__name">晨星 · 浅色</span> <span class="theme-opt__mark">✦</span> </button> </div> </div> <script type="module">const a=document.getElementById("themeBtn"),n=document.getElementById("themePop");function s(c){document.documentElement.dataset.theme=c;try{localStorage.setItem("stella-theme",c)}catch{}const e=getComputedStyle(document.documentElement).getPropertyValue("--bg-deep").trim();document.querySelector('meta[name="theme-color"]')?.setAttribute("content",e||"#070a1c"),document.querySelectorAll(".theme-opt").forEach(t=>{const d=t.dataset.themeValue===c;t.classList.toggle("is-active",d),t.setAttribute("aria-selected",String(d))})}if(a&&n){const c=document.documentElement.dataset.theme||"nebula";document.querySelectorAll(".theme-opt").forEach(e=>{const t=e.dataset.themeValue===c;e.classList.toggle("is-active",t),e.setAttribute("aria-selected",String(t))}),a.addEventListener("click",e=>{e.stopPropagation();const t=n.hidden;n.hidden=!t,a.setAttribute("aria-expanded",String(t))}),document.addEventListener("click",e=>{!n.hidden&&!e.target.closest(".theme-switch")&&(n.hidden=!0,a.setAttribute("aria-expanded","false"))}),document.addEventListener("keydown",e=>{e.key==="Escape"&&!n.hidden&&(n.hidden=!0,a.setAttribute("aria-expanded","false"),a.focus())}),n.addEventListener("click",e=>{const t=e.target.closest(".theme-opt");t&&(s(t.dataset.themeValue??"nebula"),n.hidden=!0,a.setAttribute("aria-expanded","false"))})}</script> <div class="theme-switch fx-switch"> <button class="theme-switch__btn" id="fxBtn" type="button" aria-haspopup="listbox" aria-expanded="false" aria-label="背景特效设置" title="背景特效设置"> <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"> <path d="M5 3v4M3 5h4M6.5 17.5v3M5 19h3"></path> <path d="M14.5 4.5 16 9l4.5 1.5L16 12l-1.5 4.5L13 12l-4.5-1.5L13 9l1.5-4.5Z"></path> </svg> </button> <div class="theme-pop" id="fxPop" role="listbox" aria-label="背景特效" hidden> <button class="theme-opt fx-opt" type="button" role="option" data-fx-value="off" aria-selected="false"> <span class="fx-opt__body"> <span class="fx-opt__name">关闭特效</span> <span class="fx-opt__hint">最省电</span> </span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt fx-opt" type="button" role="option" data-fx-value="standard" aria-selected="false"> <span class="fx-opt__body"> <span class="fx-opt__name">标准</span> <span class="fx-opt__hint">闪烁星空 + 流星</span> </span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt fx-opt" type="button" role="option" data-fx-value="fancy" aria-selected="false"> <span class="fx-opt__body"> <span class="fx-opt__name">华丽</span> <span class="fx-opt__hint">追加极光 / 星座 / 光尘</span> </span> <span class="theme-opt__mark">✦</span> </button> </div> </div> <script type="module">const n=document.getElementById("fxBtn"),a=document.getElementById("fxPop");function s(d){document.documentElement.dataset.fx=d;try{localStorage.setItem("stella-fx",d)}catch{}document.querySelectorAll("#fxPop .fx-opt").forEach(t=>{const e=t.dataset.fxValue===d;t.classList.toggle("is-active",e),t.setAttribute("aria-selected",String(e))}),document.dispatchEvent(new CustomEvent("stella-fx-change",{detail:d}))}if(n&&a){const d=document.documentElement.dataset.fx||"standard";document.querySelectorAll("#fxPop .fx-opt").forEach(t=>{const e=t.dataset.fxValue===d;t.classList.toggle("is-active",e),t.setAttribute("aria-selected",String(e))}),n.addEventListener("click",t=>{t.stopPropagation();const e=a.hidden;a.hidden=!e,n.setAttribute("aria-expanded",String(e))}),document.addEventListener("click",t=>{!a.hidden&&!t.target.closest(".fx-switch")&&(a.hidden=!0,n.setAttribute("aria-expanded","false"))}),document.addEventListener("keydown",t=>{t.key==="Escape"&&!a.hidden&&(a.hidden=!0,n.setAttribute("aria-expanded","false"),n.focus())}),a.addEventListener("click",t=>{const e=t.target.closest(".fx-opt");e&&(s(e.dataset.fxValue??"standard"),a.hidden=!0,n.setAttribute("aria-expanded","false"))})}</script> </div> </div> </header> <main id="main">  <article class="wrap post-layout" data-astro-cid-lvjzyg5v> <div class="post-main page-fade" data-astro-cid-lvjzyg5v> <header class="post-head" data-astro-cid-lvjzyg5v> <a class="crumb" href="/STELLASTOPVRC/posts/" data-astro-cid-lvjzyg5v>← 返回教程档案</a> <div class="post-head__meta" style="--accent:var(--ink-dim)" data-astro-cid-lvjzyg5v> <span class="badge" data-cat="Udon 世界编程" data-astro-cid-lvjzyg5v>Udon 世界编程</span> <time datetime="2026-11-09" data-astro-cid-lvjzyg5v>2026-11-09</time> <span class="post-head__reading" data-astro-cid-lvjzyg5v>⏱ 约 35 分钟</span>  </div> <h1 class="post-head__title" data-astro-cid-lvjzyg5v>VRCTween 常用模式</h1> <p class="post-head__lead" data-astro-cid-lvjzyg5v>本文档汇总创作者最常写的 VRCTween 模式,每个模式都给出完整可编译的 UdonSharp 代码,以及已知陷阱与性能注意事项。</p> <div class="chip-row" data-astro-cid-lvjzyg5v> <a class="chip" href="/STELLASTOPVRC/posts/?tag=%E7%9F%A5%E8%AF%86%E5%BA%93" data-astro-cid-lvjzyg5v> 知识库 </a><a class="chip" href="/STELLASTOPVRC/posts/?tag=world" data-astro-cid-lvjzyg5v> world </a> </div> </header> <div class="prose" data-astro-cid-lvjzyg5v> <hr>
+<h1 id="vrctween-常用模式">VRCTween 常用模式</h1>
+<p>本文档汇总<strong>创作者最常写</strong>的 VRCTween 模式,每个模式都给出<strong>完整可编译</strong>的 UdonSharp 代码,以及<strong>已知陷阱</strong>与<strong>性能注意事项</strong>。</p>
+<blockquote>
+<p><strong>核心原则</strong>:</p>
+<ol>
+<li><strong>创建前先 Kill 旧 tween</strong>(防止快速点击重叠)</li>
+<li><strong>OnDestroy 必须 KillAllTweens</strong>(无限循环必须清理)</li>
+<li><strong>热路径用复用模式</strong>(每帧或每事件)</li>
+<li><strong>检查 IsValid</strong>(输入验证失败不报错)</li>
+<li><strong>同步动画用 Goto + Synced 时间戳</strong></li>
+</ol>
+</blockquote>
+<hr>
+<hr>
+<h1 id="vrctween-常用模式模式-1-按钮按下回弹">VRCTween 常用模式：模式 1: 按钮按下回弹</h1>
+<blockquote>
+<p>最常见的 UI 反馈:点击 → 弹大 → 弹回</p>
+</blockquote>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="csharp"><code><span class="line"><span style="color:#F97583">using</span><span style="color:#B392F0"> UdonSharp</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">using</span><span style="color:#B392F0"> UnityEngine</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">using</span><span style="color:#B392F0"> VRC</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">SDK3</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">Components</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">public</span><span style="color:#F97583"> class</span><span style="color:#B392F0"> BouncyButton</span><span style="color:#E1E4E8"> : </span><span style="color:#B392F0">UdonSharpBehaviour</span></span>
+<span class="line"><span style="color:#E1E4E8">{</span></span>
+<span class="line"><span style="color:#F97583">    public</span><span style="color:#B392F0"> GameObject</span><span style="color:#B392F0"> button</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">    private</span><span style="color:#B392F0"> VRCTweenHandle</span><span style="color:#B392F0"> _tween</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">    public</span><span style="color:#F97583"> override</span><span style="color:#F97583"> void</span><span style="color:#B392F0"> Interact</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"><span style="color:#E1E4E8">    {</span></span>
+<span class="line"><span style="color:#6A737D">        // 1. Kill 旧 tween(快速点击时)</span></span>
+<span class="line"><span style="color:#F97583">        if</span><span style="color:#E1E4E8"> (_tween.IsValid) _tween.</span><span style="color:#B392F0">Kill</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">        // 2. 弹大 → 弹回</span></span>
+<span class="line"><span style="color:#E1E4E8">        _tween </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> button.</span><span style="color:#B392F0">TweenScale</span><span style="color:#E1E4E8">(Vector3.one </span><span style="color:#F97583">*</span><span style="color:#79B8FF"> 1.3f</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">0.1f</span><span style="color:#E1E4E8">, VRCTweenEase.OutQuad)</span></span>
+<span class="line"><span style="color:#E1E4E8">            .</span><span style="color:#B392F0">OnComplete</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">this</span><span style="color:#E1E4E8">, </span><span style="color:#F97583">nameof</span><span style="color:#E1E4E8">(ResetScale));</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">    public</span><span style="color:#F97583"> void</span><span style="color:#B392F0"> ResetScale</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"><span style="color:#E1E4E8">    {</span></span>
+<span class="line"><span style="color:#E1E4E8">        _tween </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> button.</span><span style="color:#B392F0">TweenScale</span><span style="color:#E1E4E8">(Vector3.one, </span><span style="color:#79B8FF">0.25f</span><span style="color:#E1E4E8">, VRCTweenEase.OutElastic);</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">    public</span><span style="color:#F97583"> override</span><span style="color:#F97583"> void</span><span style="color:#B392F0"> OnDestroy</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"><span style="color:#E1E4E8">    {</span></span>
+<span class="line"><span style="color:#E1E4E8">        button.</span><span style="color:#B392F0">KillAllTweens</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<p><strong>关键细节</strong>:</p>
+<ul>
+<li><code>_tween.IsValid</code> 检查(默认值无效)</li>
+<li><code>OutElastic</code> 弹回(过冲感)</li>
+<li>两个阶段用不同 <code>duration</code>(弹大快、弹回慢)</li>
+</ul>
+<hr>
+<hr>
+<h1 id="vrctween-常用模式模式-2-ui-淡入淡出整组面板">VRCTween 常用模式：模式 2: UI 淡入淡出(整组面板)</h1>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="csharp"><code><span class="line"><span style="color:#F97583">using</span><span style="color:#B392F0"> UdonSharp</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">using</span><span style="color:#B392F0"> UnityEngine</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">using</span><span style="color:#B392F0"> VRC</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">SDK3</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">Components</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">public</span><span style="color:#F97583"> class</span><span style="color:#B392F0"> UIPanelController</span><span style="color:#E1E4E8"> : </span><span style="color:#B392F0">UdonSharpBehaviour</span></span>
+<span class="line"><span style="color:#E1E4E8">{</span></span>
+<span class="line"><span style="color:#F97583">    public</span><span style="color:#B392F0"> CanvasGroup</span><span style="color:#B392F0"> panel</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">    public</span><span style="color:#F97583"> void</span><span style="color:#B392F0"> ShowPanel</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"><span style="color:#E1E4E8">    {</span></span>
+<span class="line"><span style="color:#E1E4E8">        panel.gameObject.</span><span style="color:#B392F0">SetActive</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">true</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#E1E4E8">        panel.</span><span style="color:#B392F0">TweenFade</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">1f</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">0.5f</span><span style="color:#E1E4E8">, VRCTweenEase.OutQuad)</span></span>
+<span class="line"><span style="color:#E1E4E8">            .</span><span style="color:#B392F0">OnComplete</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">this</span><span style="color:#E1E4E8">, </span><span style="color:#F97583">nameof</span><span style="color:#E1E4E8">(OnShown));</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">    public</span><span style="color:#F97583"> void</span><span style="color:#B392F0"> HidePanel</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"><span style="color:#E1E4E8">    {</span></span>
+<span class="line"><span style="color:#E1E4E8">        panel.</span><span style="color:#B392F0">TweenFade</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">0f</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">0.4f</span><span style="color:#E1E4E8">, VRCTweenEase.InQuad)</span></span>
+<span class="line"><span style="color:#E1E4E8">            .</span><span style="color:#B392F0">OnComplete</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">this</span><span style="color:#E1E4E8">, </span><span style="color:#F97583">nameof</span><span style="color:#E1E4E8">(OnHidden));</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">    public</span><span style="color:#F97583"> void</span><span style="color:#B392F0"> OnShown</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"><span style="color:#E1E4E8">    {</span></span>
+<span class="line"><span style="color:#E1E4E8">        panel.interactable </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> true</span><span style="color:#E1E4E8">;  </span><span style="color:#6A737D">// 淡入后可交互</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">    public</span><span style="color:#F97583"> void</span><span style="color:#B392F0"> OnHidden</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"><span style="color:#E1E4E8">    {</span></span>
+<span class="line"><span style="color:#E1E4E8">        panel.interactable </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> false</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">        panel.gameObject.</span><span style="color:#B392F0">SetActive</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">false</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<p><strong>关键细节</strong>:</p>
+<ul>
+<li><code>CanvasGroup.TweenFade</code> 同时影响所有子元素</li>
+<li>完全淡出后 <code>SetActive(false)</code> 节省渲染</li>
+<li>用 <code>interactable</code> 控制可交互窗口期</li>
+</ul>
+<hr>
+<hr>
+<h1 id="vrctween-常用模式模式-3-通知横幅滑入滑出">VRCTween 常用模式：模式 3: 通知横幅滑入滑出</h1>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="csharp"><code><span class="line"><span style="color:#F97583">using</span><span style="color:#B392F0"> UdonSharp</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">using</span><span style="color:#B392F0"> UnityEngine</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">using</span><span style="color:#B392F0"> VRC</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">SDK3</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">Components</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">public</span><span style="color:#F97583"> class</span><span style="color:#B392F0"> NotificationBanner</span><span style="color:#E1E4E8"> : </span><span style="color:#B392F0">UdonSharpBehaviour</span></span>
+<span class="line"><span style="color:#E1E4E8">{</span></span>
+<span class="line"><span style="color:#F97583">    public</span><span style="color:#B392F0"> RectTransform</span><span style="color:#B392F0"> banner</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">    public</span><span style="color:#F97583"> void</span><span style="color:#B392F0"> ShowNotification</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">string</span><span style="color:#B392F0"> message</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#E1E4E8">    {</span></span>
+<span class="line"><span style="color:#6A737D">        // 从屏幕左侧滑入</span></span>
+<span class="line"><span style="color:#E1E4E8">        banner.anchoredPosition </span><span style="color:#F97583">=</span><span style="color:#F97583"> new</span><span style="color:#B392F0"> Vector2</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">-</span><span style="color:#79B8FF">500</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">0</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#E1E4E8">        banner.</span><span style="color:#B392F0">TweenAnchorPos</span><span style="color:#E1E4E8">(Vector2.zero, </span><span style="color:#79B8FF">0.5f</span><span style="color:#E1E4E8">, VRCTweenEase.OutBack)</span></span>
+<span class="line"><span style="color:#E1E4E8">            .</span><span style="color:#B392F0">OnComplete</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">this</span><span style="color:#E1E4E8">, </span><span style="color:#F97583">nameof</span><span style="color:#E1E4E8">(AutoHide));</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">    public</span><span style="color:#F97583"> void</span><span style="color:#B392F0"> AutoHide</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"><span style="color:#E1E4E8">    {</span></span>
+<span class="line"><span style="color:#6A737D">        // 3 秒后自动滑出</span></span>
+<span class="line"><span style="color:#E1E4E8">        VRCTween.</span><span style="color:#B392F0">DelayedCall</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">this</span><span style="color:#E1E4E8">, </span><span style="color:#F97583">nameof</span><span style="color:#E1E4E8">(HideAfterDelay), </span><span style="color:#79B8FF">3f</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">    public</span><span style="color:#F97583"> void</span><span style="color:#B392F0"> HideAfterDelay</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"><span style="color:#E1E4E8">    {</span></span>
+<span class="line"><span style="color:#E1E4E8">        banner.</span><span style="color:#B392F0">TweenAnchorPos</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">new</span><span style="color:#B392F0"> Vector2</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">-</span><span style="color:#79B8FF">500</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">0</span><span style="color:#E1E4E8">), </span><span style="color:#79B8FF">0.4f</span><span style="color:#E1E4E8">, VRCTweenEase.InQuad);</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<p><strong>关键细节</strong>:</p>
+<ul>
+<li><code>TweenAnchorPos</code> 移动 UI(不是 <code>TweenPosition</code>)</li>
+<li><code>OutBack</code> 滑入有过冲感</li>
+<li><code>DelayedCall</code> 替代 <code>SendCustomEventDelayedSeconds</code>(可取消)</li>
+</ul>
+<hr>
+<hr>
+<h1 id="vrctween-常用模式模式-4-相机平滑跟随热路径复用">VRCTween 常用模式：模式 4: 相机平滑跟随(热路径复用)</h1>
+<blockquote>
+<p><strong>必须用复用模式</strong>,否则每帧创建+销毁 tween 性能爆炸。</p>
+</blockquote>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="csharp"><code><span class="line"><span style="color:#F97583">using</span><span style="color:#B392F0"> UdonSharp</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">using</span><span style="color:#B392F0"> UnityEngine</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">using</span><span style="color:#B392F0"> VRC</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">SDK3</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">Components</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">public</span><span style="color:#F97583"> class</span><span style="color:#B392F0"> SmoothCameraFollow</span><span style="color:#E1E4E8"> : </span><span style="color:#B392F0">UdonSharpBehaviour</span></span>
+<span class="line"><span style="color:#E1E4E8">{</span></span>
+<span class="line"><span style="color:#F97583">    public</span><span style="color:#B392F0"> Transform</span><span style="color:#B392F0"> target</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">    public</span><span style="color:#F97583"> float</span><span style="color:#B392F0"> defaultDuration</span><span style="color:#F97583"> =</span><span style="color:#79B8FF"> 0.3f</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">    private</span><span style="color:#B392F0"> VRCTweenHandle</span><span style="color:#B392F0"> _moveHandle</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">    private</span><span style="color:#F97583"> bool</span><span style="color:#B392F0"> _initialized</span><span style="color:#F97583"> =</span><span style="color:#79B8FF"> false</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">    void</span><span style="color:#B392F0"> Start</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"><span style="color:#E1E4E8">    {</span></span>
+<span class="line"><span style="color:#6A737D">        // 一次创建,无限循环,初始暂停</span></span>
+<span class="line"><span style="color:#E1E4E8">        _moveHandle </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> gameObject.</span><span style="color:#B392F0">TweenPosition</span><span style="color:#E1E4E8">(</span></span>
+<span class="line"><span style="color:#E1E4E8">            target.position, defaultDuration, VRCTweenEase.OutQuad</span></span>
+<span class="line"><span style="color:#E1E4E8">        )</span></span>
+<span class="line"><span style="color:#E1E4E8">        .</span><span style="color:#B392F0">SetLoops</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">-</span><span style="color:#79B8FF">1</span><span style="color:#E1E4E8">, VRCTweenLoopType.Restart)</span></span>
+<span class="line"><span style="color:#E1E4E8">        .</span><span style="color:#B392F0">Pause</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#E1E4E8">        _initialized </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> true</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">    public</span><span style="color:#F97583"> void</span><span style="color:#B392F0"> FollowTarget</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"><span style="color:#E1E4E8">    {</span></span>
+<span class="line"><span style="color:#F97583">        if</span><span style="color:#E1E4E8"> (</span><span style="color:#F97583">!</span><span style="color:#E1E4E8">_initialized) </span><span style="color:#F97583">return</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#6A737D">        // 重新配置 + 重启</span></span>
+<span class="line"><span style="color:#E1E4E8">        _moveHandle.</span><span style="color:#B392F0">ChangeEndValue</span><span style="color:#E1E4E8">(target.position, </span><span style="color:#79B8FF">true</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#E1E4E8">            .</span><span style="color:#B392F0">SetDuration</span><span style="color:#E1E4E8">(defaultDuration)</span></span>
+<span class="line"><span style="color:#E1E4E8">            .</span><span style="color:#B392F0">SetEase</span><span style="color:#E1E4E8">(VRCTweenEase.OutQuad);</span></span>
+<span class="line"><span style="color:#E1E4E8">        _moveHandle.</span><span style="color:#B392F0">Restart</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">    public</span><span style="color:#F97583"> override</span><span style="color:#F97583"> void</span><span style="color:#B392F0"> OnDestroy</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"><span style="color:#E1E4E8">    {</span></span>
+<span class="line"><span style="color:#F97583">        if</span><span style="color:#E1E4E8"> (_initialized </span><span style="color:#F97583">&#x26;&#x26;</span><span style="color:#E1E4E8"> _moveHandle.IsValid) _moveHandle.</span><span style="color:#B392F0">Kill</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<p><strong>关键细节</strong>:</p>
+<ul>
+<li><code>ChangeEndValue(target, true)</code> → 起点=当前位置(避免跳回原点)</li>
+<li><code>SetLoops(-1, Restart)</code> → 完成后保持 alive(以便 Restart)</li>
+<li>必须在 <code>Start</code> 创建,不能延迟(否则 OnDestroy 时 <code>_moveHandle</code> 是 <code>default</code>)</li>
+</ul>
+<p><strong>性能事实</strong>(官方基准):</p>
+<ul>
+<li>500 tween × 300 帧</li>
+<li>复用模式 vs kill-and-recreate:
+<ul>
+<li>内存少 <strong>46 倍</strong></li>
+<li>速度快 <strong>10 倍</strong></li>
+</ul>
+</li>
+</ul>
+<hr>
+<hr>
+<h1 id="vrctween-常用模式模式-5-late-joiner-同步动画">VRCTween 常用模式：模式 5: Late joiner 同步动画</h1>
+<blockquote>
+<p>🔴 <strong>VRCTween 不自动同步</strong>。Late joiner 需要用 <code>Goto()</code> 跳到正确时间。</p>
+</blockquote>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="csharp"><code><span class="line"><span style="color:#F97583">using</span><span style="color:#B392F0"> UdonSharp</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">using</span><span style="color:#B392F0"> UnityEngine</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">using</span><span style="color:#B392F0"> VRC</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">SDKBase</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">using</span><span style="color:#B392F0"> VRC</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">SDK3</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">Components</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">[</span><span style="color:#B392F0">UdonBehaviourSyncMode</span><span style="color:#E1E4E8">(BehaviourSyncMode.Manual)]</span></span>
+<span class="line"><span style="color:#F97583">public</span><span style="color:#F97583"> class</span><span style="color:#B392F0"> SyncedPatrol</span><span style="color:#E1E4E8"> : </span><span style="color:#B392F0">UdonSharpBehaviour</span></span>
+<span class="line"><span style="color:#E1E4E8">{</span></span>
+<span class="line"><span style="color:#F97583">    public</span><span style="color:#B392F0"> GameObject</span><span style="color:#B392F0"> platform</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">    public</span><span style="color:#B392F0"> Vector3</span><span style="color:#E1E4E8">[] </span><span style="color:#B392F0">waypoints</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">    [</span><span style="color:#B392F0">UdonSynced</span><span style="color:#E1E4E8">] </span><span style="color:#F97583">public</span><span style="color:#F97583"> float</span><span style="color:#B392F0"> startTime</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">    private</span><span style="color:#B392F0"> VRCTweenHandle</span><span style="color:#B392F0"> _handle</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">    private</span><span style="color:#F97583"> float</span><span style="color:#B392F0"> _totalDuration</span><span style="color:#F97583"> =</span><span style="color:#79B8FF"> 8f</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">    void</span><span style="color:#B392F0"> Start</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"><span style="color:#E1E4E8">    {</span></span>
+<span class="line"><span style="color:#E1E4E8">        _handle </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> platform.</span><span style="color:#B392F0">TweenPath</span><span style="color:#E1E4E8">(</span></span>
+<span class="line"><span style="color:#E1E4E8">            waypoints,</span></span>
+<span class="line"><span style="color:#E1E4E8">            _totalDuration,</span></span>
+<span class="line"><span style="color:#E1E4E8">            VRCTweenPathType.CatmullRom,</span></span>
+<span class="line"><span style="color:#79B8FF">            true</span><span style="color:#E1E4E8">,   </span><span style="color:#6A737D">// closePath</span></span>
+<span class="line"><span style="color:#79B8FF">            10</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">            VRCTweenEase.Linear</span></span>
+<span class="line"><span style="color:#E1E4E8">        ).</span><span style="color:#B392F0">SetLoops</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">-</span><span style="color:#79B8FF">1</span><span style="color:#E1E4E8">, VRCTweenLoopType.Restart);</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">    public</span><span style="color:#F97583"> override</span><span style="color:#F97583"> void</span><span style="color:#B392F0"> OnDeserialization</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"><span style="color:#E1E4E8">    {</span></span>
+<span class="line"><span style="color:#6A737D">        // Late joiner 跳到正确时间</span></span>
+<span class="line"><span style="color:#F97583">        float</span><span style="color:#B392F0"> elapsed</span><span style="color:#F97583"> =</span><span style="color:#E1E4E8"> (</span><span style="color:#F97583">float</span><span style="color:#E1E4E8">)(Networking.</span><span style="color:#B392F0">GetServerTimeInSeconds</span><span style="color:#E1E4E8">() </span><span style="color:#F97583">-</span><span style="color:#E1E4E8"> startTime);</span></span>
+<span class="line"><span style="color:#E1E4E8">        _handle.</span><span style="color:#B392F0">Goto</span><span style="color:#E1E4E8">(elapsed </span><span style="color:#F97583">%</span><span style="color:#E1E4E8"> _totalDuration, </span><span style="color:#79B8FF">true</span><span style="color:#E1E4E8">);  </span><span style="color:#6A737D">// 模 duration(因为循环)</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">    public</span><span style="color:#F97583"> void</span><span style="color:#B392F0"> Interact</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"><span style="color:#E1E4E8">    {</span></span>
+<span class="line"><span style="color:#6A737D">        // 仅 owner 启动同步</span></span>
+<span class="line"><span style="color:#F97583">        if</span><span style="color:#E1E4E8"> (</span><span style="color:#F97583">!</span><span style="color:#E1E4E8">Networking.</span><span style="color:#B392F0">IsOwner</span><span style="color:#E1E4E8">(gameObject))</span></span>
+<span class="line"><span style="color:#E1E4E8">        {</span></span>
+<span class="line"><span style="color:#E1E4E8">            Networking.</span><span style="color:#B392F0">SetOwner</span><span style="color:#E1E4E8">(Networking.LocalPlayer, gameObject);</span></span>
+<span class="line"><span style="color:#E1E4E8">        }</span></span>
+<span class="line"><span style="color:#E1E4E8">        startTime </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> (</span><span style="color:#F97583">float</span><span style="color:#E1E4E8">)Networking.</span><span style="color:#B392F0">GetServerTimeInSeconds</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#B392F0">        RequestSerialization</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<p><strong>关键细节</strong>:</p>
+<ul>
+<li>用 <code>Networking.GetServerTimeInSeconds()</code> 算出 elapsed</li>
+<li>循环 tween 需要 <code>% duration</code></li>
+<li><code>OnDeserialization</code> 在 Late joiner 触发时同步状态</li>
+</ul>
+<hr>
+<hr>
+<h1 id="vrctween-常用模式模式-6-大量物体交错动画性能关键">VRCTween 常用模式：模式 6: 大量物体交错动画(性能关键)</h1>
+<blockquote>
+<p>🔴 <strong>不要同帧创建几十个 tween</strong> — 错开,做”波浪”效果。</p>
+</blockquote>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="csharp"><code><span class="line"><span style="color:#F97583">using</span><span style="color:#B392F0"> UdonSharp</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">using</span><span style="color:#B392F0"> UnityEngine</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">using</span><span style="color:#B392F0"> VRC</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">SDK3</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">Components</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">public</span><span style="color:#F97583"> class</span><span style="color:#B392F0"> TileWave</span><span style="color:#E1E4E8"> : </span><span style="color:#B392F0">UdonSharpBehaviour</span></span>
+<span class="line"><span style="color:#E1E4E8">{</span></span>
+<span class="line"><span style="color:#F97583">    public</span><span style="color:#B392F0"> GameObject</span><span style="color:#E1E4E8">[] </span><span style="color:#B392F0">tiles</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">    public</span><span style="color:#F97583"> float</span><span style="color:#B392F0"> delayBetween</span><span style="color:#F97583"> =</span><span style="color:#79B8FF"> 0.05f</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">    public</span><span style="color:#F97583"> float</span><span style="color:#B392F0"> duration</span><span style="color:#F97583"> =</span><span style="color:#79B8FF"> 0.3f</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">    private</span><span style="color:#F97583"> int</span><span style="color:#B392F0"> _nextIndex</span><span style="color:#F97583"> =</span><span style="color:#79B8FF"> 0</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">    public</span><span style="color:#F97583"> void</span><span style="color:#B392F0"> AnimateAll</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"><span style="color:#E1E4E8">    {</span></span>
+<span class="line"><span style="color:#E1E4E8">        _nextIndex </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> 0</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#B392F0">        AnimateNext</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">    public</span><span style="color:#F97583"> void</span><span style="color:#B392F0"> AnimateNext</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"><span style="color:#E1E4E8">    {</span></span>
+<span class="line"><span style="color:#F97583">        if</span><span style="color:#E1E4E8"> (_nextIndex </span><span style="color:#F97583">>=</span><span style="color:#E1E4E8"> tiles.Length) </span><span style="color:#F97583">return</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">        tiles[_nextIndex].</span><span style="color:#B392F0">TweenScale</span><span style="color:#E1E4E8">(Vector3.one </span><span style="color:#F97583">*</span><span style="color:#79B8FF"> 0.8f</span><span style="color:#E1E4E8">, duration, VRCTweenEase.OutBack);</span></span>
+<span class="line"><span style="color:#E1E4E8">        _nextIndex</span><span style="color:#F97583">++</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#6A737D">        // 用 DelayedCall 替代 SendCustomEventDelayedSeconds(可取消)</span></span>
+<span class="line"><span style="color:#E1E4E8">        VRCTween.</span><span style="color:#B392F0">DelayedCall</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">this</span><span style="color:#E1E4E8">, </span><span style="color:#F97583">nameof</span><span style="color:#E1E4E8">(AnimateNext), delayBetween);</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<p><strong>关键细节</strong>:</p>
+<ul>
+<li>错开避免同帧 GC / EXTERN 峰值</li>
+<li>视觉上反而更好看(波浪感)</li>
+<li><code>DelayedCall</code> 可取消(可加 <code>_waveHandle.Kill()</code>)</li>
+</ul>
+<hr>
+<hr>
+<h1 id="vrctween-常用模式模式-7-开关按钮状态机">VRCTween 常用模式：模式 7: 开关按钮(状态机)</h1>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="csharp"><code><span class="line"><span style="color:#F97583">using</span><span style="color:#B392F0"> UdonSharp</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">using</span><span style="color:#B392F0"> UnityEngine</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">using</span><span style="color:#B392F0"> VRC</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">SDK3</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">Components</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">public</span><span style="color:#F97583"> class</span><span style="color:#B392F0"> ToggleButton</span><span style="color:#E1E4E8"> : </span><span style="color:#B392F0">UdonSharpBehaviour</span></span>
+<span class="line"><span style="color:#E1E4E8">{</span></span>
+<span class="line"><span style="color:#F97583">    public</span><span style="color:#B392F0"> GameObject</span><span style="color:#B392F0"> indicator</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">    public</span><span style="color:#F97583"> bool</span><span style="color:#B392F0"> isOn</span><span style="color:#F97583"> =</span><span style="color:#79B8FF"> false</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">    private</span><span style="color:#B392F0"> VRCTweenHandle</span><span style="color:#B392F0"> _tween</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">    public</span><span style="color:#F97583"> override</span><span style="color:#F97583"> void</span><span style="color:#B392F0"> Interact</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"><span style="color:#E1E4E8">    {</span></span>
+<span class="line"><span style="color:#F97583">        if</span><span style="color:#E1E4E8"> (_tween.IsValid) _tween.</span><span style="color:#B392F0">Kill</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#E1E4E8">        isOn </span><span style="color:#F97583">=</span><span style="color:#F97583"> !</span><span style="color:#E1E4E8">isOn;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">        if</span><span style="color:#E1E4E8"> (isOn)</span></span>
+<span class="line"><span style="color:#E1E4E8">        {</span></span>
+<span class="line"><span style="color:#E1E4E8">            _tween </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> indicator.</span><span style="color:#B392F0">TweenPosition</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">new</span><span style="color:#B392F0"> Vector3</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">1</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">0</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">0</span><span style="color:#E1E4E8">), </span><span style="color:#79B8FF">0.2f</span><span style="color:#E1E4E8">, VRCTweenEase.OutBack)</span></span>
+<span class="line"><span style="color:#E1E4E8">                .</span><span style="color:#B392F0">OnComplete</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">this</span><span style="color:#E1E4E8">, </span><span style="color:#F97583">nameof</span><span style="color:#E1E4E8">(OnToggledOn));</span></span>
+<span class="line"><span style="color:#E1E4E8">        }</span></span>
+<span class="line"><span style="color:#F97583">        else</span></span>
+<span class="line"><span style="color:#E1E4E8">        {</span></span>
+<span class="line"><span style="color:#E1E4E8">            _tween </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> indicator.</span><span style="color:#B392F0">TweenPosition</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">new</span><span style="color:#B392F0"> Vector3</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">0</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">0</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">0</span><span style="color:#E1E4E8">), </span><span style="color:#79B8FF">0.2f</span><span style="color:#E1E4E8">, VRCTweenEase.OutBack)</span></span>
+<span class="line"><span style="color:#E1E4E8">                .</span><span style="color:#B392F0">OnComplete</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">this</span><span style="color:#E1E4E8">, </span><span style="color:#F97583">nameof</span><span style="color:#E1E4E8">(OnToggledOff));</span></span>
+<span class="line"><span style="color:#E1E4E8">        }</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">    public</span><span style="color:#F97583"> void</span><span style="color:#B392F0"> OnToggledOn</span><span style="color:#E1E4E8">() { </span><span style="color:#6A737D">/* 音效/粒子 */</span><span style="color:#E1E4E8"> }</span></span>
+<span class="line"><span style="color:#F97583">    public</span><span style="color:#F97583"> void</span><span style="color:#B392F0"> OnToggledOff</span><span style="color:#E1E4E8">() { </span><span style="color:#6A737D">/* 音效/粒子 */</span><span style="color:#E1E4E8"> }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">    public</span><span style="color:#F97583"> override</span><span style="color:#F97583"> void</span><span style="color:#B392F0"> OnDestroy</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"><span style="color:#E1E4E8">    {</span></span>
+<span class="line"><span style="color:#E1E4E8">        indicator.</span><span style="color:#B392F0">KillAllTweens</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<hr>
+<hr>
+<h1 id="vrctween-常用模式模式-8-拾取物飞向玩家简化版">VRCTween 常用模式：模式 8: 拾取物飞向玩家(简化版)</h1>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="csharp"><code><span class="line"><span style="color:#F97583">using</span><span style="color:#B392F0"> UdonSharp</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">using</span><span style="color:#B392F0"> UnityEngine</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">using</span><span style="color:#B392F0"> VRC</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">SDKBase</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">using</span><span style="color:#B392F0"> VRC</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">SDK3</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">Components</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">public</span><span style="color:#F97583"> class</span><span style="color:#B392F0"> PickupAttractor</span><span style="color:#E1E4E8"> : </span><span style="color:#B392F0">UdonSharpBehaviour</span></span>
+<span class="line"><span style="color:#E1E4E8">{</span></span>
+<span class="line"><span style="color:#F97583">    public</span><span style="color:#B392F0"> GameObject</span><span style="color:#B392F0"> pickup</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">    public</span><span style="color:#F97583"> float</span><span style="color:#B392F0"> attractSpeed</span><span style="color:#F97583"> =</span><span style="color:#79B8FF"> 0.3f</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">    public</span><span style="color:#B392F0"> VRCPlayerApi</span><span style="color:#B392F0"> targetPlayer</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">    private</span><span style="color:#B392F0"> VRCTweenHandle</span><span style="color:#B392F0"> _tween</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">    public</span><span style="color:#F97583"> void</span><span style="color:#B392F0"> AttractToPlayer</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"><span style="color:#E1E4E8">    {</span></span>
+<span class="line"><span style="color:#F97583">        if</span><span style="color:#E1E4E8"> (</span><span style="color:#F97583">!</span><span style="color:#E1E4E8">Utilities.</span><span style="color:#B392F0">IsValid</span><span style="color:#E1E4E8">(targetPlayer)) </span><span style="color:#F97583">return</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">        if</span><span style="color:#E1E4E8"> (_tween.IsValid) _tween.</span><span style="color:#B392F0">Kill</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">        _tween </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> pickup.</span><span style="color:#B392F0">TweenPosition</span><span style="color:#E1E4E8">(targetPlayer.</span><span style="color:#B392F0">GetPosition</span><span style="color:#E1E4E8">(), attractSpeed, VRCTweenEase.InQuad)</span></span>
+<span class="line"><span style="color:#E1E4E8">            .</span><span style="color:#B392F0">OnComplete</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">this</span><span style="color:#E1E4E8">, </span><span style="color:#F97583">nameof</span><span style="color:#E1E4E8">(OnArrived));</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">    public</span><span style="color:#F97583"> void</span><span style="color:#B392F0"> OnArrived</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"><span style="color:#E1E4E8">    {</span></span>
+<span class="line"><span style="color:#6A737D">        // 拾取音效</span></span>
+<span class="line"><span style="color:#6A737D">        // 销毁对象</span></span>
+<span class="line"><span style="color:#B392F0">        Destroy</span><span style="color:#E1E4E8">(pickup);</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<hr>
+<hr>
+<h1 id="vrctween-常用模式模式-9-灯光脉冲呼吸效果">VRCTween 常用模式：模式 9: 灯光脉冲(呼吸效果)</h1>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="csharp"><code><span class="line"><span style="color:#F97583">public</span><span style="color:#F97583"> class</span><span style="color:#B392F0"> BreathingLight</span><span style="color:#E1E4E8"> : </span><span style="color:#B392F0">UdonSharpBehaviour</span></span>
+<span class="line"><span style="color:#E1E4E8">{</span></span>
+<span class="line"><span style="color:#F97583">    public</span><span style="color:#B392F0"> Light</span><span style="color:#B392F0"> targetLight</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">    public</span><span style="color:#F97583"> float</span><span style="color:#B392F0"> minIntensity</span><span style="color:#F97583"> =</span><span style="color:#79B8FF"> 1f</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">    public</span><span style="color:#F97583"> float</span><span style="color:#B392F0"> maxIntensity</span><span style="color:#F97583"> =</span><span style="color:#79B8FF"> 3f</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">    public</span><span style="color:#F97583"> float</span><span style="color:#B392F0"> pulseDuration</span><span style="color:#F97583"> =</span><span style="color:#79B8FF"> 2f</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">    void</span><span style="color:#B392F0"> Start</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"><span style="color:#E1E4E8">    {</span></span>
+<span class="line"><span style="color:#E1E4E8">        targetLight.</span><span style="color:#B392F0">TweenIntensity</span><span style="color:#E1E4E8">(maxIntensity, pulseDuration, VRCTweenEase.InOutSine)</span></span>
+<span class="line"><span style="color:#E1E4E8">            .</span><span style="color:#B392F0">SetLoops</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">-</span><span style="color:#79B8FF">1</span><span style="color:#E1E4E8">, VRCTweenLoopType.Yoyo);  </span><span style="color:#6A737D">// 来回脉冲</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">    public</span><span style="color:#F97583"> override</span><span style="color:#F97583"> void</span><span style="color:#B392F0"> OnDestroy</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"><span style="color:#E1E4E8">    {</span></span>
+<span class="line"><span style="color:#E1E4E8">        targetLight.</span><span style="color:#B392F0">KillAllTweens</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<hr>
+<hr>
+<h1 id="vrctween-常用模式模式-10-摄像机推拉电影感">VRCTween 常用模式：模式 10: 摄像机推拉(电影感)</h1>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="csharp"><code><span class="line"><span style="color:#F97583">public</span><span style="color:#F97583"> class</span><span style="color:#B392F0"> CinematicCamera</span><span style="color:#E1E4E8"> : </span><span style="color:#B392F0">UdonSharpBehaviour</span></span>
+<span class="line"><span style="color:#E1E4E8">{</span></span>
+<span class="line"><span style="color:#F97583">    public</span><span style="color:#B392F0"> Camera</span><span style="color:#B392F0"> mainCamera</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">    [</span><span style="color:#B392F0">System</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">NonSerialized</span><span style="color:#E1E4E8">] </span><span style="color:#F97583">public</span><span style="color:#F97583"> float</span><span style="color:#B392F0"> currentFOV</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">    public</span><span style="color:#F97583"> float</span><span style="color:#B392F0"> defaultFOV</span><span style="color:#F97583"> =</span><span style="color:#79B8FF"> 60f</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">    public</span><span style="color:#F97583"> float</span><span style="color:#B392F0"> closeUpFOV</span><span style="color:#F97583"> =</span><span style="color:#79B8FF"> 35f</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">    public</span><span style="color:#F97583"> void</span><span style="color:#B392F0"> ZoomIn</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"><span style="color:#E1E4E8">    {</span></span>
+<span class="line"><span style="color:#E1E4E8">        VRCTween.</span><span style="color:#B392F0">TweenFloat</span><span style="color:#E1E4E8">(currentFOV, closeUpFOV, </span><span style="color:#79B8FF">2f</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">this</span><span style="color:#E1E4E8">, </span><span style="color:#F97583">nameof</span><span style="color:#E1E4E8">(currentFOV), </span><span style="color:#F97583">nameof</span><span style="color:#E1E4E8">(ApplyFOV), VRCTweenEase.OutQuad);</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">    public</span><span style="color:#F97583"> void</span><span style="color:#B392F0"> ZoomOut</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"><span style="color:#E1E4E8">    {</span></span>
+<span class="line"><span style="color:#E1E4E8">        VRCTween.</span><span style="color:#B392F0">TweenFloat</span><span style="color:#E1E4E8">(currentFOV, defaultFOV, </span><span style="color:#79B8FF">1.5f</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">this</span><span style="color:#E1E4E8">, </span><span style="color:#F97583">nameof</span><span style="color:#E1E4E8">(currentFOV), </span><span style="color:#F97583">nameof</span><span style="color:#E1E4E8">(ApplyFOV), VRCTweenEase.InOutQuad);</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">    public</span><span style="color:#F97583"> void</span><span style="color:#B392F0"> ApplyFOV</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"><span style="color:#E1E4E8">    {</span></span>
+<span class="line"><span style="color:#E1E4E8">        mainCamera.fieldOfView </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> currentFOV;</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<hr>
+<hr>
+<h1 id="vrctween-常用模式模式-11-链式开关门用-state-模式">VRCTween 常用模式：模式 11: 链式开关门(用 state 模式)</h1>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="csharp"><code><span class="line"><span style="color:#F97583">public</span><span style="color:#F97583"> class</span><span style="color:#B392F0"> FancyDoor</span><span style="color:#E1E4E8"> : </span><span style="color:#B392F0">UdonSharpBehaviour</span></span>
+<span class="line"><span style="color:#E1E4E8">{</span></span>
+<span class="line"><span style="color:#F97583">    public</span><span style="color:#B392F0"> GameObject</span><span style="color:#B392F0"> door</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">    public</span><span style="color:#B392F0"> AudioSource</span><span style="color:#B392F0"> sound</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">    public</span><span style="color:#F97583"> int</span><span style="color:#B392F0"> currentStep</span><span style="color:#F97583"> =</span><span style="color:#79B8FF"> 0</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">    public</span><span style="color:#F97583"> bool</span><span style="color:#B392F0"> cancelled</span><span style="color:#F97583"> =</span><span style="color:#79B8FF"> false</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">    public</span><span style="color:#F97583"> void</span><span style="color:#B392F0"> Interact</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"><span style="color:#E1E4E8">    {</span></span>
+<span class="line"><span style="color:#E1E4E8">        cancelled </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> false</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">        currentStep </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> 0</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#B392F0">        Step1_Lift</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">    public</span><span style="color:#F97583"> void</span><span style="color:#B392F0"> Step1_Lift</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"><span style="color:#E1E4E8">    {</span></span>
+<span class="line"><span style="color:#E1E4E8">        currentStep </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> 1</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">        door.</span><span style="color:#B392F0">TweenPosition</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">new</span><span style="color:#B392F0"> Vector3</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">0</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">3</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">0</span><span style="color:#E1E4E8">), </span><span style="color:#79B8FF">1f</span><span style="color:#E1E4E8">, VRCTweenEase.OutQuad)</span></span>
+<span class="line"><span style="color:#E1E4E8">            .</span><span style="color:#B392F0">OnComplete</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">this</span><span style="color:#E1E4E8">, </span><span style="color:#F97583">nameof</span><span style="color:#E1E4E8">(StepDone));</span></span>
+<span class="line"><span style="color:#E1E4E8">        sound.</span><span style="color:#B392F0">Play</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">    public</span><span style="color:#F97583"> void</span><span style="color:#B392F0"> StepDone</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"><span style="color:#E1E4E8">    {</span></span>
+<span class="line"><span style="color:#F97583">        if</span><span style="color:#E1E4E8"> (cancelled) </span><span style="color:#F97583">return</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">        switch</span><span style="color:#E1E4E8"> (currentStep)</span></span>
+<span class="line"><span style="color:#E1E4E8">        {</span></span>
+<span class="line"><span style="color:#F97583">            case</span><span style="color:#79B8FF"> 1</span><span style="color:#E1E4E8">: </span><span style="color:#B392F0">Step2_Rotate</span><span style="color:#E1E4E8">(); </span><span style="color:#F97583">break</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">            case</span><span style="color:#79B8FF"> 2</span><span style="color:#E1E4E8">: </span><span style="color:#B392F0">Step3_Glow</span><span style="color:#E1E4E8">(); </span><span style="color:#F97583">break</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">            case</span><span style="color:#79B8FF"> 3</span><span style="color:#E1E4E8">: </span><span style="color:#F97583">break</span><span style="color:#E1E4E8">; </span><span style="color:#6A737D">// done</span></span>
+<span class="line"><span style="color:#E1E4E8">        }</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">    public</span><span style="color:#F97583"> void</span><span style="color:#B392F0"> Step2_Rotate</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"><span style="color:#E1E4E8">    {</span></span>
+<span class="line"><span style="color:#E1E4E8">        currentStep </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> 2</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">        door.</span><span style="color:#B392F0">TweenRotation</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">new</span><span style="color:#B392F0"> Vector3</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">0</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">90</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">0</span><span style="color:#E1E4E8">), </span><span style="color:#79B8FF">0.8f</span><span style="color:#E1E4E8">, VRCTweenEase.InOutQuad)</span></span>
+<span class="line"><span style="color:#E1E4E8">            .</span><span style="color:#B392F0">OnComplete</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">this</span><span style="color:#E1E4E8">, </span><span style="color:#F97583">nameof</span><span style="color:#E1E4E8">(StepDone));</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">    public</span><span style="color:#F97583"> void</span><span style="color:#B392F0"> Step3_Glow</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"><span style="color:#E1E4E8">    {</span></span>
+<span class="line"><span style="color:#E1E4E8">        currentStep </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> 3</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#6A737D">        // ... 灯光/粒子效果</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">    public</span><span style="color:#F97583"> void</span><span style="color:#B392F0"> Cancel</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"><span style="color:#E1E4E8">    {</span></span>
+<span class="line"><span style="color:#E1E4E8">        cancelled </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> true</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">        door.</span><span style="color:#B392F0">KillAllTweens</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<hr>
+<hr>
+<h1 id="vrctween-常用模式模式-12-音频淡入淡出带-bgm-切换">VRCTween 常用模式：模式 12: 音频淡入淡出(带 BGM 切换)</h1>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="csharp"><code><span class="line"><span style="color:#F97583">public</span><span style="color:#F97583"> class</span><span style="color:#B392F0"> BGMCrossfade</span><span style="color:#E1E4E8"> : </span><span style="color:#B392F0">UdonSharpBehaviour</span></span>
+<span class="line"><span style="color:#E1E4E8">{</span></span>
+<span class="line"><span style="color:#F97583">    public</span><span style="color:#B392F0"> AudioSource</span><span style="color:#B392F0"> sourceA</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">    public</span><span style="color:#B392F0"> AudioSource</span><span style="color:#B392F0"> sourceB</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">    public</span><span style="color:#B392F0"> AudioClip</span><span style="color:#B392F0"> newClip</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">    public</span><span style="color:#F97583"> float</span><span style="color:#B392F0"> fadeDuration</span><span style="color:#F97583"> =</span><span style="color:#79B8FF"> 2f</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">    public</span><span style="color:#F97583"> void</span><span style="color:#B392F0"> CrossfadeToNewTrack</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"><span style="color:#E1E4E8">    {</span></span>
+<span class="line"><span style="color:#6A737D">        // 1. 准备 B 轨道</span></span>
+<span class="line"><span style="color:#E1E4E8">        sourceB.clip </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> newClip;</span></span>
+<span class="line"><span style="color:#E1E4E8">        sourceB.volume </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> 0f</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">        sourceB.</span><span style="color:#B392F0">Play</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">        // 2. 并行淡入 + 淡出</span></span>
+<span class="line"><span style="color:#E1E4E8">        sourceA.</span><span style="color:#B392F0">TweenVolume</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">0f</span><span style="color:#E1E4E8">, fadeDuration, VRCTweenEase.Linear)</span></span>
+<span class="line"><span style="color:#E1E4E8">            .</span><span style="color:#B392F0">OnComplete</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">this</span><span style="color:#E1E4E8">, </span><span style="color:#F97583">nameof</span><span style="color:#E1E4E8">(OnFadeOutDone));</span></span>
+<span class="line"><span style="color:#E1E4E8">        sourceB.</span><span style="color:#B392F0">TweenVolume</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">1f</span><span style="color:#E1E4E8">, fadeDuration, VRCTweenEase.Linear);</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">    public</span><span style="color:#F97583"> void</span><span style="color:#B392F0"> OnFadeOutDone</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"><span style="color:#E1E4E8">    {</span></span>
+<span class="line"><span style="color:#E1E4E8">        sourceA.</span><span style="color:#B392F0">Stop</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<hr>
+<hr>
+<h1 id="vrctween-常用模式反模式不要做">VRCTween 常用模式：反模式(不要做)</h1>
+<h3 id="-1-同帧创建-50-tween">❌ 1. 同帧创建 50+ tween</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="csharp"><code><span class="line"><span style="color:#6A737D">// ❌ 错</span></span>
+<span class="line"><span style="color:#F97583">public</span><span style="color:#F97583"> void</span><span style="color:#B392F0"> AnimateAll</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"><span style="color:#E1E4E8">{</span></span>
+<span class="line"><span style="color:#F97583">    for</span><span style="color:#E1E4E8"> (</span><span style="color:#F97583">int</span><span style="color:#B392F0"> i</span><span style="color:#F97583"> =</span><span style="color:#79B8FF"> 0</span><span style="color:#E1E4E8">; i </span><span style="color:#F97583">&#x3C;</span><span style="color:#79B8FF"> 100</span><span style="color:#E1E4E8">; i</span><span style="color:#F97583">++</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#E1E4E8">    {</span></span>
+<span class="line"><span style="color:#E1E4E8">        tiles[i].</span><span style="color:#B392F0">TweenScale</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">..</span><span style="color:#E1E4E8">.);  </span><span style="color:#6A737D">// 100 个 EXTERN 同帧触发!</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// ✅ 错开(模式 6)</span></span></code></pre>
+<h3 id="-2-不-kill-旧-tween-就创建新的">❌ 2. 不 Kill 旧 tween 就创建新的</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="csharp"><code><span class="line"><span style="color:#6A737D">// ❌ 错(快速点击时多个 tween 跑)</span></span>
+<span class="line"><span style="color:#F97583">public</span><span style="color:#F97583"> override</span><span style="color:#F97583"> void</span><span style="color:#B392F0"> Interact</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"><span style="color:#E1E4E8">{</span></span>
+<span class="line"><span style="color:#E1E4E8">    button.</span><span style="color:#B392F0">TweenScale</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">..</span><span style="color:#E1E4E8">.);  </span><span style="color:#6A737D">// 第二次点击时第一个 tween 还在跑</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// ✅ 检查 + Kill(模式 1)</span></span></code></pre>
+<h3 id="-3-无限循环-tween-不清理">❌ 3. 无限循环 tween 不清理</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="csharp"><code><span class="line"><span style="color:#6A737D">// ❌ 错(GameObject 销毁后 tween 还在跑 → null ref)</span></span>
+<span class="line"><span style="color:#F97583">void</span><span style="color:#B392F0"> Start</span><span style="color:#E1E4E8">() { light.</span><span style="color:#B392F0">TweenIntensity</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">5f</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">1f</span><span style="color:#E1E4E8">, VRCTweenEase.Linear).</span><span style="color:#B392F0">SetLoops</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">-</span><span style="color:#79B8FF">1</span><span style="color:#E1E4E8">, Yoyo); }</span></span>
+<span class="line"><span style="color:#6A737D">// 没有 OnDestroy 清理</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// ✅</span></span>
+<span class="line"><span style="color:#F97583">public</span><span style="color:#F97583"> override</span><span style="color:#F97583"> void</span><span style="color:#B392F0"> OnDestroy</span><span style="color:#E1E4E8">() { light.</span><span style="color:#B392F0">KillAllTweens</span><span style="color:#E1E4E8">(); }</span></span></code></pre>
+<h3 id="-4-用-tweenposition-移动-ui">❌ 4. 用 TweenPosition 移动 UI</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="csharp"><code><span class="line"><span style="color:#6A737D">// ❌ Canvas 会覆盖</span></span>
+<span class="line"><span style="color:#E1E4E8">uiImage.</span><span style="color:#B392F0">TweenPosition</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">new</span><span style="color:#B392F0"> Vector2</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">100</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">0</span><span style="color:#E1E4E8">), </span><span style="color:#79B8FF">1f</span><span style="color:#E1E4E8">, </span><span style="color:#F97583">..</span><span style="color:#E1E4E8">.);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// ✅ 用 TweenAnchorPos</span></span>
+<span class="line"><span style="color:#E1E4E8">rectTransform.</span><span style="color:#B392F0">TweenAnchorPos</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">new</span><span style="color:#B392F0"> Vector2</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">100</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">0</span><span style="color:#E1E4E8">), </span><span style="color:#79B8FF">1f</span><span style="color:#E1E4E8">, </span><span style="color:#F97583">..</span><span style="color:#E1E4E8">.);</span></span></code></pre>
+<h3 id="-5-试图用-vrctween-做物理运动">❌ 5. 试图用 VRCTween 做物理运动</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="csharp"><code><span class="line"><span style="color:#6A737D">// ❌ VRCTween 不参与物理模拟</span></span>
+<span class="line"><span style="color:#6A737D">// ✅ 用 Rigidbody + PhysBone</span></span></code></pre>
+<h3 id="-6-changeendvalue-改-colorvector3-虚拟补间">❌ 6. ChangeEndValue 改 Color/Vector3 虚拟补间</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="csharp"><code><span class="line"><span style="color:#6A737D">// ❌ 官方不支持</span></span>
+<span class="line"><span style="color:#E1E4E8">VRCTween.</span><span style="color:#B392F0">TweenColor</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">..</span><span style="color:#E1E4E8">.);</span></span>
+<span class="line"><span style="color:#E1E4E8">h.</span><span style="color:#B392F0">ChangeEndValue</span><span style="color:#E1E4E8">(Color.red, </span><span style="color:#79B8FF">true</span><span style="color:#E1E4E8">);  </span><span style="color:#6A737D">// 不生效</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// ✅ Kill + 重建</span></span>
+<span class="line"><span style="color:#F97583">if</span><span style="color:#E1E4E8"> (h.IsValid) h.</span><span style="color:#B392F0">Kill</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#E1E4E8">h </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> VRCTween.</span><span style="color:#B392F0">TweenColor</span><span style="color:#E1E4E8">(current, Color.red, </span><span style="color:#79B8FF">1f</span><span style="color:#E1E4E8">, </span><span style="color:#F97583">..</span><span style="color:#E1E4E8">.);</span></span></code></pre>
+<h3 id="-7-同步动画不用-goto">❌ 7. 同步动画不用 Goto</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="csharp"><code><span class="line"><span style="color:#6A737D">// ❌ 错(每个玩家看到的不同步)</span></span>
+<span class="line"><span style="color:#F97583">public</span><span style="color:#F97583"> void</span><span style="color:#B392F0"> Interact</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"><span style="color:#E1E4E8">{</span></span>
+<span class="line"><span style="color:#E1E4E8">    obj.</span><span style="color:#B392F0">TweenPosition</span><span style="color:#E1E4E8">(target, </span><span style="color:#79B8FF">5f</span><span style="color:#E1E4E8">, </span><span style="color:#F97583">..</span><span style="color:#E1E4E8">.);</span></span>
+<span class="line"><span style="color:#6A737D">    // 没有 [UdonSynced] 时间戳,Late joiner 看到从 0 开始</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// ✅ 用 Goto + Synced(模式 5)</span></span></code></pre>
+<hr>
+<hr>
+<h1 id="vrctween-常用模式性能清单创作前自查">VRCTween 常用模式：性能清单(创作前自查)</h1>
+<ul class="contains-task-list">
+<li class="task-list-item"><input type="checkbox" disabled> 所有 tween 创建后检查 <code>IsValid</code>?(输入验证)</li>
+<li class="task-list-item"><input type="checkbox" disabled> 重复触发的 tween 在创建前 Kill 旧 handle?</li>
+<li class="task-list-item"><input type="checkbox" disabled> 无限循环 tween 在 OnDestroy 清理?</li>
+<li class="task-list-item"><input type="checkbox" disabled> 热路径(每帧)用 <code>ChangeEndValue</code> 复用而非 kill-recreate?</li>
+<li class="task-list-item"><input type="checkbox" disabled> 大量物体(20+)的同步动画用 <code>DelayedCall</code> 错开?</li>
+<li class="task-list-item"><input type="checkbox" disabled> UI 移动用 <code>TweenAnchorPos</code> 而非 <code>TweenPosition</code>?</li>
+<li class="task-list-item"><input type="checkbox" disabled> 同步动画用 <code>[UdonSynced]</code> + <code>Goto</code> 而非裸调?</li>
+<li class="task-list-item"><input type="checkbox" disabled> 复杂序列考虑用 state 字段模式(<code>currentStep</code>)?</li>
+</ul>
+<hr>
+<hr>
+<h1 id="vrctween-常用模式速查表-缓动--场景">VRCTween 常用模式：速查表: 缓动 → 场景</h1>
+<table>
+<thead>
+<tr>
+<th>场景</th>
+<th>推荐 Ease</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>按钮回弹</td>
+<td><code>OutBack</code> / <code>OutElastic</code></td>
+</tr>
+<tr>
+<td>UI 淡入淡出</td>
+<td><code>OutQuad</code> / <code>InQuad</code></td>
+</tr>
+<tr>
+<td>通知滑入</td>
+<td><code>OutBack</code></td>
+</tr>
+<tr>
+<td>物理掉落</td>
+<td><code>InQuad</code> / <code>InCubic</code></td>
+</tr>
+<tr>
+<td>弹跳落地</td>
+<td><code>OutBounce</code></td>
+</tr>
+<tr>
+<td>相机平滑</td>
+<td><code>InOutSine</code> / <code>InOutCubic</code></td>
+</tr>
+<tr>
+<td>旋转/旋转物体</td>
+<td><code>OutCubic</code> / <code>InOutQuad</code></td>
+</tr>
+<tr>
+<td>灯光脉冲</td>
+<td><code>InOutSine</code> + Yoyo</td>
+</tr>
+<tr>
+<td>匀速轮播</td>
+<td><code>Linear</code></td>
+</tr>
+<tr>
+<td>弹跳金币</td>
+<td><code>OutBounce</code></td>
+</tr>
+</tbody>
+</table>
+<hr>
+<hr>
+<h1 id="vrctween-常用模式官方文档相关章节">VRCTween 常用模式：官方文档相关章节</h1>
+<table>
+<thead>
+<tr>
+<th>模式</th>
+<th>官方文档</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1-3 (UI 模式)</td>
+<td>主页面”Basic Usage”</td>
+</tr>
+<tr>
+<td>4 (相机跟随)</td>
+<td>主页面”Tween Reuse”</td>
+</tr>
+<tr>
+<td>5 (Late joiner)</td>
+<td><code>settings</code> 页面”Seeking With Goto”</td>
+</tr>
+<tr>
+<td>6 (大量物体)</td>
+<td>主页面”Staggering Many Tweens”</td>
+</tr>
+<tr>
+<td>7-12</td>
+<td>各种组合(基于 <code>tween-types</code> 和 <code>settings</code>)</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<hr>
+<h1 id="vrctween-常用模式相关页面">VRCTween 常用模式：相关页面</h1>
+<p>../index.md · basics.md · tween-types.md · control.md · sequence.md · custom-tween.md · ../animation-events.md · ../ui-events.md</p>
+<hr> </div> <p class="kb-source-note" data-astro-cid-lvjzyg5v>
+本文由 VRChat 开发知识库自动整理（社区整理  · 可信度 medium ），
+          遇到与手写教程冲突的地方，以官方文档为最高优先级。
+</p> <section class="comments" id="comments" data-astro-cid-lvjzyg5v> <h2 class="comments__title" data-astro-cid-lvjzyg5v>✦ 旅人留言（0）</h2> <p class="comments__empty" id="commentsEmpty" data-astro-cid-lvjzyg5v>
+还没有旅人留言 —— 有疑问就写在下面，站长都会回复。
+</p> <form class="comment-form" id="commentForm" data-target="kb-world-udon-vrctween-patterns" data-astro-cid-lvjzyg5v> <p class="comment-form__title" data-astro-cid-lvjzyg5v>写下你的留言</p> <input id="cAuthor" maxlength="20" placeholder="昵称（留空则为「旅人」）" data-astro-cid-lvjzyg5v> <textarea id="cBody" maxlength="1000" required placeholder="想问的问题、想说的感谢都可以（最多 1000 字）" data-astro-cid-lvjzyg5v></textarea> <div class="comment-form__actions" data-astro-cid-lvjzyg5v> <button class="btn btn--primary" type="submit" data-astro-cid-lvjzyg5v>发布留言</button> <span class="form-hint" data-astro-cid-lvjzyg5v>留言保存在本站，站长在写作台里能看到</span> <span class="form-msg" id="cMsg" data-astro-cid-lvjzyg5v></span> </div> </form> </section> <nav class="station-nav" aria-label="站间导航" data-astro-cid-lvjzyg5v> <a href="/STELLASTOPVRC/posts/kb-world-udon-vrctween-custom-tween/" data-astro-cid-lvjzyg5v> <span class="dir" data-astro-cid-lvjzyg5v>← 上一站 · 更新的星光</span> <span class="to" data-astro-cid-lvjzyg5v>VRCTween 自定义补间(虚拟补间 + AnimationCurve)</span> </a> <a href="/STELLASTOPVRC/posts/kb-world-udon-vrctween-sequence/" data-astro-cid-lvjzyg5v> <span class="dir" data-astro-cid-lvjzyg5v>下一站 · 更早的星光 →</span> <span class="to" data-astro-cid-lvjzyg5v>VRCTween 序列与并行(用 OnComplete 链式回调)</span> </a> </nav> </div> <aside class="toc" id="toc" hidden> <p class="toc__title">✦ 本页星图</p> <nav id="tocNav" aria-label="文章目录"></nav> </aside> <script type="module">const i=document.querySelector(".prose"),d=document.getElementById("toc"),u=document.getElementById("tocNav"),l=[];if(i&&d&&u){const c=[...i.querySelectorAll("h1, h2, h3")];if(c.length>=3){d.hidden=!1,c.forEach((o,e)=>{o.id||(o.id=`sec-${e}`);const n=document.createElement("a");n.href=`#${o.id}`;const s=(o.textContent??"").replace(/\s+/g," ").trim(),r=s.search(/[：:]/),a=r>=4?s.slice(0,r):s;n.textContent=a.length>40?`${a.slice(0,40)}…`:a,n.title=s,u.appendChild(n),l.push({a:n,h:o})});const t=()=>{let o=l[0];for(const e of l)e.h.getBoundingClientRect().top<=130&&(o=e);for(const e of l)e.a.classList.toggle("is-active",e===o)};addEventListener("scroll",t,{passive:!0}),t()}}document.querySelectorAll(".prose pre").forEach(c=>{const t=document.createElement("button");t.className="code-copy",t.type="button",t.textContent="复制",t.addEventListener("click",async()=>{const o=c.querySelector("code")?.innerText??c.innerText;try{await navigator.clipboard.writeText(o)}catch{const e=document.createElement("textarea");e.value=o,document.body.appendChild(e),e.select(),document.execCommand("copy"),e.remove()}t.textContent="已复制 ✓",t.classList.add("is-ok"),setTimeout(()=>{t.textContent="复制",t.classList.remove("is-ok")},1500)}),c.appendChild(t)});</script> </article>  </main> <footer class="site-footer"> <div class="wrap"> <p class="star-line" aria-hidden="true"> <svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> <svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> </p> <p>星之驿站 StellaStop —— 在虚拟宇宙中，为你保留一座驿站</p> <p class="site-footer__disclaimer">
+该网页目前是测试阶段，仅用于测试，所有内容仅供参考；内容全部为引用互联网当中的信息。
+</p> <p>© 2026 星之驿站 · 由 <a href="https://astro.build">Astro</a> 与星光驱动</p> <p> <a data-desk-login hidden title="写作台：登录 / 注册">登录 / 注册</a> ·
+<a href="/STELLASTOPVRC/announcements/">官方公告</a> ·
+<a href="/STELLASTOPVRC/ai/">问星 AI</a> ·
+<a href="/STELLASTOPVRC/feedback/">旅人留言板</a> </p> </div> </footer> <button class="to-top" id="toTop" aria-label="回到顶部"> <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"> <path d="M12 20V5"></path> <path d="M5.5 11.5 12 5l6.5 6.5"></path> </svg> </button> <script type="module">const e=document.getElementById("toTop");if(e){const t=()=>e.classList.toggle("is-visible",scrollY>480);addEventListener("scroll",t,{passive:!0}),t(),e.addEventListener("click",()=>{const o=matchMedia("(prefers-reduced-motion: reduce)").matches;scrollTo({top:0,behavior:o?"auto":"smooth"})})}</script> <script>(function(){const deskConfigured = "";
+
+      /* 写作台探测（页面尾部执行，DOM 已就绪）：
+         1. 计算写作台地址：站点配置 deskUrl（公网部署时填）> 本机默认 localhost:4322 > 同主机 4322
+         2. 探测 /api/gate/status —— 在线才点亮「登录 / 注册」入口，并复用给验证门横幅
+         3. 不在线则保持隐藏，绝不会把访客拽进内网地址；同时给出一次性「镜像模式」提示 */
+      (function () {
+        var host = location.hostname;
+        var isLocal = host === 'localhost' || host === '127.0.0.1' || host === '[::1]';
+        var desk = deskConfigured ||
+          (isLocal ? 'http://localhost:4322' : location.protocol + '//' + host + ':4322');
+        window.STELLA_DESK = desk;
+
+        function revealLogin() {
+          document.querySelectorAll('[data-desk-login]').forEach(function (a) {
+            a.href = desk + '/admin';
+            a.removeAttribute('hidden');
+          });
+        }
+        function showBanner(css, html, shiftHeader) {
+          var bar = document.createElement('div');
+          bar.style.cssText = css;
+          bar.innerHTML = html;
+          document.body.prepend(bar);
+          if (shiftHeader) {
+            var header = document.querySelector('.site-header');
+            if (header) header.style.marginTop = '42px';
+          }
+        }
+        function hintMirrorMode() {
+          try {
+            if (sessionStorage.getItem('stella-desk-hint')) return;
+            sessionStorage.setItem('stella-desk-hint', '1');
+          } catch (e) { /* 无痕模式等：忽略 */ }
+          var tip = document.createElement('div');
+          tip.style.cssText = 'position:fixed;left:14px;bottom:14px;z-index:9998;max-width:min(92vw,430px);padding:.65rem .9rem;border-radius:12px;background:rgba(18,20,44,.92);border:1px solid rgba(150,142,255,.35);color:#e8e6ff;font-size:.82rem;line-height:1.6;font-family:system-ui,sans-serif;box-shadow:0 8px 30px rgba(0,0,0,.35)';
+          tip.innerHTML = 'ℹ️ 静态镜像模式：登录 / 评论 / AI 等互动功能需要站长写作台在线，当前不可用。' +
+            '<span id="stellaDeskHintClose" style="float:right;cursor:pointer;opacity:.75;font-weight:700;margin-left:.6rem" title="关闭">×</span>';
+          document.body.appendChild(tip);
+          var close = function () { tip.remove(); };
+          tip.querySelector('#stellaDeskHintClose').addEventListener('click', close);
+          setTimeout(close, 9000);
+        }
+
+        try {
+          var ctrl = new AbortController();
+          var timer = setTimeout(function () { ctrl.abort(); }, 2500);
+          fetch(desk + '/api/gate/status', { credentials: 'include', signal: ctrl.signal })
+            .then(function (r) { return r.ok ? r.json() : null; })
+            .then(function (d) {
+              clearTimeout(timer);
+              if (!d) throw new Error('desk-offline');
+              window.STELLA_DESK_OK = true;
+              revealLogin();
+              if (d.regionBlocked) {
+                showBanner(
+                  'position:fixed;top:0;left:0;right:0;z-index:9999;padding:1.2rem;text-align:center;background:#1a0a0a;color:#ff9ed2;font-size:.95rem;border-bottom:2px solid #ff4d6d;font-family:system-ui,sans-serif',
+                  '⛔ 你所在的地区（' + (d.regionCountry || '未知') + '）暂不开放访问。',
+                  false
+                );
+                return;
+              }
+              if (d.enabled && !d.passed) {
+                showBanner(
+                  'position:fixed;top:0;left:0;right:0;z-index:9999;padding:0.7rem;text-align:center;background:linear-gradient(94deg,rgba(143,127,247,.25),rgba(98,200,245,.18));border-bottom:1px solid rgba(150,142,255,.3);color:#f0efff;font-size:.88rem;font-family:system-ui,sans-serif',
+                  '🔒 本站启用了安全验证 —— <a href="' + desk + '/gate?next=' + encodeURIComponent(location.href) + '" style="color:#ffd98e;font-weight:700;text-decoration:underline">点击完成验证</a>，通过后即可使用全部功能（30 天免验）。',
+                  true
+                );
+              }
+            })
+            .catch(function () {
+              clearTimeout(timer);
+              window.STELLA_DESK_OK = false;
+              hintMirrorMode();
+            });
+        } catch (e) { /* 忽略 */ }
+      })();
+    })();</script> </body> </html> <script type="module">const m=document.getElementById("commentForm"),s=document.getElementById("cMsg"),u=`${location.protocol}//${location.hostname}:4322/api/message`;function r(e,t=!1){s&&(s.textContent=e,s.classList.toggle("is-err",t),s.classList.toggle("is-ok",!t))}function y(){const e=new Date,t=n=>String(n).padStart(2,"0");return`${e.getFullYear()}-${t(e.getMonth()+1)}-${t(e.getDate())}`}function f(e){let t=7;for(const n of e)t=(t*31+n.charCodeAt(0))%360;return t}function g(e,t){const n=document.createElement("li");n.className="comment",n.innerHTML=`
+      <span class="comment__avatar"></span>
+      <div class="comment__bubble">
+        <div class="comment__head">
+          <span class="comment__name"></span>
+          <time class="comment__date">${y()}</time>
+        </div>
+        <p class="comment__body"></p>
+      </div>`;const o=n.querySelector(".comment__avatar");return o.style.setProperty("--h",String(f(e))),o.textContent=e.slice(0,1),n.querySelector(".comment__name").textContent=e,n.querySelector(".comment__body").textContent=t,n}m?.addEventListener("submit",async e=>{e.preventDefault();const t=document.getElementById("cBody").value.trim();if(!t)return r("留言内容不能为空哦",!0);const n=document.getElementById("cAuthor").value.trim()||"旅人",o=m.querySelector("button");o&&(o.disabled=!0);try{const c=await fetch(u,{credentials:"include",method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({target:m.dataset.target,kind:"comment",author:n,body:t})}),d=await c.json().catch(()=>({}));if(!c.ok)throw new Error(d.error||`发送失败（${c.status}）`);const l=document.querySelector(".comment-list");l&&l.appendChild(g(n,t)),document.getElementById("commentsEmpty")?.remove(),document.getElementById("cBody").value="",r("留言已发布，感谢支持 ✦");const a=document.querySelector(".comments__title"),i=a?.textContent?.match(/（(\d+)）/);a&&i&&(a.textContent=a.textContent.replace(/（\d+）/,`（${Number(i[1])+1}）`))}catch(c){r(c instanceof TypeError?"写作台没在运行，暂时收不到留言 —— 双击「启动博客.bat」就好":c.message,!0)}finally{o&&(o.disabled=!1)}});</script> 

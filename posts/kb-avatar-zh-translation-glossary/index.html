@@ -1,0 +1,456 @@
+<!DOCTYPE html><html lang="zh-CN"> <head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="generator" content="Astro v5.18.2"><meta name="description" content="结论：本对照表出自 VRCD 文档库「Avatar 与你」附录（源页标注 36 条），是中文社区的翻译规范参考，不是 VRChat 官方文档；官方文档与 SDK 中出现的术语一律以英文原名为准，中文译名仅供中文社区沟通使"><meta name="theme-color" content="#070a1c"><meta property="og:title" content="VRChat Avatar 中英术语对照表（全量）——英文原名、常见中文代称与欠标准译名警示 · 星之驿站 StellaStop"><meta property="og:description" content="结论：本对照表出自 VRCD 文档库「Avatar 与你」附录（源页标注 36 条），是中文社区的翻译规范参考，不是 VRChat 官方文档；官方文档与 SDK 中出现的术语一律以英文原名为准，中文译名仅供中文社区沟通使"><meta property="og:type" content="website"><meta name="twitter:card" content="summary"><link rel="icon" type="image/svg+xml" href="/STELLASTOPVRC/favicon.svg"><script>
+      // 在渲染前恢复主题与特效档位，避免闪一下默认状态
+      try {
+        document.documentElement.dataset.theme =
+          localStorage.getItem('stella-theme') || 'nebula';
+        document.documentElement.dataset.fx =
+          localStorage.getItem('stella-fx') || 'standard';
+      } catch {
+        /* 隐私模式读不到就算了 */
+      }
+    </script><link rel="stylesheet" href="/STELLASTOPVRC/custom-vars.css"><title>VRChat Avatar 中英术语对照表（全量）——英文原名、常见中文代称与欠标准译名警示 · 星之驿站 StellaStop</title><link rel="stylesheet" href="/STELLASTOPVRC/_astro/about.Bgh6wcGl.css">
+<style>.post-head__meta[data-astro-cid-lvjzyg5v]{color:var(--ink-faint);font-family:var(--font-mono);font-size:.82rem}.post-head[data-astro-cid-lvjzyg5v] .chip-row[data-astro-cid-lvjzyg5v]{margin-top:1rem}.kb-source-note[data-astro-cid-lvjzyg5v]{max-width:760px;margin:2.2rem auto 0;font-size:.82rem;color:var(--ink-faint);border-top:1px dashed var(--line);padding-top:1rem}
+</style></head> <body> <div class="site-notice" id="siteNotice"> <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> <span class="site-notice__text">欢迎来到星之驿站！</span> <button class="site-notice__close" id="noticeClose" type="button" aria-label="关闭公告">
+×
+</button> </div> <a class="skip-link" href="#main">跳到主要内容</a> <canvas id="starfield" aria-hidden="true" data-astro-cid-ra7sfcwn></canvas> <div class="fx-aurora fx-aurora--a" aria-hidden="true" data-astro-cid-ra7sfcwn></div> <div class="fx-aurora fx-aurora--b" aria-hidden="true" data-astro-cid-ra7sfcwn></div>  <script type="module">const u=document.getElementById("starfield");if(u){let F=function(){const n=Math.random();return n<.1?"gold":n<.42?"blue":"white"},v=function(){const n=Math.min(window.devicePixelRatio||1,2);s=window.innerWidth,d=window.innerHeight,u.width=s*n,u.height=d*n,u.style.width=`${s}px`,u.style.height=`${d}px`,t.setTransform(n,0,0,n,0,0);const e=Math.min(190,Math.round(s*d/8500));l=Array.from({length:e},()=>({x:Math.random()*s,y:Math.random()*d,r:r(.4,1.7),base:r(.25,.8),amp:r(.12,.4),speed:r(6e-4,.0022),phase:r(0,Math.PI*2),c:F()})),C=Array.from({length:26},()=>({x:Math.random()*s,y:Math.random()*d,r:r(.9,2.4),vx:r(-.006,.006),vy:r(-.02,-.006),base:r(.2,.5),speed:r(8e-4,.002),phase:r(0,Math.PI*2),c:Math.random()<.5?"gold":"violet"})),c==="off"&&m(0,!0)},D=function(n){const e=Math.random()<.5?1:-1,o=r(Math.PI/7,Math.PI/5),a=r(.45,.75);y.push({x:r(s*.15,s*.85),y:r(-20,d*.3),vx:Math.cos(o)*a*e,vy:Math.sin(o)*a,born:n,life:r(750,1050),len:r(100,170)})},S=function(n){y=y.filter(e=>n-e.born<e.life);for(const e of y){const o=(n-e.born)/e.life,a=e.x+e.vx*(n-e.born),i=e.y+e.vy*(n-e.born),f=o<.15?o/.15:o>.7?(1-o)/.3:1,h=Math.hypot(e.vx,e.vy),x=e.vx/h,g=e.vy/h,b=t.createLinearGradient(a,i,a-x*e.len,i-g*e.len);b.addColorStop(0,`rgba(236,242,255,${(.85*f).toFixed(3)})`),b.addColorStop(1,"rgba(236,242,255,0)"),t.strokeStyle=b,t.lineWidth=1.6,t.lineCap="round",t.beginPath(),t.moveTo(a,i),t.lineTo(a-x*e.len,i-g*e.len),t.stroke()}},B=function(){let o=0;t.lineWidth=.7;for(let a=0;a<l.length&&o<26;a++)for(let i=a+1;i<l.length&&o<26;i++){const f=l[a].x-l[i].x,h=l[a].y-l[i].y,x=f*f+h*h;if(x<16900){const g=(1-Math.sqrt(x)/130)*.17;t.strokeStyle=`rgba(178,170,255,${g.toFixed(3)})`,t.beginPath(),t.moveTo(l[a].x,l[a].y),t.lineTo(l[i].x,l[i].y),t.stroke(),o++}}},X=function(n){for(const e of C){e.x+=e.vx*16,e.y+=e.vy*16,e.y<-12&&(e.y=d+10),e.x<-12&&(e.x=s+10),e.x>s+12&&(e.x=-10);const o=Math.max(.05,e.base+.25*Math.sin(n*e.speed+e.phase)),[a,i,f]=A[e.c];t.beginPath(),t.arc(e.x,e.y,e.r,0,7),t.shadowBlur=9,t.shadowColor=`rgba(${a},${i},${f},0.9)`,t.fillStyle=`rgba(${a},${i},${f},${o.toFixed(3)})`,t.fill()}t.shadowBlur=0},m=function(n,e=!1){t.clearRect(0,0,s,d);for(const o of l){const a=c==="off"?o.base:Math.max(.05,o.base+o.amp*Math.sin(n*o.speed+o.phase)),[i,f,h]=A[o.c];t.beginPath(),t.arc(o.x,o.y,o.r,0,7),o.r>1.25?(t.shadowBlur=7,t.shadowColor=`rgba(${i},${f},${h},0.85)`):t.shadowBlur=0,t.fillStyle=`rgba(${i},${f},${h},${a.toFixed(3)})`,t.fill()}if(t.shadowBlur=0,c!=="off"&&!e){c==="fancy"&&(B(),X(n));const o=c==="fancy"?r(2600,6e3):r(4200,9500);n>P&&(D(n),P=n+o),S(n)}},$=function(n){m(n),M=requestAnimationFrame($)},p=function(){if(c==="off"){m(0,!0);return}cancelAnimationFrame(M),M=requestAnimationFrame($)},w=function(){cancelAnimationFrame(M),t.clearRect(0,0,s,d),m(0,!0)};const t=u.getContext("2d"),k=matchMedia("(prefers-reduced-motion: reduce)").matches,A={white:[240,240,255],blue:[150,215,250],gold:[255,218,150],violet:[178,170,255]};let s=0,d=0,l=[],C=[],y=[],P=2500,M=0,c=document.documentElement.dataset.fx||"standard";k&&(c="off");const r=(n,e)=>n+Math.random()*(e-n);v(),addEventListener("resize",v),document.addEventListener("stella-fx-change",n=>{c=n.detail,c==="off"?w():p()}),c==="off"?m(0,!0):(p(),document.addEventListener("visibilitychange",()=>{document.hidden?w():p()}))}</script> <header class="site-header"> <div class="wrap site-header__inner"> <a class="logo" href="/STELLASTOPVRC/"> <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> <span>星之驿站</span> <span class="logo__romaji">StellaStop</span> </a> <div class="header-right"> <nav class="site-nav" aria-label="站内导航"> <a href="/STELLASTOPVRC/"> 首页 </a><a href="/STELLASTOPVRC/start/"> 新手 </a><a href="/STELLASTOPVRC/posts/"> 教程 </a><a href="/STELLASTOPVRC/videos/"> 视频 </a><a href="/STELLASTOPVRC/resources/"> 资源 </a><a href="/STELLASTOPVRC/booth/"> Booth </a><a href="/STELLASTOPVRC/announcements/"> 公告 </a><a href="/STELLASTOPVRC/ai/"> 问星 </a><a href="/STELLASTOPVRC/changelog/"> 更新日志 </a><a href="/STELLASTOPVRC/about/"> 关于 </a> </nav> <a class="login-link" data-desk-login hidden title="写作台：登录 / 注册后可发教程、传资源">
+登录 / 注册
+</a> <div class="theme-switch"> <button class="theme-switch__btn" id="themeBtn" type="button" aria-haspopup="listbox" aria-expanded="false" aria-label="切换主题配色" title="切换主题配色"> <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"> <path d="M12 3a9 9 0 1 0 9 9c0-1.2-1-2-2.2-2H17a2 2 0 0 1-2-2V6.2C15 5 14.2 4 13 4.4A9 9 0 0 0 12 3Z"></path> <circle cx="7.5" cy="11.5" r="1" fill="currentColor" stroke="none"></circle> <circle cx="10" cy="7.5" r="1" fill="currentColor" stroke="none"></circle> <circle cx="15" cy="7" r="1" fill="currentColor" stroke="none"></circle> </svg> </button> <div class="theme-pop" id="themePop" role="listbox" aria-label="选择主题" hidden> <button class="theme-opt" type="button" role="option" data-theme-value="nebula" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#8f7ff7"></span><span class="dot" style="background:#62c8f5"></span><span class="dot" style="background:#ffd98e"></span> </span> <span class="theme-opt__name">星云 · 蓝紫</span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt" type="button" role="option" data-theme-value="sakura" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#ff8fc7"></span><span class="dot" style="background:#c79bff"></span><span class="dot" style="background:#ffd08e"></span> </span> <span class="theme-opt__name">樱语 · 粉紫</span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt" type="button" role="option" data-theme-value="miku" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#2ed3c2"></span><span class="dot" style="background:#6ea8ff"></span><span class="dot" style="background:#ffe08e"></span> </span> <span class="theme-opt__name">葱色 · 青绿</span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt" type="button" role="option" data-theme-value="ember" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#ffb35c"></span><span class="dot" style="background:#ff7e6b"></span><span class="dot" style="background:#ffd98e"></span> </span> <span class="theme-opt__name">暮金 · 暖橙</span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt" type="button" role="option" data-theme-value="dawn" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#6a5ce8"></span><span class="dot" style="background:#e0568f"></span><span class="dot" style="background:#b8821e"></span> </span> <span class="theme-opt__name">晨星 · 浅色</span> <span class="theme-opt__mark">✦</span> </button> </div> </div> <script type="module">const a=document.getElementById("themeBtn"),n=document.getElementById("themePop");function s(c){document.documentElement.dataset.theme=c;try{localStorage.setItem("stella-theme",c)}catch{}const e=getComputedStyle(document.documentElement).getPropertyValue("--bg-deep").trim();document.querySelector('meta[name="theme-color"]')?.setAttribute("content",e||"#070a1c"),document.querySelectorAll(".theme-opt").forEach(t=>{const d=t.dataset.themeValue===c;t.classList.toggle("is-active",d),t.setAttribute("aria-selected",String(d))})}if(a&&n){const c=document.documentElement.dataset.theme||"nebula";document.querySelectorAll(".theme-opt").forEach(e=>{const t=e.dataset.themeValue===c;e.classList.toggle("is-active",t),e.setAttribute("aria-selected",String(t))}),a.addEventListener("click",e=>{e.stopPropagation();const t=n.hidden;n.hidden=!t,a.setAttribute("aria-expanded",String(t))}),document.addEventListener("click",e=>{!n.hidden&&!e.target.closest(".theme-switch")&&(n.hidden=!0,a.setAttribute("aria-expanded","false"))}),document.addEventListener("keydown",e=>{e.key==="Escape"&&!n.hidden&&(n.hidden=!0,a.setAttribute("aria-expanded","false"),a.focus())}),n.addEventListener("click",e=>{const t=e.target.closest(".theme-opt");t&&(s(t.dataset.themeValue??"nebula"),n.hidden=!0,a.setAttribute("aria-expanded","false"))})}</script> <div class="theme-switch fx-switch"> <button class="theme-switch__btn" id="fxBtn" type="button" aria-haspopup="listbox" aria-expanded="false" aria-label="背景特效设置" title="背景特效设置"> <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"> <path d="M5 3v4M3 5h4M6.5 17.5v3M5 19h3"></path> <path d="M14.5 4.5 16 9l4.5 1.5L16 12l-1.5 4.5L13 12l-4.5-1.5L13 9l1.5-4.5Z"></path> </svg> </button> <div class="theme-pop" id="fxPop" role="listbox" aria-label="背景特效" hidden> <button class="theme-opt fx-opt" type="button" role="option" data-fx-value="off" aria-selected="false"> <span class="fx-opt__body"> <span class="fx-opt__name">关闭特效</span> <span class="fx-opt__hint">最省电</span> </span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt fx-opt" type="button" role="option" data-fx-value="standard" aria-selected="false"> <span class="fx-opt__body"> <span class="fx-opt__name">标准</span> <span class="fx-opt__hint">闪烁星空 + 流星</span> </span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt fx-opt" type="button" role="option" data-fx-value="fancy" aria-selected="false"> <span class="fx-opt__body"> <span class="fx-opt__name">华丽</span> <span class="fx-opt__hint">追加极光 / 星座 / 光尘</span> </span> <span class="theme-opt__mark">✦</span> </button> </div> </div> <script type="module">const n=document.getElementById("fxBtn"),a=document.getElementById("fxPop");function s(d){document.documentElement.dataset.fx=d;try{localStorage.setItem("stella-fx",d)}catch{}document.querySelectorAll("#fxPop .fx-opt").forEach(t=>{const e=t.dataset.fxValue===d;t.classList.toggle("is-active",e),t.setAttribute("aria-selected",String(e))}),document.dispatchEvent(new CustomEvent("stella-fx-change",{detail:d}))}if(n&&a){const d=document.documentElement.dataset.fx||"standard";document.querySelectorAll("#fxPop .fx-opt").forEach(t=>{const e=t.dataset.fxValue===d;t.classList.toggle("is-active",e),t.setAttribute("aria-selected",String(e))}),n.addEventListener("click",t=>{t.stopPropagation();const e=a.hidden;a.hidden=!e,n.setAttribute("aria-expanded",String(e))}),document.addEventListener("click",t=>{!a.hidden&&!t.target.closest(".fx-switch")&&(a.hidden=!0,n.setAttribute("aria-expanded","false"))}),document.addEventListener("keydown",t=>{t.key==="Escape"&&!a.hidden&&(a.hidden=!0,n.setAttribute("aria-expanded","false"),n.focus())}),a.addEventListener("click",t=>{const e=t.target.closest(".fx-opt");e&&(s(e.dataset.fxValue??"standard"),a.hidden=!0,n.setAttribute("aria-expanded","false"))})}</script> </div> </div> </header> <main id="main">  <article class="wrap post-layout" data-astro-cid-lvjzyg5v> <div class="post-main page-fade" data-astro-cid-lvjzyg5v> <header class="post-head" data-astro-cid-lvjzyg5v> <a class="crumb" href="/STELLASTOPVRC/posts/" data-astro-cid-lvjzyg5v>← 返回教程档案</a> <div class="post-head__meta" style="--accent:var(--ink-dim)" data-astro-cid-lvjzyg5v> <span class="badge" data-cat="Avatar 虚拟形象" data-astro-cid-lvjzyg5v>Avatar 虚拟形象</span> <time datetime="2026-11-09" data-astro-cid-lvjzyg5v>2026-11-09</time> <span class="post-head__reading" data-astro-cid-lvjzyg5v>⏱ 约 13 分钟</span>  </div> <h1 class="post-head__title" data-astro-cid-lvjzyg5v>VRChat Avatar 中英术语对照表（全量）——英文原名、常见中文代称与欠标准译名警示</h1> <p class="post-head__lead" data-astro-cid-lvjzyg5v>结论：本对照表出自 VRCD 文档库「Avatar 与你」附录（源页标注 36 条），是中文社区的翻译规范参考，不是 VRChat 官方文档；官方文档与 SDK 中出现的术语一律以英文原名为准，中文译名仅供中文社区沟通使</p> <div class="chip-row" data-astro-cid-lvjzyg5v> <a class="chip" href="/STELLASTOPVRC/posts/?tag=%E7%9F%A5%E8%AF%86%E5%BA%93" data-astro-cid-lvjzyg5v> 知识库 </a><a class="chip" href="/STELLASTOPVRC/posts/?tag=avatar" data-astro-cid-lvjzyg5v> avatar </a> </div> </header> <div class="prose" data-astro-cid-lvjzyg5v> <hr>
+<h1 id="vrchat-avatar-中英术语对照表定位中文社区翻译规范参考官方文档与-sdk-中的术语一律以英文为准">VRChat Avatar 中英术语对照表定位：中文社区翻译规范参考，官方文档与 SDK 中的术语一律以英文为准</h1>
+<p>结论：本对照表出自 VRCD 文档库「Avatar 与你」附录（源页标注 36 条），是中文社区的翻译规范参考，不是 VRChat 官方文档；官方文档与 SDK 中出现的术语一律以英文原名为准，中文译名仅供中文社区沟通使用（来源：VRCD 文档库 docs.vrcd.org.cn，community-tested）。</p>
+<p>编制目的有三：统一术语，减少中文社区内的术语混乱；警示非标准译名，标注常见但不被官方推荐的译名；辅助教学，帮助新创作者建立中英术语映射。</p>
+<p>重要程度定位为教学参考（🟡）：服务对象是中文社区翻译与教学场景，不构成官方命名规范。</p>
+<p>[UNKNOWN] 源页标题标注「36 条」，但对照表逐行清点为 39 行；差额 3 行的计数口径源页未说明。本文件按源页原始行忠实收录，全部条目分布于后续四个分类对照块。</p>
+<hr>
+<hr>
+<h1 id="术语对照表模型与渲染资产类avatarmeshskinned-meshtexturematerialshaderrendererliltoonpoiyomi-toon">术语对照表·模型与渲染资产类：Avatar/Mesh/Skinned Mesh/Texture/Material/Shader/Renderer/liltoon/poiyomi toon</h1>
+<p>结论：以下 10 条覆盖模型结构与渲染资产的常用中英对照；一律以官方英文原名为准，⚠️ 列为社区警示的非标准译名（来源：VRCD 关键词对照表 §2，community-tested）。</p>
+<table>
+<thead>
+<tr>
+<th>英文</th>
+<th>常见中文代称或解释</th>
+<th>⚠️ 欠标准译名（社区警示）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Avatar</strong></td>
+<td>模型，虚拟形象</td>
+<td>⚠️ 头像，皮肤，外观</td>
+</tr>
+<tr>
+<td><strong>Armature</strong></td>
+<td>骨架</td>
+<td>—</td>
+</tr>
+<tr>
+<td><strong>Mesh</strong></td>
+<td>网格，模型</td>
+<td>⚠️ 模型（易混淆）</td>
+</tr>
+<tr>
+<td><strong>Skinned Mesh</strong></td>
+<td>蒙皮，蒙皮网格；被骨头控制的 Mesh</td>
+<td>—</td>
+</tr>
+<tr>
+<td><strong>Texture</strong></td>
+<td>贴图，纹理</td>
+<td>⚠️ 材质（易与 Material 混淆）</td>
+</tr>
+<tr>
+<td><strong>Material</strong></td>
+<td>材质球，材料球</td>
+<td>—</td>
+</tr>
+<tr>
+<td><strong>Shader</strong></td>
+<td>着色器</td>
+<td>⚠️ 光影（不准确）</td>
+</tr>
+<tr>
+<td><strong>Renderer</strong></td>
+<td>渲染器；渲染某个 Mesh 的组件，有 Mesh 和 Skinned Mesh 两种</td>
+<td>—</td>
+</tr>
+<tr>
+<td><strong>liltoon</strong></td>
+<td>一款常用 Shader，以功能完备著称；常见于 Booth 商品和 Upload Ready 的 Avatar</td>
+<td>—</td>
+</tr>
+<tr>
+<td><strong>poiyomi toon</strong></td>
+<td>一款很多人使用的 shader；难以维护但功能强大且多样</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<hr>
+<h1 id="术语对照表unity-工程与工具链类vccprefabhierarchyasset-windowinspectorcomponentupload-readyworld-等-13-条">术语对照表·Unity 工程与工具链类：VCC/Prefab/Hierarchy/Asset Window/Inspector/Component/Upload Ready/World 等 13 条</h1>
+<p>结论：以下 13 条覆盖 Unity 编辑器、工程管理与上传流程相关术语；自动脚本/自动插件指能自动安装预制件的工具链（例：MA、VRCFury）（来源：VRCD 关键词对照表 §2，community-tested）。</p>
+<table>
+<thead>
+<tr>
+<th>英文</th>
+<th>常见中文代称或解释</th>
+<th>⚠️ 欠标准译名（社区警示）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>自动脚本，自动插件</td>
+<td>能自动把符合规格的预制件安装到 Avatar 上的 Unity 插件（例：MA、VRCFury）</td>
+<td>—</td>
+</tr>
+<tr>
+<td><strong>VRChat Creator Companion</strong></td>
+<td>VCC，工程管理器</td>
+<td>—</td>
+</tr>
+<tr>
+<td><strong>(Unity) Editor</strong></td>
+<td>Unity，Unity 编辑器，编辑器</td>
+<td>—</td>
+</tr>
+<tr>
+<td><strong>(Unity) Project</strong></td>
+<td>工程，工程文件</td>
+<td>—</td>
+</tr>
+<tr>
+<td><strong>Prefab</strong></td>
+<td>预制体，预制件</td>
+<td>—</td>
+</tr>
+<tr>
+<td><strong>Hierarchy</strong></td>
+<td>场景列表，列表</td>
+<td>—</td>
+</tr>
+<tr>
+<td><strong>Asset Window</strong></td>
+<td>资产窗口，资源窗口；显示 Project 中所有资源的窗口</td>
+<td>—</td>
+</tr>
+<tr>
+<td><strong>Inspector</strong></td>
+<td>检查器</td>
+<td>⚠️ 信息窗口（不准确）</td>
+</tr>
+<tr>
+<td><strong>Object</strong></td>
+<td>物体，组件</td>
+<td>—</td>
+</tr>
+<tr>
+<td><strong>Component</strong></td>
+<td>组件，脚本；在 Inspector 中添加给物体的组件</td>
+<td>—</td>
+</tr>
+<tr>
+<td><strong>Upload Ready</strong></td>
+<td>完整，完备；即刻可以上传的</td>
+<td>—</td>
+</tr>
+<tr>
+<td><strong>VRChat</strong></td>
+<td>VRC</td>
+<td>—</td>
+</tr>
+<tr>
+<td><strong>World</strong></td>
+<td>世界</td>
+<td>⚠️ 地图（不准确）</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<hr>
+<h1 id="术语对照表动画状态机与物理骨骼类animatoranimationstatetransitionconditionweightparameterhipsphysbone-等-10-条">术语对照表·动画状态机与物理骨骼类：Animator/Animation/State/Transition/Condition/Weight/Parameter/Hips/Physbone 等 10 条</h1>
+<p>结论：以下 10 条覆盖动画状态机、参数与物理骨骼系统术语；State 与 Animation 的译名区分是高频出错点（来源：VRCD 关键词对照表 §2，community-tested）。</p>
+<table>
+<thead>
+<tr>
+<th>英文</th>
+<th>常见中文代称或解释</th>
+<th>⚠️ 欠标准译名（社区警示）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Animator</strong></td>
+<td>动画器，状态机</td>
+<td>⚠️ 动画师（职业混淆）</td>
+</tr>
+<tr>
+<td><strong>Animation</strong></td>
+<td>动画</td>
+<td>—</td>
+</tr>
+<tr>
+<td><strong>State</strong></td>
+<td>状态；Animator 里的方块，内含一个 Animation</td>
+<td>⚠️ 动画（易混淆）</td>
+</tr>
+<tr>
+<td><strong>Transition</strong></td>
+<td>过渡，动画过渡</td>
+<td>—</td>
+</tr>
+<tr>
+<td><strong>Condition</strong></td>
+<td>条件</td>
+<td>⚠️ 过渡限制（不准确）</td>
+</tr>
+<tr>
+<td><strong>Weight</strong></td>
+<td>权重</td>
+<td>⚠️ 重量，影响（不准确）</td>
+</tr>
+<tr>
+<td><strong>Parameter</strong></td>
+<td>参数</td>
+<td>—</td>
+</tr>
+<tr>
+<td><strong>Hips</strong></td>
+<td>髋部，腰部，胯部，臀部；大腿骨和骨盆相连的骨骼部位</td>
+<td>—</td>
+</tr>
+<tr>
+<td><strong>Physbone</strong></td>
+<td>动骨，新动骨；VRChat Avatar Dynamics 更新中取代 Dynamic Bone 的系统</td>
+<td>—</td>
+</tr>
+<tr>
+<td><strong>Physbone Collider</strong></td>
+<td>动骨碰撞，碰撞；可与 Physbone 进行碰撞的 Component</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<hr>
+<h1 id="术语对照表avatar-组件表情与玩家指称类vrc-avatar-descriptorplayable-layersexpression-parametersexpression-menuremote-playerlocal-player">术语对照表·Avatar 组件表情与玩家指称类：VRC Avatar Descriptor/Playable Layers/Expression Parameters/Expression Menu/Remote Player/Local Player</h1>
+<p>结论：以下 6 条覆盖 Avatar 核心组件、表情参数菜单与玩家指称术语；Remote Player 与 Local Player 是描述同步行为时的基础称谓（来源：VRCD 关键词对照表 §2，community-tested）。</p>
+<table>
+<thead>
+<tr>
+<th>英文</th>
+<th>常见中文代称或解释</th>
+<th>⚠️ 欠标准译名（社区警示）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>VRC Avatar Descriptor</strong></td>
+<td>Avatar 的核心组件</td>
+<td>—</td>
+</tr>
+<tr>
+<td><strong>Playable Layers</strong></td>
+<td>VRC Avatar Descriptor 的一部分；Avatar 不同用途的 5 个 Animator</td>
+<td>—</td>
+</tr>
+<tr>
+<td><strong>Expression Parameters</strong></td>
+<td>参数表，同步参数表，同步表，参数</td>
+<td>—</td>
+</tr>
+<tr>
+<td><strong>Expression Menu</strong></td>
+<td>菜单，轮盘菜单</td>
+<td>—</td>
+</tr>
+<tr>
+<td><strong>Remote Player</strong></td>
+<td>远端玩家，其他人，其他玩家；自己之外的任何人</td>
+<td>—</td>
+</tr>
+<tr>
+<td><strong>Local Player</strong></td>
+<td>我，自己；低头看到的那副身体</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<p>使用提示：涉及动画驱动时，Playable Layers 归属于 VRC Avatar Descriptor；涉及表情交互时，Expression Parameters 承担同步、Expression Menu 提供操作入口。</p>
+<hr>
+<hr>
+<h1 id="欠标准译名警示清单10-组头像模型材质光影动画师地图信息窗口动画state过渡限制重量翻译与教学时应避免">欠标准译名警示清单（10 组）：头像/模型/材质/光影/动画师/地图/信息窗口/动画（State）/过渡限制/重量——翻译与教学时应避免</h1>
+<p>结论：对照表以 ⚠️ 标注了 10 组欠标准译名——在中文社区流通、但非官方推荐且容易造成歧义；翻译与教学时应优先避开（来源：VRCD 关键词对照表 §2 ⚠️ 列，community-tested）。</p>
+<table>
+<thead>
+<tr>
+<th>英文</th>
+<th>欠标准译名</th>
+<th>警示说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Avatar</td>
+<td>头像，皮肤，外观</td>
+<td>与 3D 虚拟形象含义不符</td>
+</tr>
+<tr>
+<td>Mesh</td>
+<td>模型</td>
+<td>易混淆</td>
+</tr>
+<tr>
+<td>Texture</td>
+<td>材质</td>
+<td>易与 Material 混淆</td>
+</tr>
+<tr>
+<td>Shader</td>
+<td>光影</td>
+<td>不准确</td>
+</tr>
+<tr>
+<td>Animator</td>
+<td>动画师</td>
+<td>与职业称谓混淆</td>
+</tr>
+<tr>
+<td>World</td>
+<td>地图</td>
+<td>不准确</td>
+</tr>
+<tr>
+<td>Inspector</td>
+<td>信息窗口</td>
+<td>不准确</td>
+</tr>
+<tr>
+<td>State</td>
+<td>动画</td>
+<td>易混淆</td>
+</tr>
+<tr>
+<td>Condition</td>
+<td>过渡限制</td>
+<td>不准确</td>
+</tr>
+<tr>
+<td>Weight</td>
+<td>重量，影响</td>
+<td>不准确</td>
+</tr>
+</tbody>
+</table>
+<p>使用规则：官方文档与 SDK 中一律使用英文原名；中文写作遇到这些概念时改用推荐译名（见前四个分类对照块的推荐列）。</p>
+<p>[UNKNOWN] 欠标准判定为 VRCD 社区约定，非 VRChat 官方裁决；「警示说明」列按源页备注整理，Avatar 一行的说明取自同页 §3 辨析，其余条目源页仅标「易混淆 / 不准确」。</p>
+<hr>
+<hr>
+<h1 id="四组高频混淆术语辨析texturematerialstateanimationavatar头像animator动画师含教学话术">四组高频混淆术语辨析：Texture≠Material、State≠Animation、Avatar≠头像、Animator≠动画师（含教学话术）</h1>
+<p>结论：四组术语最容易被中文社区误译混用，判别要点与教学话术如下（来源：VRCD 关键词对照表 §3，community-tested）。</p>
+<p>① Texture vs Material：Texture = 贴图/纹理（图片本身）；Material = 材质球（包含 Texture + Shader + 渲染属性）。常见错误是把 Texture 译成「材质」，应译为「贴图/纹理」。教学话术：「Material 是盒子，Texture 是装在盒子里的画」。</p>
+<p>② State vs Animation：State = 状态（Animator 中的方块）；Animation = 动画（状态内播放的内容）。常见错误是把 State 译成「动画」，应译为「状态」。教学话术：「State 是播放器的按钮，Animation 是按钮播放的歌曲」。</p>
+<p>③ Avatar ≠ 头像：Avatar = 虚拟形象（VRChat 中的 3D 角色）；「头像」通常指 2D 图像（如社交媒体头像）。官方文档中 Avatar 专指 3D 虚拟形象。教学话术：「Avatar 是 3D 角色，不等于 2D 头像」。</p>
+<p>④ Animator ≠ 动画师：Animator = 动画器/状态机（Unity 组件）；「动画师」是职业称谓。常见错误是把 Animator 译成「动画师」，应译为「动画器/状态机」。教学话术：「Animator 是 Unity 里的组件，不是做动画的人」。</p>
+<hr>
+<hr>
+<h1 id="vrchat-术语翻译规范建议首次出现中英并标避开欠标准译名sdkapi代码场景避免中文译名教学按入门进阶专业分层">VRChat 术语翻译规范建议：首次出现中英并标、避开欠标准译名、SDK/API/代码场景避免中文译名、教学按入门进阶专业分层</h1>
+<p>结论：中文社区文档写作的术语规范分三类——推荐做法、避免做法、教学场景分层（来源：VRCD 关键词对照表 §4，community-tested）。</p>
+<p>推荐做法：术语首次出现时同时标注英文和中文，写法如「Animator（动画器）」；后续可仅用中文，但保留英文别名；跨文档引用时使用统一译名；复杂术语优先直接用英文原文，避免翻译歧义。</p>
+<p>避免做法：不使用对照表中标 ⚠️ 的欠标准译名；不自创译名（除非已在社区广泛流通）；在 SDK、API、代码相关的场景避免使用中文译名。</p>
+<p>教学场景分层：入门教学多用中文译名，降低理解门槛；进阶教程中英双语并行，帮助建立工程对应关系；专业文档优先用英文，保持准确性。</p>
+<hr> </div> <p class="kb-source-note" data-astro-cid-lvjzyg5v>
+本文由 VRChat 开发知识库自动整理（社区整理  · 可信度 high ），
+          遇到与手写教程冲突的地方，以官方文档为最高优先级。
+</p> <section class="comments" id="comments" data-astro-cid-lvjzyg5v> <h2 class="comments__title" data-astro-cid-lvjzyg5v>✦ 旅人留言（0）</h2> <p class="comments__empty" id="commentsEmpty" data-astro-cid-lvjzyg5v>
+还没有旅人留言 —— 有疑问就写在下面，站长都会回复。
+</p> <form class="comment-form" id="commentForm" data-target="kb-avatar-zh-translation-glossary" data-astro-cid-lvjzyg5v> <p class="comment-form__title" data-astro-cid-lvjzyg5v>写下你的留言</p> <input id="cAuthor" maxlength="20" placeholder="昵称（留空则为「旅人」）" data-astro-cid-lvjzyg5v> <textarea id="cBody" maxlength="1000" required placeholder="想问的问题、想说的感谢都可以（最多 1000 字）" data-astro-cid-lvjzyg5v></textarea> <div class="comment-form__actions" data-astro-cid-lvjzyg5v> <button class="btn btn--primary" type="submit" data-astro-cid-lvjzyg5v>发布留言</button> <span class="form-hint" data-astro-cid-lvjzyg5v>留言保存在本站，站长在写作台里能看到</span> <span class="form-msg" id="cMsg" data-astro-cid-lvjzyg5v></span> </div> </form> </section> <nav class="station-nav" aria-label="站间导航" data-astro-cid-lvjzyg5v> <a href="/STELLASTOPVRC/posts/kb-avatar-vrcfury-reference/" data-astro-cid-lvjzyg5v> <span class="dir" data-astro-cid-lvjzyg5v>← 上一站 · 更新的星光</span> <span class="to" data-astro-cid-lvjzyg5v>VRCFury 完整参考 — Non-Destructive Avatar 工具与优化系统</span> </a> <a href="/STELLASTOPVRC/posts/kb-avatar-world-fixed-objects/" data-astro-cid-lvjzyg5v> <span class="dir" data-astro-cid-lvjzyg5v>下一站 · 更早的星光 →</span> <span class="to" data-astro-cid-lvjzyg5v>Avatar 固定世界物品结构（World-Fixed Objects）——VRC Constraints + FX 层实现的 5 空物体世界固定方案</span> </a> </nav> </div> <aside class="toc" id="toc" hidden> <p class="toc__title">✦ 本页星图</p> <nav id="tocNav" aria-label="文章目录"></nav> </aside> <script type="module">const i=document.querySelector(".prose"),d=document.getElementById("toc"),u=document.getElementById("tocNav"),l=[];if(i&&d&&u){const c=[...i.querySelectorAll("h1, h2, h3")];if(c.length>=3){d.hidden=!1,c.forEach((o,e)=>{o.id||(o.id=`sec-${e}`);const n=document.createElement("a");n.href=`#${o.id}`;const s=(o.textContent??"").replace(/\s+/g," ").trim(),r=s.search(/[：:]/),a=r>=4?s.slice(0,r):s;n.textContent=a.length>40?`${a.slice(0,40)}…`:a,n.title=s,u.appendChild(n),l.push({a:n,h:o})});const t=()=>{let o=l[0];for(const e of l)e.h.getBoundingClientRect().top<=130&&(o=e);for(const e of l)e.a.classList.toggle("is-active",e===o)};addEventListener("scroll",t,{passive:!0}),t()}}document.querySelectorAll(".prose pre").forEach(c=>{const t=document.createElement("button");t.className="code-copy",t.type="button",t.textContent="复制",t.addEventListener("click",async()=>{const o=c.querySelector("code")?.innerText??c.innerText;try{await navigator.clipboard.writeText(o)}catch{const e=document.createElement("textarea");e.value=o,document.body.appendChild(e),e.select(),document.execCommand("copy"),e.remove()}t.textContent="已复制 ✓",t.classList.add("is-ok"),setTimeout(()=>{t.textContent="复制",t.classList.remove("is-ok")},1500)}),c.appendChild(t)});</script> </article>  </main> <footer class="site-footer"> <div class="wrap"> <p class="star-line" aria-hidden="true"> <svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> <svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> </p> <p>星之驿站 StellaStop —— 在虚拟宇宙中，为你保留一座驿站</p> <p class="site-footer__disclaimer">
+该网页目前是测试阶段，仅用于测试，所有内容仅供参考；内容全部为引用互联网当中的信息。
+</p> <p>© 2026 星之驿站 · 由 <a href="https://astro.build">Astro</a> 与星光驱动</p> <p> <a data-desk-login hidden title="写作台：登录 / 注册">登录 / 注册</a> ·
+<a href="/STELLASTOPVRC/announcements/">官方公告</a> ·
+<a href="/STELLASTOPVRC/ai/">问星 AI</a> ·
+<a href="/STELLASTOPVRC/feedback/">旅人留言板</a> </p> </div> </footer> <button class="to-top" id="toTop" aria-label="回到顶部"> <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"> <path d="M12 20V5"></path> <path d="M5.5 11.5 12 5l6.5 6.5"></path> </svg> </button> <script type="module">const e=document.getElementById("toTop");if(e){const t=()=>e.classList.toggle("is-visible",scrollY>480);addEventListener("scroll",t,{passive:!0}),t(),e.addEventListener("click",()=>{const o=matchMedia("(prefers-reduced-motion: reduce)").matches;scrollTo({top:0,behavior:o?"auto":"smooth"})})}</script> <script>(function(){const deskConfigured = "";
+
+      /* 写作台探测（页面尾部执行，DOM 已就绪）：
+         1. 计算写作台地址：站点配置 deskUrl（公网部署时填）> 本机默认 localhost:4322 > 同主机 4322
+         2. 探测 /api/gate/status —— 在线才点亮「登录 / 注册」入口，并复用给验证门横幅
+         3. 不在线则保持隐藏，绝不会把访客拽进内网地址；同时给出一次性「镜像模式」提示 */
+      (function () {
+        var host = location.hostname;
+        var isLocal = host === 'localhost' || host === '127.0.0.1' || host === '[::1]';
+        var desk = deskConfigured ||
+          (isLocal ? 'http://localhost:4322' : location.protocol + '//' + host + ':4322');
+        window.STELLA_DESK = desk;
+
+        function revealLogin() {
+          document.querySelectorAll('[data-desk-login]').forEach(function (a) {
+            a.href = desk + '/admin';
+            a.removeAttribute('hidden');
+          });
+        }
+        function showBanner(css, html, shiftHeader) {
+          var bar = document.createElement('div');
+          bar.style.cssText = css;
+          bar.innerHTML = html;
+          document.body.prepend(bar);
+          if (shiftHeader) {
+            var header = document.querySelector('.site-header');
+            if (header) header.style.marginTop = '42px';
+          }
+        }
+        function hintMirrorMode() {
+          try {
+            if (sessionStorage.getItem('stella-desk-hint')) return;
+            sessionStorage.setItem('stella-desk-hint', '1');
+          } catch (e) { /* 无痕模式等：忽略 */ }
+          var tip = document.createElement('div');
+          tip.style.cssText = 'position:fixed;left:14px;bottom:14px;z-index:9998;max-width:min(92vw,430px);padding:.65rem .9rem;border-radius:12px;background:rgba(18,20,44,.92);border:1px solid rgba(150,142,255,.35);color:#e8e6ff;font-size:.82rem;line-height:1.6;font-family:system-ui,sans-serif;box-shadow:0 8px 30px rgba(0,0,0,.35)';
+          tip.innerHTML = 'ℹ️ 静态镜像模式：登录 / 评论 / AI 等互动功能需要站长写作台在线，当前不可用。' +
+            '<span id="stellaDeskHintClose" style="float:right;cursor:pointer;opacity:.75;font-weight:700;margin-left:.6rem" title="关闭">×</span>';
+          document.body.appendChild(tip);
+          var close = function () { tip.remove(); };
+          tip.querySelector('#stellaDeskHintClose').addEventListener('click', close);
+          setTimeout(close, 9000);
+        }
+
+        try {
+          var ctrl = new AbortController();
+          var timer = setTimeout(function () { ctrl.abort(); }, 2500);
+          fetch(desk + '/api/gate/status', { credentials: 'include', signal: ctrl.signal })
+            .then(function (r) { return r.ok ? r.json() : null; })
+            .then(function (d) {
+              clearTimeout(timer);
+              if (!d) throw new Error('desk-offline');
+              window.STELLA_DESK_OK = true;
+              revealLogin();
+              if (d.regionBlocked) {
+                showBanner(
+                  'position:fixed;top:0;left:0;right:0;z-index:9999;padding:1.2rem;text-align:center;background:#1a0a0a;color:#ff9ed2;font-size:.95rem;border-bottom:2px solid #ff4d6d;font-family:system-ui,sans-serif',
+                  '⛔ 你所在的地区（' + (d.regionCountry || '未知') + '）暂不开放访问。',
+                  false
+                );
+                return;
+              }
+              if (d.enabled && !d.passed) {
+                showBanner(
+                  'position:fixed;top:0;left:0;right:0;z-index:9999;padding:0.7rem;text-align:center;background:linear-gradient(94deg,rgba(143,127,247,.25),rgba(98,200,245,.18));border-bottom:1px solid rgba(150,142,255,.3);color:#f0efff;font-size:.88rem;font-family:system-ui,sans-serif',
+                  '🔒 本站启用了安全验证 —— <a href="' + desk + '/gate?next=' + encodeURIComponent(location.href) + '" style="color:#ffd98e;font-weight:700;text-decoration:underline">点击完成验证</a>，通过后即可使用全部功能（30 天免验）。',
+                  true
+                );
+              }
+            })
+            .catch(function () {
+              clearTimeout(timer);
+              window.STELLA_DESK_OK = false;
+              hintMirrorMode();
+            });
+        } catch (e) { /* 忽略 */ }
+      })();
+    })();</script> </body> </html> <script type="module">const m=document.getElementById("commentForm"),s=document.getElementById("cMsg"),u=`${location.protocol}//${location.hostname}:4322/api/message`;function r(e,t=!1){s&&(s.textContent=e,s.classList.toggle("is-err",t),s.classList.toggle("is-ok",!t))}function y(){const e=new Date,t=n=>String(n).padStart(2,"0");return`${e.getFullYear()}-${t(e.getMonth()+1)}-${t(e.getDate())}`}function f(e){let t=7;for(const n of e)t=(t*31+n.charCodeAt(0))%360;return t}function g(e,t){const n=document.createElement("li");n.className="comment",n.innerHTML=`
+      <span class="comment__avatar"></span>
+      <div class="comment__bubble">
+        <div class="comment__head">
+          <span class="comment__name"></span>
+          <time class="comment__date">${y()}</time>
+        </div>
+        <p class="comment__body"></p>
+      </div>`;const o=n.querySelector(".comment__avatar");return o.style.setProperty("--h",String(f(e))),o.textContent=e.slice(0,1),n.querySelector(".comment__name").textContent=e,n.querySelector(".comment__body").textContent=t,n}m?.addEventListener("submit",async e=>{e.preventDefault();const t=document.getElementById("cBody").value.trim();if(!t)return r("留言内容不能为空哦",!0);const n=document.getElementById("cAuthor").value.trim()||"旅人",o=m.querySelector("button");o&&(o.disabled=!0);try{const c=await fetch(u,{credentials:"include",method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({target:m.dataset.target,kind:"comment",author:n,body:t})}),d=await c.json().catch(()=>({}));if(!c.ok)throw new Error(d.error||`发送失败（${c.status}）`);const l=document.querySelector(".comment-list");l&&l.appendChild(g(n,t)),document.getElementById("commentsEmpty")?.remove(),document.getElementById("cBody").value="",r("留言已发布，感谢支持 ✦");const a=document.querySelector(".comments__title"),i=a?.textContent?.match(/（(\d+)）/);a&&i&&(a.textContent=a.textContent.replace(/（\d+）/,`（${Number(i[1])+1}）`))}catch(c){r(c instanceof TypeError?"写作台没在运行，暂时收不到留言 —— 双击「启动博客.bat」就好":c.message,!0)}finally{o&&(o.disabled=!1)}});</script> 

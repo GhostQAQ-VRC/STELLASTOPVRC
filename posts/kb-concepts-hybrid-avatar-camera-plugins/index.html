@@ -1,0 +1,1703 @@
+<!DOCTYPE html><html lang="zh-CN"> <head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="generator" content="Astro v5.18.2"><meta name="description" content="Flex Fisheye Lens 是装载在 Avatar 上的鱼眼相机插件,使用户拍摄的照片具有鱼眼镜头畸变效果。"><meta name="theme-color" content="#070a1c"><meta property="og:title" content="Avatar 端摄影工具索引(Avatar Camera Plugins) · 星之驿站 StellaStop"><meta property="og:description" content="Flex Fisheye Lens 是装载在 Avatar 上的鱼眼相机插件,使用户拍摄的照片具有鱼眼镜头畸变效果。"><meta property="og:type" content="website"><meta name="twitter:card" content="summary"><link rel="icon" type="image/svg+xml" href="/STELLASTOPVRC/favicon.svg"><script>
+      // 在渲染前恢复主题与特效档位，避免闪一下默认状态
+      try {
+        document.documentElement.dataset.theme =
+          localStorage.getItem('stella-theme') || 'nebula';
+        document.documentElement.dataset.fx =
+          localStorage.getItem('stella-fx') || 'standard';
+      } catch {
+        /* 隐私模式读不到就算了 */
+      }
+    </script><link rel="stylesheet" href="/STELLASTOPVRC/custom-vars.css"><title>Avatar 端摄影工具索引(Avatar Camera Plugins) · 星之驿站 StellaStop</title><link rel="stylesheet" href="/STELLASTOPVRC/_astro/about.Bgh6wcGl.css">
+<style>.post-head__meta[data-astro-cid-lvjzyg5v]{color:var(--ink-faint);font-family:var(--font-mono);font-size:.82rem}.post-head[data-astro-cid-lvjzyg5v] .chip-row[data-astro-cid-lvjzyg5v]{margin-top:1rem}.kb-source-note[data-astro-cid-lvjzyg5v]{max-width:760px;margin:2.2rem auto 0;font-size:.82rem;color:var(--ink-faint);border-top:1px dashed var(--line);padding-top:1rem}
+</style></head> <body> <div class="site-notice" id="siteNotice"> <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> <span class="site-notice__text">欢迎来到星之驿站！</span> <button class="site-notice__close" id="noticeClose" type="button" aria-label="关闭公告">
+×
+</button> </div> <a class="skip-link" href="#main">跳到主要内容</a> <canvas id="starfield" aria-hidden="true" data-astro-cid-ra7sfcwn></canvas> <div class="fx-aurora fx-aurora--a" aria-hidden="true" data-astro-cid-ra7sfcwn></div> <div class="fx-aurora fx-aurora--b" aria-hidden="true" data-astro-cid-ra7sfcwn></div>  <script type="module">const u=document.getElementById("starfield");if(u){let F=function(){const n=Math.random();return n<.1?"gold":n<.42?"blue":"white"},v=function(){const n=Math.min(window.devicePixelRatio||1,2);s=window.innerWidth,d=window.innerHeight,u.width=s*n,u.height=d*n,u.style.width=`${s}px`,u.style.height=`${d}px`,t.setTransform(n,0,0,n,0,0);const e=Math.min(190,Math.round(s*d/8500));l=Array.from({length:e},()=>({x:Math.random()*s,y:Math.random()*d,r:r(.4,1.7),base:r(.25,.8),amp:r(.12,.4),speed:r(6e-4,.0022),phase:r(0,Math.PI*2),c:F()})),C=Array.from({length:26},()=>({x:Math.random()*s,y:Math.random()*d,r:r(.9,2.4),vx:r(-.006,.006),vy:r(-.02,-.006),base:r(.2,.5),speed:r(8e-4,.002),phase:r(0,Math.PI*2),c:Math.random()<.5?"gold":"violet"})),c==="off"&&m(0,!0)},D=function(n){const e=Math.random()<.5?1:-1,o=r(Math.PI/7,Math.PI/5),a=r(.45,.75);y.push({x:r(s*.15,s*.85),y:r(-20,d*.3),vx:Math.cos(o)*a*e,vy:Math.sin(o)*a,born:n,life:r(750,1050),len:r(100,170)})},S=function(n){y=y.filter(e=>n-e.born<e.life);for(const e of y){const o=(n-e.born)/e.life,a=e.x+e.vx*(n-e.born),i=e.y+e.vy*(n-e.born),f=o<.15?o/.15:o>.7?(1-o)/.3:1,h=Math.hypot(e.vx,e.vy),x=e.vx/h,g=e.vy/h,b=t.createLinearGradient(a,i,a-x*e.len,i-g*e.len);b.addColorStop(0,`rgba(236,242,255,${(.85*f).toFixed(3)})`),b.addColorStop(1,"rgba(236,242,255,0)"),t.strokeStyle=b,t.lineWidth=1.6,t.lineCap="round",t.beginPath(),t.moveTo(a,i),t.lineTo(a-x*e.len,i-g*e.len),t.stroke()}},B=function(){let o=0;t.lineWidth=.7;for(let a=0;a<l.length&&o<26;a++)for(let i=a+1;i<l.length&&o<26;i++){const f=l[a].x-l[i].x,h=l[a].y-l[i].y,x=f*f+h*h;if(x<16900){const g=(1-Math.sqrt(x)/130)*.17;t.strokeStyle=`rgba(178,170,255,${g.toFixed(3)})`,t.beginPath(),t.moveTo(l[a].x,l[a].y),t.lineTo(l[i].x,l[i].y),t.stroke(),o++}}},X=function(n){for(const e of C){e.x+=e.vx*16,e.y+=e.vy*16,e.y<-12&&(e.y=d+10),e.x<-12&&(e.x=s+10),e.x>s+12&&(e.x=-10);const o=Math.max(.05,e.base+.25*Math.sin(n*e.speed+e.phase)),[a,i,f]=A[e.c];t.beginPath(),t.arc(e.x,e.y,e.r,0,7),t.shadowBlur=9,t.shadowColor=`rgba(${a},${i},${f},0.9)`,t.fillStyle=`rgba(${a},${i},${f},${o.toFixed(3)})`,t.fill()}t.shadowBlur=0},m=function(n,e=!1){t.clearRect(0,0,s,d);for(const o of l){const a=c==="off"?o.base:Math.max(.05,o.base+o.amp*Math.sin(n*o.speed+o.phase)),[i,f,h]=A[o.c];t.beginPath(),t.arc(o.x,o.y,o.r,0,7),o.r>1.25?(t.shadowBlur=7,t.shadowColor=`rgba(${i},${f},${h},0.85)`):t.shadowBlur=0,t.fillStyle=`rgba(${i},${f},${h},${a.toFixed(3)})`,t.fill()}if(t.shadowBlur=0,c!=="off"&&!e){c==="fancy"&&(B(),X(n));const o=c==="fancy"?r(2600,6e3):r(4200,9500);n>P&&(D(n),P=n+o),S(n)}},$=function(n){m(n),M=requestAnimationFrame($)},p=function(){if(c==="off"){m(0,!0);return}cancelAnimationFrame(M),M=requestAnimationFrame($)},w=function(){cancelAnimationFrame(M),t.clearRect(0,0,s,d),m(0,!0)};const t=u.getContext("2d"),k=matchMedia("(prefers-reduced-motion: reduce)").matches,A={white:[240,240,255],blue:[150,215,250],gold:[255,218,150],violet:[178,170,255]};let s=0,d=0,l=[],C=[],y=[],P=2500,M=0,c=document.documentElement.dataset.fx||"standard";k&&(c="off");const r=(n,e)=>n+Math.random()*(e-n);v(),addEventListener("resize",v),document.addEventListener("stella-fx-change",n=>{c=n.detail,c==="off"?w():p()}),c==="off"?m(0,!0):(p(),document.addEventListener("visibilitychange",()=>{document.hidden?w():p()}))}</script> <header class="site-header"> <div class="wrap site-header__inner"> <a class="logo" href="/STELLASTOPVRC/"> <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> <span>星之驿站</span> <span class="logo__romaji">StellaStop</span> </a> <div class="header-right"> <nav class="site-nav" aria-label="站内导航"> <a href="/STELLASTOPVRC/"> 首页 </a><a href="/STELLASTOPVRC/start/"> 新手 </a><a href="/STELLASTOPVRC/posts/"> 教程 </a><a href="/STELLASTOPVRC/videos/"> 视频 </a><a href="/STELLASTOPVRC/resources/"> 资源 </a><a href="/STELLASTOPVRC/booth/"> Booth </a><a href="/STELLASTOPVRC/announcements/"> 公告 </a><a href="/STELLASTOPVRC/ai/"> 问星 </a><a href="/STELLASTOPVRC/changelog/"> 更新日志 </a><a href="/STELLASTOPVRC/about/"> 关于 </a> </nav> <a class="login-link" data-desk-login hidden title="写作台：登录 / 注册后可发教程、传资源">
+登录 / 注册
+</a> <div class="theme-switch"> <button class="theme-switch__btn" id="themeBtn" type="button" aria-haspopup="listbox" aria-expanded="false" aria-label="切换主题配色" title="切换主题配色"> <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"> <path d="M12 3a9 9 0 1 0 9 9c0-1.2-1-2-2.2-2H17a2 2 0 0 1-2-2V6.2C15 5 14.2 4 13 4.4A9 9 0 0 0 12 3Z"></path> <circle cx="7.5" cy="11.5" r="1" fill="currentColor" stroke="none"></circle> <circle cx="10" cy="7.5" r="1" fill="currentColor" stroke="none"></circle> <circle cx="15" cy="7" r="1" fill="currentColor" stroke="none"></circle> </svg> </button> <div class="theme-pop" id="themePop" role="listbox" aria-label="选择主题" hidden> <button class="theme-opt" type="button" role="option" data-theme-value="nebula" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#8f7ff7"></span><span class="dot" style="background:#62c8f5"></span><span class="dot" style="background:#ffd98e"></span> </span> <span class="theme-opt__name">星云 · 蓝紫</span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt" type="button" role="option" data-theme-value="sakura" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#ff8fc7"></span><span class="dot" style="background:#c79bff"></span><span class="dot" style="background:#ffd08e"></span> </span> <span class="theme-opt__name">樱语 · 粉紫</span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt" type="button" role="option" data-theme-value="miku" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#2ed3c2"></span><span class="dot" style="background:#6ea8ff"></span><span class="dot" style="background:#ffe08e"></span> </span> <span class="theme-opt__name">葱色 · 青绿</span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt" type="button" role="option" data-theme-value="ember" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#ffb35c"></span><span class="dot" style="background:#ff7e6b"></span><span class="dot" style="background:#ffd98e"></span> </span> <span class="theme-opt__name">暮金 · 暖橙</span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt" type="button" role="option" data-theme-value="dawn" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#6a5ce8"></span><span class="dot" style="background:#e0568f"></span><span class="dot" style="background:#b8821e"></span> </span> <span class="theme-opt__name">晨星 · 浅色</span> <span class="theme-opt__mark">✦</span> </button> </div> </div> <script type="module">const a=document.getElementById("themeBtn"),n=document.getElementById("themePop");function s(c){document.documentElement.dataset.theme=c;try{localStorage.setItem("stella-theme",c)}catch{}const e=getComputedStyle(document.documentElement).getPropertyValue("--bg-deep").trim();document.querySelector('meta[name="theme-color"]')?.setAttribute("content",e||"#070a1c"),document.querySelectorAll(".theme-opt").forEach(t=>{const d=t.dataset.themeValue===c;t.classList.toggle("is-active",d),t.setAttribute("aria-selected",String(d))})}if(a&&n){const c=document.documentElement.dataset.theme||"nebula";document.querySelectorAll(".theme-opt").forEach(e=>{const t=e.dataset.themeValue===c;e.classList.toggle("is-active",t),e.setAttribute("aria-selected",String(t))}),a.addEventListener("click",e=>{e.stopPropagation();const t=n.hidden;n.hidden=!t,a.setAttribute("aria-expanded",String(t))}),document.addEventListener("click",e=>{!n.hidden&&!e.target.closest(".theme-switch")&&(n.hidden=!0,a.setAttribute("aria-expanded","false"))}),document.addEventListener("keydown",e=>{e.key==="Escape"&&!n.hidden&&(n.hidden=!0,a.setAttribute("aria-expanded","false"),a.focus())}),n.addEventListener("click",e=>{const t=e.target.closest(".theme-opt");t&&(s(t.dataset.themeValue??"nebula"),n.hidden=!0,a.setAttribute("aria-expanded","false"))})}</script> <div class="theme-switch fx-switch"> <button class="theme-switch__btn" id="fxBtn" type="button" aria-haspopup="listbox" aria-expanded="false" aria-label="背景特效设置" title="背景特效设置"> <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"> <path d="M5 3v4M3 5h4M6.5 17.5v3M5 19h3"></path> <path d="M14.5 4.5 16 9l4.5 1.5L16 12l-1.5 4.5L13 12l-4.5-1.5L13 9l1.5-4.5Z"></path> </svg> </button> <div class="theme-pop" id="fxPop" role="listbox" aria-label="背景特效" hidden> <button class="theme-opt fx-opt" type="button" role="option" data-fx-value="off" aria-selected="false"> <span class="fx-opt__body"> <span class="fx-opt__name">关闭特效</span> <span class="fx-opt__hint">最省电</span> </span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt fx-opt" type="button" role="option" data-fx-value="standard" aria-selected="false"> <span class="fx-opt__body"> <span class="fx-opt__name">标准</span> <span class="fx-opt__hint">闪烁星空 + 流星</span> </span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt fx-opt" type="button" role="option" data-fx-value="fancy" aria-selected="false"> <span class="fx-opt__body"> <span class="fx-opt__name">华丽</span> <span class="fx-opt__hint">追加极光 / 星座 / 光尘</span> </span> <span class="theme-opt__mark">✦</span> </button> </div> </div> <script type="module">const n=document.getElementById("fxBtn"),a=document.getElementById("fxPop");function s(d){document.documentElement.dataset.fx=d;try{localStorage.setItem("stella-fx",d)}catch{}document.querySelectorAll("#fxPop .fx-opt").forEach(t=>{const e=t.dataset.fxValue===d;t.classList.toggle("is-active",e),t.setAttribute("aria-selected",String(e))}),document.dispatchEvent(new CustomEvent("stella-fx-change",{detail:d}))}if(n&&a){const d=document.documentElement.dataset.fx||"standard";document.querySelectorAll("#fxPop .fx-opt").forEach(t=>{const e=t.dataset.fxValue===d;t.classList.toggle("is-active",e),t.setAttribute("aria-selected",String(e))}),n.addEventListener("click",t=>{t.stopPropagation();const e=a.hidden;a.hidden=!e,n.setAttribute("aria-expanded",String(e))}),document.addEventListener("click",t=>{!a.hidden&&!t.target.closest(".fx-switch")&&(a.hidden=!0,n.setAttribute("aria-expanded","false"))}),document.addEventListener("keydown",t=>{t.key==="Escape"&&!a.hidden&&(a.hidden=!0,n.setAttribute("aria-expanded","false"),n.focus())}),a.addEventListener("click",t=>{const e=t.target.closest(".fx-opt");e&&(s(e.dataset.fxValue??"standard"),a.hidden=!0,n.setAttribute("aria-expanded","false"))})}</script> </div> </div> </header> <main id="main">  <article class="wrap post-layout" data-astro-cid-lvjzyg5v> <div class="post-main page-fade" data-astro-cid-lvjzyg5v> <header class="post-head" data-astro-cid-lvjzyg5v> <a class="crumb" href="/STELLASTOPVRC/posts/" data-astro-cid-lvjzyg5v>← 返回教程档案</a> <div class="post-head__meta" style="--accent:var(--ink-dim)" data-astro-cid-lvjzyg5v> <span class="badge" data-cat="工具链与 Hybrid" data-astro-cid-lvjzyg5v>工具链与 Hybrid</span> <time datetime="2026-07-04" data-astro-cid-lvjzyg5v>2026-07-04</time> <span class="post-head__reading" data-astro-cid-lvjzyg5v>⏱ 约 45 分钟</span>  </div> <h1 class="post-head__title" data-astro-cid-lvjzyg5v>Avatar 端摄影工具索引(Avatar Camera Plugins)</h1> <p class="post-head__lead" data-astro-cid-lvjzyg5v>Flex Fisheye Lens 是装载在 Avatar 上的鱼眼相机插件,使用户拍摄的照片具有鱼眼镜头畸变效果。</p> <div class="chip-row" data-astro-cid-lvjzyg5v> <a class="chip" href="/STELLASTOPVRC/posts/?tag=%E7%9F%A5%E8%AF%86%E5%BA%93" data-astro-cid-lvjzyg5v> 知识库 </a><a class="chip" href="/STELLASTOPVRC/posts/?tag=concepts" data-astro-cid-lvjzyg5v> concepts </a> </div> </header> <div class="prose" data-astro-cid-lvjzyg5v> <h1 id="avatar-端摄影工具索引avatar-camera-plugins">Avatar 端摄影工具索引(Avatar Camera Plugins)</h1>
+<blockquote>
+<p><strong>Domain</strong>: Hybrid(Avatar ↔ World 摄影增强工具)
+<strong>类型</strong>: 推荐工具索引(Avatar 端,与 <code>udon-world-plugins.md</code> 对应)
+<strong>目标读者</strong>: VRChat Avatar 创作者(增强 Avatar 端的摄影能力)
+<strong>状态</strong>: ✅ 已收录 1 个插件(Flex Fisheye Lens)
+<strong>最后更新</strong>: 2026-07-04</p>
+</blockquote>
+<hr>
+<h2 id="️-重要前置警告">⚠️ 重要前置警告</h2>
+<blockquote>
+<p>🔴 <strong>本类工具与 <code>udon-world-plugins.md</code> 的区别</strong>:</p>
+<ul>
+<li><code>udon-world-plugins.md</code> = <strong>World 端</strong> Udon 工具(创作者安装在 World 中)</li>
+<li>本文档 = <strong>Avatar 端</strong> 摄影工具(玩家安装在 Avatar 中)</li>
+<li><strong>典型代表</strong>: Flex Fisheye Lens — 闭源,需要 Modular Avatar 集成到 Avatar</li>
+</ul>
+</blockquote>
+<blockquote>
+<p>🔴 <strong>平台限制</strong>: 已收录的 Flex Fisheye Lens <strong>仅支持 PC VR 模式</strong>,桌面模式和 Quest 均不可用。</p>
+</blockquote>
+<hr>
+<h2 id="0-速查表quick-reference">§0 速查表(Quick Reference)</h2>
+<table>
+<thead>
+<tr>
+<th>玩家最常问的问题</th>
+<th>解答</th>
+<th>跳转</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Flex Fisheye Lens 装上后菜单在哪?</td>
+<td>Expressions 菜单 <code>[FishEyeLens]</code> + 轮盘菜单 <code>FishEyeCam</code></td>
+<td><a href="#2-%E5%AE%89%E8%A3%85%E4%B8%8E%E9%85%8D%E7%BD%AEinstallation">§2</a></td>
+</tr>
+<tr>
+<td>怎么拍照?</td>
+<td>启用 FishEyeON → 打开 VRC 原相机 → 拍摄(原相机需跟随玩家)</td>
+<td><a href="#3-%E4%BD%BF%E7%94%A8%E6%B5%81%E7%A8%8Busage-workflow">§3</a></td>
+</tr>
+<tr>
+<td>桌面模式能用吗?</td>
+<td>❌ <strong>不能</strong>,仅 PC VR 模式</td>
+<td><a href="#13-%E5%B9%B3%E5%8F%B0%E4%B8%8E%E7%A1%AC%E4%BB%B6%E9%99%90%E5%88%B6">§1.3</a></td>
+</tr>
+<tr>
+<td>Quest 能用吗?</td>
+<td>❌ <strong>不能</strong>,仅 PC VR 模式</td>
+<td><a href="#13-%E5%B9%B3%E5%8F%B0%E4%B8%8E%E7%A1%AC%E4%BB%B6%E9%99%90%E5%88%B6">§1.3</a></td>
+</tr>
+<tr>
+<td>照片出现网格?</td>
+<td>720P 分辨率所致,改用 1080P+</td>
+<td><a href="#q1-%E7%85%A7%E7%89%87%E4%B8%AD%E4%BC%9A%E5%87%BA%E7%8E%B0%E7%BD%91%E6%A0%BC%E6%88%96%E9%AB%98%E5%85%89%E5%90%97">§6 Q1</a></td>
+</tr>
+<tr>
+<td>远景/Skybox 不可见?</td>
+<td>调整 <code>[Setting] → [Clipping Far]</code></td>
+<td><a href="#q2-%E8%BF%9C%E5%A4%84%E7%9A%84%E7%89%A9%E4%BD%93%E5%92%8C-skybox-%E4%B8%8D%E5%8F%AF%E8%A7%81%E6%80%8E%E4%B9%88%E5%8A%9E">§6 Q2</a></td>
+</tr>
+<tr>
+<td>物体莫名消失?</td>
+<td>LOD 触发,超广角导致物体被切走</td>
+<td><a href="#q3-%E4%B8%BA%E4%BB%80%E4%B9%88%E6%9C%89%E4%BA%9B%E7%89%A9%E4%BD%93%E4%B8%8D%E5%8F%AF%E8%A7%81">§6 Q3</a></td>
+</tr>
+<tr>
+<td>部分 Shader 渲染错误?</td>
+<td>2 相机架构与 UV 计算 Shader 不兼容</td>
+<td><a href="#q4-%E4%B8%80%E4%BA%9B%E7%9D%80%E8%89%B2%E5%99%A8%E6%B8%B2%E6%9F%93%E4%B8%8D%E6%AD%A3%E7%A1%AE%E6%80%8E%E4%B9%88%E5%8A%9E">§6 Q4</a></td>
+</tr>
+<tr>
+<td>怎么换相机外形?</td>
+<td>Addon 文件夹有 2 个 prefab(GlobalShow/Local)</td>
+<td><a href="#53-%E6%9B%B4%E6%94%B9%E7%9B%B8%E6%9C%BA%E5%A4%96%E5%BD%A2">§5.3</a></td>
+</tr>
+<tr>
+<td>需要 Modular Avatar 吗?</td>
+<td>✅ 必需,否则无法安装</td>
+<td><a href="#21-%E5%AE%89%E8%A3%85%E5%89%8D%E7%BD%AE%E6%9D%A1%E4%BB%B6">§2.1</a></td>
+</tr>
+<tr>
+<td>升级后质量设置变了?</td>
+<td>升级副作用,需重新设置</td>
+<td><a href="#51-%E8%B0%83%E6%95%B4%E6%8B%8D%E6%91%84%E8%B4%A8%E9%87%8F">§5.1</a></td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="1-概述overview">§1 概述(Overview)</h2>
+<h3 id="11-工具索引">1.1 工具索引</h3>
+<table>
+<thead>
+<tr>
+<th>插件名称</th>
+<th>作者</th>
+<th>价格</th>
+<th>平台</th>
+<th>状态</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Flex Fisheye Lens</strong></td>
+<td>Goat-Cannery(山羊罐头厂)</td>
+<td>¥2,000</td>
+<td>PC VR Only</td>
+<td>✅ 已收录</td>
+</tr>
+</tbody>
+</table>
+<h3 id="12-flex-fisheye-lens-简介">1.2 Flex Fisheye Lens 简介</h3>
+<p><strong>Flex Fisheye Lens</strong> 是装载在 Avatar 上的鱼眼相机插件,使用户拍摄的照片具有鱼眼镜头畸变效果。</p>
+<p><strong>适用场景</strong>:</p>
+<ul>
+<li>拍摄较宽阔的场景</li>
+<li>视野太狭窄时中和压迫感</li>
+<li>创意作品(利用视角独特性)</li>
+<li>视觉冲击力强的街头摄影</li>
+<li>“原图直出”即可获得鱼眼效果(无需后处理)</li>
+</ul>
+<p><strong>分发信息</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>属性</th>
+<th>值</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>分发平台</strong></td>
+<td>BOOTH</td>
+</tr>
+<tr>
+<td><strong>链接</strong></td>
+<td><code>https://booth.pm/en/items/5512392</code></td>
+</tr>
+<tr>
+<td><strong>日文链接</strong></td>
+<td><code>https://booth.pm/ja/items/5512392</code></td>
+</tr>
+<tr>
+<td><strong>首次发布</strong></td>
+<td>2024-02-21</td>
+</tr>
+<tr>
+<td><strong>售价</strong></td>
+<td>¥2,000</td>
+</tr>
+<tr>
+<td><strong>渲染管线</strong></td>
+<td>BRP(VRChat 兼容的 Built-in Rendering Pipeline)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="13-平台与硬件限制">1.3 平台与硬件限制</h3>
+<blockquote>
+<p>🔴 <strong>本节是核心警告,请务必完整阅读</strong></p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>限制项</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>VR 模式强制</strong></td>
+<td>只能在 PC VR 模式下使用,桌面模式无法操作</td>
+</tr>
+<tr>
+<td><strong>Quest 不支持</strong></td>
+<td>移动端 Quest 完全不可用</td>
+</tr>
+<tr>
+<td><strong>内部相机数量</strong></td>
+<td>2 个高分辨率相机叠加</td>
+</tr>
+<tr>
+<td><strong>性能影响</strong></td>
+<td>召出鱼眼相机时游戏可能变卡</td>
+</tr>
+<tr>
+<td><strong>照片分辨率</strong></td>
+<td>FullHD (1080P) 以上才能保证效果</td>
+</tr>
+<tr>
+<td><strong>分辨率陷阱</strong></td>
+<td>720P 拍摄时画面会显示网格线</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>💡 <strong>设计优势</strong>: 该插件采用 <strong>Local Only</strong> 模式,鱼眼效果完全本地处理,<strong>零网络同步开销</strong>。</p>
+</blockquote>
+<h3 id="14-关键术语对照表">1.4 关键术语对照表</h3>
+<table>
+<thead>
+<tr>
+<th>术语</th>
+<th>英文</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>鱼眼</td>
+<td>FishEye</td>
+<td>凸透镜式广角镜头,边缘畸变</td>
+</tr>
+<tr>
+<td>凹透镜</td>
+<td>Reverse FishEye</td>
+<td>反向效果(菜单中可切换)</td>
+</tr>
+<tr>
+<td>折射率</td>
+<td>Distortion</td>
+<td>畸变强度,可分别调整 X/Y 轴</td>
+</tr>
+<tr>
+<td>景深</td>
+<td>Depth of Field / DOF</td>
+<td>焦点内外模糊效果(本插件不支持前景模糊)</td>
+</tr>
+<tr>
+<td>无人机模式</td>
+<td>Drone</td>
+<td>双手分离操控,单手移动 + 单手朝向</td>
+</tr>
+<tr>
+<td>固定位置</td>
+<td>World Fix</td>
+<td>将相机固定到当前世界坐标</td>
+</tr>
+<tr>
+<td>看向模型面部</td>
+<td>LookAtHead</td>
+<td>相机自动锁定 Avatar 面部</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="2-安装与配置installation">§2 安装与配置(Installation)</h2>
+<h3 id="21-安装前置条件">2.1 安装前置条件</h3>
+<table>
+<thead>
+<tr>
+<th>前置条件</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Modular Avatar (MA)</strong></td>
+<td>🔴 <strong>必需</strong>,未导入会导致安装失败</td>
+</tr>
+<tr>
+<td><strong>MA 版本</strong></td>
+<td>建议使用最新版,旧版可能出现导入错误</td>
+</tr>
+<tr>
+<td><strong>Avatar 结构</strong></td>
+<td>标准 Humanoid Avatar(可正常处理 Prefab)</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>📚 详见 <a href="/STELLASTOPVRC/posts/kb-avatar-modular-avatar/">modular-avatar</a> 了解 MA 完整知识。</p>
+</blockquote>
+<h3 id="22-安装步骤">2.2 安装步骤</h3>
+<ol>
+<li>导入 <code>.unitypackage</code></li>
+<li>在 Project 窗口定位到 <code>Assets/GoatCannery/FishEyeCam/</code></li>
+<li>将 <code>FishEyeCam.prefab</code> 拖入 Avatar,作为子物体</li>
+<li>(可选)左撇子用户改用 <code>FishEyeCam_Left</code> 预制体</li>
+<li>上传 Avatar</li>
+</ol>
+<p><strong>安装成功标志</strong>:</p>
+<ul>
+<li>Expressions 菜单中出现 <code>[FishEyeLens]</code> 选项</li>
+<li>轮盘菜单(Radial Menu)中出现 <code>FishEyeCam</code> 菜单</li>
+</ul>
+<h3 id="23-示例资源">2.3 示例资源</h3>
+<table>
+<thead>
+<tr>
+<th>资源类型</th>
+<th>链接</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>示例 World</td>
+<td><code>wrld_44b14599-7011-48d3-b40f-41c0dc80252e</code></td>
+<td>照片展览、试用 Avatar、拍摄点</td>
+</tr>
+<tr>
+<td>试用 Avatar</td>
+<td><code>avtr_04cd67b2-3a7d-4a20-b322-17dd437221b8</code></td>
+<td>功能受限的体验模型</td>
+</tr>
+</tbody>
+</table>
+<h3 id="24-社交传播要求">2.4 社交传播要求</h3>
+<ul>
+<li>在 Twitter 等社交媒体发布使用该插件的内容时,需添加 <code>#FlexFishEye</code> 标签(作者要求)</li>
+</ul>
+<h3 id="25-与-modular-avatar-的协同-inference">2.5 与 Modular Avatar 的协同 [INFERENCE]</h3>
+<table>
+<thead>
+<tr>
+<th>操作</th>
+<th>是否需要 MA</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>基础安装</td>
+<td>✅ MA 是必需的</td>
+</tr>
+<tr>
+<td>质量调整</td>
+<td>❌ 直接编辑 Inspector</td>
+</tr>
+<tr>
+<td>位置调整</td>
+<td>❌ 直接编辑 Hierarchy</td>
+</tr>
+<tr>
+<td>相机外形替换</td>
+<td>❌ 直接编辑 Addon</td>
+</tr>
+<tr>
+<td>菜单自动生成</td>
+<td>✅ MA 处理菜单挂载</td>
+</tr>
+</tbody>
+</table>
+<p><strong>结论</strong>: MA 在此插件中<strong>只承担安装和菜单挂载</strong>,运行期配置仍由原生组件管理。</p>
+<hr>
+<h2 id="3-使用流程usage-workflow">§3 使用流程(Usage Workflow)</h2>
+<h3 id="31-完整操作链">3.1 完整操作链</h3>
+<ol>
+<li>打开轮盘菜单 → 启用 <code>[FishEyeON]</code></li>
+<li>打开 VRC 原相机(系统相机)</li>
+<li>🔴 <strong>关键约束</strong>: 原相机必须 <strong>跟随玩家移动</strong>(非飞行模式)</li>
+<li>拍摄照片(由 VRC 原相机保存到本地)</li>
+<li>关闭 <code>[FishEyeON]</code></li>
+</ol>
+<blockquote>
+<p>⚠️ <strong>如果不满足第 3 步</strong>,鱼眼相机的画面无法传递给 VRC 原相机,最终拍出的照片<strong>不会包含鱼眼效果</strong>。</p>
+</blockquote>
+<h3 id="32-镜头可见性">3.2 镜头可见性</h3>
+<table>
+<thead>
+<tr>
+<th>状态</th>
+<th>是否可见</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>PC VR 模式</td>
+<td>✅ 手上会显示鱼眼镜头模型</td>
+</tr>
+<tr>
+<td>桌面模式</td>
+<td>❌ 不可见(VR-only)</td>
+</tr>
+<tr>
+<td>Quest</td>
+<td>❌ 不可用</td>
+</tr>
+<tr>
+<td>其他人视角</td>
+<td>❌ 鱼眼镜头仅本地可见(Local Only)</td>
+</tr>
+<tr>
+<td>照片中</td>
+<td>✅ 鱼眼效果被拍摄下来</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>💡 “Local Only” 是关键设计: 不需要网络同步,完全本地处理,<strong>零网络开销</strong>。</p>
+</blockquote>
+<h3 id="33-调试工作流-inference">3.3 调试工作流 [INFERENCE]</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>1. 安装插件 → 验证 Expressions 菜单出现 [FishEyeLens]</span></span>
+<span class="line"><span>2. 召出 FishEyeON → 验证手上出现镜头</span></span>
+<span class="line"><span>3. 选择 Far Camera → 预览原始画面</span></span>
+<span class="line"><span>4. (可选) 调整 CameraTracker 位置</span></span>
+<span class="line"><span>5. (可选) 调整 LookAtHead[Offset]</span></span>
+<span class="line"><span>6. (可选) 替换相机外形</span></span>
+<span class="line"><span>7. 拍摄测试照片 → 验证鱼眼效果</span></span>
+<span class="line"><span>8. 调整 Preset / Manual 参数</span></span>
+<span class="line"><span>9. 拍摄成品</span></span></code></pre>
+<hr>
+<h2 id="4-菜单参考menu-reference">§4 菜单参考(Menu Reference)</h2>
+<h3 id="40-菜单总览">4.0 菜单总览</h3>
+<p>插件共有 <strong>6 个主菜单</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>菜单</th>
+<th>全名</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>FishEye ON</strong></td>
+<td>FishEye ON</td>
+<td>鱼眼相机开关(主开关)</td>
+</tr>
+<tr>
+<td><strong>P</strong></td>
+<td>Preset</td>
+<td>进入预设菜单(常用场景预设)</td>
+</tr>
+<tr>
+<td><strong>M</strong></td>
+<td>Manual</td>
+<td>进入手动调整菜单(细粒度控制)</td>
+</tr>
+<tr>
+<td><strong>Drone</strong></td>
+<td>Drone</td>
+<td>进入无人机操控菜单(分离式操控)</td>
+</tr>
+<tr>
+<td><strong>Behavior</strong></td>
+<td>Behavior</td>
+<td>进入相机行为菜单(行为模式)</td>
+</tr>
+<tr>
+<td><strong>Setting</strong></td>
+<td>Setting</td>
+<td>进入设置菜单(全局参数)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="401-菜单架构图-inference">4.0.1 菜单架构图 [INFERENCE]</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>FishEyeCam (主菜单)</span></span>
+<span class="line"><span>├── FishEye ON         ← 开关</span></span>
+<span class="line"><span>├── P (Preset)         ← 预设模式(快速选择)</span></span>
+<span class="line"><span>│   ├── 多种预设效果</span></span>
+<span class="line"><span>│   ├── [Zoom]</span></span>
+<span class="line"><span>│   └── [World Fix]</span></span>
+<span class="line"><span>├── M (Manual)         ← 手动模式(细调)</span></span>
+<span class="line"><span>│   ├── [Fov]</span></span>
+<span class="line"><span>│   ├── [Zoom]</span></span>
+<span class="line"><span>│   ├── [Switch Zoom Level]</span></span>
+<span class="line"><span>│   ├── [Distortion]    ← 子菜单:折射率</span></span>
+<span class="line"><span>│   ├── [SceenSize]</span></span>
+<span class="line"><span>│   ├── [Depth of field]← 子菜单:景深</span></span>
+<span class="line"><span>│   └── [World Fix]</span></span>
+<span class="line"><span>├── Drone              ← 无人机模式</span></span>
+<span class="line"><span>│   ├── [Drone]</span></span>
+<span class="line"><span>│   ├── [Drone (RotateOnly)]</span></span>
+<span class="line"><span>│   ├── [Fov] [Zoom] [Switch Zoom Level]</span></span>
+<span class="line"><span>│   ├── [Auto Level]</span></span>
+<span class="line"><span>│   └── [WorldFix (Drone Reset)]</span></span>
+<span class="line"><span>├── Behavior           ← 行为模式</span></span>
+<span class="line"><span>│   ├── [World Fix]</span></span>
+<span class="line"><span>│   ├── [Auto Level]</span></span>
+<span class="line"><span>│   ├── [LookAtHead]</span></span>
+<span class="line"><span>│   ├── [HeadPos Move]</span></span>
+<span class="line"><span>│   ├── [Color Adjust]</span></span>
+<span class="line"><span>│   └── [Reverse FishEye]</span></span>
+<span class="line"><span>└── Setting            ← 全局设置</span></span>
+<span class="line"><span>    ├── [Grid]</span></span>
+<span class="line"><span>    ├── [Clipping Far]</span></span>
+<span class="line"><span>    ├── [Distoriton Check]</span></span>
+<span class="line"><span>    ├── [Camera Culling OFF]</span></span>
+<span class="line"><span>    └── [AspectRatio]</span></span></code></pre>
+<h3 id="41-预设模式-p-preset">4.1 预设模式 P (Preset)</h3>
+<p><strong>定位</strong>: 快速选择常用拍摄场景或对象的镜头效果预设</p>
+<p><strong>使用方式</strong>:</p>
+<ul>
+<li>选择预设后,在原相机屏幕右下角会显示预设图标(短时间)</li>
+<li>每种预设都试一下,挑选最满意的效果(不需要严格遵循预设分类)</li>
+</ul>
+<p><strong>子选项</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>选项</th>
+<th>英文</th>
+<th>功能</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>缩放</strong></td>
+<td>[Zoom]</td>
+<td>调整鱼眼镜头的缩放</td>
+</tr>
+<tr>
+<td><strong>固定位置</strong></td>
+<td>[World Fix]</td>
+<td>将相机固定到当前世界位置 / 解除固定</td>
+</tr>
+</tbody>
+</table>
+<h3 id="42-手动模式-m-manual">4.2 手动模式 M (Manual)</h3>
+<p><strong>定位</strong>: 细粒度手动调节镜头参数</p>
+<table>
+<thead>
+<tr>
+<th>选项</th>
+<th>英文</th>
+<th>功能</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>视角</td>
+<td>[Fov]</td>
+<td>调整相机视角(视野)</td>
+</tr>
+<tr>
+<td>变焦</td>
+<td>[Zoom]</td>
+<td>在不改变相机视角的情况下变焦</td>
+</tr>
+<tr>
+<td>远距变焦</td>
+<td>[Switch Zoom Level]</td>
+<td>转换为远距离变焦</td>
+</tr>
+<tr>
+<td>失真</td>
+<td>[Distortion]</td>
+<td>进入鱼眼折射率编辑菜单</td>
+</tr>
+<tr>
+<td>画面大小</td>
+<td>[SceenSize]</td>
+<td>放大相机画面(画质可能降低)</td>
+</tr>
+<tr>
+<td>景深</td>
+<td>[Depth of field]</td>
+<td>进入景深菜单</td>
+</tr>
+<tr>
+<td>固定位置</td>
+<td>[World Fix]</td>
+<td>固定在当前位置</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>💡 [SceenSize] 工作机制: 高亮部分画面处在可拍摄范围外,提示用户当前取景边界。</p>
+</blockquote>
+<h3 id="43-失真菜单-distortion">4.3 失真菜单 (Distortion)</h3>
+<p><strong>进入后</strong>: 显示折射率指南,编辑数值时在拍摄范围外加亮光(可视化反馈)</p>
+<table>
+<thead>
+<tr>
+<th>选项</th>
+<th>英文</th>
+<th>功能</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>折射率倍数</td>
+<td>[Distortion Multiple]</td>
+<td>折射率整体倍数变更</td>
+</tr>
+<tr>
+<td>折射率分轴</td>
+<td>[Distortion X&#x26;Y]</td>
+<td>折射率 x 轴 / y 轴分别变更</td>
+</tr>
+<tr>
+<td>中心</td>
+<td>[Center]</td>
+<td>更改镜头的中心位置</td>
+</tr>
+<tr>
+<td>凹透镜</td>
+<td>[Reverse FishEye]</td>
+<td>将鱼眼变成凹透镜(反向效果)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="44-景深菜单-depth-of-field">4.4 景深菜单 (Depth of Field)</h3>
+<blockquote>
+<p>⚠️ <strong>重要限制</strong>:</p>
+<ul>
+<li>只支持焦点后方的模糊</li>
+<li><strong>不支持前景模糊</strong>(功能简单)</li>
+</ul>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>选项</th>
+<th>英文</th>
+<th>功能</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>景深开关</td>
+<td>[DOF ON]</td>
+<td>开启景深功能</td>
+</tr>
+<tr>
+<td>焦点锁定</td>
+<td>[Focus Lock]</td>
+<td>固定对焦距离</td>
+</tr>
+<tr>
+<td>光圈</td>
+<td>[Aperture]</td>
+<td>调整焦点对准的距离</td>
+</tr>
+<tr>
+<td>模糊强度</td>
+<td>[BokehPower]</td>
+<td>调节模糊程度</td>
+</tr>
+</tbody>
+</table>
+<p><strong>视觉反馈机制</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>区域</th>
+<th>颜色</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>合焦区域</td>
+<td><strong>红色</strong></td>
+</tr>
+<tr>
+<td>即将失焦</td>
+<td><strong>蓝色</strong></td>
+</tr>
+<tr>
+<td>完全失焦</td>
+<td>(无标记)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>调参技巧</strong>:</p>
+<ul>
+<li>如果能够确保蓝色部分不覆盖想要聚焦的区域</li>
+<li>背景的模糊程度就会减少(更接近无景深效果)</li>
+</ul>
+<h3 id="45-无人机模式-drone">4.5 无人机模式 (Drone)</h3>
+<p><strong>定位</strong>: 双手分离操控的独立机位模式,适合大场景航拍式摄影</p>
+<p><strong>核心操作模型</strong>:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>玩家左手 → 移动无人机位置</span></span>
+<span class="line"><span>玩家右手 → 控制无人机摄像头方向</span></span></code></pre>
+<p><strong>进入/退出行为</strong>:</p>
+<ul>
+<li><strong>进入</strong>: 选择 <code>[Drone]</code> 进入无人机模式</li>
+<li><strong>退出</strong>: 离开无人机模式后,相机将<strong>固定在该位置</strong>(不会回到玩家身边)</li>
+<li><strong>收回</strong>: 选择 <code>[WorldFix (Drone Reset)]</code> 将无人机收回至玩家手中</li>
+</ul>
+<p><strong>子选项</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>选项</th>
+<th>英文</th>
+<th>功能</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>无人机模式</td>
+<td>[Drone]</td>
+<td>进入无人机模式</td>
+</tr>
+<tr>
+<td>仅旋转模式</td>
+<td>[Drone (RotateOnly)]</td>
+<td>不移动无人机,只操作方向(通过菜单旋钮开启)</td>
+</tr>
+<tr>
+<td>视角/变焦</td>
+<td>[Fov] [Zoom] [Switch Zoom Level]</td>
+<td>与手动模式相同</td>
+</tr>
+<tr>
+<td>自动水平</td>
+<td>[Auto Level]</td>
+<td>控制相机倾斜(左/正/右固定)</td>
+</tr>
+<tr>
+<td>收回</td>
+<td>[WorldFix (Drone Reset)]</td>
+<td>收回至手中</td>
+</tr>
+</tbody>
+</table>
+<p><strong>设计思想</strong> [INFERENCE]:</p>
+<table>
+<thead>
+<tr>
+<th>维度</th>
+<th>设计</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>机位分离</strong></td>
+<td>相机不再束缚在玩家身上,机位独立</td>
+</tr>
+<tr>
+<td><strong>空间感</strong></td>
+<td>通过双手分工实现第三人称操控</td>
+</tr>
+<tr>
+<td><strong>持久化</strong></td>
+<td>退出后位置固定,可作为”半永久机位”</td>
+</tr>
+<tr>
+<td><strong>借鉴来源</strong></td>
+<td>25/10/01 更新: 借鉴 suzuki_ith 的 [Integral] 相机无人机操控系统</td>
+</tr>
+</tbody>
+</table>
+<h3 id="46-行为模式-behavior">4.6 行为模式 (Behavior)</h3>
+<p><strong>定位</strong>: 相机行为模式切换</p>
+<table>
+<thead>
+<tr>
+<th>选项</th>
+<th>英文</th>
+<th>功能</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>固定位置</td>
+<td>[World Fix]</td>
+<td>将相机固定在当前位置</td>
+</tr>
+<tr>
+<td>自动水平</td>
+<td>[Auto Level]</td>
+<td>控制相机倾斜(左·正面·右固定)</td>
+</tr>
+<tr>
+<td>看向面部</td>
+<td>[LookAtHead]</td>
+<td>镜头对向自己的脸</td>
+</tr>
+<tr>
+<td>微调方向</td>
+<td>[HeadPos Move]</td>
+<td>微调镜头的方向</td>
+</tr>
+<tr>
+<td>颜色调整</td>
+<td>[Color Adjust]</td>
+<td>校正亮度</td>
+</tr>
+<tr>
+<td>凹透镜</td>
+<td>[Reverse FishEye]</td>
+<td>将鱼眼变为凹透镜</td>
+</tr>
+</tbody>
+</table>
+<h3 id="47-设置菜单-setting">4.7 设置菜单 (Setting)</h3>
+<p><strong>定位</strong>: 全局参数配置,影响所有模式</p>
+<h4 id="471-网格显示-grid">4.7.1 网格显示 (Grid)</h4>
+<table>
+<thead>
+<tr>
+<th>选项</th>
+<th>功能</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>[Grid]</td>
+<td>选择各种网格显示</td>
+</tr>
+<tr>
+<td>0%</td>
+<td>1k(1 千米)</td>
+</tr>
+<tr>
+<td>(可调)</td>
+<td>不同百分比对应不同距离</td>
+</tr>
+</tbody>
+</table>
+<h4 id="472-远景裁剪-clipping-far">4.7.2 远景裁剪 (Clipping Far)</h4>
+<table>
+<thead>
+<tr>
+<th>百分比</th>
+<th>远景显示距离</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0%</td>
+<td>1 km</td>
+</tr>
+<tr>
+<td>50%</td>
+<td>10 km</td>
+</tr>
+<tr>
+<td>100%</td>
+<td>1000 km (100 万米)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>用途</strong>: 当 Skybox 或远处对象无法显示时,调整到更大数值</p>
+<h4 id="473-变形检查-distortion-check">4.7.3 变形检查 (Distortion Check)</h4>
+<ul>
+<li>在手持相机内显示镜头的变形情况</li>
+<li>用于调试 / 创作时确认失真分布</li>
+</ul>
+<h4 id="474-相机剔除关闭-camera-culling-off">4.7.4 相机剔除关闭 (Camera Culling OFF)</h4>
+<ul>
+<li>显示所有物体(包括被剔除的)</li>
+<li>⚠️ <strong>性能警告</strong>: 会显著让游戏变卡顿</li>
+</ul>
+<h4 id="475-长宽比-aspectratio">4.7.5 长宽比 (AspectRatio)</h4>
+<table>
+<thead>
+<tr>
+<th>长宽比</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>16:9</td>
+<td>标准宽屏</td>
+</tr>
+<tr>
+<td>1:1</td>
+<td>正方形</td>
+</tr>
+<tr>
+<td>3:2</td>
+<td>经典胶片</td>
+</tr>
+<tr>
+<td>4:3</td>
+<td>传统电视</td>
+</tr>
+<tr>
+<td>2.35:1</td>
+<td>宽银幕电影</td>
+</tr>
+<tr>
+<td>1:√2 (白银比)</td>
+<td>⭐ 25/10/07 新增,银盐比例</td>
+</tr>
+</tbody>
+</table>
+<p><strong>附加功能</strong>:</p>
+<ul>
+<li>照片外侧变黑色(或白色,开启 <code>[White Back]</code>)</li>
+<li>注 1: 根据世界后处理设置,效果可能更适合黑色区域</li>
+<li>注 2: 使用 VRC+ 打印功能时,打印的白色与照片内白色颜色不同</li>
+</ul>
+<h3 id="48-关键操作模式-inference">4.8 关键操作模式 [INFERENCE]</h3>
+<table>
+<thead>
+<tr>
+<th>模式</th>
+<th>适用场景</th>
+<th>核心特性</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>预设模式 (P)</strong></td>
+<td>快速拍摄</td>
+<td>一键应用,无需调参</td>
+</tr>
+<tr>
+<td><strong>手动模式 (M)</strong></td>
+<td>专业拍摄</td>
+<td>完全控制 Fov、Zoom、失真、景深</td>
+</tr>
+<tr>
+<td><strong>无人机模式 (Drone)</strong></td>
+<td>大场景/特殊角度</td>
+<td>双手分离操控,离开后位置固定</td>
+</tr>
+<tr>
+<td><strong>行为模式 (Behavior)</strong></td>
+<td>自拍/锁定</td>
+<td>LookAtHead、AutoLevel 等辅助</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="5-自定义与调整customization">§5 自定义与调整(Customization)</h2>
+<h3 id="51-调整拍摄质量">5.1 调整拍摄质量</h3>
+<p><strong>入口</strong>: Hierarchy 窗口 → 点击 <code>FishEyeCam</code> → 右侧 Inspector</p>
+<p><strong>可调参数</strong>:</p>
+<ul>
+<li><code>Select Preset</code>: 调整照片质量(预设档位)</li>
+<li><code>Custom</code>: 自行调整 <code>Resolution Far</code> 和 <code>Resolution Near</code></li>
+</ul>
+<blockquote>
+<p>🔴 <strong>关键约束</strong>: 调整值务必为 <strong>4 的倍数</strong>!否则可能出渲染异常</p>
+</blockquote>
+<p><strong>升级副作用</strong>:</p>
+<ul>
+<li>插件更新后,质量设置会<strong>初始化</strong></li>
+<li>更新后需要重新设置</li>
+</ul>
+<h3 id="52-调整相机与手的相对位置">5.2 调整相机与手的相对位置</h3>
+<p><strong>目标</strong>: 控制镜头与玩家手部之间的距离</p>
+<p><strong>操作步骤</strong>:</p>
+<ol>
+<li>在 Hierarchy 中找到 <code>FishEyeCam - Tracer - Hand - CameraTracker</code></li>
+<li>移动 <code>CameraTracker</code> 到期望位置</li>
+<li>保存</li>
+</ol>
+<h3 id="53-调整-lookathead看向模型面部">5.3 调整 LookAtHead(看向模型面部)</h3>
+<p><strong>目标</strong>: 调整相机看向的位置(默认看向玩家面部)</p>
+<p><strong>操作步骤</strong>:</p>
+<ol>
+<li>在 Hierarchy 中找到 <code>Tracer - Head - LookAtHead[Offset]</code></li>
+<li>移动到模型的脸部中间位置</li>
+<li>保存</li>
+</ol>
+<h3 id="54-更改相机外形">5.4 更改相机外形</h3>
+<p><strong>目标</strong>: 用自己喜欢的相机模型替换默认的鱼眼相机模型</p>
+<h4 id="541-addon-预制体清单">5.4.1 Addon 预制体清单</h4>
+<p>Addon 路径: <code>Assets/GoatCannery/FishEyeCam/Addon/</code></p>
+<table>
+<thead>
+<tr>
+<th>预制体</th>
+<th>可见性</th>
+<th>适用手</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>FFELens_Addon_ChangeCameraOBJ(GlobalShow)</code></td>
+<td>对其他人相机<strong>可见</strong></td>
+<td>右手</td>
+</tr>
+<tr>
+<td><code>FFELens_Addon_ChangeCameraOBJ(Local)</code></td>
+<td>对其他人相机<strong>不可见</strong></td>
+<td>右手</td>
+</tr>
+<tr>
+<td>(left 文件夹下)</td>
+<td>同上</td>
+<td><strong>左手</strong></td>
+</tr>
+</tbody>
+</table>
+<h4 id="542-替换步骤">5.4.2 替换步骤</h4>
+<ol>
+<li>在 Addon 文件夹选择合适的 prefab</li>
+<li><strong>重要</strong>: 拖入到<strong>模型</strong>(Avatar)下,成为子物体</li>
+<li><strong>不是</strong> FishEyeCam 的子物体</li>
+<li>在 <code>[inCameraOBJ]</code> 层级下,用准备好的相机模型<strong>替代</strong>原有模型</li>
+<li>调整新相机的位置</li>
+</ol>
+<h4 id="543-关键注意事项">5.4.3 关键注意事项</h4>
+<blockquote>
+<p>🔴 <strong>位置要求</strong>: 相机外形安装在镜头的<strong>背面</strong>,否则会被拍到画面中</p>
+</blockquote>
+<p><strong>调试方法</strong>:</p>
+<ul>
+<li>选择 <code>Far Camera</code> 进行相机预览</li>
+<li>确认新加入的相机是否被拍摄到画面中</li>
+</ul>
+<h4 id="544-上传时的特殊行为">5.4.4 上传时的特殊行为</h4>
+<ul>
+<li>上传时,原本包含的鱼眼镜头对象<strong>将被删除</strong></li>
+<li>这是 Avatar 端 Prefab 替换的标准流程</li>
+</ul>
+<h4 id="545-自定义路径的陷阱">5.4.5 自定义路径的陷阱</h4>
+<blockquote>
+<p>⚠️ <strong>警告</strong>: 如果不通过标准方法更换相机模型,而是另辟蹊径(如直接用 <code>WorldFix</code> 和 <code>LookAtHead·Drone</code> 移动相机),<strong>相机位置本身与其他人的位置和方向也不会同步</strong>。在他人看来,相机会永远停留在手边。</p>
+</blockquote>
+<p><strong>结论</strong>: <strong>必须使用 Addon 方式</strong>,而不是手动移动。</p>
+<h3 id="55-性能影响">5.5 性能影响</h3>
+<table>
+<thead>
+<tr>
+<th>操作</th>
+<th>性能影响</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>召出鱼眼相机</td>
+<td>中等(2 个高分辨率相机)</td>
+</tr>
+<tr>
+<td>Camera Culling OFF</td>
+<td>高(显示所有物体)</td>
+</tr>
+<tr>
+<td>远景 Clipping Far 调高</td>
+<td>中(渲染距离增加)</td>
+</tr>
+<tr>
+<td>其他操作</td>
+<td>低</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="6-qa-与故障排除faq--troubleshooting">§6 Q&#x26;A 与故障排除(FAQ &#x26; Troubleshooting)</h2>
+<h3 id="q1-照片中会出现网格或高光吗">Q1: 照片中会出现网格或高光吗?</h3>
+<p><strong>A</strong>: 通常不可见,<strong>仅当以 720P 分辨率拍摄时,它才会显示在照片中</strong>。</p>
+<p><strong>解决方法</strong>:</p>
+<ul>
+<li>使用 1080P 或更高分辨率拍摄</li>
+<li>在 Inspector 中调整 Resolution Far/Near 质量</li>
+</ul>
+<h3 id="q2-远处的物体和-skybox-不可见怎么办">Q2: 远处的物体和 skybox 不可见怎么办?</h3>
+<p><strong>A</strong>: 在 expression 菜单中,增加 <code>[Setting] - [Clipping Far]</code> 的值。</p>
+<table>
+<thead>
+<tr>
+<th>距离</th>
+<th>设置</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>默认</td>
+<td>1 km</td>
+</tr>
+<tr>
+<td>中等</td>
+<td>10 km</td>
+</tr>
+<tr>
+<td>极远</td>
+<td>1000 km</td>
+</tr>
+</tbody>
+</table>
+<p><strong>如果是近处物体不可见</strong>: 参考 Q3 (LOD 问题)</p>
+<h3 id="q3-为什么有些物体不可见">Q3: 为什么有些物体不可见?</h3>
+<p><strong>A</strong>: 由于 Unity 的规格,在启用 LOD 的世界中物体可能会消失。</p>
+<p><strong>原理</strong>:</p>
+<ul>
+<li>LOD 是一种根据摄像机距离切换为简单物体的功能</li>
+<li>FlexFishEyeLens 使用的相机是<strong>超广角</strong>的</li>
+<li>高度宽度变小,看起来像是低 LOD</li>
+<li>Unity 触发 LOD 切换,远处物体变成更简单的模型甚至消失</li>
+</ul>
+<p><strong>这是已知的设计限制</strong>,无直接解决方法,需在世界搭建时考虑。</p>
+<h3 id="q4-一些着色器渲染不正确怎么办">Q4: 一些着色器渲染不正确怎么办?</h3>
+<p><strong>A</strong>: FlexFishEyeLens 使用两个摄像头捕捉图像。</p>
+<p><strong>根本原因</strong>:</p>
+<ul>
+<li>它与从相机屏幕 UV 计算和渲染的着色器不兼容</li>
+<li>两个摄像头的 UV 拼接会导致基于 UV 的 Shader 计算错误</li>
+</ul>
+<p><strong>Workaround</strong>:</p>
+<ul>
+<li>增加 <code>[SceenSize]</code></li>
+<li>仅使用内置摄像头</li>
+<li>代价: 图像质量会降低</li>
+</ul>
+<blockquote>
+<p>📚 <strong>知识库映射</strong>: 这是 <strong>Avatar Shader 域</strong> 的典型问题。屏幕 UV 计算类 Shader(后处理、全屏效果)与多相机架构不兼容。详见 index。</p>
+</blockquote>
+<h3 id="qa-分类整理-inference">Q&#x26;A 分类整理 [INFERENCE]</h3>
+<table>
+<thead>
+<tr>
+<th>类别</th>
+<th>问题</th>
+<th>涉及技术点</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>照片质量</strong></td>
+<td>网格、高光</td>
+<td>分辨率阈值</td>
+</tr>
+<tr>
+<td><strong>场景范围</strong></td>
+<td>远景不可见</td>
+<td>相机 Clipping Far</td>
+</tr>
+<tr>
+<td><strong>LOD 兼容</strong></td>
+<td>部分物体消失</td>
+<td>Unity LOD 系统 + 广角触发</td>
+</tr>
+<tr>
+<td><strong>Shader 兼容</strong></td>
+<td>部分 Shader 渲染错误</td>
+<td>2 相机架构 + UV 计算 Shader</td>
+</tr>
+</tbody>
+</table>
+<h3 id="故障排除决策树-inference">故障排除决策树 [INFERENCE]</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>照片有网格?</span></span>
+<span class="line"><span>├── 是 → 分辨率 &#x3C; 1080P → 提高到 1080P+</span></span>
+<span class="line"><span>└── 否 → 继续</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>远景 / Skybox 不可见?</span></span>
+<span class="line"><span>├── 是 → 调整 [Clipping Far] → 50% 或 100%</span></span>
+<span class="line"><span>└── 否 → 继续</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>物体看起来消失 / 简化?</span></span>
+<span class="line"><span>├── 是 → 可能是 LOD 触发 → 世界端问题,无解</span></span>
+<span class="line"><span>└── 否 → 继续</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>Shader 渲染异常(全屏、UV 类)?</span></span>
+<span class="line"><span>├── 是 → 增加 [SceenSize] + 使用内置摄像头</span></span>
+<span class="line"><span>└── 否 → 咨询作者</span></span></code></pre>
+<h3 id="与-booth-官方-qa-对照">与 BOOTH 官方 Q&#x26;A 对照</h3>
+<p>从 BOOTH 页面 (<code>https://goat-cannery.booth.pm/items/5512392</code>) 提取的 Q&#x26;A:</p>
+<blockquote>
+<p><strong>Q</strong>: Flex FishEye Lens を使用している時に、一部のオブジェクトが写らない時があります。
+<strong>A</strong>: LODが効いているワールドだと、Unityのカメラの仕様上、オブジェクトが消える事があります</p>
+</blockquote>
+<blockquote>
+<p><strong>Q</strong>: 一部のShaderがちゃんと描写されない
+<strong>A</strong>: FlexFishEyeLensはカメラを２つ使用して描写しているために、カメラの画面UVから計算して描写をしているShaderとの相性が悪いです</p>
+</blockquote>
+<p><strong>对照结论</strong>: BOOTH 原版与 VRCD 汉化版 Q&#x26;A <strong>完全一致</strong>,验证了翻译的准确性。</p>
+<h3 id="调试技巧汇总-inference">调试技巧汇总 [INFERENCE]</h3>
+<table>
+<thead>
+<tr>
+<th>技巧</th>
+<th>适用场景</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>使用 <code>Far Camera</code> 预览</td>
+<td>任何调试场景</td>
+</tr>
+<tr>
+<td>调整 Resolution Far/Near(4 倍数)</td>
+<td>性能与画质平衡</td>
+</tr>
+<tr>
+<td>调整 CameraTracker</td>
+<td>机位舒适度</td>
+</tr>
+<tr>
+<td>调整 LookAtHead[Offset]</td>
+<td>看向位置精度</td>
+</tr>
+<tr>
+<td>选择正确 Addon 预制体</td>
+<td>多人可见性</td>
+</tr>
+<tr>
+<td>关闭 <code>Camera Culling OFF</code> 调试</td>
+<td>仅用于调试,会卡顿</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="7-版本历史version-history">§7 版本历史(Version History)</h2>
+<h3 id="71-版本演进时间线">7.1 版本演进时间线</h3>
+<table>
+<thead>
+<tr>
+<th>日期</th>
+<th>变更</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2024-02-21</td>
+<td>首次发布于 BOOTH(<code>booth.pm/ja/items/5512392</code>)</td>
+</tr>
+<tr>
+<td>2025-10-01</td>
+<td>Preset 调整;无人机操控借鉴 Integral;新增 Arm 模式;相机上下角度调整</td>
+</tr>
+<tr>
+<td>2025-10-07</td>
+<td>新增 1:√2 (Silver Ratio) 长宽比;预览模式黑框;左手相机旋转修复</td>
+</tr>
+<tr>
+<td>2025-12</td>
+<td>VRCD 中文文档汉化发布</td>
+</tr>
+</tbody>
+</table>
+<h3 id="72-251007-更新详情">7.2 25/10/07 更新详情</h3>
+<table>
+<thead>
+<tr>
+<th>变更项</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>新增 1:√2 (Silver Ratio)</strong></td>
+<td>增加白银比例长宽比选项</td>
+</tr>
+<tr>
+<td><strong>预览黑框模式</strong></td>
+<td>预览时显示黑框,辅助构图</td>
+</tr>
+<tr>
+<td><strong>左手相机旋转修复</strong></td>
+<td>修正左手用户使用时的相机旋转 bug</td>
+</tr>
+</tbody>
+</table>
+<h3 id="73-251001-更新详情">7.3 25/10/01 更新详情</h3>
+<table>
+<thead>
+<tr>
+<th>变更项</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Preset 调整</strong></td>
+<td>部分预设参数优化</td>
+</tr>
+<tr>
+<td><strong>无人机操作</strong></td>
+<td>借鉴 <code>suzuki_ith</code> 的 <code>[Integral]</code> 系统操控方式</td>
+</tr>
+<tr>
+<td><strong>Arm 模式</strong></td>
+<td>无人机扩展模式</td>
+</tr>
+<tr>
+<td><strong>相机上下角度</strong></td>
+<td>相机垂直角度可调整</td>
+</tr>
+</tbody>
+</table>
+<h3 id="74-作者致敬">7.4 作者致敬</h3>
+<blockquote>
+<p><strong>致谢</strong>: 无人机操作系统的设计借鉴了 <code>suzuki_ith</code> 制作的相机无人机操作系统</p>
+<ul>
+<li>引用: 【VRChat用】Integral 相机ギミック</li>
+<li>BOOTH 链接: <code>https://booth.pm/ja/items/4724145</code></li>
+<li>获得作者许可</li>
+</ul>
+</blockquote>
+<h3 id="75-版本注意事项">7.5 版本注意事项</h3>
+<blockquote>
+<p>⚠️ <strong>重要</strong>: 升级插件时,拍摄质量设置会被初始化,请在更新后重新设置。</p>
+</blockquote>
+<p><strong>实践建议</strong>:</p>
+<ul>
+<li>升级前记录当前的 Resolution Far / Near 值</li>
+<li>升级后第一时间重新设置</li>
+<li>测试拍照效果确认无回退</li>
+</ul>
+<h3 id="76-长期维护承诺评估-inference">7.6 长期维护承诺评估 [INFERENCE]</h3>
+<table>
+<thead>
+<tr>
+<th>维度</th>
+<th>评估</th>
+<th>依据</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>维护活跃度</strong></td>
+<td>✅ 高</td>
+<td>2025 年内 2 次大更新(10/01, 10/07)</td>
+</tr>
+<tr>
+<td><strong>作者响应</strong></td>
+<td>✅ 积极</td>
+<td>BOOTH 上有详细 Q&#x26;A,持续发布更新</td>
+</tr>
+<tr>
+<td><strong>社区认可</strong></td>
+<td>✅ 良好</td>
+<td>VRCD 文档库收录,中文社区有汉化版</td>
+</tr>
+<tr>
+<td><strong>价格稳定</strong></td>
+<td>¥2,000</td>
+<td>BOOTH 售价未变</td>
+</tr>
+<tr>
+<td><strong>首发时间</strong></td>
+<td>2024-02-21</td>
+<td>已运营 2+ 年</td>
+</tr>
+<tr>
+<td><strong>跨平台</strong></td>
+<td>❌ PC VR Only</td>
+<td>Quest 不支持</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="8-设计分析design-analysisinference">§8 设计分析(Design Analysis)[INFERENCE]</h2>
+<blockquote>
+<p>⚠️ <strong>本章为作者观点/分析</strong>,非原作者陈述,仅供参考。</p>
+</blockquote>
+<h3 id="81-生态关系图">8.1 生态关系图</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>Integral (无人机操控原型) ← Flex FishEye Lens 借鉴</span></span>
+<span class="line"><span>Modular Avatar (Avatar 框架) → Flex FishEye Lens 依赖</span></span></code></pre>
+<table>
+<thead>
+<tr>
+<th>项目</th>
+<th>价值</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Flex FishEye Lens</strong></td>
+<td>鱼眼相机插件(本次研究)</td>
+</tr>
+<tr>
+<td><strong>Integral 相机ギミック</strong></td>
+<td>无人机操控原型系统(被引用)</td>
+</tr>
+<tr>
+<td><strong>Modular Avatar</strong></td>
+<td>安装机制(前置依赖)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="82-多模态操控分离设计">8.2 多模态操控分离设计</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>本体 (FishEyeCam)        ← 玩家绑定</span></span>
+<span class="line"><span>├── 预设模式            ← 快速应用</span></span>
+<span class="line"><span>├── 手动模式            ← 细粒度调参</span></span>
+<span class="line"><span>├── 无人机模式 (Drone)  ← 机位独立 ← 双手分离</span></span>
+<span class="line"><span>└── 行为模式 (Behavior) ← 行为控制</span></span></code></pre>
+<h3 id="83-与-unity-camera-的对比">8.3 与 Unity Camera 的对比</h3>
+<table>
+<thead>
+<tr>
+<th>维度</th>
+<th>Unity Camera</th>
+<th>Flex Fisheye Lens</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>渲染目标</td>
+<td>单一相机 → RenderTexture</td>
+<td>2 个高分辨率相机叠加</td>
+</tr>
+<tr>
+<td>畸变控制</td>
+<td>需自定义 Shader/后处理</td>
+<td>菜单直接调节</td>
+</tr>
+<tr>
+<td>景深</td>
+<td>内置 Bokeh 等高级效果</td>
+<td>简单景深,不支持前景模糊</td>
+</tr>
+<tr>
+<td>网络开销</td>
+<td>N/A</td>
+<td>Local Only,零网络</td>
+</tr>
+<tr>
+<td>平台限制</td>
+<td>跨平台</td>
+<td>PC VR Only</td>
+</tr>
+<tr>
+<td>性能开销</td>
+<td>单相机开销</td>
+<td>2x 相机 + 畸变计算</td>
+</tr>
+</tbody>
+</table>
+<h3 id="84-world-fix-的多入口设计">8.4 [World Fix] 的多入口设计</h3>
+<p>[World Fix] 在 <strong>预设、手动、行为</strong> 三个菜单中均出现 — 这是常见的设计模式:高频操作多个入口,降低导航成本。</p>
+<p><strong>对照</strong>:</p>
+<ul>
+<li>P → [World Fix]: 与预设配合,快速固定机位</li>
+<li>M → [World Fix]: 与手动调参配合,固定后细调</li>
+<li>Behavior → [World Fix]: 行为级控制,与其他行为(LookAtHead 等)联动</li>
+</ul>
+<hr>
+<h2 id="9-知识库关系kb-relations">§9 知识库关系(KB Relations)</h2>
+<h3 id="91-与其他知识库文档的关系">9.1 与其他知识库文档的关系</h3>
+<table>
+<thead>
+<tr>
+<th>关联文档</th>
+<th>关联类型</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="/STELLASTOPVRC/posts/kb-concepts-hybrid-udon-world-plugins/">udon-world-plugins</a></td>
+<td><strong>兄弟索引</strong></td>
+<td>同为插件索引,但属于 World 端 Udon 工具</td>
+</tr>
+<tr>
+<td><a href="/STELLASTOPVRC/posts/kb-avatar-modular-avatar/">modular-avatar</a></td>
+<td><strong>依赖</strong></td>
+<td>MA 是安装前置,本插件是 MA 生态子应用</td>
+</tr>
+<tr>
+<td>index</td>
+<td><strong>注意事项</strong></td>
+<td>2 相机架构与 UV Shader 兼容问题</td>
+</tr>
+<tr>
+<td><a href="/STELLASTOPVRC/posts/kb-concepts-hybrid-audio-link/">audio-link</a></td>
+<td><strong>场景联动</strong></td>
+<td>摄影场景可与音频可视化结合</td>
+</tr>
+<tr>
+<td>index</td>
+<td><strong>所属域</strong></td>
+<td>Hybrid 域(Avatar 侧)</td>
+</tr>
+<tr>
+<td><a href="/STELLASTOPVRC/posts/kb-concepts-hybrid-osc-protocol/">osc-protocol</a></td>
+<td><strong>参考</strong></td>
+<td>OSC 协议可扩展摄影工具能力</td>
+</tr>
+<tr>
+<td>（来源：Open Source Projects，本地整理）</td>
+<td><strong>对照</strong></td>
+<td>本插件闭源,与开源参考工程区分</td>
+</tr>
+</tbody>
+</table>
+<h3 id="92-推荐工具评估标准">9.2 推荐工具评估标准</h3>
+<p>如果一个第三方 Avatar 端插件希望被收录到本文档,需满足:</p>
+<table>
+<thead>
+<tr>
+<th>维度</th>
+<th>要求</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>维护状态</strong></td>
+<td>最近 6 个月内至少有 1 次 commit/update</td>
+</tr>
+<tr>
+<td><strong>社区反馈</strong></td>
+<td>10+ stars 或 100+ downloads</td>
+</tr>
+<tr>
+<td><strong>文档完整</strong></td>
+<td>README + 至少 3 个示例 Prefab</td>
+</tr>
+<tr>
+<td><strong>分发渠道</strong></td>
+<td>有可访问的购买/下载链接(BOOTH/GitHub)</td>
+</tr>
+<tr>
+<td><strong>设计质量</strong></td>
+<td>遵循 VRChat 最佳实践(无反射黑魔法、无 GC 滥用)</td>
+</tr>
+<tr>
+<td><strong>跨平台</strong></td>
+<td>PC/Quest 兼容(优先);不兼容需明确标注</td>
+</tr>
+<tr>
+<td><strong>可验证</strong></td>
+<td>知识库已建立相关分析文档</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="10-维护记录maintenance-log">§10 维护记录(Maintenance Log)</h2>
+<table>
+<thead>
+<tr>
+<th>日期</th>
+<th>变更</th>
+<th>操作者</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2026-07-04</td>
+<td>创建本文档,收录 Flex Fisheye Lens 作为首个 Avatar 端摄影工具</td>
+<td>Knowledge Curator Agent</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="附录关键警告清单必读">附录:关键警告清单(必读)</h2>
+<blockquote>
+<p>🔴 <strong>本节是使用前的必读警告,所有 Flex Fisheye Lens 用户都应知晓</strong></p>
+</blockquote>
+<ol>
+<li><strong>VR-only</strong> — 桌面模式和 Quest 均不可用</li>
+<li><strong>MA 必需</strong> — 必须先安装 Modular Avatar</li>
+<li><strong>原相机需跟随玩家</strong> — 飞行模式会导致效果失效</li>
+<li><strong>2 相机架构</strong> — 性能开销 + UV Shader 不兼容</li>
+<li><strong>4 倍数约束</strong> — Resolution Far/Near 必须是 4 的倍数</li>
+<li><strong>升级副作用</strong> — 质量设置会被重置</li>
+<li><strong>Addon 替换</strong> — 必须使用 Addon 预制体,不能手动移动</li>
+<li><strong>Local Only</strong> — 其他人看不到你手上的镜头(零网络开销)</li>
+<li><strong>价格</strong> — ¥2,000 (截至 2025-12)</li>
+<li><strong>作者要求</strong> — Twitter 等社交媒体发布需加 <code>#FlexFishEye</code> 标签</li>
+</ol>
+<hr>
+<h2 id="外部资源链接">外部资源链接</h2>
+<table>
+<thead>
+<tr>
+<th>资源</th>
+<th>链接</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>BOOTH 商品页(日文)</strong></td>
+<td><code>https://booth.pm/ja/items/5512392</code></td>
+</tr>
+<tr>
+<td><strong>BOOTH 商品页(英文)</strong></td>
+<td><code>https://booth.pm/en/items/5512392</code></td>
+</tr>
+<tr>
+<td><strong>BOOTH 商品页(原始)</strong></td>
+<td><code>https://goat-cannery.booth.pm/items/5512392</code></td>
+</tr>
+<tr>
+<td><strong>VRCD 汉化文档</strong></td>
+<td><code>https://docs.vrcd.org.cn/books/flex-fisheye-lens</code></td>
+</tr>
+<tr>
+<td><strong>VRCD 概览页</strong></td>
+<td><code>https://docs.vrcd.org.cn/books/vrc-uyG/page/flex-fisheye-lens</code></td>
+</tr>
+<tr>
+<td><strong>官方使用手册(Google Docs)</strong></td>
+<td><code>https://docs.google.com/document/d/14vIpZHvVXfoYedPgE2tbDNJkNOJvSwp_cLzaTu-ARag/edit?tab=t.0</code></td>
+</tr>
+<tr>
+<td><strong>作者 Twitter</strong></td>
+<td>需搜索 <code>#FlexFishEye</code> 标签</td>
+</tr>
+<tr>
+<td><strong>作者站点</strong></td>
+<td>Goat-Cannery BOOTH 主页</td>
+</tr>
+<tr>
+<td><strong>示例 World</strong></td>
+<td><code>wrld_44b14599-7011-48d3-b40f-41c0dc80252e</code></td>
+</tr>
+<tr>
+<td><strong>试用 Avatar</strong></td>
+<td><code>avtr_04cd67b2-3a7d-4a20-b322-17dd437221b8</code></td>
+</tr>
+<tr>
+<td><strong>引用 Integral 插件</strong></td>
+<td><code>https://booth.pm/ja/items/4724145</code></td>
+</tr>
+</tbody>
+</table>
+<hr>
+<p><strong>文档结束。如有更新,请在维护记录中追加。</strong></p>
+<hr>
+<h2 id="相关页面">相关页面</h2>
+<p><a href="/STELLASTOPVRC/posts/kb-concepts-hybrid-udon-world-plugins/">udon-world-plugins.md</a> · <a href="/STELLASTOPVRC/posts/kb-concepts-hybrid-index/">index.md</a> · <a href="/STELLASTOPVRC/posts/kb-concepts-hybrid-audio-link/">audio-link.md</a> · <a href="/STELLASTOPVRC/posts/kb-avatar-modular-avatar/">../entities/avatar/modular-avatar.md</a> · <a href="/STELLASTOPVRC/posts/kb-avatar-shader-index/">../entities/avatar/shader/index.md</a> · <a href="/STELLASTOPVRC/posts/kb-concepts-hybrid-osc-protocol/">osc-protocol.md</a></p> </div> <p class="kb-source-note" data-astro-cid-lvjzyg5v>
+本文由 VRChat 开发知识库自动整理（社区整理  · 可信度 Medium  · 最后校对 2026-07-04），
+          遇到与手写教程冲突的地方，以官方文档为最高优先级。
+</p> <section class="comments" id="comments" data-astro-cid-lvjzyg5v> <h2 class="comments__title" data-astro-cid-lvjzyg5v>✦ 旅人留言（0）</h2> <p class="comments__empty" id="commentsEmpty" data-astro-cid-lvjzyg5v>
+还没有旅人留言 —— 有疑问就写在下面，站长都会回复。
+</p> <form class="comment-form" id="commentForm" data-target="kb-concepts-hybrid-avatar-camera-plugins" data-astro-cid-lvjzyg5v> <p class="comment-form__title" data-astro-cid-lvjzyg5v>写下你的留言</p> <input id="cAuthor" maxlength="20" placeholder="昵称（留空则为「旅人」）" data-astro-cid-lvjzyg5v> <textarea id="cBody" maxlength="1000" required placeholder="想问的问题、想说的感谢都可以（最多 1000 字）" data-astro-cid-lvjzyg5v></textarea> <div class="comment-form__actions" data-astro-cid-lvjzyg5v> <button class="btn btn--primary" type="submit" data-astro-cid-lvjzyg5v>发布留言</button> <span class="form-hint" data-astro-cid-lvjzyg5v>留言保存在本站，站长在写作台里能看到</span> <span class="form-msg" id="cMsg" data-astro-cid-lvjzyg5v></span> </div> </form> </section> <nav class="station-nav" aria-label="站间导航" data-astro-cid-lvjzyg5v> <a href="/STELLASTOPVRC/posts/kb-comparisons-poiyomi-vs-liltoon/" data-astro-cid-lvjzyg5v> <span class="dir" data-astro-cid-lvjzyg5v>← 上一站 · 更新的星光</span> <span class="to" data-astro-cid-lvjzyg5v>Poiyomi vs lilToon - 全面对比</span> </a> <a href="/STELLASTOPVRC/posts/kb-concepts-rules-quest-constraints/" data-astro-cid-lvjzyg5v> <span class="dir" data-astro-cid-lvjzyg5v>下一站 · 更早的星光 →</span> <span class="to" data-astro-cid-lvjzyg5v>Quest 兼容性约束清单</span> </a> </nav> </div> <aside class="toc" id="toc" hidden> <p class="toc__title">✦ 本页星图</p> <nav id="tocNav" aria-label="文章目录"></nav> </aside> <script type="module">const i=document.querySelector(".prose"),d=document.getElementById("toc"),u=document.getElementById("tocNav"),l=[];if(i&&d&&u){const c=[...i.querySelectorAll("h1, h2, h3")];if(c.length>=3){d.hidden=!1,c.forEach((o,e)=>{o.id||(o.id=`sec-${e}`);const n=document.createElement("a");n.href=`#${o.id}`;const s=(o.textContent??"").replace(/\s+/g," ").trim(),r=s.search(/[：:]/),a=r>=4?s.slice(0,r):s;n.textContent=a.length>40?`${a.slice(0,40)}…`:a,n.title=s,u.appendChild(n),l.push({a:n,h:o})});const t=()=>{let o=l[0];for(const e of l)e.h.getBoundingClientRect().top<=130&&(o=e);for(const e of l)e.a.classList.toggle("is-active",e===o)};addEventListener("scroll",t,{passive:!0}),t()}}document.querySelectorAll(".prose pre").forEach(c=>{const t=document.createElement("button");t.className="code-copy",t.type="button",t.textContent="复制",t.addEventListener("click",async()=>{const o=c.querySelector("code")?.innerText??c.innerText;try{await navigator.clipboard.writeText(o)}catch{const e=document.createElement("textarea");e.value=o,document.body.appendChild(e),e.select(),document.execCommand("copy"),e.remove()}t.textContent="已复制 ✓",t.classList.add("is-ok"),setTimeout(()=>{t.textContent="复制",t.classList.remove("is-ok")},1500)}),c.appendChild(t)});</script> </article>  </main> <footer class="site-footer"> <div class="wrap"> <p class="star-line" aria-hidden="true"> <svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> <svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> </p> <p>星之驿站 StellaStop —— 在虚拟宇宙中，为你保留一座驿站</p> <p class="site-footer__disclaimer">
+该网页目前是测试阶段，仅用于测试，所有内容仅供参考；内容全部为引用互联网当中的信息。
+</p> <p>© 2026 星之驿站 · 由 <a href="https://astro.build">Astro</a> 与星光驱动</p> <p> <a data-desk-login hidden title="写作台：登录 / 注册">登录 / 注册</a> ·
+<a href="/STELLASTOPVRC/announcements/">官方公告</a> ·
+<a href="/STELLASTOPVRC/ai/">问星 AI</a> ·
+<a href="/STELLASTOPVRC/feedback/">旅人留言板</a> </p> </div> </footer> <button class="to-top" id="toTop" aria-label="回到顶部"> <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"> <path d="M12 20V5"></path> <path d="M5.5 11.5 12 5l6.5 6.5"></path> </svg> </button> <script type="module">const e=document.getElementById("toTop");if(e){const t=()=>e.classList.toggle("is-visible",scrollY>480);addEventListener("scroll",t,{passive:!0}),t(),e.addEventListener("click",()=>{const o=matchMedia("(prefers-reduced-motion: reduce)").matches;scrollTo({top:0,behavior:o?"auto":"smooth"})})}</script> <script>(function(){const deskConfigured = "";
+
+      /* 写作台探测（页面尾部执行，DOM 已就绪）：
+         1. 计算写作台地址：站点配置 deskUrl（公网部署时填）> 本机默认 localhost:4322 > 同主机 4322
+         2. 探测 /api/gate/status —— 在线才点亮「登录 / 注册」入口，并复用给验证门横幅
+         3. 不在线则保持隐藏，绝不会把访客拽进内网地址；同时给出一次性「镜像模式」提示 */
+      (function () {
+        var host = location.hostname;
+        var isLocal = host === 'localhost' || host === '127.0.0.1' || host === '[::1]';
+        var desk = deskConfigured ||
+          (isLocal ? 'http://localhost:4322' : location.protocol + '//' + host + ':4322');
+        window.STELLA_DESK = desk;
+
+        function revealLogin() {
+          document.querySelectorAll('[data-desk-login]').forEach(function (a) {
+            a.href = desk + '/admin';
+            a.removeAttribute('hidden');
+          });
+        }
+        function showBanner(css, html, shiftHeader) {
+          var bar = document.createElement('div');
+          bar.style.cssText = css;
+          bar.innerHTML = html;
+          document.body.prepend(bar);
+          if (shiftHeader) {
+            var header = document.querySelector('.site-header');
+            if (header) header.style.marginTop = '42px';
+          }
+        }
+        function hintMirrorMode() {
+          try {
+            if (sessionStorage.getItem('stella-desk-hint')) return;
+            sessionStorage.setItem('stella-desk-hint', '1');
+          } catch (e) { /* 无痕模式等：忽略 */ }
+          var tip = document.createElement('div');
+          tip.style.cssText = 'position:fixed;left:14px;bottom:14px;z-index:9998;max-width:min(92vw,430px);padding:.65rem .9rem;border-radius:12px;background:rgba(18,20,44,.92);border:1px solid rgba(150,142,255,.35);color:#e8e6ff;font-size:.82rem;line-height:1.6;font-family:system-ui,sans-serif;box-shadow:0 8px 30px rgba(0,0,0,.35)';
+          tip.innerHTML = 'ℹ️ 静态镜像模式：登录 / 评论 / AI 等互动功能需要站长写作台在线，当前不可用。' +
+            '<span id="stellaDeskHintClose" style="float:right;cursor:pointer;opacity:.75;font-weight:700;margin-left:.6rem" title="关闭">×</span>';
+          document.body.appendChild(tip);
+          var close = function () { tip.remove(); };
+          tip.querySelector('#stellaDeskHintClose').addEventListener('click', close);
+          setTimeout(close, 9000);
+        }
+
+        try {
+          var ctrl = new AbortController();
+          var timer = setTimeout(function () { ctrl.abort(); }, 2500);
+          fetch(desk + '/api/gate/status', { credentials: 'include', signal: ctrl.signal })
+            .then(function (r) { return r.ok ? r.json() : null; })
+            .then(function (d) {
+              clearTimeout(timer);
+              if (!d) throw new Error('desk-offline');
+              window.STELLA_DESK_OK = true;
+              revealLogin();
+              if (d.regionBlocked) {
+                showBanner(
+                  'position:fixed;top:0;left:0;right:0;z-index:9999;padding:1.2rem;text-align:center;background:#1a0a0a;color:#ff9ed2;font-size:.95rem;border-bottom:2px solid #ff4d6d;font-family:system-ui,sans-serif',
+                  '⛔ 你所在的地区（' + (d.regionCountry || '未知') + '）暂不开放访问。',
+                  false
+                );
+                return;
+              }
+              if (d.enabled && !d.passed) {
+                showBanner(
+                  'position:fixed;top:0;left:0;right:0;z-index:9999;padding:0.7rem;text-align:center;background:linear-gradient(94deg,rgba(143,127,247,.25),rgba(98,200,245,.18));border-bottom:1px solid rgba(150,142,255,.3);color:#f0efff;font-size:.88rem;font-family:system-ui,sans-serif',
+                  '🔒 本站启用了安全验证 —— <a href="' + desk + '/gate?next=' + encodeURIComponent(location.href) + '" style="color:#ffd98e;font-weight:700;text-decoration:underline">点击完成验证</a>，通过后即可使用全部功能（30 天免验）。',
+                  true
+                );
+              }
+            })
+            .catch(function () {
+              clearTimeout(timer);
+              window.STELLA_DESK_OK = false;
+              hintMirrorMode();
+            });
+        } catch (e) { /* 忽略 */ }
+      })();
+    })();</script> </body> </html> <script type="module">const m=document.getElementById("commentForm"),s=document.getElementById("cMsg"),u=`${location.protocol}//${location.hostname}:4322/api/message`;function r(e,t=!1){s&&(s.textContent=e,s.classList.toggle("is-err",t),s.classList.toggle("is-ok",!t))}function y(){const e=new Date,t=n=>String(n).padStart(2,"0");return`${e.getFullYear()}-${t(e.getMonth()+1)}-${t(e.getDate())}`}function f(e){let t=7;for(const n of e)t=(t*31+n.charCodeAt(0))%360;return t}function g(e,t){const n=document.createElement("li");n.className="comment",n.innerHTML=`
+      <span class="comment__avatar"></span>
+      <div class="comment__bubble">
+        <div class="comment__head">
+          <span class="comment__name"></span>
+          <time class="comment__date">${y()}</time>
+        </div>
+        <p class="comment__body"></p>
+      </div>`;const o=n.querySelector(".comment__avatar");return o.style.setProperty("--h",String(f(e))),o.textContent=e.slice(0,1),n.querySelector(".comment__name").textContent=e,n.querySelector(".comment__body").textContent=t,n}m?.addEventListener("submit",async e=>{e.preventDefault();const t=document.getElementById("cBody").value.trim();if(!t)return r("留言内容不能为空哦",!0);const n=document.getElementById("cAuthor").value.trim()||"旅人",o=m.querySelector("button");o&&(o.disabled=!0);try{const c=await fetch(u,{credentials:"include",method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({target:m.dataset.target,kind:"comment",author:n,body:t})}),d=await c.json().catch(()=>({}));if(!c.ok)throw new Error(d.error||`发送失败（${c.status}）`);const l=document.querySelector(".comment-list");l&&l.appendChild(g(n,t)),document.getElementById("commentsEmpty")?.remove(),document.getElementById("cBody").value="",r("留言已发布，感谢支持 ✦");const a=document.querySelector(".comments__title"),i=a?.textContent?.match(/（(\d+)）/);a&&i&&(a.textContent=a.textContent.replace(/（\d+）/,`（${Number(i[1])+1}）`))}catch(c){r(c instanceof TypeError?"写作台没在运行，暂时收不到留言 —— 双击「启动博客.bat」就好":c.message,!0)}finally{o&&(o.disabled=!1)}});</script> 

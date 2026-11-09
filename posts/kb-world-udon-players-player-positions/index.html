@@ -1,0 +1,742 @@
+<!DOCTYPE html><html lang="zh-CN"> <head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="generator" content="Astro v5.18.2"><meta name="description" content="玩家的位置、旋转、速度均可通过 Udon 访问和修改。所有以下节点都需要 VRCPlayerApi 作为输入。"><meta name="theme-color" content="#070a1c"><meta property="og:title" content="Player Positions — 玩家位置/旋转/追踪/速度/传送 · 星之驿站 StellaStop"><meta property="og:description" content="玩家的位置、旋转、速度均可通过 Udon 访问和修改。所有以下节点都需要 VRCPlayerApi 作为输入。"><meta property="og:type" content="website"><meta name="twitter:card" content="summary"><link rel="icon" type="image/svg+xml" href="/STELLASTOPVRC/favicon.svg"><script>
+      // 在渲染前恢复主题与特效档位，避免闪一下默认状态
+      try {
+        document.documentElement.dataset.theme =
+          localStorage.getItem('stella-theme') || 'nebula';
+        document.documentElement.dataset.fx =
+          localStorage.getItem('stella-fx') || 'standard';
+      } catch {
+        /* 隐私模式读不到就算了 */
+      }
+    </script><link rel="stylesheet" href="/STELLASTOPVRC/custom-vars.css"><title>Player Positions — 玩家位置/旋转/追踪/速度/传送 · 星之驿站 StellaStop</title><link rel="stylesheet" href="/STELLASTOPVRC/_astro/about.Bgh6wcGl.css">
+<style>.post-head__meta[data-astro-cid-lvjzyg5v]{color:var(--ink-faint);font-family:var(--font-mono);font-size:.82rem}.post-head[data-astro-cid-lvjzyg5v] .chip-row[data-astro-cid-lvjzyg5v]{margin-top:1rem}.kb-source-note[data-astro-cid-lvjzyg5v]{max-width:760px;margin:2.2rem auto 0;font-size:.82rem;color:var(--ink-faint);border-top:1px dashed var(--line);padding-top:1rem}
+</style></head> <body> <div class="site-notice" id="siteNotice"> <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> <span class="site-notice__text">欢迎来到星之驿站！</span> <button class="site-notice__close" id="noticeClose" type="button" aria-label="关闭公告">
+×
+</button> </div> <a class="skip-link" href="#main">跳到主要内容</a> <canvas id="starfield" aria-hidden="true" data-astro-cid-ra7sfcwn></canvas> <div class="fx-aurora fx-aurora--a" aria-hidden="true" data-astro-cid-ra7sfcwn></div> <div class="fx-aurora fx-aurora--b" aria-hidden="true" data-astro-cid-ra7sfcwn></div>  <script type="module">const u=document.getElementById("starfield");if(u){let F=function(){const n=Math.random();return n<.1?"gold":n<.42?"blue":"white"},v=function(){const n=Math.min(window.devicePixelRatio||1,2);s=window.innerWidth,d=window.innerHeight,u.width=s*n,u.height=d*n,u.style.width=`${s}px`,u.style.height=`${d}px`,t.setTransform(n,0,0,n,0,0);const e=Math.min(190,Math.round(s*d/8500));l=Array.from({length:e},()=>({x:Math.random()*s,y:Math.random()*d,r:r(.4,1.7),base:r(.25,.8),amp:r(.12,.4),speed:r(6e-4,.0022),phase:r(0,Math.PI*2),c:F()})),C=Array.from({length:26},()=>({x:Math.random()*s,y:Math.random()*d,r:r(.9,2.4),vx:r(-.006,.006),vy:r(-.02,-.006),base:r(.2,.5),speed:r(8e-4,.002),phase:r(0,Math.PI*2),c:Math.random()<.5?"gold":"violet"})),c==="off"&&m(0,!0)},D=function(n){const e=Math.random()<.5?1:-1,o=r(Math.PI/7,Math.PI/5),a=r(.45,.75);y.push({x:r(s*.15,s*.85),y:r(-20,d*.3),vx:Math.cos(o)*a*e,vy:Math.sin(o)*a,born:n,life:r(750,1050),len:r(100,170)})},S=function(n){y=y.filter(e=>n-e.born<e.life);for(const e of y){const o=(n-e.born)/e.life,a=e.x+e.vx*(n-e.born),i=e.y+e.vy*(n-e.born),f=o<.15?o/.15:o>.7?(1-o)/.3:1,h=Math.hypot(e.vx,e.vy),x=e.vx/h,g=e.vy/h,b=t.createLinearGradient(a,i,a-x*e.len,i-g*e.len);b.addColorStop(0,`rgba(236,242,255,${(.85*f).toFixed(3)})`),b.addColorStop(1,"rgba(236,242,255,0)"),t.strokeStyle=b,t.lineWidth=1.6,t.lineCap="round",t.beginPath(),t.moveTo(a,i),t.lineTo(a-x*e.len,i-g*e.len),t.stroke()}},B=function(){let o=0;t.lineWidth=.7;for(let a=0;a<l.length&&o<26;a++)for(let i=a+1;i<l.length&&o<26;i++){const f=l[a].x-l[i].x,h=l[a].y-l[i].y,x=f*f+h*h;if(x<16900){const g=(1-Math.sqrt(x)/130)*.17;t.strokeStyle=`rgba(178,170,255,${g.toFixed(3)})`,t.beginPath(),t.moveTo(l[a].x,l[a].y),t.lineTo(l[i].x,l[i].y),t.stroke(),o++}}},X=function(n){for(const e of C){e.x+=e.vx*16,e.y+=e.vy*16,e.y<-12&&(e.y=d+10),e.x<-12&&(e.x=s+10),e.x>s+12&&(e.x=-10);const o=Math.max(.05,e.base+.25*Math.sin(n*e.speed+e.phase)),[a,i,f]=A[e.c];t.beginPath(),t.arc(e.x,e.y,e.r,0,7),t.shadowBlur=9,t.shadowColor=`rgba(${a},${i},${f},0.9)`,t.fillStyle=`rgba(${a},${i},${f},${o.toFixed(3)})`,t.fill()}t.shadowBlur=0},m=function(n,e=!1){t.clearRect(0,0,s,d);for(const o of l){const a=c==="off"?o.base:Math.max(.05,o.base+o.amp*Math.sin(n*o.speed+o.phase)),[i,f,h]=A[o.c];t.beginPath(),t.arc(o.x,o.y,o.r,0,7),o.r>1.25?(t.shadowBlur=7,t.shadowColor=`rgba(${i},${f},${h},0.85)`):t.shadowBlur=0,t.fillStyle=`rgba(${i},${f},${h},${a.toFixed(3)})`,t.fill()}if(t.shadowBlur=0,c!=="off"&&!e){c==="fancy"&&(B(),X(n));const o=c==="fancy"?r(2600,6e3):r(4200,9500);n>P&&(D(n),P=n+o),S(n)}},$=function(n){m(n),M=requestAnimationFrame($)},p=function(){if(c==="off"){m(0,!0);return}cancelAnimationFrame(M),M=requestAnimationFrame($)},w=function(){cancelAnimationFrame(M),t.clearRect(0,0,s,d),m(0,!0)};const t=u.getContext("2d"),k=matchMedia("(prefers-reduced-motion: reduce)").matches,A={white:[240,240,255],blue:[150,215,250],gold:[255,218,150],violet:[178,170,255]};let s=0,d=0,l=[],C=[],y=[],P=2500,M=0,c=document.documentElement.dataset.fx||"standard";k&&(c="off");const r=(n,e)=>n+Math.random()*(e-n);v(),addEventListener("resize",v),document.addEventListener("stella-fx-change",n=>{c=n.detail,c==="off"?w():p()}),c==="off"?m(0,!0):(p(),document.addEventListener("visibilitychange",()=>{document.hidden?w():p()}))}</script> <header class="site-header"> <div class="wrap site-header__inner"> <a class="logo" href="/STELLASTOPVRC/"> <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> <span>星之驿站</span> <span class="logo__romaji">StellaStop</span> </a> <div class="header-right"> <nav class="site-nav" aria-label="站内导航"> <a href="/STELLASTOPVRC/"> 首页 </a><a href="/STELLASTOPVRC/start/"> 新手 </a><a href="/STELLASTOPVRC/posts/"> 教程 </a><a href="/STELLASTOPVRC/videos/"> 视频 </a><a href="/STELLASTOPVRC/resources/"> 资源 </a><a href="/STELLASTOPVRC/booth/"> Booth </a><a href="/STELLASTOPVRC/announcements/"> 公告 </a><a href="/STELLASTOPVRC/ai/"> 问星 </a><a href="/STELLASTOPVRC/changelog/"> 更新日志 </a><a href="/STELLASTOPVRC/about/"> 关于 </a> </nav> <a class="login-link" data-desk-login hidden title="写作台：登录 / 注册后可发教程、传资源">
+登录 / 注册
+</a> <div class="theme-switch"> <button class="theme-switch__btn" id="themeBtn" type="button" aria-haspopup="listbox" aria-expanded="false" aria-label="切换主题配色" title="切换主题配色"> <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"> <path d="M12 3a9 9 0 1 0 9 9c0-1.2-1-2-2.2-2H17a2 2 0 0 1-2-2V6.2C15 5 14.2 4 13 4.4A9 9 0 0 0 12 3Z"></path> <circle cx="7.5" cy="11.5" r="1" fill="currentColor" stroke="none"></circle> <circle cx="10" cy="7.5" r="1" fill="currentColor" stroke="none"></circle> <circle cx="15" cy="7" r="1" fill="currentColor" stroke="none"></circle> </svg> </button> <div class="theme-pop" id="themePop" role="listbox" aria-label="选择主题" hidden> <button class="theme-opt" type="button" role="option" data-theme-value="nebula" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#8f7ff7"></span><span class="dot" style="background:#62c8f5"></span><span class="dot" style="background:#ffd98e"></span> </span> <span class="theme-opt__name">星云 · 蓝紫</span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt" type="button" role="option" data-theme-value="sakura" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#ff8fc7"></span><span class="dot" style="background:#c79bff"></span><span class="dot" style="background:#ffd08e"></span> </span> <span class="theme-opt__name">樱语 · 粉紫</span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt" type="button" role="option" data-theme-value="miku" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#2ed3c2"></span><span class="dot" style="background:#6ea8ff"></span><span class="dot" style="background:#ffe08e"></span> </span> <span class="theme-opt__name">葱色 · 青绿</span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt" type="button" role="option" data-theme-value="ember" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#ffb35c"></span><span class="dot" style="background:#ff7e6b"></span><span class="dot" style="background:#ffd98e"></span> </span> <span class="theme-opt__name">暮金 · 暖橙</span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt" type="button" role="option" data-theme-value="dawn" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#6a5ce8"></span><span class="dot" style="background:#e0568f"></span><span class="dot" style="background:#b8821e"></span> </span> <span class="theme-opt__name">晨星 · 浅色</span> <span class="theme-opt__mark">✦</span> </button> </div> </div> <script type="module">const a=document.getElementById("themeBtn"),n=document.getElementById("themePop");function s(c){document.documentElement.dataset.theme=c;try{localStorage.setItem("stella-theme",c)}catch{}const e=getComputedStyle(document.documentElement).getPropertyValue("--bg-deep").trim();document.querySelector('meta[name="theme-color"]')?.setAttribute("content",e||"#070a1c"),document.querySelectorAll(".theme-opt").forEach(t=>{const d=t.dataset.themeValue===c;t.classList.toggle("is-active",d),t.setAttribute("aria-selected",String(d))})}if(a&&n){const c=document.documentElement.dataset.theme||"nebula";document.querySelectorAll(".theme-opt").forEach(e=>{const t=e.dataset.themeValue===c;e.classList.toggle("is-active",t),e.setAttribute("aria-selected",String(t))}),a.addEventListener("click",e=>{e.stopPropagation();const t=n.hidden;n.hidden=!t,a.setAttribute("aria-expanded",String(t))}),document.addEventListener("click",e=>{!n.hidden&&!e.target.closest(".theme-switch")&&(n.hidden=!0,a.setAttribute("aria-expanded","false"))}),document.addEventListener("keydown",e=>{e.key==="Escape"&&!n.hidden&&(n.hidden=!0,a.setAttribute("aria-expanded","false"),a.focus())}),n.addEventListener("click",e=>{const t=e.target.closest(".theme-opt");t&&(s(t.dataset.themeValue??"nebula"),n.hidden=!0,a.setAttribute("aria-expanded","false"))})}</script> <div class="theme-switch fx-switch"> <button class="theme-switch__btn" id="fxBtn" type="button" aria-haspopup="listbox" aria-expanded="false" aria-label="背景特效设置" title="背景特效设置"> <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"> <path d="M5 3v4M3 5h4M6.5 17.5v3M5 19h3"></path> <path d="M14.5 4.5 16 9l4.5 1.5L16 12l-1.5 4.5L13 12l-4.5-1.5L13 9l1.5-4.5Z"></path> </svg> </button> <div class="theme-pop" id="fxPop" role="listbox" aria-label="背景特效" hidden> <button class="theme-opt fx-opt" type="button" role="option" data-fx-value="off" aria-selected="false"> <span class="fx-opt__body"> <span class="fx-opt__name">关闭特效</span> <span class="fx-opt__hint">最省电</span> </span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt fx-opt" type="button" role="option" data-fx-value="standard" aria-selected="false"> <span class="fx-opt__body"> <span class="fx-opt__name">标准</span> <span class="fx-opt__hint">闪烁星空 + 流星</span> </span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt fx-opt" type="button" role="option" data-fx-value="fancy" aria-selected="false"> <span class="fx-opt__body"> <span class="fx-opt__name">华丽</span> <span class="fx-opt__hint">追加极光 / 星座 / 光尘</span> </span> <span class="theme-opt__mark">✦</span> </button> </div> </div> <script type="module">const n=document.getElementById("fxBtn"),a=document.getElementById("fxPop");function s(d){document.documentElement.dataset.fx=d;try{localStorage.setItem("stella-fx",d)}catch{}document.querySelectorAll("#fxPop .fx-opt").forEach(t=>{const e=t.dataset.fxValue===d;t.classList.toggle("is-active",e),t.setAttribute("aria-selected",String(e))}),document.dispatchEvent(new CustomEvent("stella-fx-change",{detail:d}))}if(n&&a){const d=document.documentElement.dataset.fx||"standard";document.querySelectorAll("#fxPop .fx-opt").forEach(t=>{const e=t.dataset.fxValue===d;t.classList.toggle("is-active",e),t.setAttribute("aria-selected",String(e))}),n.addEventListener("click",t=>{t.stopPropagation();const e=a.hidden;a.hidden=!e,n.setAttribute("aria-expanded",String(e))}),document.addEventListener("click",t=>{!a.hidden&&!t.target.closest(".fx-switch")&&(a.hidden=!0,n.setAttribute("aria-expanded","false"))}),document.addEventListener("keydown",t=>{t.key==="Escape"&&!a.hidden&&(a.hidden=!0,n.setAttribute("aria-expanded","false"),n.focus())}),a.addEventListener("click",t=>{const e=t.target.closest(".fx-opt");e&&(s(e.dataset.fxValue??"standard"),a.hidden=!0,n.setAttribute("aria-expanded","false"))})}</script> </div> </div> </header> <main id="main">  <article class="wrap post-layout" data-astro-cid-lvjzyg5v> <div class="post-main page-fade" data-astro-cid-lvjzyg5v> <header class="post-head" data-astro-cid-lvjzyg5v> <a class="crumb" href="/STELLASTOPVRC/posts/" data-astro-cid-lvjzyg5v>← 返回教程档案</a> <div class="post-head__meta" style="--accent:var(--ink-dim)" data-astro-cid-lvjzyg5v> <span class="badge" data-cat="Udon 世界编程" data-astro-cid-lvjzyg5v>Udon 世界编程</span> <time datetime="2026-11-09" data-astro-cid-lvjzyg5v>2026-11-09</time> <span class="post-head__reading" data-astro-cid-lvjzyg5v>⏱ 约 27 分钟</span>  </div> <h1 class="post-head__title" data-astro-cid-lvjzyg5v>Player Positions — 玩家位置/旋转/追踪/速度/传送</h1> <p class="post-head__lead" data-astro-cid-lvjzyg5v>玩家的位置、旋转、速度均可通过 Udon 访问和修改。所有以下节点都需要 VRCPlayerApi 作为输入。</p> <div class="chip-row" data-astro-cid-lvjzyg5v> <a class="chip" href="/STELLASTOPVRC/posts/?tag=%E7%9F%A5%E8%AF%86%E5%BA%93" data-astro-cid-lvjzyg5v> 知识库 </a><a class="chip" href="/STELLASTOPVRC/posts/?tag=world" data-astro-cid-lvjzyg5v> world </a> </div> </header> <div class="prose" data-astro-cid-lvjzyg5v> <hr>
+<h1 id="player-positions--玩家位置旋转追踪速度传送">Player Positions — 玩家位置/旋转/追踪/速度/传送</h1>
+<p>玩家的<strong>位置、旋转、速度</strong>均可通过 Udon 访问和修改。<strong>所有</strong>以下节点都需要 <code>VRCPlayerApi</code> 作为输入。</p>
+<p>与力相关的 API 见 player-forces.md。</p>
+<hr>
+<hr>
+<h1 id="player-positions--玩家位置旋转追踪速度传送位置与旋转-api">Player Positions — 玩家位置/旋转/追踪/速度/传送：位置与旋转 API</h1>
+<h3 id="getposition">GetPosition</h3>
+<ul>
+<li><strong>返回</strong>: <code>Vector3</code> (世界空间)</li>
+<li><strong>说明</strong>: 获取玩家位置</li>
+</ul>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="csharp"><code><span class="line"><span style="color:#B392F0">Vector3</span><span style="color:#B392F0"> pos</span><span style="color:#F97583"> =</span><span style="color:#E1E4E8"> player.</span><span style="color:#B392F0">GetPosition</span><span style="color:#E1E4E8">();</span></span></code></pre>
+<h3 id="getrotation">GetRotation</h3>
+<ul>
+<li><strong>返回</strong>: <code>Quaternion</code> (世界空间)</li>
+<li><strong>说明</strong>: 获取玩家旋转</li>
+</ul>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="csharp"><code><span class="line"><span style="color:#B392F0">Quaternion</span><span style="color:#B392F0"> rot</span><span style="color:#F97583"> =</span><span style="color:#E1E4E8"> player.</span><span style="color:#B392F0">GetRotation</span><span style="color:#E1E4E8">();</span></span></code></pre>
+<blockquote>
+<p>📝 <strong>替代方案</strong>: 若需要”玩家大致朝向”(尤其是全身追踪玩家),考虑用 <code>GetRotation</code> 而非 <code>GetTrackingData(AvatarRoot).rotation</code>,因为后者在全身追踪时不会随头部方向旋转。</p>
+</blockquote>
+<hr>
+<hr>
+<h1 id="player-positions--玩家位置旋转追踪速度传送骨骼-api">Player Positions — 玩家位置/旋转/追踪/速度/传送：骨骼 API</h1>
+<h3 id="getboneposition">GetBonePosition</h3>
+<ul>
+<li><strong>输入</strong>: <code>HumanBodyBones</code> 枚举值</li>
+<li><strong>返回</strong>: <code>Vector3</code> (世界空间) 或 <code>Vector3.Zero (0,0,0)</code> (骨骼不存在)</li>
+<li><strong>说明</strong>: 获取玩家 Avatar 指定骨骼的位置</li>
+<li><strong>警告</strong> ⚠️:
+<ul>
+<li><strong>不同 Avatar 骨骼位置可能差异极大</strong></li>
+<li><strong>不要</strong>基于骨骼位置假设玩家身高、姿态等</li>
+<li>不同 Avatar 的”Head”骨骼不一定在预期位置</li>
+</ul>
+</li>
+</ul>
+<h3 id="getbonerotation">GetBoneRotation</h3>
+<ul>
+<li><strong>返回</strong>: <code>Quaternion</code> (世界空间) 或 <code>Quaternion.Identity</code> (骨骼不存在)</li>
+<li><strong>说明</strong>: 获取玩家 Avatar 指定骨骼的旋转</li>
+<li><strong>警告</strong> ⚠️: 同 <code>GetBonePosition</code>,骨骼位置不可强假设</li>
+</ul>
+<h3 id="原生骨骼挂载attachtransformtobone--detachtransformfrombone--planned">原生骨骼挂载（AttachTransformToBone / DetachTransformFromBone · PLANNED）</h3>
+<blockquote>
+<p>⚠️ <strong>[PLANNED] 未正式发布</strong> —— 官方 2026-08-13 开发者更新宣布，签名/行为/可用 SDK 版本正式发布前可能变动。官方明确标注 “subject to change until release”。</p>
+</blockquote>
+<p><strong>动机</strong>：传统需要在 Update 循环中每帧手动移动/旋转 Transform 跟随骨骼，Udon 中开销较大：</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="csharp"><code><span class="line"><span style="color:#F97583">void</span><span style="color:#B392F0"> Update</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"><span style="color:#E1E4E8">{</span></span>
+<span class="line"><span style="color:#B392F0">    Vector3</span><span style="color:#B392F0"> pos</span><span style="color:#F97583"> =</span><span style="color:#E1E4E8"> Networking.LocalPlayer.</span><span style="color:#B392F0">GetBonePosition</span><span style="color:#E1E4E8">(HumanBodyBones.Head);</span></span>
+<span class="line"><span style="color:#B392F0">    Quaternion</span><span style="color:#B392F0"> rot</span><span style="color:#F97583"> =</span><span style="color:#E1E4E8"> Networking.LocalPlayer.</span><span style="color:#B392F0">GetBoneRotation</span><span style="color:#E1E4E8">(HumanBodyBones.Head);</span></span>
+<span class="line"><span style="color:#E1E4E8">    transform.</span><span style="color:#B392F0">SetPositionAndRotation</span><span style="color:#E1E4E8">(pos, rot);</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<p><strong>新方法（一次性调用，VRChat 自动处理骨骼追踪）</strong>：</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="csharp"><code><span class="line"><span style="color:#6A737D">// 挂载：将 transform 吸附到本地玩家 Avatar 的指定骨骼</span></span>
+<span class="line"><span style="color:#E1E4E8">Networking.LocalPlayer.</span><span style="color:#B392F0">AttachTransformToBone</span><span style="color:#E1E4E8">(transform, HumanBodyBones.Head);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// 卸载（需要移除时）</span></span>
+<span class="line"><span style="color:#E1E4E8">Networking.LocalPlayer.</span><span style="color:#B392F0">DetachTransformFromBone</span><span style="color:#E1E4E8">(transform);</span></span></code></pre>
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>AttachTransformToBone(transform, HumanBodyBones)</code></td>
+<td>一次性挂载到骨骼；之后每帧追踪由 VRChat 原生处理，不再需要 Udon update loop</td>
+</tr>
+<tr>
+<td><code>DetachTransformFromBone(transform)</code></td>
+<td>解除挂载</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>FACT</strong>（官方 2026-08-13 公告）：只需调用一次，挂载后由 VRChat 自动处理骨骼追踪。</p>
+<p><strong>[COMMUNITY]</strong> 官方回复（Dexvoid，同一帖子）：本能力定位为”更便捷且更高效的逐帧骨骼追踪（Update 方式）的<strong>一对一等价替换</strong>”；culled / hidden avatar / imposter / fallback 等情形的表现与上述 Update 循环方式一致，<strong>远程玩家骨骼旋转不一致的历史问题并未由本 API 消除</strong>（有创作者在该帖反馈）。</p>
+</blockquote>
+<hr>
+<hr>
+<h1 id="player-positions--玩家位置旋转追踪速度传送追踪数据-api-推荐方式">Player Positions — 玩家位置/旋转/追踪/速度/传送：追踪数据 API (推荐方式)</h1>
+<h3 id="gettrackingdata">GetTrackingData</h3>
+<ul>
+<li><strong>输入</strong>: <code>TrackingDataType</code> 枚举</li>
+<li><strong>返回</strong>: <code>TrackingData</code> 结构体(含 <code>position</code> 和 <code>rotation</code>)</li>
+<li><strong>说明</strong>: <strong>官方推荐</strong>获取玩家头部和手部位置/旋转的方式</li>
+</ul>
+<h4 id="trackingdatatype-枚举值"><code>TrackingDataType</code> 枚举值</h4>
+<table>
+<thead>
+<tr>
+<th>值</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Head</code></td>
+<td>玩家头部</td>
+</tr>
+<tr>
+<td><code>LeftHand</code></td>
+<td>玩家左手</td>
+</tr>
+<tr>
+<td><code>RightHand</code></td>
+<td>玩家右手</td>
+</tr>
+<tr>
+<td><code>Origin</code></td>
+<td><strong>本地 VR 用户</strong>的 playspace 中心;<strong>本地桌面用户</strong>的玩家位置;<strong>所有远程用户</strong>的玩家位置</td>
+</tr>
+<tr>
+<td><code>AvatarRoot</code></td>
+<td>Avatar 根 Transform (与玩家胶囊体附着的同一 Transform)</td>
+</tr>
+</tbody>
+</table>
+<h4 id="关键差异">关键差异</h4>
+<ul>
+<li><strong>本地玩家</strong>: 数据来自 <strong>TrackingManager</strong> (即直接来自头显/追踪器)</li>
+<li><strong>远程玩家</strong>: 数据来自 Avatar 的 <strong>RightHand / LeftHand / Head 骨骼</strong></li>
+<li><strong>全身追踪注意</strong> ⚠️: <code>AvatarRoot</code> 在全身追踪(Full-Body Tracking)用户中<strong>不会</strong>随头部朝向旋转
+<ul>
+<li>需要”玩家大致朝向”时,<strong>用 <code>GetRotation</code> 替代 <code>GetTrackingData(AvatarRoot).rotation</code></strong></li>
+</ul>
+</li>
+</ul>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="csharp"><code><span class="line"><span style="color:#B392F0">TrackingData</span><span style="color:#B392F0"> headData</span><span style="color:#F97583"> =</span><span style="color:#E1E4E8"> player.</span><span style="color:#B392F0">GetTrackingData</span><span style="color:#E1E4E8">(VRCPlayerApi.TrackingDataType.Head);</span></span>
+<span class="line"><span style="color:#B392F0">Vector3</span><span style="color:#B392F0"> headPos</span><span style="color:#F97583"> =</span><span style="color:#E1E4E8"> headData.position;</span></span>
+<span class="line"><span style="color:#B392F0">Quaternion</span><span style="color:#B392F0"> headRot</span><span style="color:#F97583"> =</span><span style="color:#E1E4E8"> headData.rotation;</span></span></code></pre>
+<hr>
+<hr>
+<h1 id="player-positions--玩家位置旋转追踪速度传送速度-api">Player Positions — 玩家位置/旋转/追踪/速度/传送：速度 API</h1>
+<h3 id="getvelocity">GetVelocity</h3>
+<ul>
+<li><strong>返回</strong>: <code>Vector3</code> (世界空间,速度向量)</li>
+<li><strong>说明</strong>: 获取玩家<strong>当前移动速度</strong>(大小 + 方向)</li>
+</ul>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="csharp"><code><span class="line"><span style="color:#B392F0">Vector3</span><span style="color:#B392F0"> vel</span><span style="color:#F97583"> =</span><span style="color:#E1E4E8"> player.</span><span style="color:#B392F0">GetVelocity</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#F97583">float</span><span style="color:#B392F0"> speed</span><span style="color:#F97583"> =</span><span style="color:#E1E4E8"> vel.magnitude;</span></span></code></pre>
+<h3 id="setvelocity">SetVelocity</h3>
+<ul>
+<li><strong>输入</strong>: <code>Vector3</code> (世界空间)</li>
+<li><strong>说明</strong>: <strong>设置</strong>玩家移动速度</li>
+<li><strong>副作用</strong> ⚠️: 在本地玩家上调用时,其 <code>IsPlayerGrounded</code> 被设为 <code>false</code> (因为他们不再”直接控制”自己的移动)</li>
+</ul>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="csharp"><code><span class="line"><span style="color:#6A737D">// 弹起玩家</span></span>
+<span class="line"><span style="color:#E1E4E8">player.</span><span style="color:#B392F0">SetVelocity</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">new</span><span style="color:#B392F0"> Vector3</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">0</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">5f</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">0</span><span style="color:#E1E4E8">));</span></span></code></pre>
+<blockquote>
+<p>📝 <strong>与 player-forces.md 的关系</strong>: 任务规格中 <code>velocity</code> API 在新文档中归类在本文件。</p>
+</blockquote>
+<hr>
+<hr>
+<h1 id="player-positions--玩家位置旋转追踪速度传送接地检测-api">Player Positions — 玩家位置/旋转/追踪/速度/传送：接地检测 API</h1>
+<h3 id="isplayergrounded">IsPlayerGrounded</h3>
+<ul>
+<li><strong>返回</strong>: <code>bool IsPlayerGrounded</code></li>
+<li><strong>说明</strong>: 获取玩家是否<strong>接触地面</strong>(决定是否可跳跃)</li>
+<li><strong>使用</strong>: 与 <code>SetVelocity</code> 配合时自动变 false</li>
+</ul>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="csharp"><code><span class="line"><span style="color:#F97583">if</span><span style="color:#E1E4E8"> (player.</span><span style="color:#B392F0">IsPlayerGrounded</span><span style="color:#E1E4E8">())</span></span>
+<span class="line"><span style="color:#E1E4E8">{</span></span>
+<span class="line"><span style="color:#6A737D">    // 玩家在地面上,可以跳跃</span></span>
+<span class="line"><span style="color:#E1E4E8">    player.</span><span style="color:#B392F0">SetJumpImpulse</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">5f</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<hr>
+<hr>
+<h1 id="player-positions--玩家位置旋转追踪速度传送传送-api">Player Positions — 玩家位置/旋转/追踪/速度/传送：传送 API</h1>
+<h3 id="teleportto">TeleportTo</h3>
+<p>将<strong>本地玩家</strong>传送到新位置和指定旋转(除非 Station 不允许)。</p>
+<ul>
+<li><strong>签名</strong>: <code>TeleportTo(Vector3 teleportPos, Quaternion teleportRot, ...)</code></li>
+<li><strong>输入</strong>:
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>类型</th>
+<th>必填</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>teleportPos</code></td>
+<td><code>Vector3</code></td>
+<td>✅</td>
+<td>目标位置(世界空间)</td>
+</tr>
+<tr>
+<td><code>teleportRot</code></td>
+<td><code>Quaternion</code></td>
+<td>✅</td>
+<td>目标旋转(世界空间)</td>
+</tr>
+<tr>
+<td><code>TeleportOrientation</code></td>
+<td><code>SceneDescriptorSpawnOrientation</code></td>
+<td>❌</td>
+<td>玩家与目标位置/旋转的对齐方式</td>
+</tr>
+<tr>
+<td><code>lerpOnRemote</code></td>
+<td><code>bool</code></td>
+<td>❌</td>
+<td>是否为远程玩家插值(默认 <code>false</code>)</td>
+</tr>
+</tbody>
+</table>
+</li>
+</ul>
+<h4 id="关键约束">关键约束</h4>
+<table>
+<thead>
+<tr>
+<th>约束</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>仅本地玩家</strong></td>
+<td>⚠️ Udon 只能传送本地玩家。要让其他玩家传送,使用 <a href="../networking/">Networking</a> 让他们<strong>自行</strong>传送</td>
+</tr>
+<tr>
+<td><strong>Station 阻止</strong></td>
+<td>Stations 可以阻止 Udon 传送玩家</td>
+</tr>
+<tr>
+<td><strong>高频传送</strong></td>
+<td>高频/短距离传送时,考虑设置 <code>lerpOnRemote = false</code></td>
+</tr>
+</tbody>
+</table>
+<h4 id="lerponremote-行为对比"><code>lerpOnRemote</code> 行为对比</h4>
+<table>
+<thead>
+<tr>
+<th>值</th>
+<th>远程玩家视角</th>
+<th>带宽成本</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>false</code> (默认)</td>
+<td>瞬移(看起来突兀)</td>
+<td>较高(每次传送都是一次 sync)</td>
+</tr>
+<tr>
+<td><code>true</code></td>
+<td>平滑过渡(像正常移动)</td>
+<td>较低(被当作普通移动)</td>
+</tr>
+</tbody>
+</table>
+<h4 id="️-重要警告-不要在网络更新中传送">⚠️ 重要警告: 不要在网络更新中传送</h4>
+<blockquote>
+<p><strong>不要在网络更新期间传送玩家</strong>(如 OnDeserialization)。否则玩家的 Avatar 可能在传送过程中意外与环境碰撞。</p>
+<p>正确做法: 使用 <a href="https://creators.vrchat.com/worlds/udon/graph/special-nodes/#sendcustomeventdelayedframes">SendCustomEventDelayedFrames</a> <strong>延迟一帧</strong>再传送。</p>
+</blockquote>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="csharp"><code><span class="line"><span style="color:#6A737D">// 错误: 在 OnDeserialization 中直接传送</span></span>
+<span class="line"><span style="color:#F97583">public</span><span style="color:#F97583"> override</span><span style="color:#F97583"> void</span><span style="color:#B392F0"> OnDeserialization</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"><span style="color:#E1E4E8">{</span></span>
+<span class="line"><span style="color:#E1E4E8">    player.</span><span style="color:#B392F0">TeleportTo</span><span style="color:#E1E4E8">(pos, rot); </span><span style="color:#6A737D">// ⚠️ 可能导致碰撞异常</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// 正确: 延迟一帧</span></span>
+<span class="line"><span style="color:#F97583">public</span><span style="color:#F97583"> override</span><span style="color:#F97583"> void</span><span style="color:#B392F0"> OnDeserialization</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"><span style="color:#E1E4E8">{</span></span>
+<span class="line"><span style="color:#B392F0">    SendCustomEventDelayedFrames</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">nameof</span><span style="color:#E1E4E8">(DelayedTeleport), </span><span style="color:#79B8FF">1</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">public</span><span style="color:#F97583"> void</span><span style="color:#B392F0"> DelayedTeleport</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"><span style="color:#E1E4E8">{</span></span>
+<span class="line"><span style="color:#E1E4E8">    player.</span><span style="color:#B392F0">TeleportTo</span><span style="color:#E1E4E8">(teleportPos, teleportRot, </span></span>
+<span class="line"><span style="color:#E1E4E8">        VRC_SceneDescriptor.SpawnOrientation.AlignPlayerWithSpawnPoint,</span></span>
+<span class="line"><span style="color:#79B8FF">        false</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<h3 id="-vrchat-修复历史-202623">🔄 VRChat 修复历史 (2026.2.3+)</h3>
+<blockquote>
+<p><strong>FACT</strong> (2026.2.3 Build 1864,2026-06-22):“Fixed an issue with Udon’s <code>Teleport</code> functions not working if the rotation quaternion was not unit-length. This is the case in Udon Graph by default, which is where this fix will mostly apply.”</p>
+</blockquote>
+<h4 id="问题场景">问题场景</h4>
+<table>
+<thead>
+<tr>
+<th>场景</th>
+<th>表现</th>
+<th>修复状态</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Udon Graph 默认旋转</strong></td>
+<td>Udon Graph 创建的 <code>Teleport</code> 节点使用<strong>非单位长度四元数</strong>,导致 Teleport 不工作</td>
+<td>✅ 2026.2.3 修复</td>
+</tr>
+<tr>
+<td><strong>Udon# 代码</strong></td>
+<td>显式 <code>player.TeleportTo(pos, rot)</code> 使用单位四元数时正常,非单位时异常</td>
+<td>✅ 2026.2.3 修复</td>
+</tr>
+<tr>
+<td><strong>Late Joiner 场景</strong></td>
+<td>新加入玩家在 OnNetworkReady 触发的传送现在可靠</td>
+<td>✅ 2026.2.3 修复</td>
+</tr>
+</tbody>
+</table>
+<h4 id="创作者影响">创作者影响</h4>
+<table>
+<thead>
+<tr>
+<th>影响项</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Udon Graph 用户</strong></td>
+<td>默认 <code>Teleport</code> 节点现在可靠工作(无需手动归一化)</td>
+</tr>
+<tr>
+<td><strong>Udon# 用户</strong></td>
+<td>显式 <code>player.TeleportTo</code> 现在对单位/非单位四元数都正确处理</td>
+</tr>
+<tr>
+<td><strong>延迟一帧仍是最佳实践</strong></td>
+<td>修复后仍建议 <code>SendCustomEventDelayedFrames(..., 1)</code> 避免碰撞异常</td>
+</tr>
+</tbody>
+</table>
+<h4 id="udon-最佳实践">Udon# 最佳实践</h4>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="csharp"><code><span class="line"><span style="color:#6A737D">// 修复后:显式归一化仍然是好习惯</span></span>
+<span class="line"><span style="color:#F97583">public</span><span style="color:#F97583"> override</span><span style="color:#F97583"> void</span><span style="color:#B392F0"> OnDeserialization</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"><span style="color:#E1E4E8">{</span></span>
+<span class="line"><span style="color:#B392F0">    SendCustomEventDelayedFrames</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">nameof</span><span style="color:#E1E4E8">(DelayedTeleport), </span><span style="color:#79B8FF">1</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">public</span><span style="color:#F97583"> void</span><span style="color:#B392F0"> DelayedTeleport</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"><span style="color:#E1E4E8">{</span></span>
+<span class="line"><span style="color:#6A737D">    // 2026.2.3+ 即使不归一化也能工作,但归一化是良好实践</span></span>
+<span class="line"><span style="color:#B392F0">    Quaternion</span><span style="color:#B392F0"> normalizedRot</span><span style="color:#F97583"> =</span><span style="color:#E1E4E8"> targetRot.normalized;</span></span>
+<span class="line"><span style="color:#E1E4E8">    Networking.LocalPlayer.</span><span style="color:#B392F0">TeleportTo</span><span style="color:#E1E4E8">(targetPos, normalizedRot);</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<h4 id="配合改进">配合改进</h4>
+<blockquote>
+<p>2026.2.3 同时发布:</p>
+<ul>
+<li><strong>Outgoing Queue Drop Policy</strong>(详见 entities/api/networking §Outgoing Queue Drop Policy)</li>
+<li><strong>VRCObjectSync 可靠性增强</strong>(详见 entities/world/scene-components/vrc-objectsync §2026.2.3 可靠性增强)</li>
+<li><strong>Udon Teleport 四元数归一化</strong>(本节)</li>
+</ul>
+</blockquote>
+<hr>
+<hr>
+<h1 id="player-positions--玩家位置旋转追踪速度传送典型场景配方">Player Positions — 玩家位置/旋转/追踪/速度/传送：典型场景配方</h1>
+<h3 id="1-玩家接近-npc-触发对话">1. 玩家接近 NPC 触发对话</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="csharp"><code><span class="line"><span style="color:#F97583">public</span><span style="color:#F97583"> override</span><span style="color:#F97583"> void</span><span style="color:#B392F0"> OnPlayerTriggerEnter</span><span style="color:#E1E4E8">(</span><span style="color:#B392F0">VRCPlayerApi</span><span style="color:#B392F0"> player</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#E1E4E8">{</span></span>
+<span class="line"><span style="color:#F97583">    if</span><span style="color:#E1E4E8"> (player.isLocal)</span></span>
+<span class="line"><span style="color:#E1E4E8">    {</span></span>
+<span class="line"><span style="color:#6A737D">        // 面向 NPC</span></span>
+<span class="line"><span style="color:#B392F0">        Vector3</span><span style="color:#B392F0"> npcForward</span><span style="color:#F97583"> =</span><span style="color:#E1E4E8"> npcTransform.forward;</span></span>
+<span class="line"><span style="color:#B392F0">        Quaternion</span><span style="color:#B392F0"> lookAt</span><span style="color:#F97583"> =</span><span style="color:#E1E4E8"> Quaternion.</span><span style="color:#B392F0">LookRotation</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">-</span><span style="color:#E1E4E8">npcForward); </span><span style="color:#6A737D">// 背对 NPC</span></span>
+<span class="line"><span style="color:#E1E4E8">        </span></span>
+<span class="line"><span style="color:#6A737D">        // 平滑传送并对齐</span></span>
+<span class="line"><span style="color:#E1E4E8">        player.</span><span style="color:#B392F0">TeleportTo</span><span style="color:#E1E4E8">(</span></span>
+<span class="line"><span style="color:#E1E4E8">            player.</span><span style="color:#B392F0">GetPosition</span><span style="color:#E1E4E8">(),</span></span>
+<span class="line"><span style="color:#E1E4E8">            lookAt,</span></span>
+<span class="line"><span style="color:#E1E4E8">            VRC_SceneDescriptor.SpawnOrientation.AlignPlayerWithSpawnPoint,</span></span>
+<span class="line"><span style="color:#79B8FF">            true</span><span style="color:#6A737D"> // 平滑过渡</span></span>
+<span class="line"><span style="color:#E1E4E8">        );</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<h3 id="2-弹跳垫--物理弹起">2. 弹跳垫 — 物理弹起</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="csharp"><code><span class="line"><span style="color:#F97583">public</span><span style="color:#F97583"> override</span><span style="color:#F97583"> void</span><span style="color:#B392F0"> OnPlayerTriggerEnter</span><span style="color:#E1E4E8">(</span><span style="color:#B392F0">VRCPlayerApi</span><span style="color:#B392F0"> player</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#E1E4E8">{</span></span>
+<span class="line"><span style="color:#F97583">    if</span><span style="color:#E1E4E8"> (player.isLocal)</span></span>
+<span class="line"><span style="color:#E1E4E8">    {</span></span>
+<span class="line"><span style="color:#6A737D">        // 弹起 8 米/秒</span></span>
+<span class="line"><span style="color:#E1E4E8">        player.</span><span style="color:#B392F0">SetVelocity</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">new</span><span style="color:#B392F0"> Vector3</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">0</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">8f</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">0</span><span style="color:#E1E4E8">));</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<h3 id="3-hud-跟随玩家头部">3. HUD 跟随玩家头部</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="csharp"><code><span class="line"><span style="color:#F97583">private</span><span style="color:#F97583"> void</span><span style="color:#B392F0"> Update</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"><span style="color:#E1E4E8">{</span></span>
+<span class="line"><span style="color:#F97583">    if</span><span style="color:#E1E4E8"> (player </span><span style="color:#F97583">==</span><span style="color:#79B8FF"> null</span><span style="color:#F97583"> ||</span><span style="color:#F97583"> !</span><span style="color:#E1E4E8">Utilities.</span><span style="color:#B392F0">IsValid</span><span style="color:#E1E4E8">(player)) </span><span style="color:#F97583">return</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span></span>
+<span class="line"><span style="color:#B392F0">    TrackingData</span><span style="color:#B392F0"> headData</span><span style="color:#F97583"> =</span><span style="color:#E1E4E8"> player.</span><span style="color:#B392F0">GetTrackingData</span><span style="color:#E1E4E8">(VRCPlayerApi.TrackingDataType.Head);</span></span>
+<span class="line"><span style="color:#E1E4E8">    hudTransform.position </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> headData.position </span><span style="color:#F97583">+</span><span style="color:#E1E4E8"> headData.rotation </span><span style="color:#F97583">*</span><span style="color:#E1E4E8"> Vector3.forward </span><span style="color:#F97583">*</span><span style="color:#79B8FF"> 0.5f</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">    hudTransform.rotation </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> headData.rotation;</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<h3 id="4-全身追踪玩家朝向">4. 全身追踪玩家朝向</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="csharp"><code><span class="line"><span style="color:#F97583">private</span><span style="color:#F97583"> void</span><span style="color:#B392F0"> Update</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"><span style="color:#E1E4E8">{</span></span>
+<span class="line"><span style="color:#F97583">    if</span><span style="color:#E1E4E8"> (player </span><span style="color:#F97583">==</span><span style="color:#79B8FF"> null</span><span style="color:#F97583"> ||</span><span style="color:#F97583"> !</span><span style="color:#E1E4E8">Utilities.</span><span style="color:#B392F0">IsValid</span><span style="color:#E1E4E8">(player)) </span><span style="color:#F97583">return</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span></span>
+<span class="line"><span style="color:#6A737D">    // 用 GetRotation 而非 AvatarRoot,因为 FBT 用户 AvatarRoot 不旋转</span></span>
+<span class="line"><span style="color:#B392F0">    Quaternion</span><span style="color:#B392F0"> playerFacing</span><span style="color:#F97583"> =</span><span style="color:#E1E4E8"> player.</span><span style="color:#B392F0">GetRotation</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#E1E4E8">    npcIndicator.rotation </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> playerFacing;</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<h3 id="5-跨实例玩家位置恢复">5. 跨实例玩家位置恢复</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="csharp"><code><span class="line"><span style="color:#6A737D">// 加载持久化位置</span></span>
+<span class="line"><span style="color:#F97583">public</span><span style="color:#F97583"> void</span><span style="color:#B392F0"> RestorePosition</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"><span style="color:#E1E4E8">{</span></span>
+<span class="line"><span style="color:#B392F0">    Vector3</span><span style="color:#B392F0"> savedPos</span><span style="color:#F97583"> =</span><span style="color:#B392F0"> LoadPersistedPosition</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#B392F0">    Quaternion</span><span style="color:#B392F0"> savedRot</span><span style="color:#F97583"> =</span><span style="color:#B392F0"> LoadPersistedRotation</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span></span>
+<span class="line"><span style="color:#6A737D">    // 延迟一帧,避免在网络更新中传送</span></span>
+<span class="line"><span style="color:#B392F0">    SendCustomEventDelayedFrames</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">nameof</span><span style="color:#E1E4E8">(DelayedRestore), </span><span style="color:#79B8FF">1</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">public</span><span style="color:#F97583"> void</span><span style="color:#B392F0"> DelayedRestore</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"><span style="color:#E1E4E8">{</span></span>
+<span class="line"><span style="color:#E1E4E8">    Networking.LocalPlayer.</span><span style="color:#B392F0">TeleportTo</span><span style="color:#E1E4E8">(savedPos, savedRot, </span></span>
+<span class="line"><span style="color:#E1E4E8">        VRC_SceneDescriptor.SpawnOrientation.Default,</span></span>
+<span class="line"><span style="color:#79B8FF">        true</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<hr>
+<hr>
+<h1 id="player-positions--玩家位置旋转追踪速度传送与任务规格的差异说明">Player Positions — 玩家位置/旋转/追踪/速度/传送：与任务规格的差异说明</h1>
+<blockquote>
+<p>⚠️ <strong>任务提示与当前官方 API 存在以下差异</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>任务提示</th>
+<th>当前官方 API</th>
+<th>位置</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>GetPosition</code></td>
+<td>✅ 一致</td>
+<td>本文件</td>
+</tr>
+<tr>
+<td><code>GetRotation</code></td>
+<td>✅ 一致</td>
+<td>本文件</td>
+</tr>
+<tr>
+<td><code>IsPlayerGrounded</code></td>
+<td>✅ 一致</td>
+<td>本文件</td>
+</tr>
+<tr>
+<td><code>GetPlayerHeight</code></td>
+<td>❌ 当前文档<strong>未列出</strong></td>
+<td>旧 API,可能已弃用</td>
+</tr>
+<tr>
+<td><code>GetPlayerEyeHeightAsMeters</code></td>
+<td>✅ 仍存在(但归类在 player-avatar-scaling.md)</td>
+<td>player-avatar-scaling.md</td>
+</tr>
+<tr>
+<td><code>GetTrackingData</code></td>
+<td>✅ 一致</td>
+<td>本文件</td>
+</tr>
+<tr>
+<td><code>GetBonePosition</code></td>
+<td>✅ 存在(替代 <code>GetPlayerHeight</code>)</td>
+<td>本文件</td>
+</tr>
+</tbody>
+</table>
+</blockquote>
+<hr>
+<hr>
+<h1 id="player-positions--玩家位置旋转追踪速度传送与底层-api-的对照">Player Positions — 玩家位置/旋转/追踪/速度/传送：与底层 API 的对照</h1>
+<table>
+<thead>
+<tr>
+<th>本文件 API</th>
+<th>底层 <code>player-api.md</code> 摘要</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>GetPosition</code></td>
+<td>✅ 有</td>
+</tr>
+<tr>
+<td><code>GetRotation</code></td>
+<td>❌ 底层未列出</td>
+</tr>
+<tr>
+<td><code>GetTrackingData</code></td>
+<td>✅ 有</td>
+</tr>
+<tr>
+<td><code>TeleportTo</code></td>
+<td>✅ 有</td>
+</tr>
+<tr>
+<td><code>GetVelocity</code> / <code>SetVelocity</code></td>
+<td>❌ 底层未列出</td>
+</tr>
+<tr>
+<td><code>IsPlayerGrounded</code></td>
+<td>❌ 底层未列出</td>
+</tr>
+<tr>
+<td><code>GetBonePosition</code> / <code>GetBoneRotation</code></td>
+<td>❌ 底层未列出</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<hr>
+<h1 id="player-positions--玩家位置旋转追踪速度传送风险与限制">Player Positions — 玩家位置/旋转/追踪/速度/传送：风险与限制</h1>
+<table>
+<thead>
+<tr>
+<th>风险</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>传送时机</strong></td>
+<td>⚠️ 不要在 <code>OnDeserialization</code> 中传送,延迟一帧</td>
+</tr>
+<tr>
+<td><strong>骨骼假设</strong></td>
+<td>不同 Avatar 骨骼位置差异极大,不能基于 Head 骨骼位置假设玩家身高</td>
+</tr>
+<tr>
+<td><strong>FBT 与 AvatarRoot</strong></td>
+<td>全身追踪用户的 <code>AvatarRoot</code> 不随头部旋转,需用 <code>GetRotation</code> 替代</td>
+</tr>
+<tr>
+<td><strong>GetBonePosition 返回 Zero</strong></td>
+<td>骨骼不存在时返回 <code>Vector3.Zero</code>,可能误判为”在原点”</td>
+</tr>
+<tr>
+<td><strong>远程玩家追踪数据</strong></td>
+<td>来自 Avatar 骨骼,不是真实头显数据,延迟更高</td>
+</tr>
+<tr>
+<td><strong>高频读取</strong></td>
+<td><code>GetTrackingData</code> 在 <code>Update</code> 中调用有跨 VM 成本(底层文档已标注)</td>
+</tr>
+<tr>
+<td><strong>SetVelocity 影响 Grounded</strong></td>
+<td>调用后 <code>IsPlayerGrounded</code> 自动变 false,可能误判</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<hr>
+<h1 id="player-positions--玩家位置旋转追踪速度传送性能优化">Player Positions — 玩家位置/旋转/追踪/速度/传送：性能优化</h1>
+<table>
+<thead>
+<tr>
+<th>优化</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>缓存常用引用</strong></td>
+<td>玩家引用、Transform 在 <code>Start</code> 中缓存</td>
+</tr>
+<tr>
+<td><strong>避免每帧 GetTrackingData</strong></td>
+<td>非必要时改用 <code>Transform</code> 缓存(本地玩家可缓存 <code>Camera.main</code>)</td>
+</tr>
+<tr>
+<td><strong>预分配数组</strong></td>
+<td>多玩家操作时配合 <code>VRCPlayerApi[]</code> 缓存</td>
+</tr>
+<tr>
+<td><strong>延迟帧</strong></td>
+<td>传送等副作用操作延迟 1 帧,避免与网络更新冲突</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<hr>
+<h1 id="player-positions--玩家位置旋转追踪速度传送与其他知识库的关系">Player Positions — 玩家位置/旋转/追踪/速度/传送：与其他知识库的关系</h1>
+<table>
+<thead>
+<tr>
+<th>知识库</th>
+<th>关系</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>entities/api/player-api</td>
+<td>底层 API 简略版</td>
+</tr>
+<tr>
+<td>entities/world/udon/players/player-forces</td>
+<td>移动/速度/力相关</td>
+</tr>
+<tr>
+<td>entities/world/udon/players/player-avatar-scaling</td>
+<td><code>GetPlayerEyeHeightAsMeters</code></td>
+</tr>
+<tr>
+<td>entities/world/udon/networking/index</td>
+<td>网络更新事件、传送同步</td>
+</tr>
+<tr>
+<td>entities/world/udon/networking/network-components</td>
+<td><code>OnDeserialization</code> 注意事项</td>
+</tr>
+<tr>
+<td>entities/api/vrc-billboard</td>
+<td>同期预告：原生公告板 API 类（VRCBillboard）</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<hr>
+<h1 id="player-positions--玩家位置旋转追踪速度传送相关页面">Player Positions — 玩家位置/旋转/追踪/速度/传送：相关页面</h1>
+<p>player-forces.md · player-audio.md · player-avatar-scaling.md · getting-players.md · player-collisions.md · VRCBillboard（同期预告）</p>
+<hr> </div> <p class="kb-source-note" data-astro-cid-lvjzyg5v>
+本文由 VRChat 开发知识库自动整理（社区整理  · 可信度 medium ），
+          遇到与手写教程冲突的地方，以官方文档为最高优先级。
+</p> <section class="comments" id="comments" data-astro-cid-lvjzyg5v> <h2 class="comments__title" data-astro-cid-lvjzyg5v>✦ 旅人留言（0）</h2> <p class="comments__empty" id="commentsEmpty" data-astro-cid-lvjzyg5v>
+还没有旅人留言 —— 有疑问就写在下面，站长都会回复。
+</p> <form class="comment-form" id="commentForm" data-target="kb-world-udon-players-player-positions" data-astro-cid-lvjzyg5v> <p class="comment-form__title" data-astro-cid-lvjzyg5v>写下你的留言</p> <input id="cAuthor" maxlength="20" placeholder="昵称（留空则为「旅人」）" data-astro-cid-lvjzyg5v> <textarea id="cBody" maxlength="1000" required placeholder="想问的问题、想说的感谢都可以（最多 1000 字）" data-astro-cid-lvjzyg5v></textarea> <div class="comment-form__actions" data-astro-cid-lvjzyg5v> <button class="btn btn--primary" type="submit" data-astro-cid-lvjzyg5v>发布留言</button> <span class="form-hint" data-astro-cid-lvjzyg5v>留言保存在本站，站长在写作台里能看到</span> <span class="form-msg" id="cMsg" data-astro-cid-lvjzyg5v></span> </div> </form> </section> <nav class="station-nav" aria-label="站间导航" data-astro-cid-lvjzyg5v> <a href="/STELLASTOPVRC/posts/kb-world-udon-players-player-collisions/" data-astro-cid-lvjzyg5v> <span class="dir" data-astro-cid-lvjzyg5v>← 上一站 · 更新的星光</span> <span class="to" data-astro-cid-lvjzyg5v>Player Collisions — 玩家碰撞检测</span> </a> <a href="/STELLASTOPVRC/posts/kb-world-udon-udon-moderation-tool-guidelines/" data-astro-cid-lvjzyg5v> <span class="dir" data-astro-cid-lvjzyg5v>下一站 · 更早的星光 →</span> <span class="to" data-astro-cid-lvjzyg5v>Udon 版主工具开发准则</span> </a> </nav> </div> <aside class="toc" id="toc" hidden> <p class="toc__title">✦ 本页星图</p> <nav id="tocNav" aria-label="文章目录"></nav> </aside> <script type="module">const i=document.querySelector(".prose"),d=document.getElementById("toc"),u=document.getElementById("tocNav"),l=[];if(i&&d&&u){const c=[...i.querySelectorAll("h1, h2, h3")];if(c.length>=3){d.hidden=!1,c.forEach((o,e)=>{o.id||(o.id=`sec-${e}`);const n=document.createElement("a");n.href=`#${o.id}`;const s=(o.textContent??"").replace(/\s+/g," ").trim(),r=s.search(/[：:]/),a=r>=4?s.slice(0,r):s;n.textContent=a.length>40?`${a.slice(0,40)}…`:a,n.title=s,u.appendChild(n),l.push({a:n,h:o})});const t=()=>{let o=l[0];for(const e of l)e.h.getBoundingClientRect().top<=130&&(o=e);for(const e of l)e.a.classList.toggle("is-active",e===o)};addEventListener("scroll",t,{passive:!0}),t()}}document.querySelectorAll(".prose pre").forEach(c=>{const t=document.createElement("button");t.className="code-copy",t.type="button",t.textContent="复制",t.addEventListener("click",async()=>{const o=c.querySelector("code")?.innerText??c.innerText;try{await navigator.clipboard.writeText(o)}catch{const e=document.createElement("textarea");e.value=o,document.body.appendChild(e),e.select(),document.execCommand("copy"),e.remove()}t.textContent="已复制 ✓",t.classList.add("is-ok"),setTimeout(()=>{t.textContent="复制",t.classList.remove("is-ok")},1500)}),c.appendChild(t)});</script> </article>  </main> <footer class="site-footer"> <div class="wrap"> <p class="star-line" aria-hidden="true"> <svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> <svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> </p> <p>星之驿站 StellaStop —— 在虚拟宇宙中，为你保留一座驿站</p> <p class="site-footer__disclaimer">
+该网页目前是测试阶段，仅用于测试，所有内容仅供参考；内容全部为引用互联网当中的信息。
+</p> <p>© 2026 星之驿站 · 由 <a href="https://astro.build">Astro</a> 与星光驱动</p> <p> <a data-desk-login hidden title="写作台：登录 / 注册">登录 / 注册</a> ·
+<a href="/STELLASTOPVRC/announcements/">官方公告</a> ·
+<a href="/STELLASTOPVRC/ai/">问星 AI</a> ·
+<a href="/STELLASTOPVRC/feedback/">旅人留言板</a> </p> </div> </footer> <button class="to-top" id="toTop" aria-label="回到顶部"> <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"> <path d="M12 20V5"></path> <path d="M5.5 11.5 12 5l6.5 6.5"></path> </svg> </button> <script type="module">const e=document.getElementById("toTop");if(e){const t=()=>e.classList.toggle("is-visible",scrollY>480);addEventListener("scroll",t,{passive:!0}),t(),e.addEventListener("click",()=>{const o=matchMedia("(prefers-reduced-motion: reduce)").matches;scrollTo({top:0,behavior:o?"auto":"smooth"})})}</script> <script>(function(){const deskConfigured = "";
+
+      /* 写作台探测（页面尾部执行，DOM 已就绪）：
+         1. 计算写作台地址：站点配置 deskUrl（公网部署时填）> 本机默认 localhost:4322 > 同主机 4322
+         2. 探测 /api/gate/status —— 在线才点亮「登录 / 注册」入口，并复用给验证门横幅
+         3. 不在线则保持隐藏，绝不会把访客拽进内网地址；同时给出一次性「镜像模式」提示 */
+      (function () {
+        var host = location.hostname;
+        var isLocal = host === 'localhost' || host === '127.0.0.1' || host === '[::1]';
+        var desk = deskConfigured ||
+          (isLocal ? 'http://localhost:4322' : location.protocol + '//' + host + ':4322');
+        window.STELLA_DESK = desk;
+
+        function revealLogin() {
+          document.querySelectorAll('[data-desk-login]').forEach(function (a) {
+            a.href = desk + '/admin';
+            a.removeAttribute('hidden');
+          });
+        }
+        function showBanner(css, html, shiftHeader) {
+          var bar = document.createElement('div');
+          bar.style.cssText = css;
+          bar.innerHTML = html;
+          document.body.prepend(bar);
+          if (shiftHeader) {
+            var header = document.querySelector('.site-header');
+            if (header) header.style.marginTop = '42px';
+          }
+        }
+        function hintMirrorMode() {
+          try {
+            if (sessionStorage.getItem('stella-desk-hint')) return;
+            sessionStorage.setItem('stella-desk-hint', '1');
+          } catch (e) { /* 无痕模式等：忽略 */ }
+          var tip = document.createElement('div');
+          tip.style.cssText = 'position:fixed;left:14px;bottom:14px;z-index:9998;max-width:min(92vw,430px);padding:.65rem .9rem;border-radius:12px;background:rgba(18,20,44,.92);border:1px solid rgba(150,142,255,.35);color:#e8e6ff;font-size:.82rem;line-height:1.6;font-family:system-ui,sans-serif;box-shadow:0 8px 30px rgba(0,0,0,.35)';
+          tip.innerHTML = 'ℹ️ 静态镜像模式：登录 / 评论 / AI 等互动功能需要站长写作台在线，当前不可用。' +
+            '<span id="stellaDeskHintClose" style="float:right;cursor:pointer;opacity:.75;font-weight:700;margin-left:.6rem" title="关闭">×</span>';
+          document.body.appendChild(tip);
+          var close = function () { tip.remove(); };
+          tip.querySelector('#stellaDeskHintClose').addEventListener('click', close);
+          setTimeout(close, 9000);
+        }
+
+        try {
+          var ctrl = new AbortController();
+          var timer = setTimeout(function () { ctrl.abort(); }, 2500);
+          fetch(desk + '/api/gate/status', { credentials: 'include', signal: ctrl.signal })
+            .then(function (r) { return r.ok ? r.json() : null; })
+            .then(function (d) {
+              clearTimeout(timer);
+              if (!d) throw new Error('desk-offline');
+              window.STELLA_DESK_OK = true;
+              revealLogin();
+              if (d.regionBlocked) {
+                showBanner(
+                  'position:fixed;top:0;left:0;right:0;z-index:9999;padding:1.2rem;text-align:center;background:#1a0a0a;color:#ff9ed2;font-size:.95rem;border-bottom:2px solid #ff4d6d;font-family:system-ui,sans-serif',
+                  '⛔ 你所在的地区（' + (d.regionCountry || '未知') + '）暂不开放访问。',
+                  false
+                );
+                return;
+              }
+              if (d.enabled && !d.passed) {
+                showBanner(
+                  'position:fixed;top:0;left:0;right:0;z-index:9999;padding:0.7rem;text-align:center;background:linear-gradient(94deg,rgba(143,127,247,.25),rgba(98,200,245,.18));border-bottom:1px solid rgba(150,142,255,.3);color:#f0efff;font-size:.88rem;font-family:system-ui,sans-serif',
+                  '🔒 本站启用了安全验证 —— <a href="' + desk + '/gate?next=' + encodeURIComponent(location.href) + '" style="color:#ffd98e;font-weight:700;text-decoration:underline">点击完成验证</a>，通过后即可使用全部功能（30 天免验）。',
+                  true
+                );
+              }
+            })
+            .catch(function () {
+              clearTimeout(timer);
+              window.STELLA_DESK_OK = false;
+              hintMirrorMode();
+            });
+        } catch (e) { /* 忽略 */ }
+      })();
+    })();</script> </body> </html> <script type="module">const m=document.getElementById("commentForm"),s=document.getElementById("cMsg"),u=`${location.protocol}//${location.hostname}:4322/api/message`;function r(e,t=!1){s&&(s.textContent=e,s.classList.toggle("is-err",t),s.classList.toggle("is-ok",!t))}function y(){const e=new Date,t=n=>String(n).padStart(2,"0");return`${e.getFullYear()}-${t(e.getMonth()+1)}-${t(e.getDate())}`}function f(e){let t=7;for(const n of e)t=(t*31+n.charCodeAt(0))%360;return t}function g(e,t){const n=document.createElement("li");n.className="comment",n.innerHTML=`
+      <span class="comment__avatar"></span>
+      <div class="comment__bubble">
+        <div class="comment__head">
+          <span class="comment__name"></span>
+          <time class="comment__date">${y()}</time>
+        </div>
+        <p class="comment__body"></p>
+      </div>`;const o=n.querySelector(".comment__avatar");return o.style.setProperty("--h",String(f(e))),o.textContent=e.slice(0,1),n.querySelector(".comment__name").textContent=e,n.querySelector(".comment__body").textContent=t,n}m?.addEventListener("submit",async e=>{e.preventDefault();const t=document.getElementById("cBody").value.trim();if(!t)return r("留言内容不能为空哦",!0);const n=document.getElementById("cAuthor").value.trim()||"旅人",o=m.querySelector("button");o&&(o.disabled=!0);try{const c=await fetch(u,{credentials:"include",method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({target:m.dataset.target,kind:"comment",author:n,body:t})}),d=await c.json().catch(()=>({}));if(!c.ok)throw new Error(d.error||`发送失败（${c.status}）`);const l=document.querySelector(".comment-list");l&&l.appendChild(g(n,t)),document.getElementById("commentsEmpty")?.remove(),document.getElementById("cBody").value="",r("留言已发布，感谢支持 ✦");const a=document.querySelector(".comments__title"),i=a?.textContent?.match(/（(\d+)）/);a&&i&&(a.textContent=a.textContent.replace(/（\d+）/,`（${Number(i[1])+1}）`))}catch(c){r(c instanceof TypeError?"写作台没在运行，暂时收不到留言 —— 双击「启动博客.bat」就好":c.message,!0)}finally{o&&(o.disabled=!1)}});</script> 

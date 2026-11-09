@@ -1,0 +1,682 @@
+<!DOCTYPE html><html lang="zh-CN"> <head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="generator" content="Astro v5.18.2"><meta name="description" content="转换方法: 登录 VRChat 网站创建新的正式账户 → 通过 Settings → 转换"><meta name="theme-color" content="#070a1c"><meta property="og:title" content="Avatar 上传入门指南(2026) · 星之驿站 StellaStop"><meta property="og:description" content="转换方法: 登录 VRChat 网站创建新的正式账户 → 通过 Settings → 转换"><meta property="og:type" content="website"><meta name="twitter:card" content="summary"><link rel="icon" type="image/svg+xml" href="/STELLASTOPVRC/favicon.svg"><script>
+      // 在渲染前恢复主题与特效档位，避免闪一下默认状态
+      try {
+        document.documentElement.dataset.theme =
+          localStorage.getItem('stella-theme') || 'nebula';
+        document.documentElement.dataset.fx =
+          localStorage.getItem('stella-fx') || 'standard';
+      } catch {
+        /* 隐私模式读不到就算了 */
+      }
+    </script><link rel="stylesheet" href="/STELLASTOPVRC/custom-vars.css"><title>Avatar 上传入门指南(2026) · 星之驿站 StellaStop</title><link rel="stylesheet" href="/STELLASTOPVRC/_astro/about.Bgh6wcGl.css">
+<style>.post-head__meta[data-astro-cid-lvjzyg5v]{color:var(--ink-faint);font-family:var(--font-mono);font-size:.82rem}.post-head[data-astro-cid-lvjzyg5v] .chip-row[data-astro-cid-lvjzyg5v]{margin-top:1rem}.kb-source-note[data-astro-cid-lvjzyg5v]{max-width:760px;margin:2.2rem auto 0;font-size:.82rem;color:var(--ink-faint);border-top:1px dashed var(--line);padding-top:1rem}
+</style></head> <body> <div class="site-notice" id="siteNotice"> <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> <span class="site-notice__text">欢迎来到星之驿站！</span> <button class="site-notice__close" id="noticeClose" type="button" aria-label="关闭公告">
+×
+</button> </div> <a class="skip-link" href="#main">跳到主要内容</a> <canvas id="starfield" aria-hidden="true" data-astro-cid-ra7sfcwn></canvas> <div class="fx-aurora fx-aurora--a" aria-hidden="true" data-astro-cid-ra7sfcwn></div> <div class="fx-aurora fx-aurora--b" aria-hidden="true" data-astro-cid-ra7sfcwn></div>  <script type="module">const u=document.getElementById("starfield");if(u){let F=function(){const n=Math.random();return n<.1?"gold":n<.42?"blue":"white"},v=function(){const n=Math.min(window.devicePixelRatio||1,2);s=window.innerWidth,d=window.innerHeight,u.width=s*n,u.height=d*n,u.style.width=`${s}px`,u.style.height=`${d}px`,t.setTransform(n,0,0,n,0,0);const e=Math.min(190,Math.round(s*d/8500));l=Array.from({length:e},()=>({x:Math.random()*s,y:Math.random()*d,r:r(.4,1.7),base:r(.25,.8),amp:r(.12,.4),speed:r(6e-4,.0022),phase:r(0,Math.PI*2),c:F()})),C=Array.from({length:26},()=>({x:Math.random()*s,y:Math.random()*d,r:r(.9,2.4),vx:r(-.006,.006),vy:r(-.02,-.006),base:r(.2,.5),speed:r(8e-4,.002),phase:r(0,Math.PI*2),c:Math.random()<.5?"gold":"violet"})),c==="off"&&m(0,!0)},D=function(n){const e=Math.random()<.5?1:-1,o=r(Math.PI/7,Math.PI/5),a=r(.45,.75);y.push({x:r(s*.15,s*.85),y:r(-20,d*.3),vx:Math.cos(o)*a*e,vy:Math.sin(o)*a,born:n,life:r(750,1050),len:r(100,170)})},S=function(n){y=y.filter(e=>n-e.born<e.life);for(const e of y){const o=(n-e.born)/e.life,a=e.x+e.vx*(n-e.born),i=e.y+e.vy*(n-e.born),f=o<.15?o/.15:o>.7?(1-o)/.3:1,h=Math.hypot(e.vx,e.vy),x=e.vx/h,g=e.vy/h,b=t.createLinearGradient(a,i,a-x*e.len,i-g*e.len);b.addColorStop(0,`rgba(236,242,255,${(.85*f).toFixed(3)})`),b.addColorStop(1,"rgba(236,242,255,0)"),t.strokeStyle=b,t.lineWidth=1.6,t.lineCap="round",t.beginPath(),t.moveTo(a,i),t.lineTo(a-x*e.len,i-g*e.len),t.stroke()}},B=function(){let o=0;t.lineWidth=.7;for(let a=0;a<l.length&&o<26;a++)for(let i=a+1;i<l.length&&o<26;i++){const f=l[a].x-l[i].x,h=l[a].y-l[i].y,x=f*f+h*h;if(x<16900){const g=(1-Math.sqrt(x)/130)*.17;t.strokeStyle=`rgba(178,170,255,${g.toFixed(3)})`,t.beginPath(),t.moveTo(l[a].x,l[a].y),t.lineTo(l[i].x,l[i].y),t.stroke(),o++}}},X=function(n){for(const e of C){e.x+=e.vx*16,e.y+=e.vy*16,e.y<-12&&(e.y=d+10),e.x<-12&&(e.x=s+10),e.x>s+12&&(e.x=-10);const o=Math.max(.05,e.base+.25*Math.sin(n*e.speed+e.phase)),[a,i,f]=A[e.c];t.beginPath(),t.arc(e.x,e.y,e.r,0,7),t.shadowBlur=9,t.shadowColor=`rgba(${a},${i},${f},0.9)`,t.fillStyle=`rgba(${a},${i},${f},${o.toFixed(3)})`,t.fill()}t.shadowBlur=0},m=function(n,e=!1){t.clearRect(0,0,s,d);for(const o of l){const a=c==="off"?o.base:Math.max(.05,o.base+o.amp*Math.sin(n*o.speed+o.phase)),[i,f,h]=A[o.c];t.beginPath(),t.arc(o.x,o.y,o.r,0,7),o.r>1.25?(t.shadowBlur=7,t.shadowColor=`rgba(${i},${f},${h},0.85)`):t.shadowBlur=0,t.fillStyle=`rgba(${i},${f},${h},${a.toFixed(3)})`,t.fill()}if(t.shadowBlur=0,c!=="off"&&!e){c==="fancy"&&(B(),X(n));const o=c==="fancy"?r(2600,6e3):r(4200,9500);n>P&&(D(n),P=n+o),S(n)}},$=function(n){m(n),M=requestAnimationFrame($)},p=function(){if(c==="off"){m(0,!0);return}cancelAnimationFrame(M),M=requestAnimationFrame($)},w=function(){cancelAnimationFrame(M),t.clearRect(0,0,s,d),m(0,!0)};const t=u.getContext("2d"),k=matchMedia("(prefers-reduced-motion: reduce)").matches,A={white:[240,240,255],blue:[150,215,250],gold:[255,218,150],violet:[178,170,255]};let s=0,d=0,l=[],C=[],y=[],P=2500,M=0,c=document.documentElement.dataset.fx||"standard";k&&(c="off");const r=(n,e)=>n+Math.random()*(e-n);v(),addEventListener("resize",v),document.addEventListener("stella-fx-change",n=>{c=n.detail,c==="off"?w():p()}),c==="off"?m(0,!0):(p(),document.addEventListener("visibilitychange",()=>{document.hidden?w():p()}))}</script> <header class="site-header"> <div class="wrap site-header__inner"> <a class="logo" href="/STELLASTOPVRC/"> <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> <span>星之驿站</span> <span class="logo__romaji">StellaStop</span> </a> <div class="header-right"> <nav class="site-nav" aria-label="站内导航"> <a href="/STELLASTOPVRC/"> 首页 </a><a href="/STELLASTOPVRC/start/"> 新手 </a><a href="/STELLASTOPVRC/posts/"> 教程 </a><a href="/STELLASTOPVRC/videos/"> 视频 </a><a href="/STELLASTOPVRC/resources/"> 资源 </a><a href="/STELLASTOPVRC/booth/"> Booth </a><a href="/STELLASTOPVRC/announcements/"> 公告 </a><a href="/STELLASTOPVRC/ai/"> 问星 </a><a href="/STELLASTOPVRC/changelog/"> 更新日志 </a><a href="/STELLASTOPVRC/about/"> 关于 </a> </nav> <a class="login-link" data-desk-login hidden title="写作台：登录 / 注册后可发教程、传资源">
+登录 / 注册
+</a> <div class="theme-switch"> <button class="theme-switch__btn" id="themeBtn" type="button" aria-haspopup="listbox" aria-expanded="false" aria-label="切换主题配色" title="切换主题配色"> <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"> <path d="M12 3a9 9 0 1 0 9 9c0-1.2-1-2-2.2-2H17a2 2 0 0 1-2-2V6.2C15 5 14.2 4 13 4.4A9 9 0 0 0 12 3Z"></path> <circle cx="7.5" cy="11.5" r="1" fill="currentColor" stroke="none"></circle> <circle cx="10" cy="7.5" r="1" fill="currentColor" stroke="none"></circle> <circle cx="15" cy="7" r="1" fill="currentColor" stroke="none"></circle> </svg> </button> <div class="theme-pop" id="themePop" role="listbox" aria-label="选择主题" hidden> <button class="theme-opt" type="button" role="option" data-theme-value="nebula" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#8f7ff7"></span><span class="dot" style="background:#62c8f5"></span><span class="dot" style="background:#ffd98e"></span> </span> <span class="theme-opt__name">星云 · 蓝紫</span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt" type="button" role="option" data-theme-value="sakura" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#ff8fc7"></span><span class="dot" style="background:#c79bff"></span><span class="dot" style="background:#ffd08e"></span> </span> <span class="theme-opt__name">樱语 · 粉紫</span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt" type="button" role="option" data-theme-value="miku" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#2ed3c2"></span><span class="dot" style="background:#6ea8ff"></span><span class="dot" style="background:#ffe08e"></span> </span> <span class="theme-opt__name">葱色 · 青绿</span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt" type="button" role="option" data-theme-value="ember" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#ffb35c"></span><span class="dot" style="background:#ff7e6b"></span><span class="dot" style="background:#ffd98e"></span> </span> <span class="theme-opt__name">暮金 · 暖橙</span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt" type="button" role="option" data-theme-value="dawn" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#6a5ce8"></span><span class="dot" style="background:#e0568f"></span><span class="dot" style="background:#b8821e"></span> </span> <span class="theme-opt__name">晨星 · 浅色</span> <span class="theme-opt__mark">✦</span> </button> </div> </div> <script type="module">const a=document.getElementById("themeBtn"),n=document.getElementById("themePop");function s(c){document.documentElement.dataset.theme=c;try{localStorage.setItem("stella-theme",c)}catch{}const e=getComputedStyle(document.documentElement).getPropertyValue("--bg-deep").trim();document.querySelector('meta[name="theme-color"]')?.setAttribute("content",e||"#070a1c"),document.querySelectorAll(".theme-opt").forEach(t=>{const d=t.dataset.themeValue===c;t.classList.toggle("is-active",d),t.setAttribute("aria-selected",String(d))})}if(a&&n){const c=document.documentElement.dataset.theme||"nebula";document.querySelectorAll(".theme-opt").forEach(e=>{const t=e.dataset.themeValue===c;e.classList.toggle("is-active",t),e.setAttribute("aria-selected",String(t))}),a.addEventListener("click",e=>{e.stopPropagation();const t=n.hidden;n.hidden=!t,a.setAttribute("aria-expanded",String(t))}),document.addEventListener("click",e=>{!n.hidden&&!e.target.closest(".theme-switch")&&(n.hidden=!0,a.setAttribute("aria-expanded","false"))}),document.addEventListener("keydown",e=>{e.key==="Escape"&&!n.hidden&&(n.hidden=!0,a.setAttribute("aria-expanded","false"),a.focus())}),n.addEventListener("click",e=>{const t=e.target.closest(".theme-opt");t&&(s(t.dataset.themeValue??"nebula"),n.hidden=!0,a.setAttribute("aria-expanded","false"))})}</script> <div class="theme-switch fx-switch"> <button class="theme-switch__btn" id="fxBtn" type="button" aria-haspopup="listbox" aria-expanded="false" aria-label="背景特效设置" title="背景特效设置"> <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"> <path d="M5 3v4M3 5h4M6.5 17.5v3M5 19h3"></path> <path d="M14.5 4.5 16 9l4.5 1.5L16 12l-1.5 4.5L13 12l-4.5-1.5L13 9l1.5-4.5Z"></path> </svg> </button> <div class="theme-pop" id="fxPop" role="listbox" aria-label="背景特效" hidden> <button class="theme-opt fx-opt" type="button" role="option" data-fx-value="off" aria-selected="false"> <span class="fx-opt__body"> <span class="fx-opt__name">关闭特效</span> <span class="fx-opt__hint">最省电</span> </span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt fx-opt" type="button" role="option" data-fx-value="standard" aria-selected="false"> <span class="fx-opt__body"> <span class="fx-opt__name">标准</span> <span class="fx-opt__hint">闪烁星空 + 流星</span> </span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt fx-opt" type="button" role="option" data-fx-value="fancy" aria-selected="false"> <span class="fx-opt__body"> <span class="fx-opt__name">华丽</span> <span class="fx-opt__hint">追加极光 / 星座 / 光尘</span> </span> <span class="theme-opt__mark">✦</span> </button> </div> </div> <script type="module">const n=document.getElementById("fxBtn"),a=document.getElementById("fxPop");function s(d){document.documentElement.dataset.fx=d;try{localStorage.setItem("stella-fx",d)}catch{}document.querySelectorAll("#fxPop .fx-opt").forEach(t=>{const e=t.dataset.fxValue===d;t.classList.toggle("is-active",e),t.setAttribute("aria-selected",String(e))}),document.dispatchEvent(new CustomEvent("stella-fx-change",{detail:d}))}if(n&&a){const d=document.documentElement.dataset.fx||"standard";document.querySelectorAll("#fxPop .fx-opt").forEach(t=>{const e=t.dataset.fxValue===d;t.classList.toggle("is-active",e),t.setAttribute("aria-selected",String(e))}),n.addEventListener("click",t=>{t.stopPropagation();const e=a.hidden;a.hidden=!e,n.setAttribute("aria-expanded",String(e))}),document.addEventListener("click",t=>{!a.hidden&&!t.target.closest(".fx-switch")&&(a.hidden=!0,n.setAttribute("aria-expanded","false"))}),document.addEventListener("keydown",t=>{t.key==="Escape"&&!a.hidden&&(a.hidden=!0,n.setAttribute("aria-expanded","false"),n.focus())}),a.addEventListener("click",t=>{const e=t.target.closest(".fx-opt");e&&(s(e.dataset.fxValue??"standard"),a.hidden=!0,n.setAttribute("aria-expanded","false"))})}</script> </div> </div> </header> <main id="main">  <article class="wrap post-layout" data-astro-cid-lvjzyg5v> <div class="post-main page-fade" data-astro-cid-lvjzyg5v> <header class="post-head" data-astro-cid-lvjzyg5v> <a class="crumb" href="/STELLASTOPVRC/posts/" data-astro-cid-lvjzyg5v>← 返回教程档案</a> <div class="post-head__meta" style="--accent:var(--ink-dim)" data-astro-cid-lvjzyg5v> <span class="badge" data-cat="Avatar 虚拟形象" data-astro-cid-lvjzyg5v>Avatar 虚拟形象</span> <time datetime="2026-07-04" data-astro-cid-lvjzyg5v>2026-07-04</time> <span class="post-head__reading" data-astro-cid-lvjzyg5v>⏱ 约 26 分钟</span>  </div> <h1 class="post-head__title" data-astro-cid-lvjzyg5v>Avatar 上传入门指南(2026)</h1> <p class="post-head__lead" data-astro-cid-lvjzyg5v>转换方法: 登录 VRChat 网站创建新的正式账户 → 通过 Settings → 转换</p> <div class="chip-row" data-astro-cid-lvjzyg5v> <a class="chip" href="/STELLASTOPVRC/posts/?tag=%E7%9F%A5%E8%AF%86%E5%BA%93" data-astro-cid-lvjzyg5v> 知识库 </a><a class="chip" href="/STELLASTOPVRC/posts/?tag=avatar" data-astro-cid-lvjzyg5v> avatar </a> </div> </header> <div class="prose" data-astro-cid-lvjzyg5v> <h1 id="avatar-上传入门指南2026">Avatar 上传入门指南(2026)</h1>
+<blockquote>
+<p><strong>适用</strong>: VRChat Avatar 创作者新手(从 0 到可上传)
+<strong>来源</strong>: VRCLibrary “How to Upload an Avatar” (Iconoclass) + VRChat 官方文档
+<strong>状态</strong>: 2026-07-04 v1.0
+<strong>P 等级</strong>: P1 (结合 VRChat 官方 + Unity 官方 + 社区验证)</p>
+</blockquote>
+<hr>
+<h2 id="1-前置条件">§1 前置条件</h2>
+<h3 id="11-系统要求">1.1 系统要求</h3>
+<ul>
+<li><strong>Windows 10/11 64-bit</strong>(VCC 仅支持完整功能)</li>
+<li>Mac/Linux 用户: VCC CLI 有部分功能, 但不完整</li>
+</ul>
+<h3 id="12-vrchat-账户类型-️-关键">1.2 VRChat 账户类型 ⚠️ 关键</h3>
+<blockquote>
+<p>[FACT] <strong>来源</strong>: <a href="https://docs.vrchat.com/docs/frequently-asked-questions">https://docs.vrchat.com/docs/frequently-asked-questions</a>
+<strong>VRChat 官方明确</strong>: “Steam, Oculus and Viveport Accounts will never gain the ability to upload content.”</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>账户类型</th>
+<th>是否可上传</th>
+<th>识别方法</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>VRChat 正式账户</strong></td>
+<td>✅ 可</td>
+<td>名字后<strong>不会</strong>带 4 个随机字母和数字</td>
+</tr>
+<tr>
+<td>Steam 账户</td>
+<td>❌ 不可</td>
+<td>需转换为正式账户</td>
+</tr>
+<tr>
+<td>Oculus 账户</td>
+<td>❌ 不可</td>
+<td>需转换为正式账户</td>
+</tr>
+<tr>
+<td>Viveport 账户</td>
+<td>❌ 不可</td>
+<td>需转换为正式账户</td>
+</tr>
+</tbody>
+</table>
+<p><strong>转换方法</strong>: 登录 VRChat 网站创建新的正式账户 → 通过 Settings → 转换</p>
+<h3 id="13-信任等级">1.3 信任等级</h3>
+<blockquote>
+<p>[FACT] <strong>来源</strong>: <a href="https://help.vrchat.com/hc/en-us/articles/360062658813">https://help.vrchat.com/hc/en-us/articles/360062658813</a> + <a href="https://wiki.vrchat.com/wiki/Trust_Rank">https://wiki.vrchat.com/wiki/Trust_Rank</a>
+<strong>官方明确</strong>: “In order to upload content or use avatar pedestals in private worlds, the New User rank is required.”</p>
+</blockquote>
+<ul>
+<li>必须是 <strong>New User</strong>(蓝色身份)及以上</li>
+<li>Visitor(访客)等级<strong>不能</strong>上传任何内容</li>
+<li>升级方法: 多在 VRChat 中活动、交朋友、遵守社区准则</li>
+</ul>
+<p>详见: <a href="/STELLASTOPVRC/posts/kb-avatar-trust-rank/">trust-rank</a></p>
+<h3 id="14-工程管理建议创作者最佳实践">1.4 工程管理建议(创作者最佳实践)</h3>
+<blockquote>
+<p>[COMMUNITY] <strong>来源</strong>: VRCLibrary How to Upload an Avatar + 社区经验</p>
+</blockquote>
+<ul>
+<li><strong>每 Avatar 独立 Unity 项目</strong>: 崩溃时只丢失一个 Avatar 的进度</li>
+<li><strong>存储在容量最大的硬盘</strong>: Unity 项目可能非常大</li>
+<li><strong>专用文件夹结构</strong>: <code>VRChat Projects/&#x3C;AvatarName>/</code></li>
+</ul>
+<hr>
+<h2 id="2-工具准备">§2 工具准备</h2>
+<h3 id="21-vcc-下载与安装">2.1 VCC 下载与安装</h3>
+<blockquote>
+<p>[FACT] <strong>来源</strong>: <a href="https://vcc.docs.vrchat.com/">https://vcc.docs.vrchat.com/</a></p>
+</blockquote>
+<ul>
+<li><strong>官方下载</strong>: <a href="https://vrchat.com/home/download">https://vrchat.com/home/download</a></li>
+<li><strong>直接下载</strong>: <a href="https://vrchat.com/download/vcc">https://vrchat.com/download/vcc</a></li>
+<li><strong>安装路径</strong>: <code>%LOCALAPPDATA%\Programs</code>(默认)</li>
+<li><strong>平台支持</strong>: Windows 10/11 64-bit 完整功能, Mac/Linux CLI 部分</li>
+</ul>
+<h3 id="22-unity-版本绑定-️-关键警告">2.2 Unity 版本绑定 ⚠️ 关键警告</h3>
+<blockquote>
+<p>[FACT] <strong>来源</strong>: <a href="https://creators.vrchat.com/sdk/upgrade/current-unity-version/">https://creators.vrchat.com/sdk/upgrade/current-unity-version/</a>
+<strong>官方明确</strong>: “Upgrading your version will result in content not loading once uploaded to VRChat - make sure to stay on our recommended version.”</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>项目</th>
+<th>推荐值</th>
+<th>警告</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Unity 版本</strong></td>
+<td><strong>2022.3.22f1</strong>(唯一)</td>
+<td>⚠️ 升级会导致内容无法加载</td>
+</tr>
+<tr>
+<td><strong>2025-10 安全漏洞</strong></td>
+<td><strong>不适用 VRChat 项目</strong></td>
+<td>留在 2022.3.22f1 是安全的</td>
+</tr>
+<tr>
+<td><strong>Unity Hub 警告</strong></td>
+<td>可安全忽略</td>
+<td>不影响 VRChat 项目</td>
+</tr>
+</tbody>
+</table>
+<h3 id="23-vcc-创建项目流程">2.3 VCC 创建项目流程</h3>
+<ol>
+<li>打开 VCC → 自动检测 Unity 是否安装</li>
+<li><strong>New</strong> → <strong>Avatar</strong> → 输入项目名 + 位置</li>
+<li><strong>Create</strong> → VCC 自动配置 Unity 项目</li>
+<li>在 VCC 项目列表中点击 <strong>Open Project</strong> 打开</li>
+</ol>
+<hr>
+<h2 id="3-资源导入">§3 资源导入</h2>
+<h3 id="31-avatar-资源形式分类">3.1 Avatar 资源形式分类</h3>
+<blockquote>
+<p>[COMMUNITY] <strong>来源</strong>: VRCLibrary + 整合</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>资源形式</th>
+<th>图标/特征</th>
+<th>处理方式</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>设置好的场景</strong></td>
+<td>含已配置 Avatar 的 <code>.unity</code></td>
+<td>直接使用该场景</td>
+</tr>
+<tr>
+<td><strong>Prefab</strong></td>
+<td>蓝色方框图标</td>
+<td>拖入场景即可</td>
+</tr>
+<tr>
+<td><strong>裸 FBX + 纹理</strong></td>
+<td>仅模型 + 材质</td>
+<td>需手动配置(见 §4)</td>
+</tr>
+<tr>
+<td><strong>完全无场景</strong></td>
+<td>无文件</td>
+<td>右键 <code>Create > Scene</code> 创建</td>
+</tr>
+</tbody>
+</table>
+<h3 id="32-资源导入-3-种方式">3.2 资源导入 3 种方式</h3>
+<ol>
+<li><strong>拖拽法</strong>: 从 Windows 资源管理器拖到 Project 窗口</li>
+<li><strong>菜单法</strong>: <code>Assets > Import custom Assets > Custom package</code></li>
+<li><strong>VCC 仓库法</strong>: 通过 VPM 列表一键安装(推荐)</li>
+</ol>
+<h3 id="33-avatar-sdk-内置示例">3.3 Avatar SDK 内置示例</h3>
+<blockquote>
+<p>[FACT] <strong>来源</strong>: VRChat SDK 包结构
+VRChat Avatar SDK 自带 <strong>Physbones 示例 Avatar</strong></p>
+</blockquote>
+<ul>
+<li>路径: VCC 左下角 → <code>packages</code> → <code>VRChat</code> → <code>Examples</code> → <code>Physbones</code></li>
+<li>用途: <strong>作为上传测试的标准参考 Avatar</strong></li>
+</ul>
+<h3 id="34-免费-avatar-资源">3.4 免费 Avatar 资源</h3>
+<blockquote>
+<p>[FACT] <strong>来源</strong>: 多源验证(详见 <a href="/STELLASTOPVRC/posts/kb-avatar-free-avatar-resources/">free-avatar-resources</a>)</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>资源</th>
+<th>协议</th>
+<th>数量</th>
+<th>URL</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SCSS Wiki Avatar Models</td>
+<td>(各模型独立)</td>
+<td>多</td>
+<td><a href="https://gitlab.com/s-ilent/SCSS/-/wikis/Other/Avatar-Models">https://gitlab.com/s-ilent/SCSS/-/wikis/Other/Avatar-Models</a></td>
+</tr>
+<tr>
+<td>100Avatars (ToxSam)</td>
+<td>CC0</td>
+<td>300+</td>
+<td><a href="https://github.com/ToxSam/osa-gallery">https://github.com/ToxSam/osa-gallery</a></td>
+</tr>
+<tr>
+<td>VRChat Asset Browser</td>
+<td>(各资源独立)</td>
+<td>数百</td>
+<td><a href="https://github.com/vanquish3r/vrchat-asset-browser">https://github.com/vanquish3r/vrchat-asset-browser</a></td>
+</tr>
+<tr>
+<td>Public Use Permissions Avatars</td>
+<td>(各模型独立)</td>
+<td>持续更新</td>
+<td><a href="https://gitlab.com/vrchat6114543/public-use-permissions-avatars">https://gitlab.com/vrchat6114543/public-use-permissions-avatars</a></td>
+</tr>
+</tbody>
+</table>
+<p>⚠️ <strong>使用前务必检查每个 Avatar 的 TOS/TOU</strong></p>
+<p>详见: <a href="/STELLASTOPVRC/posts/kb-avatar-free-avatar-resources/">free-avatar-resources</a>(独立文档)</p>
+<hr>
+<h2 id="4-fbx-骨骼配置humanoid">§4 FBX 骨骼配置(Humanoid)</h2>
+<h3 id="41-rig--humanoid">4.1 Rig = Humanoid</h3>
+<blockquote>
+<p>[FACT] <strong>来源</strong>: <a href="https://creators.vrchat.com/avatars/rig-requirements/">https://creators.vrchat.com/avatars/rig-requirements/</a></p>
+</blockquote>
+<ol>
+<li>选中 FBX 文件</li>
+<li>Inspector → <strong>Rig</strong> 选项卡</li>
+<li><strong>Animation Type</strong> → <strong>Humanoid</strong></li>
+<li>点击 <strong>Configure</strong> 进入骨骼映射</li>
+</ol>
+<h3 id="42-vrchat-必需骨骼清单-️-关键">4.2 VRChat 必需骨骼清单 ⚠️ 关键</h3>
+<blockquote>
+<p>[FACT] <strong>来源</strong>: <a href="https://creators.vrchat.com/avatars/rig-requirements/">https://creators.vrchat.com/avatars/rig-requirements/</a></p>
+</blockquote>
+<h4 id="必需映射vrchat-强制">必需映射(VRChat 强制)</h4>
+<table>
+<thead>
+<tr>
+<th>骨骼</th>
+<th>Body 选项卡位置</th>
+<th>必需性</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Pelvis</strong></td>
+<td>Body</td>
+<td>✅ 必需</td>
+</tr>
+<tr>
+<td><strong>Spine</strong></td>
+<td>Body</td>
+<td>✅ 必需</td>
+</tr>
+<tr>
+<td><strong>Chest</strong></td>
+<td>Body</td>
+<td>✅ 必需(Mecanim 可选, VRChat 必需)</td>
+</tr>
+<tr>
+<td><strong>Neck</strong></td>
+<td>Head</td>
+<td>✅ 必需(Mecanim 可选, VRChat 必需)</td>
+</tr>
+<tr>
+<td><strong>Left/Right Shoulders</strong></td>
+<td>Left/Right Arm</td>
+<td>✅ 必需</td>
+</tr>
+<tr>
+<td><strong>Head</strong></td>
+<td>Head</td>
+<td>✅ 必需</td>
+</tr>
+<tr>
+<td><strong>Left/Right Hands</strong></td>
+<td>Left/Right Arm</td>
+<td>✅ 必需</td>
+</tr>
+<tr>
+<td><strong>Left/Right Feet</strong></td>
+<td>Left/Right Leg</td>
+<td>✅ 必需</td>
+</tr>
+</tbody>
+</table>
+<h4 id="可选不要映射">可选/不要映射</h4>
+<table>
+<thead>
+<tr>
+<th>骨骼</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Upper Chest</strong></td>
+<td>❌ <strong>不要映射</strong>!会导致 IK 问题</td>
+</tr>
+<tr>
+<td><strong>Toes(脚趾)</strong></td>
+<td>⚪ 可选</td>
+</tr>
+<tr>
+<td><strong>Jaw(下巴)</strong></td>
+<td>⚠️ 见 §4.4(不应分配)</td>
+</tr>
+</tbody>
+</table>
+<h4 id="父级关系ik-工作前提">父级关系(IK 工作前提)</h4>
+<blockquote>
+<p>[FACT] <strong>官方明确</strong>: “your shoulder bones… must be direct children of your chest bone… Also, the neck bone… must also be a direct child of the Chest.”</p>
+</blockquote>
+<ul>
+<li><strong>Shoulders</strong> 必须是 <strong>Chest</strong> 的直接子级</li>
+<li><strong>Neck</strong> 必须是 <strong>Chest</strong> 的直接子级</li>
+</ul>
+<h3 id="43-chest-手动配置">4.3 Chest 手动配置</h3>
+<p>如果模型未自动配置 Chest:</p>
+<ol>
+<li>在 Chest 旁边的框中</li>
+<li>单击圆圈(打开骨骼选择器)</li>
+<li>搜索 <strong>“chest”</strong></li>
+<li>选中匹配骨骼 → 应用</li>
+</ol>
+<h3 id="44-head-骨骼配置--jaw-取消-️-关键">4.4 Head 骨骼配置 + Jaw 取消 ⚠️ 关键</h3>
+<blockquote>
+<p>[FACT] <strong>来源</strong>: <a href="http://vrchat.wikidot.com/tutorial:avatars:unity-upload-tutorial">http://vrchat.wikidot.com/tutorial:avatars:unity-upload-tutorial</a> + VRChat Rig Requirements</p>
+</blockquote>
+<h4 id="head-必须分配的骨骼">Head 必须分配的骨骼</h4>
+<ul>
+<li>除 <strong>Jaw</strong> 外的所有 Head 骨骼都应被分配</li>
+<li><strong>Neck</strong> 必填(已在 §4.2)</li>
+</ul>
+<h4 id="jaw-不应分配常见错误">Jaw 不应分配(常见错误)</h4>
+<blockquote>
+<p>[FACT] <strong>VRChat Wiki 明确</strong>: “Assigning a eye bone to the jaw bone… The first problem can easily be fixed by clearing the jaw bone assignment.”</p>
+</blockquote>
+<ul>
+<li>许多模型<strong>会自动</strong>将错误骨骼分配给 Jaw(常见错误!)</li>
+<li><strong>Jaw 在 VRChat 是可选的</strong>(不强制)</li>
+<li>如分配错误: <strong>必须清除</strong> Jaw 分配</li>
+<li>清除方法: 点击 “jaw” 旁边的绿色圆圈 → 按 <strong>Delete</strong> 键</li>
+</ul>
+<h4 id="viseme-配置方式替代-jaw">Viseme 配置方式(替代 Jaw)</h4>
+<blockquote>
+<p>[FACT] <strong>来源</strong>: <a href="https://creators.vrchat.com/avatars/">https://creators.vrchat.com/avatars/</a></p>
+</blockquote>
+<p>VRChat 支持 2 种 viseme 方式:</p>
+<ol>
+<li><strong>Jaw-flap bone</strong> - 在 Rigging Configuration Screen 分配 jaw-flap 骨骼</li>
+<li><strong>Blendshapes</strong> - 通过 Blend Shape 定义 viseme(更灵活)</li>
+</ol>
+<h3 id="45-验证与保存">4.5 验证与保存</h3>
+<ol>
+<li>检查所有骨骼映射</li>
+<li><strong>Done</strong> → <strong>Apply</strong></li>
+</ol>
+<hr>
+<h2 id="5-材质与着色器">§5 材质与着色器</h2>
+<h3 id="51-extract-materials-步骤">5.1 Extract Materials 步骤</h3>
+<blockquote>
+<p>[FACT] <strong>来源</strong>: <a href="https://docs.unity3d.com/Manual/FBXImporter-Materials.html">https://docs.unity3d.com/Manual/FBXImporter-Materials.html</a></p>
+</blockquote>
+<ol>
+<li>选中 FBX 文件</li>
+<li>Inspector → <strong>Materials</strong> 选项卡</li>
+<li>点击 <strong>Extract Materials</strong> 按钮(将材质提取到项目)</li>
+<li>必要时点击 <strong>Extract Textures</strong> 按钮(提取纹理)</li>
+</ol>
+<p><strong>注意事项</strong>:</p>
+<ul>
+<li>按钮在无子资源时灰显</li>
+<li>Unity 2017.2+ 默认 <strong>Use Embedded Materials</strong></li>
+<li>Legacy 模式: Use External Materials(自动提取为外部资产)</li>
+</ul>
+<h3 id="52-纹理应用到-material">5.2 纹理应用到 Material</h3>
+<ol>
+<li>点击 Material 资产</li>
+<li><strong>Albedo</strong> / <strong>Base Color</strong> 槽位 → 拖入纹理</li>
+</ol>
+<h3 id="53-shader-选型">5.3 Shader 选型</h3>
+<blockquote>
+<p>[FACT] <strong>来源</strong>: <a href="https://creators.vrchat.com/platforms/android/quest-content-limitations">https://creators.vrchat.com/platforms/android/quest-content-limitations</a> + <a href="https://wiki.vrchat.com/wiki/Shaders">https://wiki.vrchat.com/wiki/Shaders</a></p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>Avatar 风格</th>
+<th>推荐 Shader</th>
+<th>平台</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>写实</td>
+<td><strong>Standard</strong> (Unity 默认)</td>
+<td>PC</td>
+</tr>
+<tr>
+<td>卡通(基础)</td>
+<td><strong>VRChat/Mobile/Toon Lit</strong></td>
+<td>PC + Quest 兼容</td>
+</tr>
+<tr>
+<td>卡通(推荐)</td>
+<td><strong>VRChat/Mobile/Toon Standard</strong></td>
+<td>PC + Quest 兼容 ⭐</td>
+</tr>
+<tr>
+<td>高级效果</td>
+<td>lilToon / Poiyomi / SCSS 等</td>
+<td>视 Shader 而定</td>
+</tr>
+</tbody>
+</table>
+<h4 id="toon-lit-vs-toon-standard-️-时效性">Toon Lit vs Toon Standard ⚠️ 时效性</h4>
+<table>
+<thead>
+<tr>
+<th>特性</th>
+<th>Toon Lit(老)</th>
+<th>Toon Standard(新, 2025-04-24)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Detail Maps</td>
+<td>❌</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>Emission</td>
+<td>❌</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>Rim Light</td>
+<td>❌</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>Hue Shift(动画)</td>
+<td>❌</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>Custom Shadow Ramps</td>
+<td>❌</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>Matcap</td>
+<td>❌</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>平台</td>
+<td>全部</td>
+<td>全部</td>
+</tr>
+<tr>
+<td>推荐度</td>
+<td>兜底</td>
+<td>⭐ <strong>首选</strong></td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>[FACT] <strong>VRChat 官方 Dev Update (2025-04-24)</strong>: “Coming to an SDK near you very soon, we will have a new shader named Toon Standard… provide a powerful baseline that can run well on all hardware configurations that VRChat supports.”</p>
+</blockquote>
+<p>详见: <code>index §9</code></p>
+<hr>
+<h2 id="6-上传流程">§6 上传流程</h2>
+<h3 id="61-sdk-control-panel">6.1 SDK Control Panel</h3>
+<blockquote>
+<p>[FACT] <strong>来源</strong>: <a href="https://creators.vrchat.com/getting-started/">https://creators.vrchat.com/getting-started/</a></p>
+</blockquote>
+<ol>
+<li>顶部菜单 → <code>VRChat SDK</code> → <code>Show Control Panel</code></li>
+<li>登录 VRChat 账户</li>
+<li>切换到 <strong>Builder</strong> 选项卡</li>
+</ol>
+<h3 id="62-thumbnailcapture--vrccamavatar-缩略图️-时效性">6.2 ThumbnailCapture / VRCCam(Avatar 缩略图)⚠️ 时效性</h3>
+<blockquote>
+<p>[FACT] <strong>来源</strong>: <a href="https://creators.vrchat.com/avatars/creating-your-first-avatar/">https://creators.vrchat.com/avatars/creating-your-first-avatar/</a> + <a href="https://feedback.vrchat.com/sdk-bug-reports/p/sdk-382-unity-crash-upon-saving-scene-after-using-camera-for-thumbnail">https://feedback.vrchat.com/sdk-bug-reports/p/sdk-382-unity-crash-upon-saving-scene-after-using-camera-for-thumbnail</a></p>
+</blockquote>
+<h4 id="当前2026-推荐-thumbnailcapture-组件">当前(2026 推荐): ThumbnailCapture 组件</h4>
+<p><strong>重要</strong>: VRCCam 已被替换为 <code>ThumbnailCapture</code> 组件(2025-08 后)</p>
+<ul>
+<li>标准: <strong>4:3 宽高比</strong> 缩略图</li>
+<li><strong>方法 A(简单)</strong>: 在上传窗口直接选择图片文件 / 从 Unity 场景捕获</li>
+<li><strong>方法 B(高级)</strong>: 放置 <code>GameObject > 3D Object > Plane</code> + <code>Sharky's VRC Avatar Utils > Align Upload Camera</code> 组件
+<ul>
+<li>工具 URL: <a href="https://sharkys-vrc-avatar-utils.readthedocs.io/">https://sharkys-vrc-avatar-utils.readthedocs.io/</a></li>
+</ul>
+</li>
+</ul>
+<h4 id="旧版参考-vrccam">旧版(参考): VRCCam</h4>
+<ul>
+<li>旧 SDK 行为: VRCCam 是在场景中的对象, 上传前自动创建</li>
+<li>拖动 VRCCam 可改变相机位置</li>
+<li>Inspector 可调整 FOV、背景、纯色</li>
+<li>滴管工具可从 Avatar 拾取背景色</li>
+</ul>
+<h3 id="63-滴管工具取色技巧">6.3 滴管工具取色技巧</h3>
+<ul>
+<li>选中背景 → <strong>Color Picker</strong> 工具</li>
+<li>从 Avatar 上拾取颜色</li>
+<li>微调得到与 Avatar 协调的纯色背景</li>
+</ul>
+<h3 id="64-build-and-publish">6.4 Build and Publish</h3>
+<ol>
+<li><strong>Builder</strong> 选项卡</li>
+<li>选择 Avatar GameObject</li>
+<li>填写 Name / Description / Tags</li>
+<li>选择缩略图(4:3)</li>
+<li><strong>Build &#x26; Publish</strong> → Unity 编译 → 弹出上传窗口</li>
+<li>确认 → <strong>Upload</strong></li>
+</ol>
+<h3 id="65-build--test-模式无需上传测试">6.5 Build &#x26; Test 模式(无需上传测试)</h3>
+<blockquote>
+<p>[FACT] <strong>来源</strong>: <a href="https://creators.vrchat.com/avatars/creating-your-first-avatar/">https://creators.vrchat.com/avatars/creating-your-first-avatar/</a></p>
+</blockquote>
+<ul>
+<li>切换构建类型到 <strong>Build &#x26; Test Your Avatar</strong></li>
+<li>本地构建后, Avatar 出现在 “SDK Test Avatars” 部分</li>
+<li><strong>仅自己可见</strong>, 适合上传前测试</li>
+</ul>
+<hr>
+<h2 id="7-组件说明">§7 组件说明</h2>
+<h3 id="71-pipeline-managerblueprint-id">7.1 Pipeline Manager(Blueprint ID)</h3>
+<blockquote>
+<p>[COMMUNITY] <strong>来源</strong>: VRCLibrary + SDK 文档</p>
+</blockquote>
+<ul>
+<li>包含 Avatar 的 <strong>Blueprint ID</strong>(唯一标识)</li>
+<li>标识 Avatar 是”你的 VRChat Avatar”</li>
+<li>上传后自动填充</li>
+</ul>
+<h3 id="72-vrc-avatar-descriptor核心组件">7.2 VRC Avatar Descriptor(核心组件)</h3>
+<ul>
+<li>包含 Avatar 的<strong>所有重要部分</strong></li>
+<li>上传<strong>必须</strong>有此组件, 否则 SDK 报错</li>
+</ul>
+<h3 id="73-pumkins-avatar-tools快速设置">7.3 Pumkin’s Avatar Tools(快速设置)</h3>
+<ul>
+<li>仓库: <code>https://rurre.github.io/vpm/</code></li>
+<li><strong>Quick Setup Avatar</strong> 一键添加 Pipeline Manager + VRC Avatar Descriptor</li>
+<li>通过 VCC 一键安装</li>
+</ul>
+<hr>
+<h2 id="8-关联文档">§8 关联文档</h2>
+<ul>
+<li><a href="/STELLASTOPVRC/posts/kb-avatar-avatar-modding-guide/">avatar-modding-guide</a> - VRChat Avatar 改模基础知识</li>
+<li><a href="/STELLASTOPVRC/posts/kb-avatar-optimization-guide/">optimization-guide</a> - Avatar 最佳化实操指南</li>
+<li><a href="/STELLASTOPVRC/posts/kb-avatar-blender-shape-keys/">blender-shape-keys</a> - 形态键 + Rig 配置</li>
+<li>index - Shader 知识库</li>
+<li><a href="/STELLASTOPVRC/posts/kb-avatar-trust-rank/">trust-rank</a> - Trust Rank 体系</li>
+<li><a href="/STELLASTOPVRC/posts/kb-avatar-free-avatar-resources/">free-avatar-resources</a> - 免费 Avatar 资源索引</li>
+<li><a href="https://vcc.docs.vrchat.com/">VCC 文档（官方）</a> - VCC 工具</li>
+<li><a href="/STELLASTOPVRC/posts/kb-platform-backup-strategy/">backup-strategy</a> - 创作者备份策略</li>
+</ul>
+<h2 id="9-已知限制与时效性">§9 已知限制与时效性</h2>
+<ul>
+<li><strong>VCC vs ALCOM</strong>: 2026 起, ALCOM 是部分预发布工具的推荐选择; VCC 仍受支持</li>
+<li><strong>VRCCam → ThumbnailCapture</strong>: 旧 VRCCam 已被替换(2025-08 后)</li>
+<li><strong>Toon Standard 替代 Toon Lit</strong>: 新 Toon Shader 主力(2025-04-24)</li>
+<li><strong>Pumkin 工具</strong>: 2026 年活跃度需持续验证</li>
+<li><strong>教程完整性</strong>: 本文档基于 Iconoclass 2023 年教程, 部分内容由 Sippbox 视频补充</li>
+</ul>
+<hr>
+<h2 id="相关页面">相关页面</h2>
+<p><a href="/STELLASTOPVRC/posts/kb-avatar-avatar-modding-guide/">avatar-modding-guide.md</a> · <a href="/STELLASTOPVRC/posts/kb-avatar-optimization-guide/">optimization-guide.md</a> · <a href="/STELLASTOPVRC/posts/kb-avatar-blender-shape-keys/">blender-shape-keys.md</a> · <a href="/STELLASTOPVRC/posts/kb-avatar-shader-index/">index.md</a> · <a href="/STELLASTOPVRC/posts/kb-avatar-trust-rank/">trust-rank.md</a> · <a href="/STELLASTOPVRC/posts/kb-avatar-free-avatar-resources/">free-avatar-resources.md</a> · <a href="https://vcc.docs.vrchat.com/">VCC 文档（官方）</a> · <a href="/STELLASTOPVRC/posts/kb-platform-backup-strategy/">platform/backup-strategy.md</a></p> </div> <p class="kb-source-note" data-astro-cid-lvjzyg5v>
+本文由 VRChat 开发知识库自动整理（社区整理  · 可信度 High  · 最后校对 2026-07-04），
+          遇到与手写教程冲突的地方，以官方文档为最高优先级。
+</p> <section class="comments" id="comments" data-astro-cid-lvjzyg5v> <h2 class="comments__title" data-astro-cid-lvjzyg5v>✦ 旅人留言（0）</h2> <p class="comments__empty" id="commentsEmpty" data-astro-cid-lvjzyg5v>
+还没有旅人留言 —— 有疑问就写在下面，站长都会回复。
+</p> <form class="comment-form" id="commentForm" data-target="kb-avatar-avatar-upload-getting-started" data-astro-cid-lvjzyg5v> <p class="comment-form__title" data-astro-cid-lvjzyg5v>写下你的留言</p> <input id="cAuthor" maxlength="20" placeholder="昵称（留空则为「旅人」）" data-astro-cid-lvjzyg5v> <textarea id="cBody" maxlength="1000" required placeholder="想问的问题、想说的感谢都可以（最多 1000 字）" data-astro-cid-lvjzyg5v></textarea> <div class="comment-form__actions" data-astro-cid-lvjzyg5v> <button class="btn btn--primary" type="submit" data-astro-cid-lvjzyg5v>发布留言</button> <span class="form-hint" data-astro-cid-lvjzyg5v>留言保存在本站，站长在写作台里能看到</span> <span class="form-msg" id="cMsg" data-astro-cid-lvjzyg5v></span> </div> </form> </section> <nav class="station-nav" aria-label="站间导航" data-astro-cid-lvjzyg5v> <a href="/STELLASTOPVRC/posts/kb-avatar-blender-shape-keys/" data-astro-cid-lvjzyg5v> <span class="dir" data-astro-cid-lvjzyg5v>← 上一站 · 更新的星光</span> <span class="to" data-astro-cid-lvjzyg5v>Blender 形态键 (Shape Keys) → Unity BlendShapes 工作流</span> </a> <a href="/STELLASTOPVRC/posts/kb-avatar-blend-shape-troubleshooting/" data-astro-cid-lvjzyg5v> <span class="dir" data-astro-cid-lvjzyg5v>下一站 · 更早的星光 →</span> <span class="to" data-astro-cid-lvjzyg5v>Blend Shape 系统性排障 4 步法</span> </a> </nav> </div> <aside class="toc" id="toc" hidden> <p class="toc__title">✦ 本页星图</p> <nav id="tocNav" aria-label="文章目录"></nav> </aside> <script type="module">const i=document.querySelector(".prose"),d=document.getElementById("toc"),u=document.getElementById("tocNav"),l=[];if(i&&d&&u){const c=[...i.querySelectorAll("h1, h2, h3")];if(c.length>=3){d.hidden=!1,c.forEach((o,e)=>{o.id||(o.id=`sec-${e}`);const n=document.createElement("a");n.href=`#${o.id}`;const s=(o.textContent??"").replace(/\s+/g," ").trim(),r=s.search(/[：:]/),a=r>=4?s.slice(0,r):s;n.textContent=a.length>40?`${a.slice(0,40)}…`:a,n.title=s,u.appendChild(n),l.push({a:n,h:o})});const t=()=>{let o=l[0];for(const e of l)e.h.getBoundingClientRect().top<=130&&(o=e);for(const e of l)e.a.classList.toggle("is-active",e===o)};addEventListener("scroll",t,{passive:!0}),t()}}document.querySelectorAll(".prose pre").forEach(c=>{const t=document.createElement("button");t.className="code-copy",t.type="button",t.textContent="复制",t.addEventListener("click",async()=>{const o=c.querySelector("code")?.innerText??c.innerText;try{await navigator.clipboard.writeText(o)}catch{const e=document.createElement("textarea");e.value=o,document.body.appendChild(e),e.select(),document.execCommand("copy"),e.remove()}t.textContent="已复制 ✓",t.classList.add("is-ok"),setTimeout(()=>{t.textContent="复制",t.classList.remove("is-ok")},1500)}),c.appendChild(t)});</script> </article>  </main> <footer class="site-footer"> <div class="wrap"> <p class="star-line" aria-hidden="true"> <svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> <svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> </p> <p>星之驿站 StellaStop —— 在虚拟宇宙中，为你保留一座驿站</p> <p class="site-footer__disclaimer">
+该网页目前是测试阶段，仅用于测试，所有内容仅供参考；内容全部为引用互联网当中的信息。
+</p> <p>© 2026 星之驿站 · 由 <a href="https://astro.build">Astro</a> 与星光驱动</p> <p> <a data-desk-login hidden title="写作台：登录 / 注册">登录 / 注册</a> ·
+<a href="/STELLASTOPVRC/announcements/">官方公告</a> ·
+<a href="/STELLASTOPVRC/ai/">问星 AI</a> ·
+<a href="/STELLASTOPVRC/feedback/">旅人留言板</a> </p> </div> </footer> <button class="to-top" id="toTop" aria-label="回到顶部"> <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"> <path d="M12 20V5"></path> <path d="M5.5 11.5 12 5l6.5 6.5"></path> </svg> </button> <script type="module">const e=document.getElementById("toTop");if(e){const t=()=>e.classList.toggle("is-visible",scrollY>480);addEventListener("scroll",t,{passive:!0}),t(),e.addEventListener("click",()=>{const o=matchMedia("(prefers-reduced-motion: reduce)").matches;scrollTo({top:0,behavior:o?"auto":"smooth"})})}</script> <script>(function(){const deskConfigured = "";
+
+      /* 写作台探测（页面尾部执行，DOM 已就绪）：
+         1. 计算写作台地址：站点配置 deskUrl（公网部署时填）> 本机默认 localhost:4322 > 同主机 4322
+         2. 探测 /api/gate/status —— 在线才点亮「登录 / 注册」入口，并复用给验证门横幅
+         3. 不在线则保持隐藏，绝不会把访客拽进内网地址；同时给出一次性「镜像模式」提示 */
+      (function () {
+        var host = location.hostname;
+        var isLocal = host === 'localhost' || host === '127.0.0.1' || host === '[::1]';
+        var desk = deskConfigured ||
+          (isLocal ? 'http://localhost:4322' : location.protocol + '//' + host + ':4322');
+        window.STELLA_DESK = desk;
+
+        function revealLogin() {
+          document.querySelectorAll('[data-desk-login]').forEach(function (a) {
+            a.href = desk + '/admin';
+            a.removeAttribute('hidden');
+          });
+        }
+        function showBanner(css, html, shiftHeader) {
+          var bar = document.createElement('div');
+          bar.style.cssText = css;
+          bar.innerHTML = html;
+          document.body.prepend(bar);
+          if (shiftHeader) {
+            var header = document.querySelector('.site-header');
+            if (header) header.style.marginTop = '42px';
+          }
+        }
+        function hintMirrorMode() {
+          try {
+            if (sessionStorage.getItem('stella-desk-hint')) return;
+            sessionStorage.setItem('stella-desk-hint', '1');
+          } catch (e) { /* 无痕模式等：忽略 */ }
+          var tip = document.createElement('div');
+          tip.style.cssText = 'position:fixed;left:14px;bottom:14px;z-index:9998;max-width:min(92vw,430px);padding:.65rem .9rem;border-radius:12px;background:rgba(18,20,44,.92);border:1px solid rgba(150,142,255,.35);color:#e8e6ff;font-size:.82rem;line-height:1.6;font-family:system-ui,sans-serif;box-shadow:0 8px 30px rgba(0,0,0,.35)';
+          tip.innerHTML = 'ℹ️ 静态镜像模式：登录 / 评论 / AI 等互动功能需要站长写作台在线，当前不可用。' +
+            '<span id="stellaDeskHintClose" style="float:right;cursor:pointer;opacity:.75;font-weight:700;margin-left:.6rem" title="关闭">×</span>';
+          document.body.appendChild(tip);
+          var close = function () { tip.remove(); };
+          tip.querySelector('#stellaDeskHintClose').addEventListener('click', close);
+          setTimeout(close, 9000);
+        }
+
+        try {
+          var ctrl = new AbortController();
+          var timer = setTimeout(function () { ctrl.abort(); }, 2500);
+          fetch(desk + '/api/gate/status', { credentials: 'include', signal: ctrl.signal })
+            .then(function (r) { return r.ok ? r.json() : null; })
+            .then(function (d) {
+              clearTimeout(timer);
+              if (!d) throw new Error('desk-offline');
+              window.STELLA_DESK_OK = true;
+              revealLogin();
+              if (d.regionBlocked) {
+                showBanner(
+                  'position:fixed;top:0;left:0;right:0;z-index:9999;padding:1.2rem;text-align:center;background:#1a0a0a;color:#ff9ed2;font-size:.95rem;border-bottom:2px solid #ff4d6d;font-family:system-ui,sans-serif',
+                  '⛔ 你所在的地区（' + (d.regionCountry || '未知') + '）暂不开放访问。',
+                  false
+                );
+                return;
+              }
+              if (d.enabled && !d.passed) {
+                showBanner(
+                  'position:fixed;top:0;left:0;right:0;z-index:9999;padding:0.7rem;text-align:center;background:linear-gradient(94deg,rgba(143,127,247,.25),rgba(98,200,245,.18));border-bottom:1px solid rgba(150,142,255,.3);color:#f0efff;font-size:.88rem;font-family:system-ui,sans-serif',
+                  '🔒 本站启用了安全验证 —— <a href="' + desk + '/gate?next=' + encodeURIComponent(location.href) + '" style="color:#ffd98e;font-weight:700;text-decoration:underline">点击完成验证</a>，通过后即可使用全部功能（30 天免验）。',
+                  true
+                );
+              }
+            })
+            .catch(function () {
+              clearTimeout(timer);
+              window.STELLA_DESK_OK = false;
+              hintMirrorMode();
+            });
+        } catch (e) { /* 忽略 */ }
+      })();
+    })();</script> </body> </html> <script type="module">const m=document.getElementById("commentForm"),s=document.getElementById("cMsg"),u=`${location.protocol}//${location.hostname}:4322/api/message`;function r(e,t=!1){s&&(s.textContent=e,s.classList.toggle("is-err",t),s.classList.toggle("is-ok",!t))}function y(){const e=new Date,t=n=>String(n).padStart(2,"0");return`${e.getFullYear()}-${t(e.getMonth()+1)}-${t(e.getDate())}`}function f(e){let t=7;for(const n of e)t=(t*31+n.charCodeAt(0))%360;return t}function g(e,t){const n=document.createElement("li");n.className="comment",n.innerHTML=`
+      <span class="comment__avatar"></span>
+      <div class="comment__bubble">
+        <div class="comment__head">
+          <span class="comment__name"></span>
+          <time class="comment__date">${y()}</time>
+        </div>
+        <p class="comment__body"></p>
+      </div>`;const o=n.querySelector(".comment__avatar");return o.style.setProperty("--h",String(f(e))),o.textContent=e.slice(0,1),n.querySelector(".comment__name").textContent=e,n.querySelector(".comment__body").textContent=t,n}m?.addEventListener("submit",async e=>{e.preventDefault();const t=document.getElementById("cBody").value.trim();if(!t)return r("留言内容不能为空哦",!0);const n=document.getElementById("cAuthor").value.trim()||"旅人",o=m.querySelector("button");o&&(o.disabled=!0);try{const c=await fetch(u,{credentials:"include",method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({target:m.dataset.target,kind:"comment",author:n,body:t})}),d=await c.json().catch(()=>({}));if(!c.ok)throw new Error(d.error||`发送失败（${c.status}）`);const l=document.querySelector(".comment-list");l&&l.appendChild(g(n,t)),document.getElementById("commentsEmpty")?.remove(),document.getElementById("cBody").value="",r("留言已发布，感谢支持 ✦");const a=document.querySelector(".comments__title"),i=a?.textContent?.match(/（(\d+)）/);a&&i&&(a.textContent=a.textContent.replace(/（\d+）/,`（${Number(i[1])+1}）`))}catch(c){r(c instanceof TypeError?"写作台没在运行，暂时收不到留言 —— 双击「启动博客.bat」就好":c.message,!0)}finally{o&&(o.disabled=!1)}});</script> 

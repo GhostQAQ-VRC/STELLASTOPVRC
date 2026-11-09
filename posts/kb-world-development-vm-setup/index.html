@@ -1,0 +1,537 @@
+<!DOCTYPE html><html lang="zh-CN"> <head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="generator" content="Astro v5.18.2"><meta name="description" content="1. ❓ VMware Workstation 的具体配置（user-guide 未涵盖）"><meta name="theme-color" content="#070a1c"><meta property="og:title" content="VRChat in Virtual Machine — VM + EAC 调试配置 · 星之驿站 StellaStop"><meta property="og:description" content="1. ❓ VMware Workstation 的具体配置（user-guide 未涵盖）"><meta property="og:type" content="website"><meta name="twitter:card" content="summary"><link rel="icon" type="image/svg+xml" href="/STELLASTOPVRC/favicon.svg"><script>
+      // 在渲染前恢复主题与特效档位，避免闪一下默认状态
+      try {
+        document.documentElement.dataset.theme =
+          localStorage.getItem('stella-theme') || 'nebula';
+        document.documentElement.dataset.fx =
+          localStorage.getItem('stella-fx') || 'standard';
+      } catch {
+        /* 隐私模式读不到就算了 */
+      }
+    </script><link rel="stylesheet" href="/STELLASTOPVRC/custom-vars.css"><title>VRChat in Virtual Machine — VM + EAC 调试配置 · 星之驿站 StellaStop</title><link rel="stylesheet" href="/STELLASTOPVRC/_astro/about.Bgh6wcGl.css">
+<style>.post-head__meta[data-astro-cid-lvjzyg5v]{color:var(--ink-faint);font-family:var(--font-mono);font-size:.82rem}.post-head[data-astro-cid-lvjzyg5v] .chip-row[data-astro-cid-lvjzyg5v]{margin-top:1rem}.kb-source-note[data-astro-cid-lvjzyg5v]{max-width:760px;margin:2.2rem auto 0;font-size:.82rem;color:var(--ink-faint);border-top:1px dashed var(--line);padding-top:1rem}
+</style></head> <body> <div class="site-notice" id="siteNotice"> <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> <span class="site-notice__text">欢迎来到星之驿站！</span> <button class="site-notice__close" id="noticeClose" type="button" aria-label="关闭公告">
+×
+</button> </div> <a class="skip-link" href="#main">跳到主要内容</a> <canvas id="starfield" aria-hidden="true" data-astro-cid-ra7sfcwn></canvas> <div class="fx-aurora fx-aurora--a" aria-hidden="true" data-astro-cid-ra7sfcwn></div> <div class="fx-aurora fx-aurora--b" aria-hidden="true" data-astro-cid-ra7sfcwn></div>  <script type="module">const u=document.getElementById("starfield");if(u){let F=function(){const n=Math.random();return n<.1?"gold":n<.42?"blue":"white"},v=function(){const n=Math.min(window.devicePixelRatio||1,2);s=window.innerWidth,d=window.innerHeight,u.width=s*n,u.height=d*n,u.style.width=`${s}px`,u.style.height=`${d}px`,t.setTransform(n,0,0,n,0,0);const e=Math.min(190,Math.round(s*d/8500));l=Array.from({length:e},()=>({x:Math.random()*s,y:Math.random()*d,r:r(.4,1.7),base:r(.25,.8),amp:r(.12,.4),speed:r(6e-4,.0022),phase:r(0,Math.PI*2),c:F()})),C=Array.from({length:26},()=>({x:Math.random()*s,y:Math.random()*d,r:r(.9,2.4),vx:r(-.006,.006),vy:r(-.02,-.006),base:r(.2,.5),speed:r(8e-4,.002),phase:r(0,Math.PI*2),c:Math.random()<.5?"gold":"violet"})),c==="off"&&m(0,!0)},D=function(n){const e=Math.random()<.5?1:-1,o=r(Math.PI/7,Math.PI/5),a=r(.45,.75);y.push({x:r(s*.15,s*.85),y:r(-20,d*.3),vx:Math.cos(o)*a*e,vy:Math.sin(o)*a,born:n,life:r(750,1050),len:r(100,170)})},S=function(n){y=y.filter(e=>n-e.born<e.life);for(const e of y){const o=(n-e.born)/e.life,a=e.x+e.vx*(n-e.born),i=e.y+e.vy*(n-e.born),f=o<.15?o/.15:o>.7?(1-o)/.3:1,h=Math.hypot(e.vx,e.vy),x=e.vx/h,g=e.vy/h,b=t.createLinearGradient(a,i,a-x*e.len,i-g*e.len);b.addColorStop(0,`rgba(236,242,255,${(.85*f).toFixed(3)})`),b.addColorStop(1,"rgba(236,242,255,0)"),t.strokeStyle=b,t.lineWidth=1.6,t.lineCap="round",t.beginPath(),t.moveTo(a,i),t.lineTo(a-x*e.len,i-g*e.len),t.stroke()}},B=function(){let o=0;t.lineWidth=.7;for(let a=0;a<l.length&&o<26;a++)for(let i=a+1;i<l.length&&o<26;i++){const f=l[a].x-l[i].x,h=l[a].y-l[i].y,x=f*f+h*h;if(x<16900){const g=(1-Math.sqrt(x)/130)*.17;t.strokeStyle=`rgba(178,170,255,${g.toFixed(3)})`,t.beginPath(),t.moveTo(l[a].x,l[a].y),t.lineTo(l[i].x,l[i].y),t.stroke(),o++}}},X=function(n){for(const e of C){e.x+=e.vx*16,e.y+=e.vy*16,e.y<-12&&(e.y=d+10),e.x<-12&&(e.x=s+10),e.x>s+12&&(e.x=-10);const o=Math.max(.05,e.base+.25*Math.sin(n*e.speed+e.phase)),[a,i,f]=A[e.c];t.beginPath(),t.arc(e.x,e.y,e.r,0,7),t.shadowBlur=9,t.shadowColor=`rgba(${a},${i},${f},0.9)`,t.fillStyle=`rgba(${a},${i},${f},${o.toFixed(3)})`,t.fill()}t.shadowBlur=0},m=function(n,e=!1){t.clearRect(0,0,s,d);for(const o of l){const a=c==="off"?o.base:Math.max(.05,o.base+o.amp*Math.sin(n*o.speed+o.phase)),[i,f,h]=A[o.c];t.beginPath(),t.arc(o.x,o.y,o.r,0,7),o.r>1.25?(t.shadowBlur=7,t.shadowColor=`rgba(${i},${f},${h},0.85)`):t.shadowBlur=0,t.fillStyle=`rgba(${i},${f},${h},${a.toFixed(3)})`,t.fill()}if(t.shadowBlur=0,c!=="off"&&!e){c==="fancy"&&(B(),X(n));const o=c==="fancy"?r(2600,6e3):r(4200,9500);n>P&&(D(n),P=n+o),S(n)}},$=function(n){m(n),M=requestAnimationFrame($)},p=function(){if(c==="off"){m(0,!0);return}cancelAnimationFrame(M),M=requestAnimationFrame($)},w=function(){cancelAnimationFrame(M),t.clearRect(0,0,s,d),m(0,!0)};const t=u.getContext("2d"),k=matchMedia("(prefers-reduced-motion: reduce)").matches,A={white:[240,240,255],blue:[150,215,250],gold:[255,218,150],violet:[178,170,255]};let s=0,d=0,l=[],C=[],y=[],P=2500,M=0,c=document.documentElement.dataset.fx||"standard";k&&(c="off");const r=(n,e)=>n+Math.random()*(e-n);v(),addEventListener("resize",v),document.addEventListener("stella-fx-change",n=>{c=n.detail,c==="off"?w():p()}),c==="off"?m(0,!0):(p(),document.addEventListener("visibilitychange",()=>{document.hidden?w():p()}))}</script> <header class="site-header"> <div class="wrap site-header__inner"> <a class="logo" href="/STELLASTOPVRC/"> <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> <span>星之驿站</span> <span class="logo__romaji">StellaStop</span> </a> <div class="header-right"> <nav class="site-nav" aria-label="站内导航"> <a href="/STELLASTOPVRC/"> 首页 </a><a href="/STELLASTOPVRC/start/"> 新手 </a><a href="/STELLASTOPVRC/posts/"> 教程 </a><a href="/STELLASTOPVRC/videos/"> 视频 </a><a href="/STELLASTOPVRC/resources/"> 资源 </a><a href="/STELLASTOPVRC/booth/"> Booth </a><a href="/STELLASTOPVRC/announcements/"> 公告 </a><a href="/STELLASTOPVRC/ai/"> 问星 </a><a href="/STELLASTOPVRC/changelog/"> 更新日志 </a><a href="/STELLASTOPVRC/about/"> 关于 </a> </nav> <a class="login-link" data-desk-login hidden title="写作台：登录 / 注册后可发教程、传资源">
+登录 / 注册
+</a> <div class="theme-switch"> <button class="theme-switch__btn" id="themeBtn" type="button" aria-haspopup="listbox" aria-expanded="false" aria-label="切换主题配色" title="切换主题配色"> <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"> <path d="M12 3a9 9 0 1 0 9 9c0-1.2-1-2-2.2-2H17a2 2 0 0 1-2-2V6.2C15 5 14.2 4 13 4.4A9 9 0 0 0 12 3Z"></path> <circle cx="7.5" cy="11.5" r="1" fill="currentColor" stroke="none"></circle> <circle cx="10" cy="7.5" r="1" fill="currentColor" stroke="none"></circle> <circle cx="15" cy="7" r="1" fill="currentColor" stroke="none"></circle> </svg> </button> <div class="theme-pop" id="themePop" role="listbox" aria-label="选择主题" hidden> <button class="theme-opt" type="button" role="option" data-theme-value="nebula" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#8f7ff7"></span><span class="dot" style="background:#62c8f5"></span><span class="dot" style="background:#ffd98e"></span> </span> <span class="theme-opt__name">星云 · 蓝紫</span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt" type="button" role="option" data-theme-value="sakura" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#ff8fc7"></span><span class="dot" style="background:#c79bff"></span><span class="dot" style="background:#ffd08e"></span> </span> <span class="theme-opt__name">樱语 · 粉紫</span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt" type="button" role="option" data-theme-value="miku" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#2ed3c2"></span><span class="dot" style="background:#6ea8ff"></span><span class="dot" style="background:#ffe08e"></span> </span> <span class="theme-opt__name">葱色 · 青绿</span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt" type="button" role="option" data-theme-value="ember" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#ffb35c"></span><span class="dot" style="background:#ff7e6b"></span><span class="dot" style="background:#ffd98e"></span> </span> <span class="theme-opt__name">暮金 · 暖橙</span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt" type="button" role="option" data-theme-value="dawn" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#6a5ce8"></span><span class="dot" style="background:#e0568f"></span><span class="dot" style="background:#b8821e"></span> </span> <span class="theme-opt__name">晨星 · 浅色</span> <span class="theme-opt__mark">✦</span> </button> </div> </div> <script type="module">const a=document.getElementById("themeBtn"),n=document.getElementById("themePop");function s(c){document.documentElement.dataset.theme=c;try{localStorage.setItem("stella-theme",c)}catch{}const e=getComputedStyle(document.documentElement).getPropertyValue("--bg-deep").trim();document.querySelector('meta[name="theme-color"]')?.setAttribute("content",e||"#070a1c"),document.querySelectorAll(".theme-opt").forEach(t=>{const d=t.dataset.themeValue===c;t.classList.toggle("is-active",d),t.setAttribute("aria-selected",String(d))})}if(a&&n){const c=document.documentElement.dataset.theme||"nebula";document.querySelectorAll(".theme-opt").forEach(e=>{const t=e.dataset.themeValue===c;e.classList.toggle("is-active",t),e.setAttribute("aria-selected",String(t))}),a.addEventListener("click",e=>{e.stopPropagation();const t=n.hidden;n.hidden=!t,a.setAttribute("aria-expanded",String(t))}),document.addEventListener("click",e=>{!n.hidden&&!e.target.closest(".theme-switch")&&(n.hidden=!0,a.setAttribute("aria-expanded","false"))}),document.addEventListener("keydown",e=>{e.key==="Escape"&&!n.hidden&&(n.hidden=!0,a.setAttribute("aria-expanded","false"),a.focus())}),n.addEventListener("click",e=>{const t=e.target.closest(".theme-opt");t&&(s(t.dataset.themeValue??"nebula"),n.hidden=!0,a.setAttribute("aria-expanded","false"))})}</script> <div class="theme-switch fx-switch"> <button class="theme-switch__btn" id="fxBtn" type="button" aria-haspopup="listbox" aria-expanded="false" aria-label="背景特效设置" title="背景特效设置"> <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"> <path d="M5 3v4M3 5h4M6.5 17.5v3M5 19h3"></path> <path d="M14.5 4.5 16 9l4.5 1.5L16 12l-1.5 4.5L13 12l-4.5-1.5L13 9l1.5-4.5Z"></path> </svg> </button> <div class="theme-pop" id="fxPop" role="listbox" aria-label="背景特效" hidden> <button class="theme-opt fx-opt" type="button" role="option" data-fx-value="off" aria-selected="false"> <span class="fx-opt__body"> <span class="fx-opt__name">关闭特效</span> <span class="fx-opt__hint">最省电</span> </span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt fx-opt" type="button" role="option" data-fx-value="standard" aria-selected="false"> <span class="fx-opt__body"> <span class="fx-opt__name">标准</span> <span class="fx-opt__hint">闪烁星空 + 流星</span> </span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt fx-opt" type="button" role="option" data-fx-value="fancy" aria-selected="false"> <span class="fx-opt__body"> <span class="fx-opt__name">华丽</span> <span class="fx-opt__hint">追加极光 / 星座 / 光尘</span> </span> <span class="theme-opt__mark">✦</span> </button> </div> </div> <script type="module">const n=document.getElementById("fxBtn"),a=document.getElementById("fxPop");function s(d){document.documentElement.dataset.fx=d;try{localStorage.setItem("stella-fx",d)}catch{}document.querySelectorAll("#fxPop .fx-opt").forEach(t=>{const e=t.dataset.fxValue===d;t.classList.toggle("is-active",e),t.setAttribute("aria-selected",String(e))}),document.dispatchEvent(new CustomEvent("stella-fx-change",{detail:d}))}if(n&&a){const d=document.documentElement.dataset.fx||"standard";document.querySelectorAll("#fxPop .fx-opt").forEach(t=>{const e=t.dataset.fxValue===d;t.classList.toggle("is-active",e),t.setAttribute("aria-selected",String(e))}),n.addEventListener("click",t=>{t.stopPropagation();const e=a.hidden;a.hidden=!e,n.setAttribute("aria-expanded",String(e))}),document.addEventListener("click",t=>{!a.hidden&&!t.target.closest(".fx-switch")&&(a.hidden=!0,n.setAttribute("aria-expanded","false"))}),document.addEventListener("keydown",t=>{t.key==="Escape"&&!a.hidden&&(a.hidden=!0,n.setAttribute("aria-expanded","false"),n.focus())}),a.addEventListener("click",t=>{const e=t.target.closest(".fx-opt");e&&(s(e.dataset.fxValue??"standard"),a.hidden=!0,n.setAttribute("aria-expanded","false"))})}</script> </div> </div> </header> <main id="main">  <article class="wrap post-layout" data-astro-cid-lvjzyg5v> <div class="post-main page-fade" data-astro-cid-lvjzyg5v> <header class="post-head" data-astro-cid-lvjzyg5v> <a class="crumb" href="/STELLASTOPVRC/posts/" data-astro-cid-lvjzyg5v>← 返回教程档案</a> <div class="post-head__meta" style="--accent:var(--ink-dim)" data-astro-cid-lvjzyg5v> <span class="badge" data-cat="World 世界" data-astro-cid-lvjzyg5v>World 世界</span> <time datetime="2026-11-09" data-astro-cid-lvjzyg5v>2026-11-09</time> <span class="post-head__reading" data-astro-cid-lvjzyg5v>⏱ 约 26 分钟</span>  </div> <h1 class="post-head__title" data-astro-cid-lvjzyg5v>VRChat in Virtual Machine — VM + EAC 调试配置</h1> <p class="post-head__lead" data-astro-cid-lvjzyg5v>1. ❓ VMware Workstation 的具体配置（user-guide 未涵盖）</p> <div class="chip-row" data-astro-cid-lvjzyg5v> <a class="chip" href="/STELLASTOPVRC/posts/?tag=%E7%9F%A5%E8%AF%86%E5%BA%93" data-astro-cid-lvjzyg5v> 知识库 </a><a class="chip" href="/STELLASTOPVRC/posts/?tag=world" data-astro-cid-lvjzyg5v> world </a> </div> </header> <div class="prose" data-astro-cid-lvjzyg5v> <hr>
+<h1 id="vrchat-in-virtual-machine--vm--eac-调试配置">VRChat in Virtual Machine — VM + EAC 调试配置</h1>
+<blockquote>
+<p>[FACT] <strong>运行 VRChat 在虚拟机中是</strong> 不受官方支持 <strong>的</strong>。</p>
+<p>VRChat 提供此文档是<strong>基于研究</strong>，但：</p>
+<ul>
+<li>这些方法<strong>任何时候可能停止工作</strong></li>
+<li><strong>官方不保证</strong>在 VM 中能正常运行</li>
+<li>文档会尽量保持更新</li>
+</ul>
+</blockquote>
+<blockquote>
+<p><strong>🔴 关键事实</strong>:</p>
+<ul>
+<li>VRChat 的反作弊系统是 <strong>Easy Anti-Cheat (EAC)</strong></li>
+<li><strong>EAC 在 VM 环境中通常失败</strong></li>
+<li>通过特定配置<strong>某些情况可绕过</strong></li>
+</ul>
+</blockquote>
+<blockquote>
+<p>[FACT] 经验上，<strong>这些 workarounds 不影响性能</strong>。</p>
+</blockquote>
+<hr>
+<hr>
+<h1 id="vrchat-in-virtual-machine--vm--eac-调试配置概述">VRChat in Virtual Machine — VM + EAC 调试配置：概述</h1>
+<blockquote>
+<p>[FACT] 核心问题: <strong>EAC 通过 CPUID 信息检测 VM</strong>。</p>
+<p>默认 CPUID 显示 <code>"Microsoft HV"</code>（hyper-v），<strong>EAC 拒绝</strong>。</p>
+<p>通过修改 CPUID 信息（Hyper-V vendor_id），可以让 EAC 认为不在 VM 中。</p>
+<p><strong>技术原理</strong>:</p>
+<ul>
+<li>修改 <code>CPUID leaf 0x40000000</code> 的 hyper-v vendor id</li>
+<li>默认 “Microsoft HV” → 改为其他值</li>
+<li>使用 <code>hv-passthrough</code> 模式 → “Linux KVM Hv”（EAC 接受）</li>
+</ul>
+</blockquote>
+<blockquote>
+<p>[FACT] <strong>重要</strong>:</p>
+<ul>
+<li><strong>不需要</strong> 隐藏 KVM 接口 (<code>kvm=off</code> 或 <code>&#x3C;kvm>&#x3C;hidden state='on'/>&#x3C;/kvm></code>)</li>
+<li><strong>不影响</strong> 性能</li>
+<li>已有 NVIDIA code 43 修复配置的 VM 通常<strong>开箱即用</strong></li>
+</ul>
+</blockquote>
+<hr>
+<hr>
+<h1 id="vrchat-in-virtual-machine--vm--eac-调试配置1-libvirt-qemukvm">VRChat in Virtual Machine — VM + EAC 调试配置：1. libvirt (QEMU/KVM)</h1>
+<blockquote>
+<p>[FACT] <strong>libvirt</strong> 是 Linux 上管理 VM 的标准工具。</p>
+</blockquote>
+<h3 id="11-vendor_id-配置">1.1 vendor_id 配置</h3>
+<blockquote>
+<p>[FACT] <strong>修改 VM 的 XML 配置</strong>:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#B392F0">virsh</span><span style="color:#9ECBFF"> edit</span><span style="color:#9ECBFF"> VM_NAME</span></span></code></pre>
+<p>在 <code>&#x3C;features></code> 块下的 <code>&#x3C;hyperv></code> 中添加:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="xml"><code><span class="line"><span style="color:#E1E4E8">&#x3C;</span><span style="color:#85E89D">vendor_id</span><span style="color:#B392F0"> state</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">'on'</span><span style="color:#B392F0"> value</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">'0123756792CD'</span><span style="color:#E1E4E8">/></span></span></code></pre>
+<p>完整示例:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="xml"><code><span class="line"><span style="color:#E1E4E8">&#x3C;</span><span style="color:#85E89D">features</span><span style="color:#E1E4E8">></span></span>
+<span class="line"><span style="color:#E1E4E8">  &#x3C;</span><span style="color:#85E89D">hyperv</span><span style="color:#B392F0"> mode</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">'custom'</span><span style="color:#E1E4E8">></span></span>
+<span class="line"><span style="color:#6A737D">    &#x3C;!-- other things here --></span></span>
+<span class="line"><span style="color:#E1E4E8">    &#x3C;</span><span style="color:#85E89D">vendor_id</span><span style="color:#B392F0"> state</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">'on'</span><span style="color:#B392F0"> value</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">'0123756792CD'</span><span style="color:#E1E4E8">/></span></span>
+<span class="line"><span style="color:#E1E4E8">  &#x3C;/</span><span style="color:#85E89D">hyperv</span><span style="color:#E1E4E8">></span></span>
+<span class="line"><span style="color:#6A737D">  &#x3C;!-- other things here --></span></span>
+<span class="line"><span style="color:#E1E4E8">&#x3C;/</span><span style="color:#85E89D">features</span><span style="color:#E1E4E8">></span></span></code></pre>
+</blockquote>
+<blockquote>
+<p>[FACT] <strong>推荐 vendor_id</strong>: <code>0123756792CD</code>（或 <code>0123456789AB</code>）</p>
+</blockquote>
+<h3 id="12-hyper-v-passthrough-模式更优">1.2 Hyper-V Passthrough 模式（更优）</h3>
+<blockquote>
+<p>[FACT] <strong>更优的方案</strong> — 使用 Hyper-V passthrough 模式:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="xml"><code><span class="line"><span style="color:#E1E4E8">&#x3C;</span><span style="color:#85E89D">hyperv</span><span style="color:#B392F0"> mode</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">'passthrough'</span><span style="color:#E1E4E8">></span></span>
+<span class="line"><span style="color:#6A737D">  &#x3C;!-- whatever --></span></span>
+<span class="line"><span style="color:#E1E4E8">&#x3C;/</span><span style="color:#85E89D">hyperv</span><span style="color:#E1E4E8">></span></span></code></pre>
+<p><strong>效果</strong>:</p>
+<ul>
+<li>启用<strong>所有可用的 hyper-v enlightenments</strong></li>
+<li><strong>包括 vendor id</strong>（EAC 接受）</li>
+<li><strong>可能改善性能</strong>（其他 enlightenments）</li>
+</ul>
+</blockquote>
+<blockquote>
+<p>[FACT] <strong>enlightenments</strong> = hyper-v 的”paravirtualized extensions”</p>
+<ul>
+<li>Linux kernel 或 QEMU 提供给 Windows 客户机</li>
+<li>在虚拟环境中增强性能/功能</li>
+</ul>
+</blockquote>
+<h3 id="13-smbios-配置2022-08-26-后必需">1.3 SMBIOS 配置（2022-08-26 后必需）</h3>
+<blockquote>
+<p>[FACT] <strong>2022-08-26 后</strong>，仅 vendor_id 修复<strong>可能不够</strong>。</p>
+<p>需<strong>手动设置 SMBIOS 字符串</strong>模拟真实硬件。</p>
+<p>理论任何有效硬件配置都可行，<strong>推荐用真实系统的信息</strong>。</p>
+</blockquote>
+<h4 id="131-获取本机信息">1.3.1 获取本机信息</h4>
+<blockquote>
+<p>[FACT] 推荐命令:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#B392F0">dmidecode</span><span style="color:#79B8FF"> --type</span><span style="color:#9ECBFF"> bios</span></span>
+<span class="line"><span style="color:#B392F0">dmidecode</span><span style="color:#79B8FF"> --type</span><span style="color:#9ECBFF"> baseboard</span></span>
+<span class="line"><span style="color:#B392F0">dmidecode</span><span style="color:#79B8FF"> --type</span><span style="color:#9ECBFF"> system</span></span></code></pre>
+</blockquote>
+<h4 id="132-libvirt-xml-配置">1.3.2 libvirt XML 配置</h4>
+<blockquote>
+<p>[FACT] 添加到 domain XML（用本机信息替换）:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="xml"><code><span class="line"><span style="color:#E1E4E8">&#x3C;</span><span style="color:#85E89D">sysinfo</span><span style="color:#B392F0"> type</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">"smbios"</span><span style="color:#E1E4E8">></span></span>
+<span class="line"><span style="color:#E1E4E8">  &#x3C;</span><span style="color:#85E89D">bios</span><span style="color:#E1E4E8">></span></span>
+<span class="line"><span style="color:#E1E4E8">    &#x3C;</span><span style="color:#85E89D">entry</span><span style="color:#B392F0"> name</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">"vendor"</span><span style="color:#E1E4E8">>American Megatrends Inc.&#x3C;/</span><span style="color:#85E89D">entry</span><span style="color:#E1E4E8">></span></span>
+<span class="line"><span style="color:#E1E4E8">    &#x3C;</span><span style="color:#85E89D">entry</span><span style="color:#B392F0"> name</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">"version"</span><span style="color:#E1E4E8">>F31o&#x3C;/</span><span style="color:#85E89D">entry</span><span style="color:#E1E4E8">></span></span>
+<span class="line"><span style="color:#E1E4E8">    &#x3C;</span><span style="color:#85E89D">entry</span><span style="color:#B392F0"> name</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">"date"</span><span style="color:#E1E4E8">>12/03/2020&#x3C;/</span><span style="color:#85E89D">entry</span><span style="color:#E1E4E8">></span></span>
+<span class="line"><span style="color:#E1E4E8">  &#x3C;/</span><span style="color:#85E89D">bios</span><span style="color:#E1E4E8">></span></span>
+<span class="line"><span style="color:#E1E4E8">  &#x3C;</span><span style="color:#85E89D">system</span><span style="color:#E1E4E8">></span></span>
+<span class="line"><span style="color:#E1E4E8">    &#x3C;</span><span style="color:#85E89D">entry</span><span style="color:#B392F0"> name</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">"manufacturer"</span><span style="color:#E1E4E8">>Gigabyte Technology Co., Ltd.&#x3C;/</span><span style="color:#85E89D">entry</span><span style="color:#E1E4E8">></span></span>
+<span class="line"><span style="color:#E1E4E8">    &#x3C;</span><span style="color:#85E89D">entry</span><span style="color:#B392F0"> name</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">"product"</span><span style="color:#E1E4E8">>X570 AORUS ULTRA&#x3C;/</span><span style="color:#85E89D">entry</span><span style="color:#E1E4E8">></span></span>
+<span class="line"><span style="color:#E1E4E8">    &#x3C;</span><span style="color:#85E89D">entry</span><span style="color:#B392F0"> name</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">"version"</span><span style="color:#E1E4E8">>x.x&#x3C;/</span><span style="color:#85E89D">entry</span><span style="color:#E1E4E8">></span></span>
+<span class="line"><span style="color:#E1E4E8">    &#x3C;</span><span style="color:#85E89D">entry</span><span style="color:#B392F0"> name</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">"serial"</span><span style="color:#E1E4E8">>BASEBOARD SERIAL HERE (or "Default string")&#x3C;/</span><span style="color:#85E89D">entry</span><span style="color:#E1E4E8">></span></span>
+<span class="line"><span style="color:#E1E4E8">    &#x3C;</span><span style="color:#85E89D">entry</span><span style="color:#B392F0"> name</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">"uuid"</span><span style="color:#E1E4E8">>BASEBOARD UUID HERE&#x3C;/</span><span style="color:#85E89D">entry</span><span style="color:#E1E4E8">></span></span>
+<span class="line"><span style="color:#E1E4E8">    &#x3C;</span><span style="color:#85E89D">entry</span><span style="color:#B392F0"> name</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">"sku"</span><span style="color:#E1E4E8">>BASEBOARD SKU HERE (or "Default string")&#x3C;/</span><span style="color:#85E89D">entry</span><span style="color:#E1E4E8">></span></span>
+<span class="line"><span style="color:#E1E4E8">    &#x3C;</span><span style="color:#85E89D">entry</span><span style="color:#B392F0"> name</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">"family"</span><span style="color:#E1E4E8">>X570 MB&#x3C;/</span><span style="color:#85E89D">entry</span><span style="color:#E1E4E8">></span></span>
+<span class="line"><span style="color:#E1E4E8">  &#x3C;/</span><span style="color:#85E89D">system</span><span style="color:#E1E4E8">></span></span>
+<span class="line"><span style="color:#E1E4E8">&#x3C;/</span><span style="color:#85E89D">sysinfo</span><span style="color:#E1E4E8">></span></span></code></pre>
+<p><strong>UUID 必须</strong>与 domain XML 顶部 UUID <strong>匹配</strong>，否则 libvirt 报错。</p>
+</blockquote>
+<h4 id="133-启用-smbios">1.3.3 启用 SMBIOS</h4>
+<blockquote>
+<p>[FACT] 添加到 <code>&#x3C;os></code> 组:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="xml"><code><span class="line"><span style="color:#E1E4E8">&#x3C;</span><span style="color:#85E89D">os</span><span style="color:#E1E4E8">></span></span>
+<span class="line"><span style="color:#E1E4E8">    &#x3C;</span><span style="color:#85E89D">smbios</span><span style="color:#B392F0"> mode</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">"sysinfo"</span><span style="color:#E1E4E8">/></span></span>
+<span class="line"><span style="color:#6A737D">    &#x3C;!-- whatever --></span></span>
+<span class="line"><span style="color:#E1E4E8">&#x3C;/</span><span style="color:#85E89D">os</span><span style="color:#E1E4E8">></span></span></code></pre>
+</blockquote>
+<hr>
+<hr>
+<h1 id="vrchat-in-virtual-machine--vm--eac-调试配置2-qemu-命令行">VRChat in Virtual Machine — VM + EAC 调试配置：2. QEMU 命令行</h1>
+<blockquote>
+<p>[FACT] 如果用 <strong>QEMU 命令行</strong>（不用 libvirt），加 <code>-cpu</code> flag。</p>
+</blockquote>
+<h3 id="21-基本配置">2.1 基本配置</h3>
+<blockquote>
+<p>[FACT] 修改 <code>-cpu</code> flag:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#B392F0">-cpu</span><span style="color:#9ECBFF"> 'host,migratable=off,hypervisor=on,topoext=on,hv_relaxed,hv_reset,hv_runtime,hv_stimer,hv_synic,hv_time,hv_vapic,hv_vpindex,hv-frequencies,hv-avic,hv-vendor-id=0123456789AB,host-cache-info=on,apic=on,invtsc=on'</span></span></code></pre>
+<p>如果已有 <code>-cpu</code> 参数，<strong>追加</strong> <code>,hv-vendor-id=0123756792CD</code>:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#B392F0">-cpu</span><span style="color:#9ECBFF"> '原有参数,hv-vendor-id=0123756792CD'</span></span></code></pre>
+</blockquote>
+<blockquote>
+<p>[FACT] <strong>推荐设置</strong>额外启用:</p>
+<ul>
+<li><code>hv_relaxed</code> / <code>hv_reset</code> / <code>hv_runtime</code> / <code>hv_stimer</code> / <code>hv_synic</code> / <code>hv_time</code> / <code>hv_vapic</code> / <code>hv_vpindex</code></li>
+<li><code>hv-frequencies</code> / <code>hv-avic</code></li>
+<li><code>host-cache-info</code> / <code>apic</code> / <code>invtsc</code></li>
+</ul>
+<p>这些启用<strong>高级方法</strong>确保 CPU L2/L3 cache topology 正确传递。</p>
+</blockquote>
+<h3 id="22-passthrough-模式">2.2 Passthrough 模式</h3>
+<blockquote>
+<p>[FACT] QEMU 中也支持 passthrough:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#B392F0">-cpu</span><span style="color:#9ECBFF"> host,migratable=off,hypervisor=on,invtsc=on,hv-time=on,hv-passthrough=on</span></span></code></pre>
+<p>⚠️ <strong><code>hv-passthrough</code> 不推荐</strong>:</p>
+<ul>
+<li>激活 KVM 支持的<strong>所有</strong> Hyper-V entitlements</li>
+<li>不仅是硬件支持的</li>
+<li>详见: <a href="https://www.qemu.org/docs/master/system/i386/hyperv.html#supplementary-features">https://www.qemu.org/docs/master/system/i386/hyperv.html#supplementary-features</a></li>
+</ul>
+<p>[FACT] 使用 <code>hv-passthrough</code> 时:</p>
+<ul>
+<li>不需要其他 <code>hv-foo</code> 参数</li>
+<li><code>hv-time</code> <strong>可能</strong>是例外（源文档存疑）</li>
+<li>passthrough 会处理其他</li>
+</ul>
+</blockquote>
+<h3 id="23-smbios-命令行">2.3 SMBIOS 命令行</h3>
+<blockquote>
+<p>[FACT] QEMU 用 <code>-smbios</code> flag:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#B392F0">-smbios</span><span style="color:#9ECBFF"> 'type=0,version=F31o,vendor=American Megatrends International,, LLC.,uefi=on,release=5.17,date=12/03/2020'</span></span>
+<span class="line"><span style="color:#B392F0">-smbios</span><span style="color:#9ECBFF"> 'type=1,version=-CF,sku=Default string,product=X570 AORUS ULTRA,manufacturer=Gigabyte Technology Co.,, Ltd.,uuid=d30dbc2a-d9b0-11ed-afa1-0242ac120002,serial=Default string,family=X570 MB'</span></span>
+<span class="line"><span style="color:#B392F0">-smbios</span><span style="color:#9ECBFF"> 'type=2,asset=Default string,version=Default string,product=X570 AORUS ULTRA,location=Default string,manufacturer=Gigabyte Technology Co.,, Ltd.,serial=Default string'</span></span>
+<span class="line"><span style="color:#B392F0">-smbios</span><span style="color:#9ECBFF"> 'type=3,asset=Default string,version=Default string,sku=Default string,manufacturer=Default string,serial=Default string'</span></span>
+<span class="line"><span style="color:#B392F0">-smbios</span><span style="color:#9ECBFF"> 'type=4,asset=Unknown,version=AMD Ryzen 9 5950X 16-Core Processor            ,part=Zen,manufacturer=Advanced Micro Devices,, Inc.,serial=Unknown,sock_pfx=AM4'</span></span>
+<span class="line"><span style="color:#B392F0">-smbios</span><span style="color:#9ECBFF"> 'type=11,value=Default string'</span></span>
+<span class="line"><span style="color:#B392F0">-smbios</span><span style="color:#9ECBFF"> 'type=17,bank=Bank 0,asset=Not Specified,part=OV_8GR1,manufacturer=OEM_VENDOR,speed=2666,serial=OEM33161,loc_pfx=DIMM 0'</span></span></code></pre>
+</blockquote>
+<blockquote>
+<p>[FACT] 推荐用<strong>脚本</strong>生成（避免手动填写）:</p>
+<ul>
+<li><a href="https://gist.github.com/kiler129/5d437a37c07ac6eb1cdf0e595e488fd2">https://gist.github.com/kiler129/5d437a37c07ac6eb1cdf0e595e488fd2</a></li>
+<li>自动从真实硬件获取值</li>
+<li><strong>确保</strong>不与其他用户完全相同</li>
+</ul>
+</blockquote>
+<hr>
+<hr>
+<h1 id="vrchat-in-virtual-machine--vm--eac-调试配置3-proxmox--pve">VRChat in Virtual Machine — VM + EAC 调试配置：3. Proxmox / PVE</h1>
+<blockquote>
+<p>[FACT] <strong>Proxmox Virtual Environment (PVE)</strong> 设置:</p>
+</blockquote>
+<h3 id="31-操作系统设置">3.1 操作系统设置</h3>
+<blockquote>
+<p>[FACT] 在 VM Options 标签，<strong>操作系统</strong> 必须设为 <strong>“Windows 7”</strong> 或更高。</p>
+</blockquote>
+<h3 id="32-smbios-设置">3.2 SMBIOS 设置</h3>
+<blockquote>
+<p>[FACT] <strong>步骤</strong>:</p>
+<ol>
+<li>填写 BIOS 信息（VM → Options → SMBIOS Setting，“hoge” 占位 OK）</li>
+<li><strong>网络卡 MAC 地址</strong> 改为 <strong>INTEL</strong> 类型</li>
+</ol>
+</blockquote>
+<blockquote>
+<p>参考: <a href="https://www.reddit.com/r/Proxmox/comments/1cq87xc/comment/l3q7c5k/">https://www.reddit.com/r/Proxmox/comments/1cq87xc/comment/l3q7c5k/</a></p>
+</blockquote>
+<h3 id="33-性能调优">3.3 性能调优</h3>
+<blockquote>
+<p>[FACT] <strong>EAC 不直接相关</strong>，但 Proxmox 上跑 VR 游戏需<strong>一致可预测性能</strong>。</p>
+<p>Proxmox 论坛教程: <a href="https://forum.proxmox.com/threads/hey-proxmox-community-lets-talk-about-resources-isolation.124256/">https://forum.proxmox.com/threads/hey-proxmox-community-lets-talk-about-resources-isolation.124256/</a></p>
+</blockquote>
+<hr>
+<hr>
+<h1 id="vrchat-in-virtual-machine--vm--eac-调试配置4-技术原理深入">VRChat in Virtual Machine — VM + EAC 调试配置：4. 技术原理（深入）</h1>
+<h3 id="41-cpuid-hyper-v-vendor-id">4.1 CPUID Hyper-V Vendor ID</h3>
+<blockquote>
+<p>[FACT] hyper-v vendor_id 设置 CPUID <code>leaf 0x40000000</code> 的值。</p>
+<ul>
+<li><strong>默认</strong>: “Microsoft HV” → EAC 拒绝</li>
+<li><strong>修改后</strong>: “Linux KVM Hv” → EAC 接受</li>
+<li><strong>位置</strong>: CPU 的 hypervisor vendor identification string</li>
+</ul>
+</blockquote>
+<h3 id="42-hypervisor-flag-不变">4.2 hypervisor flag 不变</h3>
+<blockquote>
+<p>[FACT] <strong>不需要</strong>修改 <code>hypervisor</code> flag。</p>
+<p>客户机 OS kernel（Windows NT）<strong>仍识别</strong> VM 环境，<strong>仍应用性能优化</strong>。</p>
+<p>客户机 Task Manager 仍显示 “running in a virtual machine”。</p>
+<p><strong>不影响</strong> EAC 在 KVM 环境中的检测。</p>
+</blockquote>
+<h3 id="43-nvidia-code-43-类似性">4.3 NVIDIA Code 43 类似性</h3>
+<blockquote>
+<p>[FACT] 这个方法与著名的 <strong>“NVIDIA code 43 fix”</strong> 非常相似。</p>
+<p><strong>唯一区别</strong>: 不需要隐藏 KVM 接口 (<code>kvm=off</code> 或 <code>&#x3C;kvm>&#x3C;hidden state='on'/>&#x3C;/kvm></code>)。</p>
+<p>如果你<strong>已经</strong>为 NVIDIA code 43 设置 VM（参见 <a href="https://passthroughpo.st/apply-error-43-workaround/%EF%BC%89%EF%BC%8C**VRChat">https://passthroughpo.st/apply-error-43-workaround/），**VRChat</a> + EAC 应该开箱即用**。</p>
+</blockquote>
+<hr>
+<hr>
+<h1 id="vrchat-in-virtual-machine--vm--eac-调试配置5-验证-cpuid高级">VRChat in Virtual Machine — VM + EAC 调试配置：5. 验证 CPUID（高级）</h1>
+<blockquote>
+<p>[FACT] 验证 CPUID 修改生效的 C++ 程序:</p>
+</blockquote>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="cpp"><code><span class="line"><span style="color:#F97583">#include</span><span style="color:#9ECBFF"> &#x3C;iostream></span></span>
+<span class="line"><span style="color:#F97583">#include</span><span style="color:#9ECBFF"> &#x3C;intrin.h></span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">void</span><span style="color:#B392F0"> print_leaf</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">int</span><span style="color:#FFAB70"> leaf</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#E1E4E8">{</span></span>
+<span class="line"><span style="color:#F97583">    int</span><span style="color:#E1E4E8"> res[</span><span style="color:#79B8FF">4</span><span style="color:#E1E4E8">];</span></span>
+<span class="line"><span style="color:#B392F0">    __cpuid</span><span style="color:#E1E4E8">(res, leaf);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#B392F0">    std</span><span style="color:#E1E4E8">::cout </span><span style="color:#F97583">&#x3C;&#x3C;</span><span style="color:#9ECBFF"> "leaf: 0x"</span><span style="color:#F97583"> &#x3C;&#x3C;</span><span style="color:#B392F0"> std</span><span style="color:#E1E4E8">::hex </span><span style="color:#F97583">&#x3C;&#x3C;</span><span style="color:#E1E4E8"> leaf </span><span style="color:#F97583">&#x3C;&#x3C;</span><span style="color:#B392F0"> std</span><span style="color:#E1E4E8">::endl;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">    for</span><span style="color:#E1E4E8"> (</span><span style="color:#F97583">size_t</span><span style="color:#E1E4E8"> i </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> 0</span><span style="color:#E1E4E8">; i </span><span style="color:#F97583">&#x3C;</span><span style="color:#79B8FF"> 4</span><span style="color:#E1E4E8">; i</span><span style="color:#F97583">++</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#E1E4E8">    {</span></span>
+<span class="line"><span style="color:#B392F0">        std</span><span style="color:#E1E4E8">::cout </span><span style="color:#F97583">&#x3C;&#x3C;</span><span style="color:#9ECBFF"> "res"</span><span style="color:#F97583"> &#x3C;&#x3C;</span><span style="color:#E1E4E8"> i </span><span style="color:#F97583">&#x3C;&#x3C;</span><span style="color:#9ECBFF"> ": 0x"</span><span style="color:#F97583"> &#x3C;&#x3C;</span><span style="color:#B392F0"> std</span><span style="color:#E1E4E8">::hex </span><span style="color:#F97583">&#x3C;&#x3C;</span><span style="color:#E1E4E8"> res[i] </span><span style="color:#F97583">&#x3C;&#x3C;</span><span style="color:#9ECBFF"> " ("</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">        for</span><span style="color:#E1E4E8"> (</span><span style="color:#F97583">size_t</span><span style="color:#E1E4E8"> j </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> 0</span><span style="color:#E1E4E8">; j </span><span style="color:#F97583">&#x3C;</span><span style="color:#79B8FF"> 4</span><span style="color:#E1E4E8">; j</span><span style="color:#F97583">++</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#E1E4E8">        {</span></span>
+<span class="line"><span style="color:#F97583">            char</span><span style="color:#E1E4E8"> part </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> (res[i] </span><span style="color:#F97583">>></span><span style="color:#E1E4E8"> j </span><span style="color:#F97583">*</span><span style="color:#79B8FF"> 8</span><span style="color:#E1E4E8">) </span><span style="color:#F97583">&#x26;</span><span style="color:#F97583"> 0x</span><span style="color:#79B8FF">ff</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#B392F0">            std</span><span style="color:#E1E4E8">::cout </span><span style="color:#F97583">&#x3C;&#x3C;</span><span style="color:#E1E4E8"> part;</span></span>
+<span class="line"><span style="color:#E1E4E8">        }</span></span>
+<span class="line"><span style="color:#B392F0">        std</span><span style="color:#E1E4E8">::cout </span><span style="color:#F97583">&#x3C;&#x3C;</span><span style="color:#9ECBFF"> ")"</span><span style="color:#F97583"> &#x3C;&#x3C;</span><span style="color:#B392F0"> std</span><span style="color:#E1E4E8">::endl;</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">int</span><span style="color:#B392F0"> main</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"><span style="color:#E1E4E8">{</span></span>
+<span class="line"><span style="color:#6A737D">    // 参考:</span></span>
+<span class="line"><span style="color:#6A737D">    // https://docs.microsoft.com/en-us/virtualization/hyper-v-on-windows/tlfs/feature-discovery</span></span>
+<span class="line"><span style="color:#6A737D">    // https://docs.microsoft.com/en-us/cpp/intrinsics/cpuid-cpuidex?view=msvc-170</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#B392F0">    std</span><span style="color:#E1E4E8">::cout </span><span style="color:#F97583">&#x3C;&#x3C;</span><span style="color:#9ECBFF"> "manufacturer id:"</span><span style="color:#F97583"> &#x3C;&#x3C;</span><span style="color:#B392F0"> std</span><span style="color:#E1E4E8">::endl;</span></span>
+<span class="line"><span style="color:#B392F0">    print_leaf</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">0</span><span style="color:#E1E4E8">);</span><span style="color:#6A737D"> // Manufacturer ID</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#B392F0">    std</span><span style="color:#E1E4E8">::cout </span><span style="color:#F97583">&#x3C;&#x3C;</span><span style="color:#9ECBFF"> "hyper-v id:"</span><span style="color:#F97583"> &#x3C;&#x3C;</span><span style="color:#B392F0"> std</span><span style="color:#E1E4E8">::endl;</span></span>
+<span class="line"><span style="color:#B392F0">    print_leaf</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">0x</span><span style="color:#79B8FF">40000000</span><span style="color:#E1E4E8">);</span><span style="color:#6A737D"> // Hypervisor CPUID Leaf Range</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">    return</span><span style="color:#79B8FF"> 0</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<h3 id="51-预期输出hv-passthrough-模式">5.1 预期输出（hv-passthrough 模式）</h3>
+<blockquote>
+<p>[FACT] 预期输出示例:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>manufacturer id:</span></span>
+<span class="line"><span>leaf: 0x0</span></span>
+<span class="line"><span>res0: 0x10 (►   )</span></span>
+<span class="line"><span>res1: 0x68747541 (Auth)</span></span>
+<span class="line"><span>res2: 0x444d4163 (cAMD)</span></span>
+<span class="line"><span>res3: 0x69746e65 (enti)</span></span>
+<span class="line"><span>hyper-v id:</span></span>
+<span class="line"><span>leaf: 0x40000000</span></span>
+<span class="line"><span>res0: 0x40000005 (♣  @)</span></span>
+<span class="line"><span>res1: 0x756e694c (Linu)</span></span>
+<span class="line"><span>res2: 0x564b2078 (x KV)</span></span>
+<span class="line"><span>res3: 0x7648204d (M Hv)</span></span></code></pre>
+<p>注意 <code>hyper-v id</code> 显示 “Linux KVM Hv”（不是 “Microsoft HV”）— 表示 passthrough 工作。</p>
+</blockquote>
+<hr>
+<hr>
+<h1 id="vrchat-in-virtual-machine--vm--eac-调试配置6-推荐流程">VRChat in Virtual Machine — VM + EAC 调试配置：6. 推荐流程</h1>
+<blockquote>
+<p>[FACT] <strong>VM 设置 VRChat 的推荐流程</strong>:</p>
+</blockquote>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>1. 设置基础 VM</span></span>
+<span class="line"><span>2. 启用 vendor_id (libvirt) 或 hv-vendor-id (QEMU)</span></span>
+<span class="line"><span>3. 测试 EAC — 应该已工作</span></span>
+<span class="line"><span>4. 如 EAC 仍失败（2022-08-26 后）：</span></span>
+<span class="line"><span>   a. 获取本机 dmidecode 信息</span></span>
+<span class="line"><span>   b. 配置 SMBIOS（libvirt sysinfo 或 QEMU -smbios）</span></span>
+<span class="line"><span>   c. 重启 VM</span></span>
+<span class="line"><span>5. 在 VM 中安装 VRChat</span></span>
+<span class="line"><span>6. 测试 VRChat 启动</span></span>
+<span class="line"><span>7. 性能调优（如果需要）</span></span></code></pre>
+<hr>
+<hr>
+<h1 id="vrchat-in-virtual-machine--vm--eac-调试配置7-已知问题">VRChat in Virtual Machine — VM + EAC 调试配置：7. 已知问题</h1>
+<blockquote>
+<p>[FACT] <strong>已知问题</strong>:</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>问题</th>
+<th>原因</th>
+<th>解决</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>EAC 仍拒绝</strong></td>
+<td>vendor_id 未生效</td>
+<td>检查 CPUID 输出</td>
+</tr>
+<tr>
+<td><strong>VM 启动失败</strong></td>
+<td>SMBIOS 格式错误</td>
+<td>检查 libvirt 日志</td>
+</tr>
+<tr>
+<td><strong>性能极差</strong></td>
+<td>enlightenments 未启用</td>
+<td>启用 hyper-v 完整 passthrough</td>
+</tr>
+<tr>
+<td><strong>libvirt 报 UUID 错误</strong></td>
+<td>sysinfo UUID 与 domain UUID 不匹配</td>
+<td>同步 UUID</td>
+</tr>
+<tr>
+<td><strong>NVIDIA GPU 问题</strong></td>
+<td>未做 GPU passthrough</td>
+<td>设置 GPU passthrough</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<hr>
+<h1 id="vrchat-in-virtual-machine--vm--eac-调试配置8-安全提示">VRChat in Virtual Machine — VM + EAC 调试配置：8. 安全提示</h1>
+<blockquote>
+<p>[FACT] <strong>安全考虑</strong>:</p>
+<ul>
+<li>修改 CPUID 和 SMBIOS 是<strong>模拟硬件</strong> — 不影响真实安全</li>
+<li><strong>合规性结论【未确认】</strong>: 当前页面未直接给出 ToS 条款原文，不能仅凭本页将其表述为“明确不违反 EAC ToS / VRChat ToS”。更稳妥的说法是：官方提供了研究性质文档，但不提供支持，也不承诺长期可用。</li>
+</ul>
+</blockquote>
+<blockquote>
+<p><strong>注意</strong>: VRChat 团队<strong>不支持</strong> VM 运行。如果你遇到问题，<strong>VRChat Support 可能不会帮助</strong>。</p>
+</blockquote>
+<hr>
+<hr>
+<h1 id="vrchat-in-virtual-machine--vm--eac-调试配置9-与其他文档的关系">VRChat in Virtual Machine — VM + EAC 调试配置：9. 与其他文档的关系</h1>
+<table>
+<thead>
+<tr>
+<th>文档</th>
+<th>关系</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>world/udon/launch-options.md</code></td>
+<td>VM 中也可使用启动选项</td>
+</tr>
+<tr>
+<td><code>world/udon/using-build-test.md</code></td>
+<td>VM 中可做 Build &#x26; Test</td>
+</tr>
+<tr>
+<td><code>world/udon/debugging-udon-projects.md</code></td>
+<td>VM 中调试 Udon</td>
+</tr>
+<tr>
+<td><code>world/vvmw.md</code></td>
+<td>VRChat 视频播放器（与 VM 无关，名称相似）</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<hr>
+<h1 id="vrchat-in-virtual-machine--vm--eac-调试配置10-missing-information未确认项">VRChat in Virtual Machine — VM + EAC 调试配置：10. Missing Information（【未确认】项）</h1>
+<blockquote>
+<p>以下信息需要进一步验证或在官方文档中查找:</p>
+</blockquote>
+<ol>
+<li>❓ <strong>VMware Workstation</strong> 的具体配置（user-guide 未涵盖）</li>
+<li>❓ <strong>VirtualBox</strong> 的具体配置</li>
+<li>❓ <strong>macOS (Virtualization.framework)</strong> 的支持情况</li>
+<li>❓ <strong>Windows Hyper-V</strong> 作为 hypervisor 跑 VM 是否可行</li>
+<li>❓ <strong>KVM</strong> 的精确性能影响（与裸机对比）</li>
+<li>❓ <strong>AMD SEV</strong> 或 <strong>Intel TDX</strong> 对 EAC 的影响</li>
+<li>❓ <strong>GPU passthrough</strong> 详细设置（VFIO、Looking Glass）</li>
+<li>❓ <strong>2024-2026</strong> 是否还有新的 EAC 兼容性更新</li>
+</ol>
+<hr>
+<hr>
+<h1 id="vrchat-in-virtual-machine--vm--eac-调试配置来源">VRChat in Virtual Machine — VM + EAC 调试配置：来源</h1>
+<ul>
+<li><a href="https://docs.vrchat.com/docs/using-vrchat-in-a-virtual-machine">Using VRChat in a Virtual Machine</a></li>
+<li><a href="https://www.reddit.com/r/Proxmox/comments/1cq87xc/comment/l3q7c5k/">Proxmox SMBIOS 教程</a></li>
+<li><a href="https://passthroughpo.st/apply-error-43-workaround/">NVIDIA Code 43 Fix</a></li>
+<li><a href="https://www.qemu.org/docs/master/system/i386/hyperv.html#supplementary-features">QEMU Hyper-V Documentation</a></li>
+<li><a href="https://gist.github.com/kiler129/5d437a37c07ac6eb1cdf0e595e488fd2">SMBIOS 脚本生成器</a></li>
+<li>本地化版本: （来源：SP 文档本地译本）</li>
+</ul>
+<hr> </div> <p class="kb-source-note" data-astro-cid-lvjzyg5v>
+本文由 VRChat 开发知识库自动整理（社区整理  · 可信度 medium ），
+          遇到与手写教程冲突的地方，以官方文档为最高优先级。
+</p> <section class="comments" id="comments" data-astro-cid-lvjzyg5v> <h2 class="comments__title" data-astro-cid-lvjzyg5v>✦ 旅人留言（0）</h2> <p class="comments__empty" id="commentsEmpty" data-astro-cid-lvjzyg5v>
+还没有旅人留言 —— 有疑问就写在下面，站长都会回复。
+</p> <form class="comment-form" id="commentForm" data-target="kb-world-development-vm-setup" data-astro-cid-lvjzyg5v> <p class="comment-form__title" data-astro-cid-lvjzyg5v>写下你的留言</p> <input id="cAuthor" maxlength="20" placeholder="昵称（留空则为「旅人」）" data-astro-cid-lvjzyg5v> <textarea id="cBody" maxlength="1000" required placeholder="想问的问题、想说的感谢都可以（最多 1000 字）" data-astro-cid-lvjzyg5v></textarea> <div class="comment-form__actions" data-astro-cid-lvjzyg5v> <button class="btn btn--primary" type="submit" data-astro-cid-lvjzyg5v>发布留言</button> <span class="form-hint" data-astro-cid-lvjzyg5v>留言保存在本站，站长在写作台里能看到</span> <span class="form-msg" id="cMsg" data-astro-cid-lvjzyg5v></span> </div> </form> </section> <nav class="station-nav" aria-label="站间导航" data-astro-cid-lvjzyg5v> <a href="/STELLASTOPVRC/posts/kb-world-data-containers/" data-astro-cid-lvjzyg5v> <span class="dir" data-astro-cid-lvjzyg5v>← 上一站 · 更新的星光</span> <span class="to" data-astro-cid-lvjzyg5v>data-containers</span> </a> <a href="/STELLASTOPVRC/posts/kb-world-examples-ai-navigation/" data-astro-cid-lvjzyg5v> <span class="dir" data-astro-cid-lvjzyg5v>下一站 · 更早的星光 →</span> <span class="to" data-astro-cid-lvjzyg5v>AI Navigation Example</span> </a> </nav> </div> <aside class="toc" id="toc" hidden> <p class="toc__title">✦ 本页星图</p> <nav id="tocNav" aria-label="文章目录"></nav> </aside> <script type="module">const i=document.querySelector(".prose"),d=document.getElementById("toc"),u=document.getElementById("tocNav"),l=[];if(i&&d&&u){const c=[...i.querySelectorAll("h1, h2, h3")];if(c.length>=3){d.hidden=!1,c.forEach((o,e)=>{o.id||(o.id=`sec-${e}`);const n=document.createElement("a");n.href=`#${o.id}`;const s=(o.textContent??"").replace(/\s+/g," ").trim(),r=s.search(/[：:]/),a=r>=4?s.slice(0,r):s;n.textContent=a.length>40?`${a.slice(0,40)}…`:a,n.title=s,u.appendChild(n),l.push({a:n,h:o})});const t=()=>{let o=l[0];for(const e of l)e.h.getBoundingClientRect().top<=130&&(o=e);for(const e of l)e.a.classList.toggle("is-active",e===o)};addEventListener("scroll",t,{passive:!0}),t()}}document.querySelectorAll(".prose pre").forEach(c=>{const t=document.createElement("button");t.className="code-copy",t.type="button",t.textContent="复制",t.addEventListener("click",async()=>{const o=c.querySelector("code")?.innerText??c.innerText;try{await navigator.clipboard.writeText(o)}catch{const e=document.createElement("textarea");e.value=o,document.body.appendChild(e),e.select(),document.execCommand("copy"),e.remove()}t.textContent="已复制 ✓",t.classList.add("is-ok"),setTimeout(()=>{t.textContent="复制",t.classList.remove("is-ok")},1500)}),c.appendChild(t)});</script> </article>  </main> <footer class="site-footer"> <div class="wrap"> <p class="star-line" aria-hidden="true"> <svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> <svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> </p> <p>星之驿站 StellaStop —— 在虚拟宇宙中，为你保留一座驿站</p> <p class="site-footer__disclaimer">
+该网页目前是测试阶段，仅用于测试，所有内容仅供参考；内容全部为引用互联网当中的信息。
+</p> <p>© 2026 星之驿站 · 由 <a href="https://astro.build">Astro</a> 与星光驱动</p> <p> <a data-desk-login hidden title="写作台：登录 / 注册">登录 / 注册</a> ·
+<a href="/STELLASTOPVRC/announcements/">官方公告</a> ·
+<a href="/STELLASTOPVRC/ai/">问星 AI</a> ·
+<a href="/STELLASTOPVRC/feedback/">旅人留言板</a> </p> </div> </footer> <button class="to-top" id="toTop" aria-label="回到顶部"> <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"> <path d="M12 20V5"></path> <path d="M5.5 11.5 12 5l6.5 6.5"></path> </svg> </button> <script type="module">const e=document.getElementById("toTop");if(e){const t=()=>e.classList.toggle("is-visible",scrollY>480);addEventListener("scroll",t,{passive:!0}),t(),e.addEventListener("click",()=>{const o=matchMedia("(prefers-reduced-motion: reduce)").matches;scrollTo({top:0,behavior:o?"auto":"smooth"})})}</script> <script>(function(){const deskConfigured = "";
+
+      /* 写作台探测（页面尾部执行，DOM 已就绪）：
+         1. 计算写作台地址：站点配置 deskUrl（公网部署时填）> 本机默认 localhost:4322 > 同主机 4322
+         2. 探测 /api/gate/status —— 在线才点亮「登录 / 注册」入口，并复用给验证门横幅
+         3. 不在线则保持隐藏，绝不会把访客拽进内网地址；同时给出一次性「镜像模式」提示 */
+      (function () {
+        var host = location.hostname;
+        var isLocal = host === 'localhost' || host === '127.0.0.1' || host === '[::1]';
+        var desk = deskConfigured ||
+          (isLocal ? 'http://localhost:4322' : location.protocol + '//' + host + ':4322');
+        window.STELLA_DESK = desk;
+
+        function revealLogin() {
+          document.querySelectorAll('[data-desk-login]').forEach(function (a) {
+            a.href = desk + '/admin';
+            a.removeAttribute('hidden');
+          });
+        }
+        function showBanner(css, html, shiftHeader) {
+          var bar = document.createElement('div');
+          bar.style.cssText = css;
+          bar.innerHTML = html;
+          document.body.prepend(bar);
+          if (shiftHeader) {
+            var header = document.querySelector('.site-header');
+            if (header) header.style.marginTop = '42px';
+          }
+        }
+        function hintMirrorMode() {
+          try {
+            if (sessionStorage.getItem('stella-desk-hint')) return;
+            sessionStorage.setItem('stella-desk-hint', '1');
+          } catch (e) { /* 无痕模式等：忽略 */ }
+          var tip = document.createElement('div');
+          tip.style.cssText = 'position:fixed;left:14px;bottom:14px;z-index:9998;max-width:min(92vw,430px);padding:.65rem .9rem;border-radius:12px;background:rgba(18,20,44,.92);border:1px solid rgba(150,142,255,.35);color:#e8e6ff;font-size:.82rem;line-height:1.6;font-family:system-ui,sans-serif;box-shadow:0 8px 30px rgba(0,0,0,.35)';
+          tip.innerHTML = 'ℹ️ 静态镜像模式：登录 / 评论 / AI 等互动功能需要站长写作台在线，当前不可用。' +
+            '<span id="stellaDeskHintClose" style="float:right;cursor:pointer;opacity:.75;font-weight:700;margin-left:.6rem" title="关闭">×</span>';
+          document.body.appendChild(tip);
+          var close = function () { tip.remove(); };
+          tip.querySelector('#stellaDeskHintClose').addEventListener('click', close);
+          setTimeout(close, 9000);
+        }
+
+        try {
+          var ctrl = new AbortController();
+          var timer = setTimeout(function () { ctrl.abort(); }, 2500);
+          fetch(desk + '/api/gate/status', { credentials: 'include', signal: ctrl.signal })
+            .then(function (r) { return r.ok ? r.json() : null; })
+            .then(function (d) {
+              clearTimeout(timer);
+              if (!d) throw new Error('desk-offline');
+              window.STELLA_DESK_OK = true;
+              revealLogin();
+              if (d.regionBlocked) {
+                showBanner(
+                  'position:fixed;top:0;left:0;right:0;z-index:9999;padding:1.2rem;text-align:center;background:#1a0a0a;color:#ff9ed2;font-size:.95rem;border-bottom:2px solid #ff4d6d;font-family:system-ui,sans-serif',
+                  '⛔ 你所在的地区（' + (d.regionCountry || '未知') + '）暂不开放访问。',
+                  false
+                );
+                return;
+              }
+              if (d.enabled && !d.passed) {
+                showBanner(
+                  'position:fixed;top:0;left:0;right:0;z-index:9999;padding:0.7rem;text-align:center;background:linear-gradient(94deg,rgba(143,127,247,.25),rgba(98,200,245,.18));border-bottom:1px solid rgba(150,142,255,.3);color:#f0efff;font-size:.88rem;font-family:system-ui,sans-serif',
+                  '🔒 本站启用了安全验证 —— <a href="' + desk + '/gate?next=' + encodeURIComponent(location.href) + '" style="color:#ffd98e;font-weight:700;text-decoration:underline">点击完成验证</a>，通过后即可使用全部功能（30 天免验）。',
+                  true
+                );
+              }
+            })
+            .catch(function () {
+              clearTimeout(timer);
+              window.STELLA_DESK_OK = false;
+              hintMirrorMode();
+            });
+        } catch (e) { /* 忽略 */ }
+      })();
+    })();</script> </body> </html> <script type="module">const m=document.getElementById("commentForm"),s=document.getElementById("cMsg"),u=`${location.protocol}//${location.hostname}:4322/api/message`;function r(e,t=!1){s&&(s.textContent=e,s.classList.toggle("is-err",t),s.classList.toggle("is-ok",!t))}function y(){const e=new Date,t=n=>String(n).padStart(2,"0");return`${e.getFullYear()}-${t(e.getMonth()+1)}-${t(e.getDate())}`}function f(e){let t=7;for(const n of e)t=(t*31+n.charCodeAt(0))%360;return t}function g(e,t){const n=document.createElement("li");n.className="comment",n.innerHTML=`
+      <span class="comment__avatar"></span>
+      <div class="comment__bubble">
+        <div class="comment__head">
+          <span class="comment__name"></span>
+          <time class="comment__date">${y()}</time>
+        </div>
+        <p class="comment__body"></p>
+      </div>`;const o=n.querySelector(".comment__avatar");return o.style.setProperty("--h",String(f(e))),o.textContent=e.slice(0,1),n.querySelector(".comment__name").textContent=e,n.querySelector(".comment__body").textContent=t,n}m?.addEventListener("submit",async e=>{e.preventDefault();const t=document.getElementById("cBody").value.trim();if(!t)return r("留言内容不能为空哦",!0);const n=document.getElementById("cAuthor").value.trim()||"旅人",o=m.querySelector("button");o&&(o.disabled=!0);try{const c=await fetch(u,{credentials:"include",method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({target:m.dataset.target,kind:"comment",author:n,body:t})}),d=await c.json().catch(()=>({}));if(!c.ok)throw new Error(d.error||`发送失败（${c.status}）`);const l=document.querySelector(".comment-list");l&&l.appendChild(g(n,t)),document.getElementById("commentsEmpty")?.remove(),document.getElementById("cBody").value="",r("留言已发布，感谢支持 ✦");const a=document.querySelector(".comments__title"),i=a?.textContent?.match(/（(\d+)）/);a&&i&&(a.textContent=a.textContent.replace(/（\d+）/,`（${Number(i[1])+1}）`))}catch(c){r(c instanceof TypeError?"写作台没在运行，暂时收不到留言 —— 双击「启动博客.bat」就好":c.message,!0)}finally{o&&(o.disabled=!1)}});</script> 

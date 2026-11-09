@@ -1,0 +1,968 @@
+<!DOCTYPE html><html lang="zh-CN"> <head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="generator" content="Astro v5.18.2"><meta name="description" content="MA2BT 是 NDMF 插件，专门将 Modular Avatar 生成的响应式 Animator 层（MA Responsive: <Name>）合并到一个Direct BlendTree，从而减少 FX 层数量并提"><meta name="theme-color" content="#070a1c"><meta property="og:title" content="MA2BT (Modular Avatar to BlendTree) · 星之驿站 StellaStop"><meta property="og:description" content="MA2BT 是 NDMF 插件，专门将 Modular Avatar 生成的响应式 Animator 层（MA Responsive: <Name>）合并到一个Direct BlendTree，从而减少 FX 层数量并提"><meta property="og:type" content="website"><meta name="twitter:card" content="summary"><link rel="icon" type="image/svg+xml" href="/STELLASTOPVRC/favicon.svg"><script>
+      // 在渲染前恢复主题与特效档位，避免闪一下默认状态
+      try {
+        document.documentElement.dataset.theme =
+          localStorage.getItem('stella-theme') || 'nebula';
+        document.documentElement.dataset.fx =
+          localStorage.getItem('stella-fx') || 'standard';
+      } catch {
+        /* 隐私模式读不到就算了 */
+      }
+    </script><link rel="stylesheet" href="/STELLASTOPVRC/custom-vars.css"><title>MA2BT (Modular Avatar to BlendTree) · 星之驿站 StellaStop</title><link rel="stylesheet" href="/STELLASTOPVRC/_astro/about.Bgh6wcGl.css">
+<style>.post-head__meta[data-astro-cid-lvjzyg5v]{color:var(--ink-faint);font-family:var(--font-mono);font-size:.82rem}.post-head[data-astro-cid-lvjzyg5v] .chip-row[data-astro-cid-lvjzyg5v]{margin-top:1rem}.kb-source-note[data-astro-cid-lvjzyg5v]{max-width:760px;margin:2.2rem auto 0;font-size:.82rem;color:var(--ink-faint);border-top:1px dashed var(--line);padding-top:1rem}
+</style></head> <body> <div class="site-notice" id="siteNotice"> <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> <span class="site-notice__text">欢迎来到星之驿站！</span> <button class="site-notice__close" id="noticeClose" type="button" aria-label="关闭公告">
+×
+</button> </div> <a class="skip-link" href="#main">跳到主要内容</a> <canvas id="starfield" aria-hidden="true" data-astro-cid-ra7sfcwn></canvas> <div class="fx-aurora fx-aurora--a" aria-hidden="true" data-astro-cid-ra7sfcwn></div> <div class="fx-aurora fx-aurora--b" aria-hidden="true" data-astro-cid-ra7sfcwn></div>  <script type="module">const u=document.getElementById("starfield");if(u){let F=function(){const n=Math.random();return n<.1?"gold":n<.42?"blue":"white"},v=function(){const n=Math.min(window.devicePixelRatio||1,2);s=window.innerWidth,d=window.innerHeight,u.width=s*n,u.height=d*n,u.style.width=`${s}px`,u.style.height=`${d}px`,t.setTransform(n,0,0,n,0,0);const e=Math.min(190,Math.round(s*d/8500));l=Array.from({length:e},()=>({x:Math.random()*s,y:Math.random()*d,r:r(.4,1.7),base:r(.25,.8),amp:r(.12,.4),speed:r(6e-4,.0022),phase:r(0,Math.PI*2),c:F()})),C=Array.from({length:26},()=>({x:Math.random()*s,y:Math.random()*d,r:r(.9,2.4),vx:r(-.006,.006),vy:r(-.02,-.006),base:r(.2,.5),speed:r(8e-4,.002),phase:r(0,Math.PI*2),c:Math.random()<.5?"gold":"violet"})),c==="off"&&m(0,!0)},D=function(n){const e=Math.random()<.5?1:-1,o=r(Math.PI/7,Math.PI/5),a=r(.45,.75);y.push({x:r(s*.15,s*.85),y:r(-20,d*.3),vx:Math.cos(o)*a*e,vy:Math.sin(o)*a,born:n,life:r(750,1050),len:r(100,170)})},S=function(n){y=y.filter(e=>n-e.born<e.life);for(const e of y){const o=(n-e.born)/e.life,a=e.x+e.vx*(n-e.born),i=e.y+e.vy*(n-e.born),f=o<.15?o/.15:o>.7?(1-o)/.3:1,h=Math.hypot(e.vx,e.vy),x=e.vx/h,g=e.vy/h,b=t.createLinearGradient(a,i,a-x*e.len,i-g*e.len);b.addColorStop(0,`rgba(236,242,255,${(.85*f).toFixed(3)})`),b.addColorStop(1,"rgba(236,242,255,0)"),t.strokeStyle=b,t.lineWidth=1.6,t.lineCap="round",t.beginPath(),t.moveTo(a,i),t.lineTo(a-x*e.len,i-g*e.len),t.stroke()}},B=function(){let o=0;t.lineWidth=.7;for(let a=0;a<l.length&&o<26;a++)for(let i=a+1;i<l.length&&o<26;i++){const f=l[a].x-l[i].x,h=l[a].y-l[i].y,x=f*f+h*h;if(x<16900){const g=(1-Math.sqrt(x)/130)*.17;t.strokeStyle=`rgba(178,170,255,${g.toFixed(3)})`,t.beginPath(),t.moveTo(l[a].x,l[a].y),t.lineTo(l[i].x,l[i].y),t.stroke(),o++}}},X=function(n){for(const e of C){e.x+=e.vx*16,e.y+=e.vy*16,e.y<-12&&(e.y=d+10),e.x<-12&&(e.x=s+10),e.x>s+12&&(e.x=-10);const o=Math.max(.05,e.base+.25*Math.sin(n*e.speed+e.phase)),[a,i,f]=A[e.c];t.beginPath(),t.arc(e.x,e.y,e.r,0,7),t.shadowBlur=9,t.shadowColor=`rgba(${a},${i},${f},0.9)`,t.fillStyle=`rgba(${a},${i},${f},${o.toFixed(3)})`,t.fill()}t.shadowBlur=0},m=function(n,e=!1){t.clearRect(0,0,s,d);for(const o of l){const a=c==="off"?o.base:Math.max(.05,o.base+o.amp*Math.sin(n*o.speed+o.phase)),[i,f,h]=A[o.c];t.beginPath(),t.arc(o.x,o.y,o.r,0,7),o.r>1.25?(t.shadowBlur=7,t.shadowColor=`rgba(${i},${f},${h},0.85)`):t.shadowBlur=0,t.fillStyle=`rgba(${i},${f},${h},${a.toFixed(3)})`,t.fill()}if(t.shadowBlur=0,c!=="off"&&!e){c==="fancy"&&(B(),X(n));const o=c==="fancy"?r(2600,6e3):r(4200,9500);n>P&&(D(n),P=n+o),S(n)}},$=function(n){m(n),M=requestAnimationFrame($)},p=function(){if(c==="off"){m(0,!0);return}cancelAnimationFrame(M),M=requestAnimationFrame($)},w=function(){cancelAnimationFrame(M),t.clearRect(0,0,s,d),m(0,!0)};const t=u.getContext("2d"),k=matchMedia("(prefers-reduced-motion: reduce)").matches,A={white:[240,240,255],blue:[150,215,250],gold:[255,218,150],violet:[178,170,255]};let s=0,d=0,l=[],C=[],y=[],P=2500,M=0,c=document.documentElement.dataset.fx||"standard";k&&(c="off");const r=(n,e)=>n+Math.random()*(e-n);v(),addEventListener("resize",v),document.addEventListener("stella-fx-change",n=>{c=n.detail,c==="off"?w():p()}),c==="off"?m(0,!0):(p(),document.addEventListener("visibilitychange",()=>{document.hidden?w():p()}))}</script> <header class="site-header"> <div class="wrap site-header__inner"> <a class="logo" href="/STELLASTOPVRC/"> <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> <span>星之驿站</span> <span class="logo__romaji">StellaStop</span> </a> <div class="header-right"> <nav class="site-nav" aria-label="站内导航"> <a href="/STELLASTOPVRC/"> 首页 </a><a href="/STELLASTOPVRC/start/"> 新手 </a><a href="/STELLASTOPVRC/posts/"> 教程 </a><a href="/STELLASTOPVRC/videos/"> 视频 </a><a href="/STELLASTOPVRC/resources/"> 资源 </a><a href="/STELLASTOPVRC/booth/"> Booth </a><a href="/STELLASTOPVRC/announcements/"> 公告 </a><a href="/STELLASTOPVRC/ai/"> 问星 </a><a href="/STELLASTOPVRC/changelog/"> 更新日志 </a><a href="/STELLASTOPVRC/about/"> 关于 </a> </nav> <a class="login-link" data-desk-login hidden title="写作台：登录 / 注册后可发教程、传资源">
+登录 / 注册
+</a> <div class="theme-switch"> <button class="theme-switch__btn" id="themeBtn" type="button" aria-haspopup="listbox" aria-expanded="false" aria-label="切换主题配色" title="切换主题配色"> <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"> <path d="M12 3a9 9 0 1 0 9 9c0-1.2-1-2-2.2-2H17a2 2 0 0 1-2-2V6.2C15 5 14.2 4 13 4.4A9 9 0 0 0 12 3Z"></path> <circle cx="7.5" cy="11.5" r="1" fill="currentColor" stroke="none"></circle> <circle cx="10" cy="7.5" r="1" fill="currentColor" stroke="none"></circle> <circle cx="15" cy="7" r="1" fill="currentColor" stroke="none"></circle> </svg> </button> <div class="theme-pop" id="themePop" role="listbox" aria-label="选择主题" hidden> <button class="theme-opt" type="button" role="option" data-theme-value="nebula" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#8f7ff7"></span><span class="dot" style="background:#62c8f5"></span><span class="dot" style="background:#ffd98e"></span> </span> <span class="theme-opt__name">星云 · 蓝紫</span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt" type="button" role="option" data-theme-value="sakura" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#ff8fc7"></span><span class="dot" style="background:#c79bff"></span><span class="dot" style="background:#ffd08e"></span> </span> <span class="theme-opt__name">樱语 · 粉紫</span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt" type="button" role="option" data-theme-value="miku" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#2ed3c2"></span><span class="dot" style="background:#6ea8ff"></span><span class="dot" style="background:#ffe08e"></span> </span> <span class="theme-opt__name">葱色 · 青绿</span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt" type="button" role="option" data-theme-value="ember" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#ffb35c"></span><span class="dot" style="background:#ff7e6b"></span><span class="dot" style="background:#ffd98e"></span> </span> <span class="theme-opt__name">暮金 · 暖橙</span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt" type="button" role="option" data-theme-value="dawn" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#6a5ce8"></span><span class="dot" style="background:#e0568f"></span><span class="dot" style="background:#b8821e"></span> </span> <span class="theme-opt__name">晨星 · 浅色</span> <span class="theme-opt__mark">✦</span> </button> </div> </div> <script type="module">const a=document.getElementById("themeBtn"),n=document.getElementById("themePop");function s(c){document.documentElement.dataset.theme=c;try{localStorage.setItem("stella-theme",c)}catch{}const e=getComputedStyle(document.documentElement).getPropertyValue("--bg-deep").trim();document.querySelector('meta[name="theme-color"]')?.setAttribute("content",e||"#070a1c"),document.querySelectorAll(".theme-opt").forEach(t=>{const d=t.dataset.themeValue===c;t.classList.toggle("is-active",d),t.setAttribute("aria-selected",String(d))})}if(a&&n){const c=document.documentElement.dataset.theme||"nebula";document.querySelectorAll(".theme-opt").forEach(e=>{const t=e.dataset.themeValue===c;e.classList.toggle("is-active",t),e.setAttribute("aria-selected",String(t))}),a.addEventListener("click",e=>{e.stopPropagation();const t=n.hidden;n.hidden=!t,a.setAttribute("aria-expanded",String(t))}),document.addEventListener("click",e=>{!n.hidden&&!e.target.closest(".theme-switch")&&(n.hidden=!0,a.setAttribute("aria-expanded","false"))}),document.addEventListener("keydown",e=>{e.key==="Escape"&&!n.hidden&&(n.hidden=!0,a.setAttribute("aria-expanded","false"),a.focus())}),n.addEventListener("click",e=>{const t=e.target.closest(".theme-opt");t&&(s(t.dataset.themeValue??"nebula"),n.hidden=!0,a.setAttribute("aria-expanded","false"))})}</script> <div class="theme-switch fx-switch"> <button class="theme-switch__btn" id="fxBtn" type="button" aria-haspopup="listbox" aria-expanded="false" aria-label="背景特效设置" title="背景特效设置"> <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"> <path d="M5 3v4M3 5h4M6.5 17.5v3M5 19h3"></path> <path d="M14.5 4.5 16 9l4.5 1.5L16 12l-1.5 4.5L13 12l-4.5-1.5L13 9l1.5-4.5Z"></path> </svg> </button> <div class="theme-pop" id="fxPop" role="listbox" aria-label="背景特效" hidden> <button class="theme-opt fx-opt" type="button" role="option" data-fx-value="off" aria-selected="false"> <span class="fx-opt__body"> <span class="fx-opt__name">关闭特效</span> <span class="fx-opt__hint">最省电</span> </span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt fx-opt" type="button" role="option" data-fx-value="standard" aria-selected="false"> <span class="fx-opt__body"> <span class="fx-opt__name">标准</span> <span class="fx-opt__hint">闪烁星空 + 流星</span> </span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt fx-opt" type="button" role="option" data-fx-value="fancy" aria-selected="false"> <span class="fx-opt__body"> <span class="fx-opt__name">华丽</span> <span class="fx-opt__hint">追加极光 / 星座 / 光尘</span> </span> <span class="theme-opt__mark">✦</span> </button> </div> </div> <script type="module">const n=document.getElementById("fxBtn"),a=document.getElementById("fxPop");function s(d){document.documentElement.dataset.fx=d;try{localStorage.setItem("stella-fx",d)}catch{}document.querySelectorAll("#fxPop .fx-opt").forEach(t=>{const e=t.dataset.fxValue===d;t.classList.toggle("is-active",e),t.setAttribute("aria-selected",String(e))}),document.dispatchEvent(new CustomEvent("stella-fx-change",{detail:d}))}if(n&&a){const d=document.documentElement.dataset.fx||"standard";document.querySelectorAll("#fxPop .fx-opt").forEach(t=>{const e=t.dataset.fxValue===d;t.classList.toggle("is-active",e),t.setAttribute("aria-selected",String(e))}),n.addEventListener("click",t=>{t.stopPropagation();const e=a.hidden;a.hidden=!e,n.setAttribute("aria-expanded",String(e))}),document.addEventListener("click",t=>{!a.hidden&&!t.target.closest(".fx-switch")&&(a.hidden=!0,n.setAttribute("aria-expanded","false"))}),document.addEventListener("keydown",t=>{t.key==="Escape"&&!a.hidden&&(a.hidden=!0,n.setAttribute("aria-expanded","false"),n.focus())}),a.addEventListener("click",t=>{const e=t.target.closest(".fx-opt");e&&(s(e.dataset.fxValue??"standard"),a.hidden=!0,n.setAttribute("aria-expanded","false"))})}</script> </div> </div> </header> <main id="main">  <article class="wrap post-layout" data-astro-cid-lvjzyg5v> <div class="post-main page-fade" data-astro-cid-lvjzyg5v> <header class="post-head" data-astro-cid-lvjzyg5v> <a class="crumb" href="/STELLASTOPVRC/posts/" data-astro-cid-lvjzyg5v>← 返回教程档案</a> <div class="post-head__meta" style="--accent:var(--ink-dim)" data-astro-cid-lvjzyg5v> <span class="badge" data-cat="Avatar 虚拟形象" data-astro-cid-lvjzyg5v>Avatar 虚拟形象</span> <time datetime="2026-06-20" data-astro-cid-lvjzyg5v>2026-06-20</time> <span class="post-head__reading" data-astro-cid-lvjzyg5v>⏱ 约 36 分钟</span>  </div> <h1 class="post-head__title" data-astro-cid-lvjzyg5v>MA2BT (Modular Avatar to BlendTree)</h1> <p class="post-head__lead" data-astro-cid-lvjzyg5v>MA2BT 是 NDMF 插件，专门将 Modular Avatar 生成的响应式 Animator 层（MA Responsive: &lt;Name&gt;）合并到一个Direct BlendTree，从而减少 FX 层数量并提</p> <div class="chip-row" data-astro-cid-lvjzyg5v> <a class="chip" href="/STELLASTOPVRC/posts/?tag=%E7%9F%A5%E8%AF%86%E5%BA%93" data-astro-cid-lvjzyg5v> 知识库 </a><a class="chip" href="/STELLASTOPVRC/posts/?tag=avatar" data-astro-cid-lvjzyg5v> avatar </a> </div> </header> <div class="prose" data-astro-cid-lvjzyg5v> <h1 id="ma2bt-modular-avatar-to-blendtree">MA2BT (Modular Avatar to BlendTree)</h1>
+<blockquote>
+<p>工具名: MA2BT | 来源: github.com/Null-K/MA2BT
+置信度: High (官方仓库)
+语言占比: C# 100.0%
+VPM 包名: <code>com.puddingkc.ma2bt</code></p>
+</blockquote>
+<hr>
+<h2 id="1-工具定位">1. 工具定位</h2>
+<p><strong>MA2BT</strong> 是 NDMF 插件，专门将 Modular Avatar 生成的<strong>响应式 Animator 层</strong>（<code>MA Responsive: &#x3C;Name></code>）合并到一个<strong>Direct BlendTree</strong>，从而减少 FX 层数量并提升 Avatar 运行性能。</p>
+<table>
+<thead>
+<tr>
+<th>维度</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>设计目标</strong></td>
+<td>把多个 MA 响应式层压缩为单一 Direct BlendTree，减少 Animator 层数和空动画</td>
+</tr>
+<tr>
+<td><strong>核心场景</strong></td>
+<td>Avatar 开关多物件（Object Toggle、Material Setter、Shape Changer 等）的层合并优化</td>
+</tr>
+<tr>
+<td><strong>非目标</strong></td>
+<td>Mesh / Bone / PhysBone / Texture 优化（这些归 AAO / LAC / Meshia）</td>
+</tr>
+<tr>
+<td><strong>互补关系</strong></td>
+<td>与 AAO Trace &#x26; Optimize 互补使用；可与 AAO Animator Optimizer 串联工作</td>
+</tr>
+<tr>
+<td><strong>平台限制</strong></td>
+<td>仅作用于 <strong>VRChat Avatar 3.0</strong>（<code>RunsOnPlatforms(WellKnownPlatforms.VRChatAvatar30)</code>）</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>💡 <strong>设计哲学</strong>：MA2BT 不修改 MA 原始层结构，而是在 NDMF 优化阶段后期将符合条件的层”重组”为 Direct BlendTree，<strong>复用已存在的 <code>MA_To_BlendTree_Layer</code> 而非新建</strong>，避免多次构建产生重复层。</p>
+</blockquote>
+<hr>
+<h2 id="2-工作原理">2. 工作原理</h2>
+<p>Modular Avatar 会为每一个响应式属性（Object Toggle、Material Setter、Shape Changer 等）生成一个独立的 Animator 层，这些层在运行时带来额外开销。MA2BT 在构建完成后分析这些生成的层，并将其中<strong>简单结构</strong>转换为共享层中的 BlendTree 节点。</p>
+<h3 id="21-转换前后对比">2.1 转换前后对比</h3>
+<p><strong>优化前</strong>：</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>MA Responsive: Hat        (Layer)</span></span>
+<span class="line"><span>MA Responsive: Glasses    (Layer)</span></span>
+<span class="line"><span>MA Responsive: Jacket     (Layer)</span></span>
+<span class="line"><span>MA Responsive: Shoes      (Layer)</span></span>
+<span class="line"><span>...每个层独立运作</span></span></code></pre>
+<p><strong>优化后</strong>：</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>MA_To_BlendTree_Layer     (1 Layer, 1 Direct BlendTree)</span></span>
+<span class="line"><span>  ├── hat_param     → 1D BlendTree</span></span>
+<span class="line"><span>  ├── glasses_param → 1D BlendTree</span></span>
+<span class="line"><span>  ├── jacket_param  → 1D BlendTree</span></span>
+<span class="line"><span>  └── shoes_param   → 1D BlendTree</span></span>
+<span class="line"><span>...所有参数共用一个根直混层</span></span></code></pre>
+<h3 id="22-执行阶段">2.2 执行阶段</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>1. Modular Avatar 生成 MA Responsive:* 层</span></span>
+<span class="line"><span>   ↓</span></span>
+<span class="line"><span>2. seq.AfterPlugin("nadena.dev.modular-avatar")  ← MA2BT 强制在 MA 之后</span></span>
+<span class="line"><span>   ↓</span></span>
+<span class="line"><span>3. BuildPhase.Optimizing 阶段</span></span>
+<span class="line"><span>   ↓</span></span>
+<span class="line"><span>4. AnalyzeAllLayers() → 过滤可转换层</span></span>
+<span class="line"><span>   ↓</span></span>
+<span class="line"><span>5. GroupByParameter() 按参数分组</span></span>
+<span class="line"><span>   ↓</span></span>
+<span class="line"><span>6. BuildRootBlendTree() 构建 Direct BlendTree</span></span>
+<span class="line"><span>   ↓</span></span>
+<span class="line"><span>7. InjectBlendTreeLayer() 注入新层（复用同名层）</span></span>
+<span class="line"><span>   ↓</span></span>
+<span class="line"><span>8. RemoveLayers() 删除已被转换的源层</span></span>
+<span class="line"><span>   ↓</span></span>
+<span class="line"><span>9. DestroyImmediate(MAToBlendTree 组件)</span></span></code></pre>
+<h3 id="23-关键算法要素">2.3 关键算法要素</h3>
+<table>
+<thead>
+<tr>
+<th>算法点</th>
+<th>实现细节</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>根直混参数</strong></td>
+<td>硬编码字符串常量 <code>zhz/1</code>（继承自原”浊鸷”插件命名）</td>
+</tr>
+<tr>
+<td><strong>注入层名</strong></td>
+<td><code>MA_To_BlendTree_Layer</code>（已存在则复用而非新建）</td>
+</tr>
+<tr>
+<td><strong>注入状态名</strong></td>
+<td><code>RootBlendTree</code>，<code>writeDefaults=true</code></td>
+</tr>
+<tr>
+<td><strong>层权重</strong></td>
+<td><code>DefaultWeight = 1</code>，<code>BlendingMode = Override</code></td>
+</tr>
+<tr>
+<td><strong>阈值算法（Compact）</strong></td>
+<td>按”实际有动画的阈值 + 间距中点”动态生成 1D BlendTree 阈值</td>
+</tr>
+<tr>
+<td><strong>阈值算法（Standard）</strong></td>
+<td>补充 <code>0..Max</code> 所有整数 + 现有值</td>
+</tr>
+<tr>
+<td><strong>副参数支持</strong></td>
+<td>仅接受单边 Greater/Less 阈值（简单布尔条件）</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="3-系统要求">3. 系统要求</h2>
+<table>
+<thead>
+<tr>
+<th>项目</th>
+<th>版本</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Unity</strong></td>
+<td>2022.3 及以上（VRChat 指定 2022.3.22f1）</td>
+</tr>
+<tr>
+<td><strong>VRChat Avatars SDK</strong></td>
+<td>3.x</td>
+</tr>
+<tr>
+<td><strong>Modular Avatar</strong></td>
+<td>≥ 1.10.0</td>
+</tr>
+<tr>
+<td><strong>NDMF</strong></td>
+<td>≥ 1.4.0（随 MA 自动安装）</td>
+</tr>
+<tr>
+<td><strong>运行平台</strong></td>
+<td>仅 VRChat Avatar 3.0</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>⚠️ package.json 中 <code>unity</code> 字段声明为 <code>2019.4</code>，但 README 要求 <code>2022.3+</code>，<strong>两者不一致，以 README 为准</strong>。</p>
+</blockquote>
+<hr>
+<h2 id="4-安装方式">4. 安装方式</h2>
+<h3 id="方式-1-vcc--alcom推荐">方式 1: VCC / ALCOM（推荐）</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>VPM 仓库链接: https://null-k.github.io/vpm-listing/index</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>1. 打开 VCC / ALCOM</span></span>
+<span class="line"><span>2. 添加仓库链接</span></span>
+<span class="line"><span>3. 在项目中安装 MA2BT</span></span>
+<span class="line"><span>4. 确保已安装 Modular Avatar（会带入 NDMF）</span></span></code></pre>
+<h3 id="方式-2-github-release-手动安装">方式 2: GitHub Release 手动安装</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>1. 访问 https://github.com/Null-K/MA2BT/releases</span></span>
+<span class="line"><span>2. 下载最新 .zip 包（v2.0.0+ 为 VPM 格式）</span></span>
+<span class="line"><span>3. 通过 VPM CLI 或 ALCOM 导入</span></span></code></pre>
+<h3 id="方式-3-旧版-unitypackage不推荐">方式 3: 旧版 .unitypackage（不推荐）</h3>
+<blockquote>
+<p>v1.x 提供 <code>MA2BT.unitypackage</code>，v2.x 已切换为 VPM 格式。<strong>建议直接使用 v2.x</strong>。</p>
+</blockquote>
+<hr>
+<h2 id="5-使用方法">5. 使用方法</h2>
+<h3 id="51-基本流程">5.1 基本流程</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>1. 选中你的 Avatar 根节点（Avatar root，含 VRC Avatar Descriptor）</span></span>
+<span class="line"><span>2. Add Component > MA2BT > MA2BT</span></span>
+<span class="line"><span>3. 配置组件选项（Compact Mode / Multi-State Layers / Scan All Layers）</span></span>
+<span class="line"><span>4. 正常构建 Avatar（MA2BT 会在优化阶段自动运行）</span></span>
+<span class="line"><span>5. 在 Console 中查看 [MA2BT] 日志了解转换结果</span></span></code></pre>
+<h3 id="52-inspector-界面">5.2 Inspector 界面</h3>
+<p>组件位于 <code>Add Component > MA2BT > MA2BT</code>，包含：</p>
+<table>
+<thead>
+<tr>
+<th>字段</th>
+<th>类型</th>
+<th>默认值</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>compactMode</code></td>
+<td>bool</td>
+<td>true</td>
+<td>仅在实际存在动画的数值上生成 BlendTree 阈值</td>
+</tr>
+<tr>
+<td><code>convertMultiState</code></td>
+<td>bool</td>
+<td>false</td>
+<td>尝试转换包含多个条件状态的层（默认关闭以保证安全）</td>
+</tr>
+<tr>
+<td><code>scanAllLayers</code></td>
+<td>bool</td>
+<td>false</td>
+<td>不仅扫描 MA 生成的层，也会扫描所有符合模式的 FX 层</td>
+</tr>
+</tbody>
+</table>
+<p>自定义 Inspector 使用紫色主题（<code>Color(0.55, 0.20, 0.85)</code>），版本号 <code>MA2BT v2.0.2</code> 硬编码。</p>
+<h3 id="53-日志格式">5.3 日志格式</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>[MA2BT] No convertible MA Responsive layers found, skipping.</span></span>
+<span class="line"><span>[MA2BT] Keeping layer "&#x3C;layer>": &#x3C;reject reason></span></span>
+<span class="line"><span>[MA2BT] Found N convertible layers (including K non-MA layers), M kept layers.</span></span>
+<span class="line"><span>[MA2BT] Done: merged N layers into K BlendTree nodes.</span></span>
+<span class="line"><span>[MA2BT] Parameter "&#x3C;name>": L layers > T thresholds [v1, v2, ...]</span></span></code></pre>
+<hr>
+<h2 id="6-选项详解">6. 选项详解</h2>
+<h3 id="61-compact-mode默认开启">6.1 Compact Mode（默认开启 ✅）</h3>
+<p><strong>作用</strong>：仅在实际存在动画的数值上生成 BlendTree 阈值，减少空动画。</p>
+<table>
+<thead>
+<tr>
+<th>模式</th>
+<th>阈值生成策略</th>
+<th>适用场景</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Compact（开启）</strong></td>
+<td>按”实际有动画的阈值 + 间距中点”动态生成</td>
+<td>大多数情况（推荐）</td>
+</tr>
+<tr>
+<td><strong>Standard（关闭）</strong></td>
+<td>补充 <code>0..Max</code> 所有整数 + 现有值</td>
+<td>需要枚举所有整数值的特殊场景</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>💡 <strong>建议</strong>：保持默认开启。Standard 模式会产生大量空动画 Clip。</p>
+</blockquote>
+<h3 id="62-multi-state-layers默认关闭">6.2 Multi-State Layers（默认关闭 ❌）</h3>
+<p><strong>作用</strong>：尝试转换包含多个条件状态的层（如多值 int 参数）。</p>
+<table>
+<thead>
+<tr>
+<th>模式</th>
+<th>安全性</th>
+<th>适用场景</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>关闭（默认）</strong></td>
+<td>✅ 高 — 仅支持 2 状态（Default + 1 Conditional）</td>
+<td>大多数情况（推荐）</td>
+</tr>
+<tr>
+<td><strong>开启</strong></td>
+<td>⚠️ 中 — 支持多状态转换</td>
+<td>已知 MA 层结构简单且需要多值参数</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>⚠️ <strong>建议</strong>：除非确认所有层都是简单结构，否则保持关闭。</p>
+</blockquote>
+<h3 id="63-scan-all-layers默认关闭">6.3 Scan All Layers（默认关闭 ❌）</h3>
+<p><strong>作用</strong>：不仅扫描 MA 生成的层，也会扫描所有符合模式的 FX 层。</p>
+<table>
+<thead>
+<tr>
+<th>模式</th>
+<th>扫描范围</th>
+<th>适用场景</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>关闭（默认）</strong></td>
+<td>仅 <code>MA Responsive:</code> 前缀的层</td>
+<td>标准 MA 用户（推荐）</td>
+</tr>
+<tr>
+<td><strong>开启</strong></td>
+<td>所有符合模式的 FX 层</td>
+<td>混合 MA + 手写层的高级用户</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>⚠️ <strong>风险</strong>：开启后可能转换非 MA 生成的层，需自行确保层结构兼容性。</p>
+</blockquote>
+<hr>
+<h2 id="7-可转换条件">7. 可转换条件</h2>
+<p>当且仅当满足<strong>所有</strong>以下条件时，层才会被转换：</p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>条件</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td><strong>层名前缀</strong></td>
+<td>名称以 <code>MA Responsive:</code> 开头（开启 <code>Scan All Layers</code> 时不限制）</td>
+</tr>
+<tr>
+<td>2</td>
+<td><strong>状态数</strong></td>
+<td>状态机包含 2 个状态（1 个 Default + 1 个 Conditional）</td>
+</tr>
+<tr>
+<td>3</td>
+<td><strong>Multi-State</strong></td>
+<td>或开启 <code>Multi-State Layers</code> 时可支持更多状态</td>
+</tr>
+<tr>
+<td>4</td>
+<td><strong>Entry Transition</strong></td>
+<td>所有 Entry Transition 条件仅使用单一参数</td>
+</tr>
+<tr>
+<td>5</td>
+<td><strong>瞬时过渡</strong></td>
+<td>所有 Transition 均为瞬时（<code>Duration = 0</code> 且无 Exit Time）</td>
+</tr>
+</tbody>
+</table>
+<h3 id="71-支持的-condition-mode">7.1 支持的 Condition Mode</h3>
+<table>
+<thead>
+<tr>
+<th>Mode</th>
+<th>是否支持</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Greater</strong></td>
+<td>✅</td>
+<td>支持</td>
+</tr>
+<tr>
+<td><strong>Less</strong></td>
+<td>✅</td>
+<td>支持</td>
+</tr>
+<tr>
+<td><strong>If</strong></td>
+<td>✅</td>
+<td>支持（隐含 ≥ 0.5）</td>
+</tr>
+<tr>
+<td><strong>IfNot</strong></td>
+<td>✅</td>
+<td>支持（隐含 &#x3C; 0.5）</td>
+</tr>
+<tr>
+<td><strong>Equals</strong></td>
+<td>❌</td>
+<td>不支持（直接 Fail）</td>
+</tr>
+<tr>
+<td><strong>NotEqual</strong></td>
+<td>❌</td>
+<td>不支持（直接 Fail）</td>
+</tr>
+</tbody>
+</table>
+<h3 id="72-主参数选择优先级">7.2 主参数选择优先级</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>1. 有限 Lo+Hi 且不以 "__ActiveSelfProxy" 开头的 → 按 (Hi-Lo) 降序</span></span>
+<span class="line"><span>2. 否则有限 Lo+Hi 的 → 再按 "__ActiveSelfProxy" 排序</span></span>
+<span class="line"><span>3. 再退化为至少有 Lo 或 Hi 有限的</span></span></code></pre>
+<h3 id="73-副参数要求">7.3 副参数要求</h3>
+<p>副参数必须为<strong>简单布尔条件</strong>（仅有 Lo 或仅有 Hi），记录为 <code>SecondaryCondition</code>。</p>
+<hr>
+<h2 id="8-跳过原因完整枚举">8. 跳过原因（完整枚举）</h2>
+<p>以下情况<strong>不会</strong>被转换，Console 会输出 <code>Keeping layer "&#x3C;layer>": &#x3C;reject reason></code>。</p>
+<h3 id="81-层结构问题">8.1 层结构问题</h3>
+<table>
+<thead>
+<tr>
+<th>原因</th>
+<th>触发条件</th>
+<th>解决建议</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>No state machine</code></td>
+<td>该层没有状态机</td>
+<td>检查层结构</td>
+</tr>
+<tr>
+<td><code>Insufficient state count (N)</code></td>
+<td>状态数 &#x3C; 2</td>
+<td>检查状态机设计</td>
+</tr>
+<tr>
+<td><code>No default state</code></td>
+<td>没有默认状态</td>
+<td>设置 Default State</td>
+</tr>
+<tr>
+<td><code>Multi-state layer (N conditional states), enable convertMultiState</code></td>
+<td>多状态层但未开启 Multi-State</td>
+<td>开启 <code>convertMultiState</code> 选项</td>
+</tr>
+<tr>
+<td><code>No Entry Transition</code></td>
+<td>没有 Entry Transition</td>
+<td>检查状态机转换</td>
+</tr>
+<tr>
+<td><code>State "&#x3C;name>" has no corresponding Entry Transition</code></td>
+<td>状态没有对应的 Entry Transition</td>
+<td>检查状态机设计</td>
+</tr>
+</tbody>
+</table>
+<h3 id="82-条件参数问题">8.2 条件参数问题</h3>
+<table>
+<thead>
+<tr>
+<th>原因</th>
+<th>触发条件</th>
+<th>解决建议</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Multiple parameters detected: "A" and "B"</code></td>
+<td>检测到多参数</td>
+<td>拆分层，每层单参数</td>
+</tr>
+<tr>
+<td><code>In inverted mode, Entry Transition has N conditions (expected 1)</code></td>
+<td>反相模式多条件</td>
+<td>简化 Entry Transition</td>
+</tr>
+<tr>
+<td><code>Multiple parameters in inverted mode: ...</code></td>
+<td>反相模式多参数</td>
+<td>同上</td>
+</tr>
+<tr>
+<td><code>Inverted multi-parameter AND conditions are not supported</code></td>
+<td>反相多参数 AND 条件</td>
+<td>同上</td>
+</tr>
+<tr>
+<td><code>No conditions</code></td>
+<td>没有条件</td>
+<td>添加条件</td>
+</tr>
+<tr>
+<td><code>Unsupported condition mode: Equals/NotEqual</code></td>
+<td>使用了 Equals/NotEqual</td>
+<td>改用 Greater/Less/If/IfNot</td>
+</tr>
+<tr>
+<td><code>Invalid condition range for parameter "...": lo..hi</code></td>
+<td>无效的阈值范围</td>
+<td>检查阈值设置</td>
+</tr>
+<tr>
+<td><code>Failed to identify main parameter</code></td>
+<td>无法识别主参数</td>
+<td>检查参数条件</td>
+</tr>
+<tr>
+<td><code>Failed to extract parameter name</code></td>
+<td>无法提取参数名</td>
+<td>检查参数名是否合法</td>
+</tr>
+<tr>
+<td><code>Secondary parameter "..." must be a simple boolean condition</code></td>
+<td>副参数非简单布尔</td>
+<td>简化副参数条件</td>
+</tr>
+</tbody>
+</table>
+<h3 id="83-转换问题">8.3 转换问题</h3>
+<table>
+<thead>
+<tr>
+<th>原因</th>
+<th>触发条件</th>
+<th>解决建议</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Non-instant Transition</code></td>
+<td>存在混合时间</td>
+<td>设置 Duration = 0</td>
+</tr>
+<tr>
+<td><code>Complex state machine structure</code></td>
+<td>包含子状态机或 AnyState 过渡</td>
+<td>简化状态机结构</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="9-与其他优化器关系">9. 与其他优化器关系</h2>
+<h3 id="91-推荐执行顺序">9.1 推荐执行顺序</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>1. Modular Avatar（生成 MA Responsive 层）</span></span>
+<span class="line"><span>   ↓</span></span>
+<span class="line"><span>2. MA2BT（合并 MA Responsive 层 → Direct BlendTree）  ← 在 MA 之后</span></span>
+<span class="line"><span>   ↓</span></span>
+<span class="line"><span>3. AAO Trace And Optimize（合并 Skinned Mesh / Bone / PhysBone）</span></span>
+<span class="line"><span>   ↓</span></span>
+<span class="line"><span>4. AAO Animator Optimizer（可进一步合并层）</span></span></code></pre>
+<blockquote>
+<p>💡 MA2BT 与 AAO 是<strong>互补而非竞争</strong>关系：</p>
+<ul>
+<li><strong>MA2BT</strong> 处理 FX 层合并（响应式层 → Direct BlendTree）</li>
+<li><strong>AAO</strong> 处理 Skinned Mesh / Bone / PhysBone 合并</li>
+<li>两者可叠加工作，效果累加</li>
+</ul>
+</blockquote>
+<h3 id="92-测试建议">9.2 测试建议</h3>
+<blockquote>
+<p>⚠️ 如果安装了 AAO 或其他会合并动画层的插件，生成的 <code>MA_To_BlendTree_Layer</code> 层会被这些插件<strong>进一步合并</strong>。可以先移除其他优化插件来测试合并的数量和效果。</p>
+</blockquote>
+<h3 id="93-与-vrcfury-共存">9.3 与 VRCFury 共存</h3>
+<p>参考 <code>ndmf-tools.md</code> 中的执行顺序：</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>1. MA + 其他新增内容 NDMF 工具</span></span>
+<span class="line"><span>2. Fury</span></span>
+<span class="line"><span>3. 所有 NDMF 最佳化工具（包括 MA2BT 和 AAO）</span></span></code></pre>
+<hr>
+<h2 id="10-限制与已知问题">10. 限制与已知问题</h2>
+<h3 id="101-功能限制">10.1 功能限制</h3>
+<table>
+<thead>
+<tr>
+<th>限制</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>平台限制</strong></td>
+<td>仅 VRChat Avatar 3.0（不支持 2.0 / 3.0 以外的平台）</td>
+</tr>
+<tr>
+<td><strong>层类型限制</strong></td>
+<td>仅处理 FX 层（不影响 Base / Additive / Gesture / Action 层）</td>
+</tr>
+<tr>
+<td><strong>参数类型限制</strong></td>
+<td>强制 Float（若同名参数存在但类型不是 Float，会保留默认值并强制转换）</td>
+</tr>
+<tr>
+<td><strong>不支持 Equals/NotEqual</strong></td>
+<td>仅支持 Greater/Less/If/IfNot</td>
+</tr>
+<tr>
+<td><strong>Multi-State 默认关闭</strong></td>
+<td>多状态层需手动开启 <code>convertMultiState</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="102-已知边界">10.2 已知边界</h3>
+<table>
+<thead>
+<tr>
+<th>边界情况</th>
+<th>行为</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>__ActiveSelfProxy</code> 前缀参数</td>
+<td>作为次要优先级处理（避免错误识别为主参数）</td>
+</tr>
+<tr>
+<td>反相模式（双 Entry Transition）</td>
+<td>要求每个 Entry 仅 1 个条件、参数相同</td>
+</tr>
+<tr>
+<td>多参数 AND 条件</td>
+<td>不支持，跳过</td>
+</tr>
+<tr>
+<td>子状态机 / AnyState 过渡</td>
+<td>视为复杂结构，跳过</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="11-反馈渠道">11. 反馈渠道</h2>
+<table>
+<thead>
+<tr>
+<th>语言</th>
+<th>渠道</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>简体中文</strong></td>
+<td>QQ 群 <code>1047423396</code></td>
+</tr>
+<tr>
+<td><strong>English</strong></td>
+<td>GitHub Issues: <a href="https://github.com/Null-K/MA2BT/issues">https://github.com/Null-K/MA2BT/issues</a></td>
+</tr>
+<tr>
+<td><strong>日本語</strong></td>
+<td>GitHub Issues: <a href="https://github.com/Null-K/MA2BT/issues">https://github.com/Null-K/MA2BT/issues</a></td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="12-release-历史">12. Release 历史</h2>
+<table>
+<thead>
+<tr>
+<th>Tag</th>
+<th>发布时间</th>
+<th>资产</th>
+<th>大小</th>
+<th>下载次数</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>v2.0.2</td>
+<td>2026-05-09</td>
+<td><code>com.puddingkc.ma2bt-2.0.2.zip</code> + <code>package.json</code></td>
+<td>16.9 KB</td>
+<td>186</td>
+</tr>
+<tr>
+<td>v2.0.1</td>
+<td>2026-05-05</td>
+<td><code>com.puddingkc.ma2bt-2.0.1.zip</code> + <code>package.json</code></td>
+<td>11.1 KB</td>
+<td>63</td>
+</tr>
+<tr>
+<td>v2.0.0</td>
+<td>2026-05-05</td>
+<td><code>com.puddingkc.ma2bt-2.0.0.zip</code> + <code>package.json</code></td>
+<td>10.2 KB</td>
+<td>17</td>
+</tr>
+<tr>
+<td>v1.0.1</td>
+<td>2026-05-04</td>
+<td><code>MA2BT.unitypackage</code></td>
+<td>6.8 KB</td>
+<td>2</td>
+</tr>
+<tr>
+<td>v1.0.0</td>
+<td>2026-05-04</td>
+<td><code>MA2BT.unitypackage</code></td>
+<td>6.8 KB</td>
+<td>0</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>v1.x 为 <code>.unitypackage</code> 格式；v2.x 切换为 VPM zip 包。</p>
+</blockquote>
+<hr>
+<h2 id="13-架构与依赖开发者参考">13. 架构与依赖（开发者参考）</h2>
+<h3 id="131-项目结构">13.1 项目结构</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>MA2BT/</span></span>
+<span class="line"><span>├── Editor/</span></span>
+<span class="line"><span>│   ├── MAToBlendTreePlugin.cs         # 核心 NDMF 插件</span></span>
+<span class="line"><span>│   └── com.puddingkc.ma2bt.Editor.asmdef</span></span>
+<span class="line"><span>├── Runtime/</span></span>
+<span class="line"><span>│   ├── MAToBlendTree.cs               # MonoBehaviour 设置组件 + 自定义 Inspector</span></span>
+<span class="line"><span>│   └── com.puddingkc.ma2bt.Runtime.asmdef</span></span>
+<span class="line"><span>├── .github/workflows/release.yml      # 自动打包 + 发布</span></span>
+<span class="line"><span>├── LICENSE                            # Unlicense (公共领域)</span></span>
+<span class="line"><span>├── README.md / README_EN.md / README_JP.md</span></span>
+<span class="line"><span>└── package.json                       # VPM 包描述</span></span></code></pre>
+<h3 id="132-核心-ndmf-插件注册">13.2 核心 NDMF 插件注册</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="csharp"><code><span class="line"><span style="color:#E1E4E8">[</span><span style="color:#F97583">assembly</span><span style="color:#E1E4E8">: </span><span style="color:#B392F0">ExportsPlugin</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">typeof</span><span style="color:#E1E4E8">(</span><span style="color:#B392F0">MAToBlendTreePlugin</span><span style="color:#E1E4E8">))]</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">[</span><span style="color:#B392F0">RunsOnPlatforms</span><span style="color:#E1E4E8">(WellKnownPlatforms.VRChatAvatar30)]</span></span>
+<span class="line"><span style="color:#F97583">internal</span><span style="color:#F97583"> class</span><span style="color:#B392F0"> MAToBlendTreePlugin</span><span style="color:#E1E4E8"> : </span><span style="color:#B392F0">Plugin</span></span>
+<span class="line"><span style="color:#E1E4E8">{</span></span>
+<span class="line"><span style="color:#F97583">    public</span><span style="color:#F97583"> override</span><span style="color:#F97583"> string</span><span style="color:#B392F0"> QualifiedName</span><span style="color:#F97583"> =></span><span style="color:#9ECBFF"> "com.puddingkc.ma2bt"</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">    public</span><span style="color:#F97583"> override</span><span style="color:#F97583"> string</span><span style="color:#B392F0"> DisplayName</span><span style="color:#F97583"> =></span><span style="color:#9ECBFF"> "MA2BT"</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">    public</span><span style="color:#F97583"> override</span><span style="color:#B392F0"> Color</span><span style="color:#E1E4E8">? </span><span style="color:#B392F0">ThemeColor</span><span style="color:#F97583"> =></span><span style="color:#F97583"> new</span><span style="color:#B392F0"> Color</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">0.55f</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">0.2f</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">0.85f</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">1</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">    protected</span><span style="color:#F97583"> override</span><span style="color:#F97583"> void</span><span style="color:#B392F0"> Configure</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"><span style="color:#E1E4E8">    {</span></span>
+<span class="line"><span style="color:#B392F0">        Sequence</span><span style="color:#B392F0"> seq</span><span style="color:#F97583"> =</span><span style="color:#B392F0"> InPhase</span><span style="color:#E1E4E8">(BuildPhase.Optimizing);</span></span>
+<span class="line"><span style="color:#E1E4E8">        seq.</span><span style="color:#B392F0">AfterPlugin</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"nadena.dev.modular-avatar"</span><span style="color:#E1E4E8">);  </span><span style="color:#6A737D">// 强制在 MA 之后</span></span>
+<span class="line"><span style="color:#E1E4E8">        seq.</span><span style="color:#B392F0">WithRequiredExtension</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">typeof</span><span style="color:#E1E4E8">(</span><span style="color:#B392F0">AnimatorServicesContext</span><span style="color:#E1E4E8">), </span><span style="color:#B392F0">s</span><span style="color:#F97583"> =></span></span>
+<span class="line"><span style="color:#E1E4E8">        {</span></span>
+<span class="line"><span style="color:#E1E4E8">            s.</span><span style="color:#B392F0">Run</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"MA2BT Optimize"</span><span style="color:#E1E4E8">, </span><span style="color:#B392F0">ctx</span><span style="color:#F97583"> =></span></span>
+<span class="line"><span style="color:#E1E4E8">            {</span></span>
+<span class="line"><span style="color:#F97583">                var</span><span style="color:#B392F0"> settings</span><span style="color:#F97583"> =</span><span style="color:#E1E4E8"> ctx.AvatarRootObject.</span><span style="color:#B392F0">GetComponent</span><span style="color:#E1E4E8">&#x3C;</span><span style="color:#B392F0">MAToBlendTree</span><span style="color:#E1E4E8">>();</span></span>
+<span class="line"><span style="color:#F97583">                if</span><span style="color:#E1E4E8"> (settings </span><span style="color:#F97583">==</span><span style="color:#79B8FF"> null</span><span style="color:#E1E4E8">) </span><span style="color:#F97583">return</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">                var</span><span style="color:#B392F0"> optimizer</span><span style="color:#F97583"> =</span><span style="color:#F97583"> new</span><span style="color:#B392F0"> LayerToBlendTreeOptimizer</span><span style="color:#E1E4E8">(ctx, settings);</span></span>
+<span class="line"><span style="color:#E1E4E8">                optimizer.</span><span style="color:#B392F0">Process</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#E1E4E8">                Object.</span><span style="color:#B392F0">DestroyImmediate</span><span style="color:#E1E4E8">(settings, </span><span style="color:#79B8FF">true</span><span style="color:#E1E4E8">);  </span><span style="color:#6A737D">// 销毁组件</span></span>
+<span class="line"><span style="color:#E1E4E8">            });</span></span>
+<span class="line"><span style="color:#E1E4E8">        });</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<h3 id="133-数据模型">13.3 数据模型</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="csharp"><code><span class="line"><span style="color:#F97583">internal</span><span style="color:#F97583"> class</span><span style="color:#B392F0"> AnalyzedLayer</span></span>
+<span class="line"><span style="color:#E1E4E8">{</span></span>
+<span class="line"><span style="color:#F97583">    public</span><span style="color:#B392F0"> VirtualLayer</span><span style="color:#B392F0"> Layer</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">    public</span><span style="color:#F97583"> bool</span><span style="color:#B392F0"> IsConvertible</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">    public</span><span style="color:#F97583"> string</span><span style="color:#B392F0"> RejectReason</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">    public</span><span style="color:#F97583"> string</span><span style="color:#B392F0"> ParameterName</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">    public</span><span style="color:#F97583"> bool</span><span style="color:#B392F0"> IsInverted</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">    public</span><span style="color:#B392F0"> List</span><span style="color:#E1E4E8">&#x3C;</span><span style="color:#B392F0">StateInfo</span><span style="color:#E1E4E8">> </span><span style="color:#B392F0">States</span><span style="color:#F97583"> =</span><span style="color:#F97583"> new</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#F97583">    public</span><span style="color:#F97583"> int</span><span style="color:#B392F0"> OriginalIndex</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">    public</span><span style="color:#F97583"> bool</span><span style="color:#B392F0"> IsExternalLayer</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">internal</span><span style="color:#F97583"> class</span><span style="color:#B392F0"> StateInfo</span></span>
+<span class="line"><span style="color:#E1E4E8">{</span></span>
+<span class="line"><span style="color:#F97583">    public</span><span style="color:#F97583"> bool</span><span style="color:#B392F0"> IsDefault</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">    public</span><span style="color:#F97583"> float</span><span style="color:#B392F0"> ThresholdLo</span><span style="color:#F97583"> =</span><span style="color:#F97583"> float</span><span style="color:#E1E4E8">.NaN;</span></span>
+<span class="line"><span style="color:#F97583">    public</span><span style="color:#F97583"> float</span><span style="color:#B392F0"> ThresholdHi</span><span style="color:#F97583"> =</span><span style="color:#F97583"> float</span><span style="color:#E1E4E8">.NaN;</span></span>
+<span class="line"><span style="color:#F97583">    public</span><span style="color:#B392F0"> VirtualMotion</span><span style="color:#B392F0"> Motion</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">    public</span><span style="color:#B392F0"> List</span><span style="color:#E1E4E8">&#x3C;</span><span style="color:#B392F0">SecondaryCondition</span><span style="color:#E1E4E8">> </span><span style="color:#B392F0">SecondaryConditions</span><span style="color:#F97583"> =</span><span style="color:#F97583"> new</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">internal</span><span style="color:#F97583"> class</span><span style="color:#B392F0"> ResolvedState</span></span>
+<span class="line"><span style="color:#E1E4E8">{</span></span>
+<span class="line"><span style="color:#F97583">    public</span><span style="color:#B392F0"> StateInfo</span><span style="color:#B392F0"> ActiveState</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">    public</span><span style="color:#B392F0"> StateInfo</span><span style="color:#B392F0"> InactiveState</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">    public</span><span style="color:#B392F0"> List</span><span style="color:#E1E4E8">&#x3C;</span><span style="color:#B392F0">SecondaryCondition</span><span style="color:#E1E4E8">> </span><span style="color:#B392F0">SecondaryConditions</span><span style="color:#F97583"> =</span><span style="color:#F97583"> new</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">internal</span><span style="color:#F97583"> class</span><span style="color:#B392F0"> ParameterGroup</span></span>
+<span class="line"><span style="color:#E1E4E8">{</span></span>
+<span class="line"><span style="color:#F97583">    public</span><span style="color:#F97583"> string</span><span style="color:#B392F0"> ParameterName</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">    public</span><span style="color:#B392F0"> List</span><span style="color:#E1E4E8">&#x3C;</span><span style="color:#B392F0">AnalyzedLayer</span><span style="color:#E1E4E8">> </span><span style="color:#B392F0">Layers</span><span style="color:#F97583"> =</span><span style="color:#F97583"> new</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#F97583">    public</span><span style="color:#B392F0"> List</span><span style="color:#E1E4E8">&#x3C;</span><span style="color:#F97583">float</span><span style="color:#E1E4E8">> </span><span style="color:#B392F0">Thresholds</span><span style="color:#F97583"> =</span><span style="color:#F97583"> new</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<h3 id="134-核心常量">13.4 核心常量</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="csharp"><code><span class="line"><span style="color:#F97583">const</span><span style="color:#F97583"> string</span><span style="color:#B392F0"> ROOT_PARAM</span><span style="color:#F97583">            =</span><span style="color:#9ECBFF"> "zhz/1"</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">const</span><span style="color:#F97583"> string</span><span style="color:#B392F0"> BLEND_TREE_LAYER_NAME</span><span style="color:#F97583"> =</span><span style="color:#9ECBFF"> "MA_To_BlendTree_Layer"</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">const</span><span style="color:#F97583"> string</span><span style="color:#B392F0"> MA_RESPONSIVE_PREFIX</span><span style="color:#F97583">  =</span><span style="color:#9ECBFF"> "MA Responsive: "</span><span style="color:#E1E4E8">;</span></span></code></pre>
+<blockquote>
+<p>⚠️ 根直混参数 <code>zhz/1</code> 是硬编码字符串，继承自原作者”浊鸷”的命名（保留部分命名是为了致敬原始作者）。</p>
+</blockquote>
+<h3 id="135-asmdef-引用">13.5 asmdef 引用</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="json"><code><span class="line"><span style="color:#6A737D">// Editor/com.puddingkc.ma2bt.Editor.asmdef</span></span>
+<span class="line"><span style="color:#E1E4E8">{</span></span>
+<span class="line"><span style="color:#79B8FF">  "references"</span><span style="color:#E1E4E8">: [</span></span>
+<span class="line"><span style="color:#9ECBFF">    "com.puddingkc.ma2bt.Runtime"</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#9ECBFF">    "nadena.dev.ndmf"</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#9ECBFF">    "nadena.dev.ndmf.runtime"</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#9ECBFF">    "nadena.dev.modular-avatar.core"</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#9ECBFF">    "VRC.SDK3A"</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#9ECBFF">    "VRC.SDKBase"</span></span>
+<span class="line"><span style="color:#E1E4E8">  ],</span></span>
+<span class="line"><span style="color:#79B8FF">  "includePlatforms"</span><span style="color:#E1E4E8">: [</span><span style="color:#9ECBFF">"Editor"</span><span style="color:#E1E4E8">]</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<hr>
+<h2 id="14-鸣谢">14. 鸣谢</h2>
+<table>
+<thead>
+<tr>
+<th>贡献者</th>
+<th>贡献</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>丨丿・丶乛</strong> (<a href="https://space.bilibili.com/299071021">https://space.bilibili.com/299071021</a>)</td>
+<td>提供视频灵感</td>
+</tr>
+<tr>
+<td><strong>浊鸷</strong></td>
+<td>原作者，本插件基于其插件修改，保留部分命名</td>
+</tr>
+<tr>
+<td><strong>Null-K / PuddingKC</strong></td>
+<td>当前维护者，v2.x 完全重构</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="15-相关文档cross-reference">15. 相关文档（Cross-Reference）</h2>
+<table>
+<thead>
+<tr>
+<th>文档</th>
+<th>关系</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong><a href="/STELLASTOPVRC/posts/kb-avatar-ndmf-tools/">ndmf-tools.md</a></strong></td>
+<td>NDMF 工具生态总览（含 MA2BT 执行顺序）</td>
+</tr>
+<tr>
+<td><strong><a href="/STELLASTOPVRC/posts/kb-avatar-modular-avatar/">modular-avatar.md</a></strong></td>
+<td>MA 响应式系统（MA2BT 的输入源）</td>
+</tr>
+<tr>
+<td><strong><a href="/STELLASTOPVRC/posts/kb-avatar-avatar-optimizer/">avatar-optimizer.md</a></strong></td>
+<td>AAO（互补工具，处理 Skinned Mesh / Bone / PhysBone）</td>
+</tr>
+<tr>
+<td><strong><a href="/STELLASTOPVRC/posts/kb-avatar-optimization-guide/">optimization-guide.md</a></strong></td>
+<td>Avatar 完整最佳化实操指南</td>
+</tr>
+<tr>
+<td><strong><a href="/STELLASTOPVRC/posts/kb-avatar-performance-rank/">performance-rank.md</a></strong></td>
+<td>PC/Quest 性能等级标准</td>
+</tr>
+<tr>
+<td><strong><a href="/STELLASTOPVRC/posts/kb-avatar-avatar-modding-guide/">avatar-modding-guide.md</a></strong></td>
+<td>Avatar 改模教学</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="16-速查表cheat-sheet">16. 速查表（Cheat Sheet）</h2>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>┌──────────────────────────────────────────────────────────────┐</span></span>
+<span class="line"><span>│ MA2BT 速查                                                   │</span></span>
+<span class="line"><span>├──────────────────────────────────────────────────────────────┤</span></span>
+<span class="line"><span>│ 工具: MA2BT (Modular Avatar to BlendTree)                   │</span></span>
+<span class="line"><span>│ 平台: 仅 VRChat Avatar 3.0                                  │</span></span>
+<span class="line"><span>├──────────────────────────────────────────────────────────────┤</span></span>
+<span class="line"><span>│ VPM: https://null-k.github.io/vpm-listing/index              │</span></span>
+<span class="line"><span>│ GitHub: https://github.com/Null-K/MA2BT                      │</span></span>
+<span class="line"><span>├──────────────────────────────────────────────────────────────┤</span></span>
+<span class="line"><span>│ 依赖: Unity 2022.3+ / VRChat SDK 3.x / MA ≥1.10 / NDMF ≥1.4 │</span></span>
+<span class="line"><span>├──────────────────────────────────────────────────────────────┤</span></span>
+<span class="line"><span>│ 默认选项:                                                    │</span></span>
+<span class="line"><span>│   Compact Mode = true (推荐保持)                              │</span></span>
+<span class="line"><span>│   Multi-State Layers = false (保持关闭)                      │</span></span>
+<span class="line"><span>│   Scan All Layers = false (保持关闭)                         │</span></span>
+<span class="line"><span>├──────────────────────────────────────────────────────────────┤</span></span>
+<span class="line"><span>│ 注入层: MA_To_BlendTree_Layer (同名复用)                     │</span></span>
+<span class="line"><span>│ 根直混参数: zhz/1 (硬编码)                                    │</span></span>
+<span class="line"><span>├──────────────────────────────────────────────────────────────┤</span></span>
+<span class="line"><span>│ 不支持: Equals/NotEqual / 多参数 AND / 子状态机 / AnyState    │</span></span>
+<span class="line"><span>├──────────────────────────────────────────────────────────────┤</span></span>
+<span class="line"><span>│ 反馈: 简体中文 QQ群 1047423396 / 其他 GitHub Issues          │</span></span>
+<span class="line"><span>└──────────────────────────────────────────────────────────────┘</span></span></code></pre> </div> <p class="kb-source-note" data-astro-cid-lvjzyg5v>
+本文由 VRChat 开发知识库自动整理（社区整理  · 可信度 Medium  · 最后校对 2026-06-20），
+          遇到与手写教程冲突的地方，以官方文档为最高优先级。
+</p> <section class="comments" id="comments" data-astro-cid-lvjzyg5v> <h2 class="comments__title" data-astro-cid-lvjzyg5v>✦ 旅人留言（0）</h2> <p class="comments__empty" id="commentsEmpty" data-astro-cid-lvjzyg5v>
+还没有旅人留言 —— 有疑问就写在下面，站长都会回复。
+</p> <form class="comment-form" id="commentForm" data-target="kb-avatar-ma2bt" data-astro-cid-lvjzyg5v> <p class="comment-form__title" data-astro-cid-lvjzyg5v>写下你的留言</p> <input id="cAuthor" maxlength="20" placeholder="昵称（留空则为「旅人」）" data-astro-cid-lvjzyg5v> <textarea id="cBody" maxlength="1000" required placeholder="想问的问题、想说的感谢都可以（最多 1000 字）" data-astro-cid-lvjzyg5v></textarea> <div class="comment-form__actions" data-astro-cid-lvjzyg5v> <button class="btn btn--primary" type="submit" data-astro-cid-lvjzyg5v>发布留言</button> <span class="form-hint" data-astro-cid-lvjzyg5v>留言保存在本站，站长在写作台里能看到</span> <span class="form-msg" id="cMsg" data-astro-cid-lvjzyg5v></span> </div> </form> </section> <nav class="station-nav" aria-label="站间导航" data-astro-cid-lvjzyg5v> <a href="/STELLASTOPVRC/posts/kb-avatar-meshia-mesh-simplification/" data-astro-cid-lvjzyg5v> <span class="dir" data-astro-cid-lvjzyg5v>← 上一站 · 更新的星光</span> <span class="to" data-astro-cid-lvjzyg5v>Meshia Mesh Simplification</span> </a> <a href="/STELLASTOPVRC/posts/kb-comparisons-build-time-vs-runtime/" data-astro-cid-lvjzyg5v> <span class="dir" data-astro-cid-lvjzyg5v>下一站 · 更早的星光 →</span> <span class="to" data-astro-cid-lvjzyg5v>Build-Time vs Runtime Separation (构建时与运行时分离)</span> </a> </nav> </div> <aside class="toc" id="toc" hidden> <p class="toc__title">✦ 本页星图</p> <nav id="tocNav" aria-label="文章目录"></nav> </aside> <script type="module">const i=document.querySelector(".prose"),d=document.getElementById("toc"),u=document.getElementById("tocNav"),l=[];if(i&&d&&u){const c=[...i.querySelectorAll("h1, h2, h3")];if(c.length>=3){d.hidden=!1,c.forEach((o,e)=>{o.id||(o.id=`sec-${e}`);const n=document.createElement("a");n.href=`#${o.id}`;const s=(o.textContent??"").replace(/\s+/g," ").trim(),r=s.search(/[：:]/),a=r>=4?s.slice(0,r):s;n.textContent=a.length>40?`${a.slice(0,40)}…`:a,n.title=s,u.appendChild(n),l.push({a:n,h:o})});const t=()=>{let o=l[0];for(const e of l)e.h.getBoundingClientRect().top<=130&&(o=e);for(const e of l)e.a.classList.toggle("is-active",e===o)};addEventListener("scroll",t,{passive:!0}),t()}}document.querySelectorAll(".prose pre").forEach(c=>{const t=document.createElement("button");t.className="code-copy",t.type="button",t.textContent="复制",t.addEventListener("click",async()=>{const o=c.querySelector("code")?.innerText??c.innerText;try{await navigator.clipboard.writeText(o)}catch{const e=document.createElement("textarea");e.value=o,document.body.appendChild(e),e.select(),document.execCommand("copy"),e.remove()}t.textContent="已复制 ✓",t.classList.add("is-ok"),setTimeout(()=>{t.textContent="复制",t.classList.remove("is-ok")},1500)}),c.appendChild(t)});</script> </article>  </main> <footer class="site-footer"> <div class="wrap"> <p class="star-line" aria-hidden="true"> <svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> <svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> </p> <p>星之驿站 StellaStop —— 在虚拟宇宙中，为你保留一座驿站</p> <p class="site-footer__disclaimer">
+该网页目前是测试阶段，仅用于测试，所有内容仅供参考；内容全部为引用互联网当中的信息。
+</p> <p>© 2026 星之驿站 · 由 <a href="https://astro.build">Astro</a> 与星光驱动</p> <p> <a data-desk-login hidden title="写作台：登录 / 注册">登录 / 注册</a> ·
+<a href="/STELLASTOPVRC/announcements/">官方公告</a> ·
+<a href="/STELLASTOPVRC/ai/">问星 AI</a> ·
+<a href="/STELLASTOPVRC/feedback/">旅人留言板</a> </p> </div> </footer> <button class="to-top" id="toTop" aria-label="回到顶部"> <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"> <path d="M12 20V5"></path> <path d="M5.5 11.5 12 5l6.5 6.5"></path> </svg> </button> <script type="module">const e=document.getElementById("toTop");if(e){const t=()=>e.classList.toggle("is-visible",scrollY>480);addEventListener("scroll",t,{passive:!0}),t(),e.addEventListener("click",()=>{const o=matchMedia("(prefers-reduced-motion: reduce)").matches;scrollTo({top:0,behavior:o?"auto":"smooth"})})}</script> <script>(function(){const deskConfigured = "";
+
+      /* 写作台探测（页面尾部执行，DOM 已就绪）：
+         1. 计算写作台地址：站点配置 deskUrl（公网部署时填）> 本机默认 localhost:4322 > 同主机 4322
+         2. 探测 /api/gate/status —— 在线才点亮「登录 / 注册」入口，并复用给验证门横幅
+         3. 不在线则保持隐藏，绝不会把访客拽进内网地址；同时给出一次性「镜像模式」提示 */
+      (function () {
+        var host = location.hostname;
+        var isLocal = host === 'localhost' || host === '127.0.0.1' || host === '[::1]';
+        var desk = deskConfigured ||
+          (isLocal ? 'http://localhost:4322' : location.protocol + '//' + host + ':4322');
+        window.STELLA_DESK = desk;
+
+        function revealLogin() {
+          document.querySelectorAll('[data-desk-login]').forEach(function (a) {
+            a.href = desk + '/admin';
+            a.removeAttribute('hidden');
+          });
+        }
+        function showBanner(css, html, shiftHeader) {
+          var bar = document.createElement('div');
+          bar.style.cssText = css;
+          bar.innerHTML = html;
+          document.body.prepend(bar);
+          if (shiftHeader) {
+            var header = document.querySelector('.site-header');
+            if (header) header.style.marginTop = '42px';
+          }
+        }
+        function hintMirrorMode() {
+          try {
+            if (sessionStorage.getItem('stella-desk-hint')) return;
+            sessionStorage.setItem('stella-desk-hint', '1');
+          } catch (e) { /* 无痕模式等：忽略 */ }
+          var tip = document.createElement('div');
+          tip.style.cssText = 'position:fixed;left:14px;bottom:14px;z-index:9998;max-width:min(92vw,430px);padding:.65rem .9rem;border-radius:12px;background:rgba(18,20,44,.92);border:1px solid rgba(150,142,255,.35);color:#e8e6ff;font-size:.82rem;line-height:1.6;font-family:system-ui,sans-serif;box-shadow:0 8px 30px rgba(0,0,0,.35)';
+          tip.innerHTML = 'ℹ️ 静态镜像模式：登录 / 评论 / AI 等互动功能需要站长写作台在线，当前不可用。' +
+            '<span id="stellaDeskHintClose" style="float:right;cursor:pointer;opacity:.75;font-weight:700;margin-left:.6rem" title="关闭">×</span>';
+          document.body.appendChild(tip);
+          var close = function () { tip.remove(); };
+          tip.querySelector('#stellaDeskHintClose').addEventListener('click', close);
+          setTimeout(close, 9000);
+        }
+
+        try {
+          var ctrl = new AbortController();
+          var timer = setTimeout(function () { ctrl.abort(); }, 2500);
+          fetch(desk + '/api/gate/status', { credentials: 'include', signal: ctrl.signal })
+            .then(function (r) { return r.ok ? r.json() : null; })
+            .then(function (d) {
+              clearTimeout(timer);
+              if (!d) throw new Error('desk-offline');
+              window.STELLA_DESK_OK = true;
+              revealLogin();
+              if (d.regionBlocked) {
+                showBanner(
+                  'position:fixed;top:0;left:0;right:0;z-index:9999;padding:1.2rem;text-align:center;background:#1a0a0a;color:#ff9ed2;font-size:.95rem;border-bottom:2px solid #ff4d6d;font-family:system-ui,sans-serif',
+                  '⛔ 你所在的地区（' + (d.regionCountry || '未知') + '）暂不开放访问。',
+                  false
+                );
+                return;
+              }
+              if (d.enabled && !d.passed) {
+                showBanner(
+                  'position:fixed;top:0;left:0;right:0;z-index:9999;padding:0.7rem;text-align:center;background:linear-gradient(94deg,rgba(143,127,247,.25),rgba(98,200,245,.18));border-bottom:1px solid rgba(150,142,255,.3);color:#f0efff;font-size:.88rem;font-family:system-ui,sans-serif',
+                  '🔒 本站启用了安全验证 —— <a href="' + desk + '/gate?next=' + encodeURIComponent(location.href) + '" style="color:#ffd98e;font-weight:700;text-decoration:underline">点击完成验证</a>，通过后即可使用全部功能（30 天免验）。',
+                  true
+                );
+              }
+            })
+            .catch(function () {
+              clearTimeout(timer);
+              window.STELLA_DESK_OK = false;
+              hintMirrorMode();
+            });
+        } catch (e) { /* 忽略 */ }
+      })();
+    })();</script> </body> </html> <script type="module">const m=document.getElementById("commentForm"),s=document.getElementById("cMsg"),u=`${location.protocol}//${location.hostname}:4322/api/message`;function r(e,t=!1){s&&(s.textContent=e,s.classList.toggle("is-err",t),s.classList.toggle("is-ok",!t))}function y(){const e=new Date,t=n=>String(n).padStart(2,"0");return`${e.getFullYear()}-${t(e.getMonth()+1)}-${t(e.getDate())}`}function f(e){let t=7;for(const n of e)t=(t*31+n.charCodeAt(0))%360;return t}function g(e,t){const n=document.createElement("li");n.className="comment",n.innerHTML=`
+      <span class="comment__avatar"></span>
+      <div class="comment__bubble">
+        <div class="comment__head">
+          <span class="comment__name"></span>
+          <time class="comment__date">${y()}</time>
+        </div>
+        <p class="comment__body"></p>
+      </div>`;const o=n.querySelector(".comment__avatar");return o.style.setProperty("--h",String(f(e))),o.textContent=e.slice(0,1),n.querySelector(".comment__name").textContent=e,n.querySelector(".comment__body").textContent=t,n}m?.addEventListener("submit",async e=>{e.preventDefault();const t=document.getElementById("cBody").value.trim();if(!t)return r("留言内容不能为空哦",!0);const n=document.getElementById("cAuthor").value.trim()||"旅人",o=m.querySelector("button");o&&(o.disabled=!0);try{const c=await fetch(u,{credentials:"include",method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({target:m.dataset.target,kind:"comment",author:n,body:t})}),d=await c.json().catch(()=>({}));if(!c.ok)throw new Error(d.error||`发送失败（${c.status}）`);const l=document.querySelector(".comment-list");l&&l.appendChild(g(n,t)),document.getElementById("commentsEmpty")?.remove(),document.getElementById("cBody").value="",r("留言已发布，感谢支持 ✦");const a=document.querySelector(".comments__title"),i=a?.textContent?.match(/（(\d+)）/);a&&i&&(a.textContent=a.textContent.replace(/（\d+）/,`（${Number(i[1])+1}）`))}catch(c){r(c instanceof TypeError?"写作台没在运行，暂时收不到留言 —— 双击「启动博客.bat」就好":c.message,!0)}finally{o&&(o.disabled=!1)}});</script> 

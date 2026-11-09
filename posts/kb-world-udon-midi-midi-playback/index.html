@@ -1,0 +1,625 @@
+<!DOCTYPE html><html lang="zh-CN"> <head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="generator" content="Astro v5.18.2"><meta name="description" content="通过 VRCMidiPlayer 组件 播放 MIDI 文件,同步播放对应的音频文件,并向所有目标 UdonBehaviour 发送 MIDI Note On / Note Off 事件。"><meta name="theme-color" content="#070a1c"><meta property="og:title" content="MIDI Playback(MIDI 文件回放) · 星之驿站 StellaStop"><meta property="og:description" content="通过 VRCMidiPlayer 组件 播放 MIDI 文件,同步播放对应的音频文件,并向所有目标 UdonBehaviour 发送 MIDI Note On / Note Off 事件。"><meta property="og:type" content="website"><meta name="twitter:card" content="summary"><link rel="icon" type="image/svg+xml" href="/STELLASTOPVRC/favicon.svg"><script>
+      // 在渲染前恢复主题与特效档位，避免闪一下默认状态
+      try {
+        document.documentElement.dataset.theme =
+          localStorage.getItem('stella-theme') || 'nebula';
+        document.documentElement.dataset.fx =
+          localStorage.getItem('stella-fx') || 'standard';
+      } catch {
+        /* 隐私模式读不到就算了 */
+      }
+    </script><link rel="stylesheet" href="/STELLASTOPVRC/custom-vars.css"><title>MIDI Playback(MIDI 文件回放) · 星之驿站 StellaStop</title><link rel="stylesheet" href="/STELLASTOPVRC/_astro/about.Bgh6wcGl.css">
+<style>.post-head__meta[data-astro-cid-lvjzyg5v]{color:var(--ink-faint);font-family:var(--font-mono);font-size:.82rem}.post-head[data-astro-cid-lvjzyg5v] .chip-row[data-astro-cid-lvjzyg5v]{margin-top:1rem}.kb-source-note[data-astro-cid-lvjzyg5v]{max-width:760px;margin:2.2rem auto 0;font-size:.82rem;color:var(--ink-faint);border-top:1px dashed var(--line);padding-top:1rem}
+</style></head> <body> <div class="site-notice" id="siteNotice"> <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> <span class="site-notice__text">欢迎来到星之驿站！</span> <button class="site-notice__close" id="noticeClose" type="button" aria-label="关闭公告">
+×
+</button> </div> <a class="skip-link" href="#main">跳到主要内容</a> <canvas id="starfield" aria-hidden="true" data-astro-cid-ra7sfcwn></canvas> <div class="fx-aurora fx-aurora--a" aria-hidden="true" data-astro-cid-ra7sfcwn></div> <div class="fx-aurora fx-aurora--b" aria-hidden="true" data-astro-cid-ra7sfcwn></div>  <script type="module">const u=document.getElementById("starfield");if(u){let F=function(){const n=Math.random();return n<.1?"gold":n<.42?"blue":"white"},v=function(){const n=Math.min(window.devicePixelRatio||1,2);s=window.innerWidth,d=window.innerHeight,u.width=s*n,u.height=d*n,u.style.width=`${s}px`,u.style.height=`${d}px`,t.setTransform(n,0,0,n,0,0);const e=Math.min(190,Math.round(s*d/8500));l=Array.from({length:e},()=>({x:Math.random()*s,y:Math.random()*d,r:r(.4,1.7),base:r(.25,.8),amp:r(.12,.4),speed:r(6e-4,.0022),phase:r(0,Math.PI*2),c:F()})),C=Array.from({length:26},()=>({x:Math.random()*s,y:Math.random()*d,r:r(.9,2.4),vx:r(-.006,.006),vy:r(-.02,-.006),base:r(.2,.5),speed:r(8e-4,.002),phase:r(0,Math.PI*2),c:Math.random()<.5?"gold":"violet"})),c==="off"&&m(0,!0)},D=function(n){const e=Math.random()<.5?1:-1,o=r(Math.PI/7,Math.PI/5),a=r(.45,.75);y.push({x:r(s*.15,s*.85),y:r(-20,d*.3),vx:Math.cos(o)*a*e,vy:Math.sin(o)*a,born:n,life:r(750,1050),len:r(100,170)})},S=function(n){y=y.filter(e=>n-e.born<e.life);for(const e of y){const o=(n-e.born)/e.life,a=e.x+e.vx*(n-e.born),i=e.y+e.vy*(n-e.born),f=o<.15?o/.15:o>.7?(1-o)/.3:1,h=Math.hypot(e.vx,e.vy),x=e.vx/h,g=e.vy/h,b=t.createLinearGradient(a,i,a-x*e.len,i-g*e.len);b.addColorStop(0,`rgba(236,242,255,${(.85*f).toFixed(3)})`),b.addColorStop(1,"rgba(236,242,255,0)"),t.strokeStyle=b,t.lineWidth=1.6,t.lineCap="round",t.beginPath(),t.moveTo(a,i),t.lineTo(a-x*e.len,i-g*e.len),t.stroke()}},B=function(){let o=0;t.lineWidth=.7;for(let a=0;a<l.length&&o<26;a++)for(let i=a+1;i<l.length&&o<26;i++){const f=l[a].x-l[i].x,h=l[a].y-l[i].y,x=f*f+h*h;if(x<16900){const g=(1-Math.sqrt(x)/130)*.17;t.strokeStyle=`rgba(178,170,255,${g.toFixed(3)})`,t.beginPath(),t.moveTo(l[a].x,l[a].y),t.lineTo(l[i].x,l[i].y),t.stroke(),o++}}},X=function(n){for(const e of C){e.x+=e.vx*16,e.y+=e.vy*16,e.y<-12&&(e.y=d+10),e.x<-12&&(e.x=s+10),e.x>s+12&&(e.x=-10);const o=Math.max(.05,e.base+.25*Math.sin(n*e.speed+e.phase)),[a,i,f]=A[e.c];t.beginPath(),t.arc(e.x,e.y,e.r,0,7),t.shadowBlur=9,t.shadowColor=`rgba(${a},${i},${f},0.9)`,t.fillStyle=`rgba(${a},${i},${f},${o.toFixed(3)})`,t.fill()}t.shadowBlur=0},m=function(n,e=!1){t.clearRect(0,0,s,d);for(const o of l){const a=c==="off"?o.base:Math.max(.05,o.base+o.amp*Math.sin(n*o.speed+o.phase)),[i,f,h]=A[o.c];t.beginPath(),t.arc(o.x,o.y,o.r,0,7),o.r>1.25?(t.shadowBlur=7,t.shadowColor=`rgba(${i},${f},${h},0.85)`):t.shadowBlur=0,t.fillStyle=`rgba(${i},${f},${h},${a.toFixed(3)})`,t.fill()}if(t.shadowBlur=0,c!=="off"&&!e){c==="fancy"&&(B(),X(n));const o=c==="fancy"?r(2600,6e3):r(4200,9500);n>P&&(D(n),P=n+o),S(n)}},$=function(n){m(n),M=requestAnimationFrame($)},p=function(){if(c==="off"){m(0,!0);return}cancelAnimationFrame(M),M=requestAnimationFrame($)},w=function(){cancelAnimationFrame(M),t.clearRect(0,0,s,d),m(0,!0)};const t=u.getContext("2d"),k=matchMedia("(prefers-reduced-motion: reduce)").matches,A={white:[240,240,255],blue:[150,215,250],gold:[255,218,150],violet:[178,170,255]};let s=0,d=0,l=[],C=[],y=[],P=2500,M=0,c=document.documentElement.dataset.fx||"standard";k&&(c="off");const r=(n,e)=>n+Math.random()*(e-n);v(),addEventListener("resize",v),document.addEventListener("stella-fx-change",n=>{c=n.detail,c==="off"?w():p()}),c==="off"?m(0,!0):(p(),document.addEventListener("visibilitychange",()=>{document.hidden?w():p()}))}</script> <header class="site-header"> <div class="wrap site-header__inner"> <a class="logo" href="/STELLASTOPVRC/"> <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> <span>星之驿站</span> <span class="logo__romaji">StellaStop</span> </a> <div class="header-right"> <nav class="site-nav" aria-label="站内导航"> <a href="/STELLASTOPVRC/"> 首页 </a><a href="/STELLASTOPVRC/start/"> 新手 </a><a href="/STELLASTOPVRC/posts/"> 教程 </a><a href="/STELLASTOPVRC/videos/"> 视频 </a><a href="/STELLASTOPVRC/resources/"> 资源 </a><a href="/STELLASTOPVRC/booth/"> Booth </a><a href="/STELLASTOPVRC/announcements/"> 公告 </a><a href="/STELLASTOPVRC/ai/"> 问星 </a><a href="/STELLASTOPVRC/changelog/"> 更新日志 </a><a href="/STELLASTOPVRC/about/"> 关于 </a> </nav> <a class="login-link" data-desk-login hidden title="写作台：登录 / 注册后可发教程、传资源">
+登录 / 注册
+</a> <div class="theme-switch"> <button class="theme-switch__btn" id="themeBtn" type="button" aria-haspopup="listbox" aria-expanded="false" aria-label="切换主题配色" title="切换主题配色"> <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"> <path d="M12 3a9 9 0 1 0 9 9c0-1.2-1-2-2.2-2H17a2 2 0 0 1-2-2V6.2C15 5 14.2 4 13 4.4A9 9 0 0 0 12 3Z"></path> <circle cx="7.5" cy="11.5" r="1" fill="currentColor" stroke="none"></circle> <circle cx="10" cy="7.5" r="1" fill="currentColor" stroke="none"></circle> <circle cx="15" cy="7" r="1" fill="currentColor" stroke="none"></circle> </svg> </button> <div class="theme-pop" id="themePop" role="listbox" aria-label="选择主题" hidden> <button class="theme-opt" type="button" role="option" data-theme-value="nebula" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#8f7ff7"></span><span class="dot" style="background:#62c8f5"></span><span class="dot" style="background:#ffd98e"></span> </span> <span class="theme-opt__name">星云 · 蓝紫</span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt" type="button" role="option" data-theme-value="sakura" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#ff8fc7"></span><span class="dot" style="background:#c79bff"></span><span class="dot" style="background:#ffd08e"></span> </span> <span class="theme-opt__name">樱语 · 粉紫</span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt" type="button" role="option" data-theme-value="miku" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#2ed3c2"></span><span class="dot" style="background:#6ea8ff"></span><span class="dot" style="background:#ffe08e"></span> </span> <span class="theme-opt__name">葱色 · 青绿</span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt" type="button" role="option" data-theme-value="ember" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#ffb35c"></span><span class="dot" style="background:#ff7e6b"></span><span class="dot" style="background:#ffd98e"></span> </span> <span class="theme-opt__name">暮金 · 暖橙</span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt" type="button" role="option" data-theme-value="dawn" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#6a5ce8"></span><span class="dot" style="background:#e0568f"></span><span class="dot" style="background:#b8821e"></span> </span> <span class="theme-opt__name">晨星 · 浅色</span> <span class="theme-opt__mark">✦</span> </button> </div> </div> <script type="module">const a=document.getElementById("themeBtn"),n=document.getElementById("themePop");function s(c){document.documentElement.dataset.theme=c;try{localStorage.setItem("stella-theme",c)}catch{}const e=getComputedStyle(document.documentElement).getPropertyValue("--bg-deep").trim();document.querySelector('meta[name="theme-color"]')?.setAttribute("content",e||"#070a1c"),document.querySelectorAll(".theme-opt").forEach(t=>{const d=t.dataset.themeValue===c;t.classList.toggle("is-active",d),t.setAttribute("aria-selected",String(d))})}if(a&&n){const c=document.documentElement.dataset.theme||"nebula";document.querySelectorAll(".theme-opt").forEach(e=>{const t=e.dataset.themeValue===c;e.classList.toggle("is-active",t),e.setAttribute("aria-selected",String(t))}),a.addEventListener("click",e=>{e.stopPropagation();const t=n.hidden;n.hidden=!t,a.setAttribute("aria-expanded",String(t))}),document.addEventListener("click",e=>{!n.hidden&&!e.target.closest(".theme-switch")&&(n.hidden=!0,a.setAttribute("aria-expanded","false"))}),document.addEventListener("keydown",e=>{e.key==="Escape"&&!n.hidden&&(n.hidden=!0,a.setAttribute("aria-expanded","false"),a.focus())}),n.addEventListener("click",e=>{const t=e.target.closest(".theme-opt");t&&(s(t.dataset.themeValue??"nebula"),n.hidden=!0,a.setAttribute("aria-expanded","false"))})}</script> <div class="theme-switch fx-switch"> <button class="theme-switch__btn" id="fxBtn" type="button" aria-haspopup="listbox" aria-expanded="false" aria-label="背景特效设置" title="背景特效设置"> <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"> <path d="M5 3v4M3 5h4M6.5 17.5v3M5 19h3"></path> <path d="M14.5 4.5 16 9l4.5 1.5L16 12l-1.5 4.5L13 12l-4.5-1.5L13 9l1.5-4.5Z"></path> </svg> </button> <div class="theme-pop" id="fxPop" role="listbox" aria-label="背景特效" hidden> <button class="theme-opt fx-opt" type="button" role="option" data-fx-value="off" aria-selected="false"> <span class="fx-opt__body"> <span class="fx-opt__name">关闭特效</span> <span class="fx-opt__hint">最省电</span> </span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt fx-opt" type="button" role="option" data-fx-value="standard" aria-selected="false"> <span class="fx-opt__body"> <span class="fx-opt__name">标准</span> <span class="fx-opt__hint">闪烁星空 + 流星</span> </span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt fx-opt" type="button" role="option" data-fx-value="fancy" aria-selected="false"> <span class="fx-opt__body"> <span class="fx-opt__name">华丽</span> <span class="fx-opt__hint">追加极光 / 星座 / 光尘</span> </span> <span class="theme-opt__mark">✦</span> </button> </div> </div> <script type="module">const n=document.getElementById("fxBtn"),a=document.getElementById("fxPop");function s(d){document.documentElement.dataset.fx=d;try{localStorage.setItem("stella-fx",d)}catch{}document.querySelectorAll("#fxPop .fx-opt").forEach(t=>{const e=t.dataset.fxValue===d;t.classList.toggle("is-active",e),t.setAttribute("aria-selected",String(e))}),document.dispatchEvent(new CustomEvent("stella-fx-change",{detail:d}))}if(n&&a){const d=document.documentElement.dataset.fx||"standard";document.querySelectorAll("#fxPop .fx-opt").forEach(t=>{const e=t.dataset.fxValue===d;t.classList.toggle("is-active",e),t.setAttribute("aria-selected",String(e))}),n.addEventListener("click",t=>{t.stopPropagation();const e=a.hidden;a.hidden=!e,n.setAttribute("aria-expanded",String(e))}),document.addEventListener("click",t=>{!a.hidden&&!t.target.closest(".fx-switch")&&(a.hidden=!0,n.setAttribute("aria-expanded","false"))}),document.addEventListener("keydown",t=>{t.key==="Escape"&&!a.hidden&&(a.hidden=!0,n.setAttribute("aria-expanded","false"),n.focus())}),a.addEventListener("click",t=>{const e=t.target.closest(".fx-opt");e&&(s(e.dataset.fxValue??"standard"),a.hidden=!0,n.setAttribute("aria-expanded","false"))})}</script> </div> </div> </header> <main id="main">  <article class="wrap post-layout" data-astro-cid-lvjzyg5v> <div class="post-main page-fade" data-astro-cid-lvjzyg5v> <header class="post-head" data-astro-cid-lvjzyg5v> <a class="crumb" href="/STELLASTOPVRC/posts/" data-astro-cid-lvjzyg5v>← 返回教程档案</a> <div class="post-head__meta" style="--accent:var(--ink-dim)" data-astro-cid-lvjzyg5v> <span class="badge" data-cat="Udon 世界编程" data-astro-cid-lvjzyg5v>Udon 世界编程</span> <time datetime="2026-11-09" data-astro-cid-lvjzyg5v>2026-11-09</time> <span class="post-head__reading" data-astro-cid-lvjzyg5v>⏱ 约 20 分钟</span>  </div> <h1 class="post-head__title" data-astro-cid-lvjzyg5v>MIDI Playback(MIDI 文件回放)</h1> <p class="post-head__lead" data-astro-cid-lvjzyg5v>通过 VRCMidiPlayer 组件 播放 MIDI 文件,同步播放对应的音频文件,并向所有目标 UdonBehaviour 发送 MIDI Note On / Note Off 事件。</p> <div class="chip-row" data-astro-cid-lvjzyg5v> <a class="chip" href="/STELLASTOPVRC/posts/?tag=%E7%9F%A5%E8%AF%86%E5%BA%93" data-astro-cid-lvjzyg5v> 知识库 </a><a class="chip" href="/STELLASTOPVRC/posts/?tag=world" data-astro-cid-lvjzyg5v> world </a> </div> </header> <div class="prose" data-astro-cid-lvjzyg5v> <hr>
+<h1 id="midi-playbackmidi-文件回放">MIDI Playback(MIDI 文件回放)</h1>
+<p>通过 <strong><code>VRCMidiPlayer</code> 组件</strong> 播放 MIDI 文件,同步播放对应的音频文件,并向所有目标 UdonBehaviour 发送 <strong>MIDI Note On / Note Off 事件</strong>。</p>
+<blockquote>
+<p>⚠️ <strong>【FACT 修正】</strong> 任务描述中提到”使用 <code>VRC MIDI Player</code> 静态方法”——<strong>这与官方文档不一致</strong>。当前 SDK 中 <strong>没有静态方法</strong> 的 MIDI 播放器,实际 API 是 <strong><code>VRCMidiPlayer</code> 组件</strong>(MonoBehaviour),通过 Inspector 字段配置 + 实例方法 <code>Play()</code> / <code>Stop()</code> 调用。</p>
+</blockquote>
+<h3 id="典型场景">典型场景</h3>
+<ul>
+<li>节奏游戏</li>
+<li>音乐可视化</li>
+<li>灯光秀同步</li>
+<li>预录 MIDI 演奏的精确回放</li>
+</ul>
+<h3 id="快速开始">快速开始</h3>
+<p>可直接加载 <strong>MidiPlaybackScene 示例</strong> 起步: 详见 entities/world/examples/midi-playback</p>
+<hr>
+<hr>
+<h1 id="midi-playbackmidi-文件回放-assets-midifile-和-audioclip">MIDI Playback(MIDI 文件回放)：📁 Assets: MidiFile 和 AudioClip</h1>
+<h3 id="文件准备">文件准备</h3>
+<ol>
+<li>
+<p><strong>拖入文件</strong> 到 Unity 的 <code>Assets</code> 文件夹</p>
+<ul>
+<li>MIDI 文件必须以 <strong><code>.mid</code></strong> 扩展名结尾</li>
+<li>音频文件可以是 Unity 支持的任意格式: <code>.aif</code> / <code>.wav</code> / <code>.mp3</code> / <code>.ogg</code></li>
+</ul>
+</li>
+<li>
+<p><strong>关联 AudioClip</strong>:</p>
+<ul>
+<li>选中 MIDI 文件</li>
+<li>在 Inspector 中将对应的音频文件拖到 <code>Audio Clip</code> 字段</li>
+</ul>
+</li>
+</ol>
+<p><img src="https://creators.vrchat.com/assets/images/midi-playback-214464414-32af9c18-c003-49ed-bd12-dd431367db56-eced7f443e31cf8c6a4a1f3b8322dc79.png/" alt="image"></p>
+<ol start="3">
+<li><strong>【FACT】</strong> <strong>BPM 必须正确设置</strong>
+<ul>
+<li>如果数据看起来不匹配音频,90% 的情况是 BPM 问题</li>
+<li>可在 Inspector 中勾选 <strong>“Override Bpm”</strong> 覆盖</li>
+<li><strong>更好的做法</strong>: 直接编辑 MIDI 文件,写入正确的 BPM</li>
+</ul>
+</li>
+</ol>
+<hr>
+<hr>
+<h1 id="midi-playbackmidi-文件回放-component-vrcmidiplayer">MIDI Playback(MIDI 文件回放)：🔌 Component: VRCMidiPlayer</h1>
+<blockquote>
+<p><strong>核心组件</strong>: <code>VRCMidiPlayer</code>(命名空间 <code>VRC.SDK3.Midi</code>)
+类似 <code>AudioSource</code>,但使用 <strong>MIDI Asset</strong> 而非 AudioClip
+它向所有 <strong>Target Behaviours</strong> 发送 MIDI Note On / Note Off 事件</p>
+</blockquote>
+<h3 id="inspector-字段">Inspector 字段</h3>
+<table>
+<thead>
+<tr>
+<th>名称</th>
+<th>类型</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Midi File</strong></td>
+<td><code>MidiFile</code>(Asset)</td>
+<td>SMF 格式的 MIDI 文件,触发其事件数据</td>
+</tr>
+<tr>
+<td><strong>Audio Source</strong></td>
+<td><code>AudioSource</code></td>
+<td>与 MIDI 数据对应的音频组件(在同 GameObject 上)</td>
+</tr>
+<tr>
+<td><strong>Target Behaviours</strong></td>
+<td><code>UdonBehaviour[]</code></td>
+<td>接收 MIDI Note On / Note Off 事件的 UdonBehaviour 列表</td>
+</tr>
+<tr>
+<td><strong>Display Debug Blocks</strong></td>
+<td><code>bool</code></td>
+<td>启用后,在 Scene View 中显示当前 MIDI 文件的所有音符(辅助调试)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="方法methods">方法(Methods)</h3>
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Play()</code></td>
+<td>启动 MIDI 事件和 Audio Source 的同步播放</td>
+</tr>
+<tr>
+<td><code>Stop()</code></td>
+<td>停止 MIDI 事件和 Audio Source 的播放</td>
+</tr>
+</tbody>
+</table>
+<h3 id="属性properties">属性(Properties)</h3>
+<table>
+<thead>
+<tr>
+<th>属性</th>
+<th>类型</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>time</code></td>
+<td><code>float</code></td>
+<td>设置 / 获取 MIDI 和 Audio 源的当前时间(秒)</td>
+</tr>
+<tr>
+<td><code>midiData</code></td>
+<td><code>MidiData</code></td>
+<td>获取包含当前 MIDI 轨道所有数据的对象(可在播放前用于预配置)</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<hr>
+<h1 id="midi-playbackmidi-文件回放-数据类层级">MIDI Playback(MIDI 文件回放)：📊 数据类层级</h1>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>MidiData</span></span>
+<span class="line"><span>  ├── Tracks: MidiTrack[]</span></span>
+<span class="line"><span>  │     ├── Blocks: MidiBlock[]</span></span>
+<span class="line"><span>  │     │     ├── Note (byte) 0-127</span></span>
+<span class="line"><span>  │     │     ├── Velocity (byte) 0-127</span></span>
+<span class="line"><span>  │     │     ├── Channel (byte) 1-16</span></span>
+<span class="line"><span>  │     │     ├── StartTimeMs / EndTimeMs</span></span>
+<span class="line"><span>  │     │     ├── StartTimeSec / EndTimeSec</span></span>
+<span class="line"><span>  │     │     └── LengthSec</span></span>
+<span class="line"><span>  │     ├── minNote / maxNote (byte)</span></span>
+<span class="line"><span>  │     └── minVelocity / maxVelocity (byte)</span></span>
+<span class="line"><span>  └── Bpm (byte)</span></span></code></pre>
+<h3 id="class-mididata">Class: MidiData</h3>
+<p>返回的 MIDI 顶层数据,包含所有轨道和 BPM。</p>
+<table>
+<thead>
+<tr>
+<th>字段</th>
+<th>类型</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Tracks</code></td>
+<td><code>MidiTrack[]</code></td>
+<td>文件中的 MidiTrack 数组</td>
+</tr>
+<tr>
+<td><code>Bpm</code></td>
+<td><code>byte</code></td>
+<td>曲目的 BPM</td>
+</tr>
+</tbody>
+</table>
+<h3 id="class-miditrack">Class: MidiTrack</h3>
+<p>封装一个 <code>MidiBlock</code> 数组,提供音符和力度范围的便捷引用。</p>
+<table>
+<thead>
+<tr>
+<th>字段</th>
+<th>类型</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Blocks</code></td>
+<td><code>MidiBlock[]</code></td>
+<td>轨道中的 MidiBlock 数组</td>
+</tr>
+<tr>
+<td><code>minNote</code></td>
+<td><code>byte</code></td>
+<td>该轨道中最低的音符</td>
+</tr>
+<tr>
+<td><code>maxNote</code></td>
+<td><code>byte</code></td>
+<td>该轨道中最高的音符</td>
+</tr>
+<tr>
+<td><code>minVelocity</code></td>
+<td><code>byte</code></td>
+<td>该轨道中最低的力度(<strong>不包括 0</strong>)</td>
+</tr>
+<tr>
+<td><code>maxVelocity</code></td>
+<td><code>byte</code></td>
+<td>该轨道中最高的力度</td>
+</tr>
+</tbody>
+</table>
+<h3 id="class-midiblock">Class: MidiBlock</h3>
+<p>表示一个完整的 MIDI 音符事件(从 Note On 到 Note Off),附带元数据。</p>
+<table>
+<thead>
+<tr>
+<th>字段</th>
+<th>类型</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Note</code></td>
+<td><code>byte</code></td>
+<td>0-127 范围的音符编号</td>
+</tr>
+<tr>
+<td><code>Velocity</code></td>
+<td><code>byte</code></td>
+<td>0-127 范围的力度</td>
+</tr>
+<tr>
+<td><code>Channel</code></td>
+<td><code>byte</code></td>
+<td><strong>1-16</strong> 范围的通道(⚠️ 与事件的 0-15 索引<strong>不同</strong>)</td>
+</tr>
+<tr>
+<td><code>StartTimeMs</code></td>
+<td><code>float</code></td>
+<td>Note On 开始的时刻(毫秒)</td>
+</tr>
+<tr>
+<td><code>EndTimeMs</code></td>
+<td><code>float</code></td>
+<td>Note Off 触发的时刻(毫秒)</td>
+</tr>
+<tr>
+<td><code>StartTimeSec</code></td>
+<td><code>float</code></td>
+<td>Note On 开始的时刻(秒)</td>
+</tr>
+<tr>
+<td><code>EndTimeSec</code></td>
+<td><code>float</code></td>
+<td>Note Off 触发的时刻(秒)</td>
+</tr>
+<tr>
+<td><code>LengthSec</code></td>
+<td><code>float</code></td>
+<td>整个事件的时长(从 Note On 到 Note Off,秒)</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>⚠️ <strong>重要差异</strong>: <code>MidiBlock.Channel</code> 是 <strong>1-16</strong>,而 <code>MidiNoteOn/Off</code> 事件的 <code>channel</code> 参数是 <strong>0-15</strong>(0-indexed)。<strong>索引时需要 -1 转换</strong>!</p>
+</blockquote>
+<hr>
+<hr>
+<h1 id="midi-playbackmidi-文件回放-事件签名">MIDI Playback(MIDI 文件回放)：🎯 事件签名</h1>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="csharp"><code><span class="line"><span style="color:#F97583">public</span><span style="color:#F97583"> override</span><span style="color:#F97583"> void</span><span style="color:#B392F0"> MidiNoteOn</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">int</span><span style="color:#B392F0"> channel</span><span style="color:#E1E4E8">, </span><span style="color:#F97583">int</span><span style="color:#B392F0"> number</span><span style="color:#E1E4E8">, </span><span style="color:#F97583">int</span><span style="color:#B392F0"> velocity</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#E1E4E8">public override void MidiNoteOff(</span><span style="color:#F97583">int</span><span style="color:#B392F0"> channel</span><span style="color:#E1E4E8">, </span><span style="color:#F97583">int</span><span style="color:#B392F0"> number</span><span style="color:#E1E4E8">, </span><span style="color:#F97583">int</span><span style="color:#B392F0"> velocity</span><span style="color:#E1E4E8">)</span></span></code></pre>
+<blockquote>
+<p>完整签名与参数说明见 <code>./index.md</code>。</p>
+</blockquote>
+<hr>
+<hr>
+<h1 id="midi-playbackmidi-文件回放-完整-udonsharp-示例">MIDI Playback(MIDI 文件回放)：💡 完整 UdonSharp 示例</h1>
+<blockquote>
+<p><strong>【FACT 验证】</strong> 来自 Example Central 4-Grid LogoButton,完整代码见 entities/world/examples/midi-playback （完整 UdonSharp 代码见示例页）</p>
+</blockquote>
+<p>核心逻辑:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="csharp"><code><span class="line"><span style="color:#F97583">using</span><span style="color:#B392F0"> UdonSharp</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">using</span><span style="color:#B392F0"> VRC</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">SDK3</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">Midi</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">using</span><span style="color:#B392F0"> UnityEngine</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">UI</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">[</span><span style="color:#B392F0">UdonBehaviourSyncMode</span><span style="color:#E1E4E8">(BehaviourSyncMode.None)]</span></span>
+<span class="line"><span style="color:#F97583">public</span><span style="color:#F97583"> class</span><span style="color:#B392F0"> LogoButton</span><span style="color:#E1E4E8"> : </span><span style="color:#B392F0">UdonSharpBehaviour</span></span>
+<span class="line"><span style="color:#E1E4E8">{</span></span>
+<span class="line"><span style="color:#E1E4E8">    [</span><span style="color:#B392F0">SerializeField</span><span style="color:#E1E4E8">] </span><span style="color:#F97583">private</span><span style="color:#B392F0"> Transform</span><span style="color:#E1E4E8">[] </span><span style="color:#B392F0">grids</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">    [</span><span style="color:#B392F0">SerializeField</span><span style="color:#E1E4E8">] </span><span style="color:#F97583">private</span><span style="color:#B392F0"> VRCMidiPlayer</span><span style="color:#B392F0"> player</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">    [</span><span style="color:#B392F0">SerializeField</span><span style="color:#E1E4E8">] </span><span style="color:#F97583">private</span><span style="color:#F97583"> int</span><span style="color:#E1E4E8">[] </span><span style="color:#B392F0">channels</span><span style="color:#E1E4E8">;  </span><span style="color:#6A737D">// 通道到 Grid 的映射</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">    public</span><span style="color:#F97583"> override</span><span style="color:#F97583"> void</span><span style="color:#B392F0"> MidiNoteOn</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">int</span><span style="color:#B392F0"> channel</span><span style="color:#E1E4E8">, </span><span style="color:#F97583">int</span><span style="color:#B392F0"> number</span><span style="color:#E1E4E8">, </span><span style="color:#F97583">int</span><span style="color:#B392F0"> velocity</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#E1E4E8">    {</span></span>
+<span class="line"><span style="color:#B392F0">        UpdateGridState</span><span style="color:#E1E4E8">(channel, number, </span><span style="color:#79B8FF">true</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">    public</span><span style="color:#F97583"> override</span><span style="color:#F97583"> void</span><span style="color:#B392F0"> MidiNoteOff</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">int</span><span style="color:#B392F0"> channel</span><span style="color:#E1E4E8">, </span><span style="color:#F97583">int</span><span style="color:#B392F0"> number</span><span style="color:#E1E4E8">, </span><span style="color:#F97583">int</span><span style="color:#B392F0"> velocity</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#E1E4E8">    {</span></span>
+<span class="line"><span style="color:#B392F0">        UpdateGridState</span><span style="color:#E1E4E8">(channel, number, </span><span style="color:#79B8FF">false</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">    private</span><span style="color:#F97583"> void</span><span style="color:#B392F0"> UpdateGridState</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">int</span><span style="color:#B392F0"> midiChannel</span><span style="color:#E1E4E8">, </span><span style="color:#F97583">int</span><span style="color:#B392F0"> noteNumber</span><span style="color:#E1E4E8">, </span><span style="color:#F97583">bool</span><span style="color:#B392F0"> isEnabled</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#E1E4E8">    {</span></span>
+<span class="line"><span style="color:#F97583">        for</span><span style="color:#E1E4E8"> (</span><span style="color:#F97583">var</span><span style="color:#B392F0"> gridIndex</span><span style="color:#F97583"> =</span><span style="color:#79B8FF"> 0</span><span style="color:#E1E4E8">; gridIndex </span><span style="color:#F97583">&#x3C;</span><span style="color:#E1E4E8"> grids.Length; gridIndex</span><span style="color:#F97583">++</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#E1E4E8">        {</span></span>
+<span class="line"><span style="color:#F97583">            if</span><span style="color:#E1E4E8"> (midiChannel </span><span style="color:#F97583">!=</span><span style="color:#E1E4E8"> channels[gridIndex]) </span><span style="color:#F97583">continue</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#6A737D">            // 12 音位量化</span></span>
+<span class="line"><span style="color:#F97583">            var</span><span style="color:#B392F0"> image</span><span style="color:#F97583"> =</span><span style="color:#E1E4E8"> grids[gridIndex].</span><span style="color:#B392F0">GetChild</span><span style="color:#E1E4E8">(noteNumber </span><span style="color:#F97583">%</span><span style="color:#79B8FF"> 12</span><span style="color:#E1E4E8">).</span><span style="color:#B392F0">GetComponent</span><span style="color:#E1E4E8">&#x3C;</span><span style="color:#B392F0">Image</span><span style="color:#E1E4E8">>();</span></span>
+<span class="line"><span style="color:#E1E4E8">            image.enabled </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> isEnabled;</span></span>
+<span class="line"><span style="color:#E1E4E8">        }</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<hr>
+<hr>
+<h1 id="midi-playbackmidi-文件回放-关键设计模式">MIDI Playback(MIDI 文件回放)：🔧 关键设计模式</h1>
+<h3 id="1-behavioursyncmodenone--midi-回放是本地播放">1. <code>BehaviourSyncMode.None</code> — MIDI 回放是本地播放</h3>
+<p>MIDI 播放由 VRChat 客户端<strong>自动保证一致性</strong>:</p>
+<ul>
+<li>每玩家都从自己的 MIDI Asset 听到<strong>同步的音轨</strong></li>
+<li><strong>不需要跨玩家同步</strong> MIDI 状态</li>
+<li>避免不必要的网络带宽浪费</li>
+</ul>
+<h3 id="2-note-onoff-配对">2. Note On/Off 配对</h3>
+<p>Note On 启用 → Note Off 禁用,严格配对避免图像卡在 enabled 状态。</p>
+<h3 id="3-12-平均律量化">3. 12 平均律量化</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="csharp"><code><span class="line"><span style="color:#F97583">var</span><span style="color:#B392F0"> child</span><span style="color:#F97583"> =</span><span style="color:#E1E4E8"> grids[gridIndex].</span><span style="color:#B392F0">GetChild</span><span style="color:#E1E4E8">(noteNumber </span><span style="color:#F97583">%</span><span style="color:#79B8FF"> 12</span><span style="color:#E1E4E8">);</span></span></code></pre>
+<p><code>noteNumber % 12</code> 落在 <code>[0, 11]</code>,对应 12 半音(C=0, C#=1, …, B=11)。</p>
+<ul>
+<li><strong>简单可视化</strong>: 12 个图标</li>
+<li><strong>高级映射</strong>: 查表(<code>Dictionary&#x3C;int, Color></code>)将 MIDI 编号映射到颜色/图像</li>
+</ul>
+<h3 id="4-channels-数组作为映射表">4. channels 数组作为映射表</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="csharp"><code><span class="line"><span style="color:#E1E4E8">[</span><span style="color:#B392F0">SerializeField</span><span style="color:#E1E4E8">] </span><span style="color:#F97583">private</span><span style="color:#F97583"> int</span><span style="color:#E1E4E8">[] </span><span style="color:#B392F0">channels</span><span style="color:#F97583"> =</span><span style="color:#F97583"> new</span><span style="color:#F97583"> int</span><span style="color:#E1E4E8">[] { </span><span style="color:#79B8FF">3</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">4</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">1</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">2</span><span style="color:#E1E4E8"> };</span></span></code></pre>
+<p>将 MIDI 通道与显示 Grid 解耦,<strong>同一段 MIDI 可呈现不同视觉效果</strong>。</p>
+<h3 id="5-velocity-参数的实际应用">5. velocity 参数的实际应用</h3>
+<p>虽然 <code>velocity</code> 在示例中未使用,但可用于:</p>
+<ul>
+<li>力度相关的<strong>视觉强度</strong>(透明度/缩放)</li>
+<li>力度相关的<strong>颜色亮度</strong></li>
+<li>力度相关的<strong>粒子数量</strong></li>
+</ul>
+<hr>
+<hr>
+<h1 id="midi-playbackmidi-文件回放️-限制与陷阱">MIDI Playback(MIDI 文件回放)：⚠️ 限制与陷阱</h1>
+<table>
+<thead>
+<tr>
+<th>陷阱</th>
+<th>说明</th>
+<th>解决方案</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>本地 Asset 限制</strong></td>
+<td>MIDI 文件<strong>必须是 Unity Asset</strong>,不能用 <code>VRCUrl</code> 网络加载</td>
+<td>跟随 world 上传,大小计入 world 体积预算</td>
+</tr>
+<tr>
+<td><strong>BPM 不匹配</strong></td>
+<td>MIDI 文件 BPM 设置错误,音符时序与音频错位</td>
+<td>勾选 “Override Bpm” 或编辑 MIDI 文件</td>
+</tr>
+<tr>
+<td><strong>Channel 索引差异</strong></td>
+<td><code>MidiBlock.Channel</code> 是 1-16,事件 <code>channel</code> 是 0-15</td>
+<td>数据查询时 <code>block.Channel - 1 == event.channel</code></td>
+</tr>
+<tr>
+<td><strong>桌面端独占</strong></td>
+<td>Quest 完全不支持 MIDI</td>
+<td>提供 UI 触发的回退方案</td>
+</tr>
+<tr>
+<td><strong>MIDIBPM 精度</strong></td>
+<td>实际播放使用 MIDI 文件的微秒级时序,Inspector BPM 仅作显示</td>
+<td>不要在 <code>Update</code> 中读取 <code>time</code> 用于精确同步(改用 <code>midiData</code> 预计算)</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<hr>
+<h1 id="midi-playbackmidi-文件回放-任务描述-vs-官方文档对照">MIDI Playback(MIDI 文件回放)：🆚 任务描述 vs 官方文档对照</h1>
+<table>
+<thead>
+<tr>
+<th>项</th>
+<th>任务描述</th>
+<th>官方文档</th>
+<th>实际</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>类名</td>
+<td><code>VRC MIDI Player</code>(静态方法)</td>
+<td><code>VRCMidiPlayer</code> 组件</td>
+<td>✅ 组件(无静态方法)</td>
+</tr>
+<tr>
+<td>Play 方法</td>
+<td><code>PlayMidiFile(VRCUrl url)</code></td>
+<td><code>player.Play()</code> 实例方法</td>
+<td>✅ 实例方法</td>
+</tr>
+<tr>
+<td>Stop 方法</td>
+<td><code>StopMidiFile()</code></td>
+<td><code>player.Stop()</code> 实例方法</td>
+<td>✅ 实例方法</td>
+</tr>
+<tr>
+<td>Pause/Resume</td>
+<td><code>PauseMidiFile() / ResumeMidiFile()</code></td>
+<td>❌ 不存在</td>
+<td>❌ 仅 <code>Stop()</code>,需手动用 <code>time</code> 暂停</td>
+</tr>
+<tr>
+<td>事件前缀</td>
+<td><code>OnMidiNoteOn</code></td>
+<td><code>MidiNoteOn</code></td>
+<td>✅ 无 <code>On</code> 前缀</td>
+</tr>
+<tr>
+<td>事件 player 参数</td>
+<td><code>VRCPlayerApi player</code></td>
+<td>无</td>
+<td>✅ 无 player 参数</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>任务表中推测的”VRC MIDI Player 静态方法”API <strong>是错误信息</strong>,可能是参考了已弃用的旧版 MIDI Player。当前 SDK <strong>只支持组件方式</strong>。</p>
+</blockquote>
+<hr>
+<hr>
+<h1 id="midi-playbackmidi-文件回放与知识库互补">MIDI Playback(MIDI 文件回放)：与知识库互补</h1>
+<table>
+<thead>
+<tr>
+<th>关联知识库</th>
+<th>路径</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>MIDI 总览</strong></td>
+<td><code>./index.md</code></td>
+<td>3 个事件签名 + 技术参数速查</td>
+</tr>
+<tr>
+<td><strong>实时 MIDI</strong></td>
+<td><code>./realtime-midi.md</code></td>
+<td>真实设备输入</td>
+</tr>
+<tr>
+<td><strong>MIDI Playback 示例</strong></td>
+<td>entities/world/examples/midi-playback</td>
+<td>4-Grid LogoButton 完整实现</td>
+</tr>
+<tr>
+<td><strong>Udon 事件完整参考</strong></td>
+<td>entities/api/events-reference</td>
+<td>事件方法 + 调用约束</td>
+</tr>
+<tr>
+<td><strong>AudioLink</strong></td>
+<td>audio-link</td>
+<td>音频驱动视觉的另一种方式</td>
+</tr>
+<tr>
+<td><strong>MIDI 节点(图)</strong></td>
+<td>entities/world/udon/graph/event-nodes</td>
+<td>Node Graph 中的 MIDI 事件</td>
+</tr>
+<tr>
+<td><strong>MIDI Standard Files</strong></td>
+<td><a href="https://midi.org/standard-midi-files">https://midi.org/standard-midi-files</a></td>
+<td>SMF 规范</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<hr>
+<h1 id="midi-playbackmidi-文件回放二次开发建议">MIDI Playback(MIDI 文件回放)：二次开发建议</h1>
+<table>
+<thead>
+<tr>
+<th>扩展方向</th>
+<th>实现思路</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>添加更多 Grid</strong></td>
+<td>复制 Grid Prefab,加入 <code>grids</code> 数组,同步扩展 <code>channels</code> 数组</td>
+</tr>
+<tr>
+<td><strong>自定义映射</strong></td>
+<td>把 <code>int % 12</code> 换成查表(<code>Dictionary&#x3C;int, Color></code> MIDI → 颜色)</td>
+</tr>
+<tr>
+<td><strong>力度相关动画</strong></td>
+<td>监听 <code>velocity</code> 参数,实现力度相关的视觉强度(透明度/缩放)</td>
+</tr>
+<tr>
+<td><strong>MIDI 数据预处理</strong></td>
+<td>启动时读取 <code>player.midiData</code>,缓存音符时间表,避免在 <code>MidiNoteOn</code> 中遍历整个 track</td>
+</tr>
+<tr>
+<td><strong>多音轨混合</strong></td>
+<td>每个音轨用一个 <code>VRCMidiPlayer</code>,不同 Target Behaviours 接收不同通道</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<hr>
+<h1 id="midi-playbackmidi-文件回放相关页面">MIDI Playback(MIDI 文件回放)：相关页面</h1>
+<p>../../examples/midi-playback.md · index.md · realtime-midi.md</p>
+<hr> </div> <p class="kb-source-note" data-astro-cid-lvjzyg5v>
+本文由 VRChat 开发知识库自动整理（社区整理  · 可信度 medium ），
+          遇到与手写教程冲突的地方，以官方文档为最高优先级。
+</p> <section class="comments" id="comments" data-astro-cid-lvjzyg5v> <h2 class="comments__title" data-astro-cid-lvjzyg5v>✦ 旅人留言（0）</h2> <p class="comments__empty" id="commentsEmpty" data-astro-cid-lvjzyg5v>
+还没有旅人留言 —— 有疑问就写在下面，站长都会回复。
+</p> <form class="comment-form" id="commentForm" data-target="kb-world-udon-midi-midi-playback" data-astro-cid-lvjzyg5v> <p class="comment-form__title" data-astro-cid-lvjzyg5v>写下你的留言</p> <input id="cAuthor" maxlength="20" placeholder="昵称（留空则为「旅人」）" data-astro-cid-lvjzyg5v> <textarea id="cBody" maxlength="1000" required placeholder="想问的问题、想说的感谢都可以（最多 1000 字）" data-astro-cid-lvjzyg5v></textarea> <div class="comment-form__actions" data-astro-cid-lvjzyg5v> <button class="btn btn--primary" type="submit" data-astro-cid-lvjzyg5v>发布留言</button> <span class="form-hint" data-astro-cid-lvjzyg5v>留言保存在本站，站长在写作台里能看到</span> <span class="form-msg" id="cMsg" data-astro-cid-lvjzyg5v></span> </div> </form> </section> <nav class="station-nav" aria-label="站间导航" data-astro-cid-lvjzyg5v> <a href="/STELLASTOPVRC/posts/kb-world-udon-input-events/" data-astro-cid-lvjzyg5v> <span class="dir" data-astro-cid-lvjzyg5v>← 上一站 · 更新的星光</span> <span class="to" data-astro-cid-lvjzyg5v>Input Events - 玩家输入事件</span> </a> <a href="/STELLASTOPVRC/posts/kb-world-udon-midi-realtime-midi/" data-astro-cid-lvjzyg5v> <span class="dir" data-astro-cid-lvjzyg5v>下一站 · 更早的星光 →</span> <span class="to" data-astro-cid-lvjzyg5v>Realtime MIDI(实时 MIDI 输入)</span> </a> </nav> </div> <aside class="toc" id="toc" hidden> <p class="toc__title">✦ 本页星图</p> <nav id="tocNav" aria-label="文章目录"></nav> </aside> <script type="module">const i=document.querySelector(".prose"),d=document.getElementById("toc"),u=document.getElementById("tocNav"),l=[];if(i&&d&&u){const c=[...i.querySelectorAll("h1, h2, h3")];if(c.length>=3){d.hidden=!1,c.forEach((o,e)=>{o.id||(o.id=`sec-${e}`);const n=document.createElement("a");n.href=`#${o.id}`;const s=(o.textContent??"").replace(/\s+/g," ").trim(),r=s.search(/[：:]/),a=r>=4?s.slice(0,r):s;n.textContent=a.length>40?`${a.slice(0,40)}…`:a,n.title=s,u.appendChild(n),l.push({a:n,h:o})});const t=()=>{let o=l[0];for(const e of l)e.h.getBoundingClientRect().top<=130&&(o=e);for(const e of l)e.a.classList.toggle("is-active",e===o)};addEventListener("scroll",t,{passive:!0}),t()}}document.querySelectorAll(".prose pre").forEach(c=>{const t=document.createElement("button");t.className="code-copy",t.type="button",t.textContent="复制",t.addEventListener("click",async()=>{const o=c.querySelector("code")?.innerText??c.innerText;try{await navigator.clipboard.writeText(o)}catch{const e=document.createElement("textarea");e.value=o,document.body.appendChild(e),e.select(),document.execCommand("copy"),e.remove()}t.textContent="已复制 ✓",t.classList.add("is-ok"),setTimeout(()=>{t.textContent="复制",t.classList.remove("is-ok")},1500)}),c.appendChild(t)});</script> </article>  </main> <footer class="site-footer"> <div class="wrap"> <p class="star-line" aria-hidden="true"> <svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> <svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> </p> <p>星之驿站 StellaStop —— 在虚拟宇宙中，为你保留一座驿站</p> <p class="site-footer__disclaimer">
+该网页目前是测试阶段，仅用于测试，所有内容仅供参考；内容全部为引用互联网当中的信息。
+</p> <p>© 2026 星之驿站 · 由 <a href="https://astro.build">Astro</a> 与星光驱动</p> <p> <a data-desk-login hidden title="写作台：登录 / 注册">登录 / 注册</a> ·
+<a href="/STELLASTOPVRC/announcements/">官方公告</a> ·
+<a href="/STELLASTOPVRC/ai/">问星 AI</a> ·
+<a href="/STELLASTOPVRC/feedback/">旅人留言板</a> </p> </div> </footer> <button class="to-top" id="toTop" aria-label="回到顶部"> <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"> <path d="M12 20V5"></path> <path d="M5.5 11.5 12 5l6.5 6.5"></path> </svg> </button> <script type="module">const e=document.getElementById("toTop");if(e){const t=()=>e.classList.toggle("is-visible",scrollY>480);addEventListener("scroll",t,{passive:!0}),t(),e.addEventListener("click",()=>{const o=matchMedia("(prefers-reduced-motion: reduce)").matches;scrollTo({top:0,behavior:o?"auto":"smooth"})})}</script> <script>(function(){const deskConfigured = "";
+
+      /* 写作台探测（页面尾部执行，DOM 已就绪）：
+         1. 计算写作台地址：站点配置 deskUrl（公网部署时填）> 本机默认 localhost:4322 > 同主机 4322
+         2. 探测 /api/gate/status —— 在线才点亮「登录 / 注册」入口，并复用给验证门横幅
+         3. 不在线则保持隐藏，绝不会把访客拽进内网地址；同时给出一次性「镜像模式」提示 */
+      (function () {
+        var host = location.hostname;
+        var isLocal = host === 'localhost' || host === '127.0.0.1' || host === '[::1]';
+        var desk = deskConfigured ||
+          (isLocal ? 'http://localhost:4322' : location.protocol + '//' + host + ':4322');
+        window.STELLA_DESK = desk;
+
+        function revealLogin() {
+          document.querySelectorAll('[data-desk-login]').forEach(function (a) {
+            a.href = desk + '/admin';
+            a.removeAttribute('hidden');
+          });
+        }
+        function showBanner(css, html, shiftHeader) {
+          var bar = document.createElement('div');
+          bar.style.cssText = css;
+          bar.innerHTML = html;
+          document.body.prepend(bar);
+          if (shiftHeader) {
+            var header = document.querySelector('.site-header');
+            if (header) header.style.marginTop = '42px';
+          }
+        }
+        function hintMirrorMode() {
+          try {
+            if (sessionStorage.getItem('stella-desk-hint')) return;
+            sessionStorage.setItem('stella-desk-hint', '1');
+          } catch (e) { /* 无痕模式等：忽略 */ }
+          var tip = document.createElement('div');
+          tip.style.cssText = 'position:fixed;left:14px;bottom:14px;z-index:9998;max-width:min(92vw,430px);padding:.65rem .9rem;border-radius:12px;background:rgba(18,20,44,.92);border:1px solid rgba(150,142,255,.35);color:#e8e6ff;font-size:.82rem;line-height:1.6;font-family:system-ui,sans-serif;box-shadow:0 8px 30px rgba(0,0,0,.35)';
+          tip.innerHTML = 'ℹ️ 静态镜像模式：登录 / 评论 / AI 等互动功能需要站长写作台在线，当前不可用。' +
+            '<span id="stellaDeskHintClose" style="float:right;cursor:pointer;opacity:.75;font-weight:700;margin-left:.6rem" title="关闭">×</span>';
+          document.body.appendChild(tip);
+          var close = function () { tip.remove(); };
+          tip.querySelector('#stellaDeskHintClose').addEventListener('click', close);
+          setTimeout(close, 9000);
+        }
+
+        try {
+          var ctrl = new AbortController();
+          var timer = setTimeout(function () { ctrl.abort(); }, 2500);
+          fetch(desk + '/api/gate/status', { credentials: 'include', signal: ctrl.signal })
+            .then(function (r) { return r.ok ? r.json() : null; })
+            .then(function (d) {
+              clearTimeout(timer);
+              if (!d) throw new Error('desk-offline');
+              window.STELLA_DESK_OK = true;
+              revealLogin();
+              if (d.regionBlocked) {
+                showBanner(
+                  'position:fixed;top:0;left:0;right:0;z-index:9999;padding:1.2rem;text-align:center;background:#1a0a0a;color:#ff9ed2;font-size:.95rem;border-bottom:2px solid #ff4d6d;font-family:system-ui,sans-serif',
+                  '⛔ 你所在的地区（' + (d.regionCountry || '未知') + '）暂不开放访问。',
+                  false
+                );
+                return;
+              }
+              if (d.enabled && !d.passed) {
+                showBanner(
+                  'position:fixed;top:0;left:0;right:0;z-index:9999;padding:0.7rem;text-align:center;background:linear-gradient(94deg,rgba(143,127,247,.25),rgba(98,200,245,.18));border-bottom:1px solid rgba(150,142,255,.3);color:#f0efff;font-size:.88rem;font-family:system-ui,sans-serif',
+                  '🔒 本站启用了安全验证 —— <a href="' + desk + '/gate?next=' + encodeURIComponent(location.href) + '" style="color:#ffd98e;font-weight:700;text-decoration:underline">点击完成验证</a>，通过后即可使用全部功能（30 天免验）。',
+                  true
+                );
+              }
+            })
+            .catch(function () {
+              clearTimeout(timer);
+              window.STELLA_DESK_OK = false;
+              hintMirrorMode();
+            });
+        } catch (e) { /* 忽略 */ }
+      })();
+    })();</script> </body> </html> <script type="module">const m=document.getElementById("commentForm"),s=document.getElementById("cMsg"),u=`${location.protocol}//${location.hostname}:4322/api/message`;function r(e,t=!1){s&&(s.textContent=e,s.classList.toggle("is-err",t),s.classList.toggle("is-ok",!t))}function y(){const e=new Date,t=n=>String(n).padStart(2,"0");return`${e.getFullYear()}-${t(e.getMonth()+1)}-${t(e.getDate())}`}function f(e){let t=7;for(const n of e)t=(t*31+n.charCodeAt(0))%360;return t}function g(e,t){const n=document.createElement("li");n.className="comment",n.innerHTML=`
+      <span class="comment__avatar"></span>
+      <div class="comment__bubble">
+        <div class="comment__head">
+          <span class="comment__name"></span>
+          <time class="comment__date">${y()}</time>
+        </div>
+        <p class="comment__body"></p>
+      </div>`;const o=n.querySelector(".comment__avatar");return o.style.setProperty("--h",String(f(e))),o.textContent=e.slice(0,1),n.querySelector(".comment__name").textContent=e,n.querySelector(".comment__body").textContent=t,n}m?.addEventListener("submit",async e=>{e.preventDefault();const t=document.getElementById("cBody").value.trim();if(!t)return r("留言内容不能为空哦",!0);const n=document.getElementById("cAuthor").value.trim()||"旅人",o=m.querySelector("button");o&&(o.disabled=!0);try{const c=await fetch(u,{credentials:"include",method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({target:m.dataset.target,kind:"comment",author:n,body:t})}),d=await c.json().catch(()=>({}));if(!c.ok)throw new Error(d.error||`发送失败（${c.status}）`);const l=document.querySelector(".comment-list");l&&l.appendChild(g(n,t)),document.getElementById("commentsEmpty")?.remove(),document.getElementById("cBody").value="",r("留言已发布，感谢支持 ✦");const a=document.querySelector(".comments__title"),i=a?.textContent?.match(/（(\d+)）/);a&&i&&(a.textContent=a.textContent.replace(/（\d+）/,`（${Number(i[1])+1}）`))}catch(c){r(c instanceof TypeError?"写作台没在运行，暂时收不到留言 —— 双击「启动博客.bat」就好":c.message,!0)}finally{o&&(o.disabled=!1)}});</script> 

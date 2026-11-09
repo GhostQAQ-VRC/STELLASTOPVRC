@@ -1,0 +1,668 @@
+<!DOCTYPE html><html lang="zh-CN"> <head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="generator" content="Astro v5.18.2"><meta name="description" content="违反后果：切换渲染管线会导致 VRChat 项目完全无法工作。"><meta name="theme-color" content="#070a1c"><meta property="og:title" content="FACT.md - VRChat 技术知识库 · 星之驿站 StellaStop"><meta property="og:description" content="违反后果：切换渲染管线会导致 VRChat 项目完全无法工作。"><meta property="og:type" content="website"><meta name="twitter:card" content="summary"><link rel="icon" type="image/svg+xml" href="/STELLASTOPVRC/favicon.svg"><script>
+      // 在渲染前恢复主题与特效档位，避免闪一下默认状态
+      try {
+        document.documentElement.dataset.theme =
+          localStorage.getItem('stella-theme') || 'nebula';
+        document.documentElement.dataset.fx =
+          localStorage.getItem('stella-fx') || 'standard';
+      } catch {
+        /* 隐私模式读不到就算了 */
+      }
+    </script><link rel="stylesheet" href="/STELLASTOPVRC/custom-vars.css"><title>FACT.md - VRChat 技术知识库 · 星之驿站 StellaStop</title><link rel="stylesheet" href="/STELLASTOPVRC/_astro/about.Bgh6wcGl.css">
+<style>.post-head__meta[data-astro-cid-lvjzyg5v]{color:var(--ink-faint);font-family:var(--font-mono);font-size:.82rem}.post-head[data-astro-cid-lvjzyg5v] .chip-row[data-astro-cid-lvjzyg5v]{margin-top:1rem}.kb-source-note[data-astro-cid-lvjzyg5v]{max-width:760px;margin:2.2rem auto 0;font-size:.82rem;color:var(--ink-faint);border-top:1px dashed var(--line);padding-top:1rem}
+</style></head> <body> <div class="site-notice" id="siteNotice"> <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> <span class="site-notice__text">欢迎来到星之驿站！</span> <button class="site-notice__close" id="noticeClose" type="button" aria-label="关闭公告">
+×
+</button> </div> <a class="skip-link" href="#main">跳到主要内容</a> <canvas id="starfield" aria-hidden="true" data-astro-cid-ra7sfcwn></canvas> <div class="fx-aurora fx-aurora--a" aria-hidden="true" data-astro-cid-ra7sfcwn></div> <div class="fx-aurora fx-aurora--b" aria-hidden="true" data-astro-cid-ra7sfcwn></div>  <script type="module">const u=document.getElementById("starfield");if(u){let F=function(){const n=Math.random();return n<.1?"gold":n<.42?"blue":"white"},v=function(){const n=Math.min(window.devicePixelRatio||1,2);s=window.innerWidth,d=window.innerHeight,u.width=s*n,u.height=d*n,u.style.width=`${s}px`,u.style.height=`${d}px`,t.setTransform(n,0,0,n,0,0);const e=Math.min(190,Math.round(s*d/8500));l=Array.from({length:e},()=>({x:Math.random()*s,y:Math.random()*d,r:r(.4,1.7),base:r(.25,.8),amp:r(.12,.4),speed:r(6e-4,.0022),phase:r(0,Math.PI*2),c:F()})),C=Array.from({length:26},()=>({x:Math.random()*s,y:Math.random()*d,r:r(.9,2.4),vx:r(-.006,.006),vy:r(-.02,-.006),base:r(.2,.5),speed:r(8e-4,.002),phase:r(0,Math.PI*2),c:Math.random()<.5?"gold":"violet"})),c==="off"&&m(0,!0)},D=function(n){const e=Math.random()<.5?1:-1,o=r(Math.PI/7,Math.PI/5),a=r(.45,.75);y.push({x:r(s*.15,s*.85),y:r(-20,d*.3),vx:Math.cos(o)*a*e,vy:Math.sin(o)*a,born:n,life:r(750,1050),len:r(100,170)})},S=function(n){y=y.filter(e=>n-e.born<e.life);for(const e of y){const o=(n-e.born)/e.life,a=e.x+e.vx*(n-e.born),i=e.y+e.vy*(n-e.born),f=o<.15?o/.15:o>.7?(1-o)/.3:1,h=Math.hypot(e.vx,e.vy),x=e.vx/h,g=e.vy/h,b=t.createLinearGradient(a,i,a-x*e.len,i-g*e.len);b.addColorStop(0,`rgba(236,242,255,${(.85*f).toFixed(3)})`),b.addColorStop(1,"rgba(236,242,255,0)"),t.strokeStyle=b,t.lineWidth=1.6,t.lineCap="round",t.beginPath(),t.moveTo(a,i),t.lineTo(a-x*e.len,i-g*e.len),t.stroke()}},B=function(){let o=0;t.lineWidth=.7;for(let a=0;a<l.length&&o<26;a++)for(let i=a+1;i<l.length&&o<26;i++){const f=l[a].x-l[i].x,h=l[a].y-l[i].y,x=f*f+h*h;if(x<16900){const g=(1-Math.sqrt(x)/130)*.17;t.strokeStyle=`rgba(178,170,255,${g.toFixed(3)})`,t.beginPath(),t.moveTo(l[a].x,l[a].y),t.lineTo(l[i].x,l[i].y),t.stroke(),o++}}},X=function(n){for(const e of C){e.x+=e.vx*16,e.y+=e.vy*16,e.y<-12&&(e.y=d+10),e.x<-12&&(e.x=s+10),e.x>s+12&&(e.x=-10);const o=Math.max(.05,e.base+.25*Math.sin(n*e.speed+e.phase)),[a,i,f]=A[e.c];t.beginPath(),t.arc(e.x,e.y,e.r,0,7),t.shadowBlur=9,t.shadowColor=`rgba(${a},${i},${f},0.9)`,t.fillStyle=`rgba(${a},${i},${f},${o.toFixed(3)})`,t.fill()}t.shadowBlur=0},m=function(n,e=!1){t.clearRect(0,0,s,d);for(const o of l){const a=c==="off"?o.base:Math.max(.05,o.base+o.amp*Math.sin(n*o.speed+o.phase)),[i,f,h]=A[o.c];t.beginPath(),t.arc(o.x,o.y,o.r,0,7),o.r>1.25?(t.shadowBlur=7,t.shadowColor=`rgba(${i},${f},${h},0.85)`):t.shadowBlur=0,t.fillStyle=`rgba(${i},${f},${h},${a.toFixed(3)})`,t.fill()}if(t.shadowBlur=0,c!=="off"&&!e){c==="fancy"&&(B(),X(n));const o=c==="fancy"?r(2600,6e3):r(4200,9500);n>P&&(D(n),P=n+o),S(n)}},$=function(n){m(n),M=requestAnimationFrame($)},p=function(){if(c==="off"){m(0,!0);return}cancelAnimationFrame(M),M=requestAnimationFrame($)},w=function(){cancelAnimationFrame(M),t.clearRect(0,0,s,d),m(0,!0)};const t=u.getContext("2d"),k=matchMedia("(prefers-reduced-motion: reduce)").matches,A={white:[240,240,255],blue:[150,215,250],gold:[255,218,150],violet:[178,170,255]};let s=0,d=0,l=[],C=[],y=[],P=2500,M=0,c=document.documentElement.dataset.fx||"standard";k&&(c="off");const r=(n,e)=>n+Math.random()*(e-n);v(),addEventListener("resize",v),document.addEventListener("stella-fx-change",n=>{c=n.detail,c==="off"?w():p()}),c==="off"?m(0,!0):(p(),document.addEventListener("visibilitychange",()=>{document.hidden?w():p()}))}</script> <header class="site-header"> <div class="wrap site-header__inner"> <a class="logo" href="/STELLASTOPVRC/"> <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> <span>星之驿站</span> <span class="logo__romaji">StellaStop</span> </a> <div class="header-right"> <nav class="site-nav" aria-label="站内导航"> <a href="/STELLASTOPVRC/"> 首页 </a><a href="/STELLASTOPVRC/start/"> 新手 </a><a href="/STELLASTOPVRC/posts/"> 教程 </a><a href="/STELLASTOPVRC/videos/"> 视频 </a><a href="/STELLASTOPVRC/resources/"> 资源 </a><a href="/STELLASTOPVRC/booth/"> Booth </a><a href="/STELLASTOPVRC/announcements/"> 公告 </a><a href="/STELLASTOPVRC/ai/"> 问星 </a><a href="/STELLASTOPVRC/changelog/"> 更新日志 </a><a href="/STELLASTOPVRC/about/"> 关于 </a> </nav> <a class="login-link" data-desk-login hidden title="写作台：登录 / 注册后可发教程、传资源">
+登录 / 注册
+</a> <div class="theme-switch"> <button class="theme-switch__btn" id="themeBtn" type="button" aria-haspopup="listbox" aria-expanded="false" aria-label="切换主题配色" title="切换主题配色"> <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"> <path d="M12 3a9 9 0 1 0 9 9c0-1.2-1-2-2.2-2H17a2 2 0 0 1-2-2V6.2C15 5 14.2 4 13 4.4A9 9 0 0 0 12 3Z"></path> <circle cx="7.5" cy="11.5" r="1" fill="currentColor" stroke="none"></circle> <circle cx="10" cy="7.5" r="1" fill="currentColor" stroke="none"></circle> <circle cx="15" cy="7" r="1" fill="currentColor" stroke="none"></circle> </svg> </button> <div class="theme-pop" id="themePop" role="listbox" aria-label="选择主题" hidden> <button class="theme-opt" type="button" role="option" data-theme-value="nebula" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#8f7ff7"></span><span class="dot" style="background:#62c8f5"></span><span class="dot" style="background:#ffd98e"></span> </span> <span class="theme-opt__name">星云 · 蓝紫</span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt" type="button" role="option" data-theme-value="sakura" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#ff8fc7"></span><span class="dot" style="background:#c79bff"></span><span class="dot" style="background:#ffd08e"></span> </span> <span class="theme-opt__name">樱语 · 粉紫</span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt" type="button" role="option" data-theme-value="miku" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#2ed3c2"></span><span class="dot" style="background:#6ea8ff"></span><span class="dot" style="background:#ffe08e"></span> </span> <span class="theme-opt__name">葱色 · 青绿</span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt" type="button" role="option" data-theme-value="ember" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#ffb35c"></span><span class="dot" style="background:#ff7e6b"></span><span class="dot" style="background:#ffd98e"></span> </span> <span class="theme-opt__name">暮金 · 暖橙</span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt" type="button" role="option" data-theme-value="dawn" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#6a5ce8"></span><span class="dot" style="background:#e0568f"></span><span class="dot" style="background:#b8821e"></span> </span> <span class="theme-opt__name">晨星 · 浅色</span> <span class="theme-opt__mark">✦</span> </button> </div> </div> <script type="module">const a=document.getElementById("themeBtn"),n=document.getElementById("themePop");function s(c){document.documentElement.dataset.theme=c;try{localStorage.setItem("stella-theme",c)}catch{}const e=getComputedStyle(document.documentElement).getPropertyValue("--bg-deep").trim();document.querySelector('meta[name="theme-color"]')?.setAttribute("content",e||"#070a1c"),document.querySelectorAll(".theme-opt").forEach(t=>{const d=t.dataset.themeValue===c;t.classList.toggle("is-active",d),t.setAttribute("aria-selected",String(d))})}if(a&&n){const c=document.documentElement.dataset.theme||"nebula";document.querySelectorAll(".theme-opt").forEach(e=>{const t=e.dataset.themeValue===c;e.classList.toggle("is-active",t),e.setAttribute("aria-selected",String(t))}),a.addEventListener("click",e=>{e.stopPropagation();const t=n.hidden;n.hidden=!t,a.setAttribute("aria-expanded",String(t))}),document.addEventListener("click",e=>{!n.hidden&&!e.target.closest(".theme-switch")&&(n.hidden=!0,a.setAttribute("aria-expanded","false"))}),document.addEventListener("keydown",e=>{e.key==="Escape"&&!n.hidden&&(n.hidden=!0,a.setAttribute("aria-expanded","false"),a.focus())}),n.addEventListener("click",e=>{const t=e.target.closest(".theme-opt");t&&(s(t.dataset.themeValue??"nebula"),n.hidden=!0,a.setAttribute("aria-expanded","false"))})}</script> <div class="theme-switch fx-switch"> <button class="theme-switch__btn" id="fxBtn" type="button" aria-haspopup="listbox" aria-expanded="false" aria-label="背景特效设置" title="背景特效设置"> <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"> <path d="M5 3v4M3 5h4M6.5 17.5v3M5 19h3"></path> <path d="M14.5 4.5 16 9l4.5 1.5L16 12l-1.5 4.5L13 12l-4.5-1.5L13 9l1.5-4.5Z"></path> </svg> </button> <div class="theme-pop" id="fxPop" role="listbox" aria-label="背景特效" hidden> <button class="theme-opt fx-opt" type="button" role="option" data-fx-value="off" aria-selected="false"> <span class="fx-opt__body"> <span class="fx-opt__name">关闭特效</span> <span class="fx-opt__hint">最省电</span> </span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt fx-opt" type="button" role="option" data-fx-value="standard" aria-selected="false"> <span class="fx-opt__body"> <span class="fx-opt__name">标准</span> <span class="fx-opt__hint">闪烁星空 + 流星</span> </span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt fx-opt" type="button" role="option" data-fx-value="fancy" aria-selected="false"> <span class="fx-opt__body"> <span class="fx-opt__name">华丽</span> <span class="fx-opt__hint">追加极光 / 星座 / 光尘</span> </span> <span class="theme-opt__mark">✦</span> </button> </div> </div> <script type="module">const n=document.getElementById("fxBtn"),a=document.getElementById("fxPop");function s(d){document.documentElement.dataset.fx=d;try{localStorage.setItem("stella-fx",d)}catch{}document.querySelectorAll("#fxPop .fx-opt").forEach(t=>{const e=t.dataset.fxValue===d;t.classList.toggle("is-active",e),t.setAttribute("aria-selected",String(e))}),document.dispatchEvent(new CustomEvent("stella-fx-change",{detail:d}))}if(n&&a){const d=document.documentElement.dataset.fx||"standard";document.querySelectorAll("#fxPop .fx-opt").forEach(t=>{const e=t.dataset.fxValue===d;t.classList.toggle("is-active",e),t.setAttribute("aria-selected",String(e))}),n.addEventListener("click",t=>{t.stopPropagation();const e=a.hidden;a.hidden=!e,n.setAttribute("aria-expanded",String(e))}),document.addEventListener("click",t=>{!a.hidden&&!t.target.closest(".fx-switch")&&(a.hidden=!0,n.setAttribute("aria-expanded","false"))}),document.addEventListener("keydown",t=>{t.key==="Escape"&&!a.hidden&&(a.hidden=!0,n.setAttribute("aria-expanded","false"),n.focus())}),a.addEventListener("click",t=>{const e=t.target.closest(".fx-opt");e&&(s(e.dataset.fxValue??"standard"),a.hidden=!0,n.setAttribute("aria-expanded","false"))})}</script> </div> </div> </header> <main id="main">  <article class="wrap post-layout" data-astro-cid-lvjzyg5v> <div class="post-main page-fade" data-astro-cid-lvjzyg5v> <header class="post-head" data-astro-cid-lvjzyg5v> <a class="crumb" href="/STELLASTOPVRC/posts/" data-astro-cid-lvjzyg5v>← 返回教程档案</a> <div class="post-head__meta" style="--accent:var(--ink-dim)" data-astro-cid-lvjzyg5v> <span class="badge" data-cat="总览速查" data-astro-cid-lvjzyg5v>总览速查</span> <time datetime="2026-08-20" data-astro-cid-lvjzyg5v>2026-08-20</time> <span class="post-head__reading" data-astro-cid-lvjzyg5v>⏱ 约 28 分钟</span>  </div> <h1 class="post-head__title" data-astro-cid-lvjzyg5v>FACT.md - VRChat 技术知识库</h1> <p class="post-head__lead" data-astro-cid-lvjzyg5v>违反后果：切换渲染管线会导致 VRChat 项目完全无法工作。</p> <div class="chip-row" data-astro-cid-lvjzyg5v> <a class="chip" href="/STELLASTOPVRC/posts/?tag=%E7%9F%A5%E8%AF%86%E5%BA%93" data-astro-cid-lvjzyg5v> 知识库 </a><a class="chip" href="/STELLASTOPVRC/posts/?tag=FACT.md" data-astro-cid-lvjzyg5v> FACT.md </a> </div> </header> <div class="prose" data-astro-cid-lvjzyg5v> <h1 id="factmd---vrchat-技术知识库">FACT.md - VRChat 技术知识库</h1>
+<blockquote>
+<p>长期有效的知识库结构、核心约束、设计模式索引与工程经验。</p>
+<p><strong>本文件保留原则</strong>:仅存储长期有效的<strong>知识性内容</strong>(结构/约束/经验),不记录过程性整理日志。详细工作模式、阶段历史、规则沉淀等过程性产物见 <code>特殊Agent提示词/知识库整理Agent_V3.1.md</code>。</p>
+</blockquote>
+<hr>
+<h2 id="知识库结构">知识库结构</h2>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>LLMWikiPage/                     # 知识页根（现行知识库）</span></span>
+<span class="line"><span>├── FACT.md                      # 本文件：Fact Index（事实索引）</span></span>
+<span class="line"><span>├── index.md                     # 顶层索引</span></span>
+<span class="line"><span>├── _always-load.md              # 每会话必载</span></span>
+<span class="line"><span>├── comparisons/                 # 对比分析（6 个文件）</span></span>
+<span class="line"><span>├── concepts/                    # 概念域</span></span>
+<span class="line"><span>│   ├── hybrid/                  # Hybrid/OSC 系统（12 个文件）</span></span>
+<span class="line"><span>│   ├── misc/                    # 杂项概念（4 个文件）</span></span>
+<span class="line"><span>│   ├── patterns/                # 核心设计模式（21 个文件）</span></span>
+<span class="line"><span>│   └── rules/                   # UdonSharp 语言/工程规则（10 个文件）</span></span>
+<span class="line"><span>├── entities/                    # 实体域</span></span>
+<span class="line"><span>│   ├── api/                     # API 参考（19 个文件）</span></span>
+<span class="line"><span>│   ├── avatar/                  # Avatar 域（63 个文件 + shader 子域）</span></span>
+<span class="line"><span>│   │   └── shader/              # Shader 知识库</span></span>
+<span class="line"><span>│   │       ├── filamented/      # Filamented PBR 着色器（3 个文件）</span></span>
+<span class="line"><span>│   │       ├── liltoon/         # lilToon 详细文档（17 个文件）</span></span>
+<span class="line"><span>│   │       ├── orl/             # ORL Shaders World 通用着色器（4 个文件）</span></span>
+<span class="line"><span>│   │       ├── poiyomi/         # Poiyomi Shaders 8 主题知识（8 个文件）</span></span>
+<span class="line"><span>│   │       └── unlitwf/         # UnlitWF Unlit 扩展专业效果（1 个文件）</span></span>
+<span class="line"><span>│   ├── platform/                # 跨平台开发（12 个文件）</span></span>
+<span class="line"><span>│   ├── vrchatsdk/               # VRChatSDK（HTTP API，19 个文件）</span></span>
+<span class="line"><span>│   └── world/                   # World 域（19 个文件 + 子域）</span></span>
+<span class="line"><span>│       ├── udon/                # Udon 域（18 个文件 + 深层子域）</span></span>
+<span class="line"><span>│       │   ├── data-containers/ # 数据容器（7 个文件）</span></span>
+<span class="line"><span>│       │   ├── graph/           # Udon Graph（6 个文件）</span></span>
+<span class="line"><span>│       │   ├── midi/            # MIDI（3 个文件）</span></span>
+<span class="line"><span>│       │   ├── networking/      # 网络同步（12 个文件，含 tools/）</span></span>
+<span class="line"><span>│       │   ├── persistence/     # 持久化（5 个文件，含 patterns/）</span></span>
+<span class="line"><span>│       │   ├── players/         # 玩家（7 个文件，含 drones/）</span></span>
+<span class="line"><span>│       │   ├── udonsharp/       # UdonSharp（6 个文件）</span></span>
+<span class="line"><span>│       │   ├── video-players/   # 视频播放器（3 个文件）</span></span>
+<span class="line"><span>│       │   ├── vrc-graphics/    # VRC Graphics（4 个文件）</span></span>
+<span class="line"><span>│       │   └── vrctween/        # VRCTween（7 个文件）</span></span>
+<span class="line"><span>│       ├── scene-components/    # Scene Components（46 个文件）</span></span>
+<span class="line"><span>│       ├── examples/            # SDK 内置示例（11 个文件）</span></span>
+<span class="line"><span>│       │   ├── udon-example-scene/  # Udon Example Scene（6 个文件）</span></span>
+<span class="line"><span>│       │   ├── obstacle-course/     # 障碍赛道示例（6 个文件）</span></span>
+<span class="line"><span>│       │   └── persistence/         # 持久化示例（10 个文件）</span></span>
+<span class="line"><span>│       ├── clientsim/           # ClientSim 模拟器（含 systems/）</span></span>
+<span class="line"><span>│       ├── bakery/              # Bakery 光照烘焙（2 个文件）</span></span>
+<span class="line"><span>│       ├── development/         # 开发相关内容（2 个文件）</span></span>
+<span class="line"><span>│       ├── patterns/            # World 模式（2 个文件）</span></span>
+<span class="line"><span>│       └── shader/              # World Shader（2 个文件）</span></span>
+<span class="line"><span>├── meta/                        # 元协议/元数据（6 个文件）</span></span>
+<span class="line"><span>└── queries/                     # 查询（1 个文件）</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>> 📌 raw 源材料（哈希账本锚定、不可变）不随知识页发布包分发；知识页根为当前 `LLMWikiPage/`。</span></span></code></pre>
+<hr>
+<h2 id="️-核心约束绝对规则">⚠️ 核心约束（绝对规则）</h2>
+<h3 id="渲染管线">渲染管线</h3>
+<blockquote>
+<p><strong>🔴 最高优先级：VRChat 只支持 BRP (Built-in Rendering Pipeline)</strong></p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>规则</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>只支持 BRP</strong></td>
+<td>VRChat <strong>只支持</strong> Built-in Rendering Pipeline</td>
+</tr>
+<tr>
+<td><strong>禁止切换管线</strong></td>
+<td>任何更改渲染管线的行为都是<strong>致命的</strong></td>
+</tr>
+<tr>
+<td><strong>禁止 URP/HDRP</strong></td>
+<td>项目中不得使用 Universal 或 High Definition Render Pipeline</td>
+</tr>
+<tr>
+<td><strong>Unity 版本绑定</strong></td>
+<td>SDK 3.5.0+ 绑定 Unity 2022.3.22f1（LTS）；SDK 3.4.2 及更早绑定 Unity 2019.4.31f1</td>
+</tr>
+</tbody>
+</table>
+<p><strong>违反后果</strong>：切换渲染管线会导致 VRChat 项目完全无法工作。</p>
+<h3 id="editor-脚本与构建">Editor 脚本与构建</h3>
+<blockquote>
+<p>🔴 <strong>任何引用 <code>UnityEditor.*</code> 命名空间的脚本必须放在 <code>Editor</code> 文件夹内</strong></p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>规则</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>根因</strong></td>
+<td>脚本先在编辑器下编译（包含 <code>UnityEditor</code> 程序集），再为目标平台重新编译（<strong>不包含</strong> <code>UnityEditor</code> 程序集）</td>
+</tr>
+<tr>
+<td><strong>触发条件</strong></td>
+<td><code>using UnityEditor;</code> 等编辑器命名空间</td>
+</tr>
+<tr>
+<td><strong>解决路径 1</strong></td>
+<td>将脚本放到<strong>父目录为 <code>Editor</code></strong> 的任意路径下，构建时自动排除</td>
+</tr>
+<tr>
+<td><strong>解决路径 2</strong></td>
+<td>创建 asmdef，<strong>Include Platforms</strong> 仅勾选 Editor</td>
+</tr>
+</tbody>
+</table>
+<p><strong>常见场景</strong>（VRChat World 开发中）：</p>
+<ul>
+<li>自定义 Inspector (<code>[CustomEditor]</code>)</li>
+<li>Gizmo 调试 (<code>OnDrawGizmos</code>)</li>
+<li>Build Pipeline 后处理 (<code>IPreprocessBuildWithReport</code>)</li>
+<li>AssetPostprocessor</li>
+<li>AssetDatabase / EditorUtility / EditorPrefs 调用</li>
+</ul>
+<p><strong>易错点</strong>：</p>
+<ul>
+<li>❌ 脚本必须挂在 GameObject 上才能编译 → 实际由<strong>文件夹路径</strong>决定</li>
+<li>❌ 用 <code>Assets/Scripts/MyEditor.cs</code> → 跨平台构建时找不到 <code>UnityEditor</code> 程序集，报错</li>
+<li>✅ 用 <code>Assets/Editor/MyEditor.cs</code> 或 <code>Assets/Scripts/Editor/MyEditor.cs</code> → 正常</li>
+</ul>
+<p><strong>参考</strong>：</p>
+<ul>
+<li>Unity 特殊文件夹：<a href="https://docs.unity3d.com/6000.3/Documentation/Manual/SpecialFolders.html">https://docs.unity3d.com/6000.3/Documentation/Manual/SpecialFolders.html</a></li>
+</ul>
+<h3 id="第三方工具链兼容性矩阵2026-07-04-补充">第三方工具链兼容性矩阵（2026-07-04 补充）</h3>
+<blockquote>
+<p>来源: VirtualLens2 + VRCLens 评估（外部验证）</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>工具</th>
+<th>VRCSDK 最低</th>
+<th>Unity 版本</th>
+<th>MA 最低</th>
+<th>表情参数需求</th>
+<th>平台</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>VRChat SDK 官方</strong></td>
+<td>3.5.0+</td>
+<td>2022.3.22f1 LTS</td>
+<td>N/A</td>
+<td>N/A</td>
+<td>全平台</td>
+</tr>
+<tr>
+<td><strong>Modular Avatar (MA)</strong></td>
+<td>与 SDK 一致</td>
+<td>2022 LTS</td>
+<td>N/A</td>
+<td>N/A</td>
+<td>全平台</td>
+</tr>
+<tr>
+<td><strong>VRCFury</strong></td>
+<td>与 SDK 一致</td>
+<td>2022 LTS</td>
+<td>N/A</td>
+<td>N/A</td>
+<td>全平台</td>
+</tr>
+<tr>
+<td><strong>AvatarOptimizer (AAO)</strong></td>
+<td>与 SDK 一致</td>
+<td>2022 LTS</td>
+<td>1.x</td>
+<td>N/A</td>
+<td>全平台</td>
+</tr>
+<tr>
+<td><strong>VirtualLens2</strong></td>
+<td>3.7.0+</td>
+<td>2022 LTS</td>
+<td>1.8.0+</td>
+<td>8 bit</td>
+<td>PCVR + Remote Mode (Android)</td>
+</tr>
+<tr>
+<td><strong>VRCLens</strong></td>
+<td>3.0.8+</td>
+<td>2022 LTS</td>
+<td>(集成 AV3Manager)</td>
+<td>8 bit</td>
+<td>Desktop + VR</td>
+</tr>
+<tr>
+<td><strong>VVMW</strong></td>
+<td>与 SDK 一致</td>
+<td>2022 LTS</td>
+<td>N/A</td>
+<td>N/A</td>
+<td>World 工具</td>
+</tr>
+<tr>
+<td><strong>UVU</strong></td>
+<td>与 SDK 一致</td>
+<td>2022 LTS</td>
+<td>N/A</td>
+<td>N/A</td>
+<td>World 工具</td>
+</tr>
+<tr>
+<td><strong>Shader Locking 机制</strong></td>
+<td>N/A (VRChat 强制)</td>
+<td>2022 LTS</td>
+<td>N/A</td>
+<td>N/A</td>
+<td>Poiyomi Animated/Renamed, LilToon 需手动 Lock, d4rkAO 不支持 Renamed</td>
+</tr>
+</tbody>
+</table>
+<p><strong>关键约束总结</strong>:</p>
+<ul>
+<li>🔴 <strong>Unity 2022 LTS</strong> 是当前（2026-07）所有主流工具的最低要求</li>
+<li>🔴 <strong>VRCSDK 3.7.0+</strong> 是 VirtualLens2 等新工具的硬性要求</li>
+<li>🔴 <strong>表情参数 8 bit</strong> 是 VirtualLens2 / VRCLens 等摄影工具的硬性需求</li>
+<li>⚠️ <strong>MA 1.8.0+</strong> 是 VirtualLens2 非破坏性工作流的依赖</li>
+<li>⚠️ <strong>Shader Locking</strong>: VRChat 上传时自动 Lock 材质（剥离未用功能、烘焙常量、属性不可动画）。Poiyomi 提供 <code>Animated</code> / <code>Renamed</code> 标记让属性保持可动画；LilToon 无内置机制（需手动 Lock）。d4rkAvatarOptimizer <strong>不支持</strong> Poiyomi Renamed 模式（Issue #182 Open）</li>
+</ul>
+<blockquote>
+<p>完整对比见 <code>entities/avatar/camera-tools.md</code> §1 / §2.1 / §3.1 + <code>entities/avatar/shader/poiyomi/shader-locking-mechanism.md</code></p>
+</blockquote>
+<h3 id="vrchat-avatar-相机已知问题2026-07-04-补充">VRChat Avatar 相机已知问题（2026-07-04 补充）</h3>
+<blockquote>
+<p>🔴 <strong>来源</strong>: VRChat 官方 Canny feedback 平台
+状态: tracked by Staff 但<strong>未解决</strong></p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>问题</th>
+<th>影响</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Avatar Camera 不响应 DepthTextureMode</strong></td>
+<td>DoF 效果异常、shader 行为异常</td>
+</tr>
+<tr>
+<td><strong>DoF 噪声无法关闭</strong></td>
+<td>视频录制和后期降噪困难</td>
+</tr>
+<tr>
+<td><strong>Avatar 相机使用 stale depth texture</strong></td>
+<td>深度相关效果失效</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>详细分析见 <code>entities/world/vrc-camera-settings.md</code> §Avatar 相机限制</p>
+</blockquote>
+<hr>
+<h2 id="高优先级知识已完成">高优先级知识（已完成）</h2>
+<h3 id="avatar-pipeline">Avatar Pipeline</h3>
+<ul>
+<li>VRCPipelineManager ✅</li>
+<li>Avatar 3.0 四行架构 ✅</li>
+</ul>
+<h3 id="vrc-constraints-avatar-域">VRC Constraints (Avatar 域)</h3>
+<ul>
+<li>6 种约束类型 ✅</li>
+<li>高级设置（Local Space/Freeze To World）✅</li>
+<li>性能分类（Count/Depth）✅</li>
+<li>Constraints API ✅</li>
+</ul>
+<h3 id="playable-layers">Playable Layers</h3>
+<ul>
+<li>Humanoid vs Generic ✅</li>
+<li>5 层详解（Base/Additive/Gesture/Action/FX）✅</li>
+<li>Avatar Mask 规则 ✅</li>
+<li>T-Pose/IK Pose/Sitting Pose ✅</li>
+<li><strong>Avatar Animator = 参数驱动系统</strong> ✅（核心：Expression Menu → Parameter → Playable Layer → Animator）</li>
+</ul>
+<h3 id="unity-animatorworld-上下文">Unity Animator（World 上下文）</h3>
+<ul>
+<li><strong>World Animator = 逻辑驱动系统</strong> ✅（核心：Udon Event → SetBool/SetTrigger → State Machine）</li>
+<li>Udon Animator API（SetBool/SetFloat/SetTrigger/SetInteger/Play/CrossFade）✅</li>
+<li>网络同步注意事项 ✅</li>
+</ul>
+<h3 id="world-性能优化">World 性能优化</h3>
+<ul>
+<li>预算规划 ✅</li>
+<li>材质/Shader/纹理管理 ✅</li>
+<li>光照系统（烘焙/动态）✅</li>
+<li>测试方法 ✅</li>
+</ul>
+<h3 id="bakery-光照烘焙">Bakery 光照烘焙 ✅</h3>
+<ul>
+<li>系统要求（Windows + NVIDIA Kepler+）✅</li>
+<li>6 种 Render Mode ✅</li>
+<li>5 种 Directional Mode ✅</li>
+<li>8 种组件 ✅</li>
+<li>材质兼容性 ✅</li>
+<li>FAQ + 故障排除 ✅</li>
+</ul>
+<h3 id="osc-协议">OSC 协议</h3>
+<ul>
+<li>完整协议数据库 ✅</li>
+</ul>
+<h3 id="音频同步系统架构--参考工程">音频同步系统架构 ✅ (参考工程)</h3>
+<ul>
+<li><strong>纹理编码数据传递</strong>：音频数据通过 CustomRenderTexture 传递 Shader，零网络同步开销</li>
+<li><strong>时间同步系统</strong>：Master 权威时间锚点 + 双时间源融合 + 漂移校正</li>
+<li><strong>同步策略</strong>：Manual Sync + Owner Transfer 混合模式</li>
+<li><strong>位域压缩</strong>：byte 存储多个 bool(<code>_flags</code>)→ 详见 <code>entities/world/udon/data-containers/byte-and-bit-operations.md</code></li>
+<li><strong>性能热点</strong>：SendAudioOutputData 每帧 8 次 SetFloatArray(约 2ms 开销)</li>
+<li><strong>实验性功能保护</strong>：audioDataToggle 默认关闭(VRCAsyncGPUReadback 成本高)</li>
+</ul>
+<blockquote>
+<p><strong>📚 参考实现</strong>:本节提炼自开源 VRChat 音频同步框架,见 （来源：Open Source Projects，本地整理） §音频同步类目</p>
+</blockquote>
+<h3 id="多机位导演系统网络同步架构--参考工程">多机位导演系统网络同步架构 ✅ (参考工程)</h3>
+<ul>
+<li><strong>5 层同步体系</strong>：Manual + Continuous + NetworkCallable + SafeMod(排除) + NoVariableSync</li>
+<li><strong>NetworkCallable RPC</strong>：参数化远程调用 + 批量延迟提交</li>
+<li><strong>双缓冲预览模式</strong>：<code>_isPreviewActive</code> + <code>_serializationPending</code></li>
+<li><strong>指数衰减插值</strong>：Continuous 值平滑(Compensation 因子)</li>
+<li><strong>Slerp/Slerp 本地缓动</strong>：位置+旋转独立插值</li>
+<li><strong>所有权分层</strong>：操作者 vs 被跟踪者所有权分离</li>
+<li><strong>UI 转发模式</strong>：NoVariableSync + SetProgramVariable</li>
+</ul>
+<blockquote>
+<p><strong>📚 参考实现</strong>:本节提炼自开源 VRChat 多机位导演系统,见 （来源：Open Source Projects，本地整理） §多机位导演类目</p>
+</blockquote>
+<hr>
+<h2 id="核心设计模式与案例研究索引精简版">核心设计模式与案例研究索引（精简版）</h2>
+<blockquote>
+<p>以下为知识库中已验证的核心设计模式和案例研究索引。
+完整实现代码、详细架构分析、对比表格均在对应文档中，按需检索。</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>类别</th>
+<th>数量</th>
+<th>索引位置</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>核心设计模式</td>
+<td>14 个</td>
+<td><code>concepts/patterns/index.md</code> + 各模式独立文档</td>
+</tr>
+<tr>
+<td>玩家本地相机工具</td>
+<td>2 个 (VirtualLens2 + VRCLens)</td>
+<td><code>entities/avatar/camera-tools.md</code></td>
+</tr>
+<tr>
+<td><strong>设计哲学：Non-Destructive vs Invasive</strong></td>
+<td>1 个模式</td>
+<td><code>entities/avatar/camera-tools.md</code> §4 + <code>entities/avatar/vrcfury-reference.md</code></td>
+</tr>
+<tr>
+<td><strong>VRChat Avatar 相机已知问题</strong></td>
+<td>1 个主题</td>
+<td><code>entities/world/vrc-camera-settings.md</code> §Avatar 相机限制</td>
+</tr>
+<tr>
+<td><strong>第三方工具链兼容性矩阵</strong></td>
+<td>1 个矩阵</td>
+<td><a href="/STELLASTOPVRC/posts/kb-fact/">FACT</a> §核心约束 + <code>entities/avatar/camera-tools.md</code> §1</td>
+</tr>
+<tr>
+<td><strong>Shader Locking 机制</strong></td>
+<td>1 个完整文档</td>
+<td><code>entities/avatar/shader/poiyomi/shader-locking-mechanism.md</code> (2026-07-04)</td>
+</tr>
+<tr>
+<td>LuraSwitch2 实战模式</td>
+<td>6 个</td>
+<td><code>concepts/patterns/index.md</code> #8-#13</td>
+</tr>
+<tr>
+<td>UdonVoiceUtils 工程化模式</td>
+<td>10 个</td>
+<td><code>concepts/patterns/index.md</code> #14-#23</td>
+</tr>
+<tr>
+<td>ULocalization 沙箱适配模式</td>
+<td>5 个</td>
+<td><code>concepts/patterns/index.md</code> #24-#28</td>
+</tr>
+<tr>
+<td>Sardinal 消息总线模式</td>
+<td>3 个</td>
+<td><code>concepts/patterns/index.md</code> #29-#31</td>
+</tr>
+<tr>
+<td>案例研究 A1-A9</td>
+<td>9 个</td>
+<td>（来源：Open Source Projects，本地整理）</td>
+</tr>
+<tr>
+<td>推荐工具 C1-C16</td>
+<td>16 个</td>
+<td><code>concepts/hybrid/udon-world-plugins.md</code></td>
+</tr>
+<tr>
+<td>Avatar 端摄影工具 C17</td>
+<td>1 个</td>
+<td><code>concepts/hybrid/avatar-camera-plugins.md</code> (Flex Fisheye Lens,2026-07-04)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>快速查阅入口</strong>：</p>
+<ul>
+<li>网络同步：<code>concepts/patterns/manual-sync-state.md</code> / <code>advanced-sync-patterns.md</code></li>
+<li>沙箱适配：<code>concepts/patterns/hash-based-dispatch.md</code> / <code>build-time-vs-runtime-separation.md</code></li>
+<li>消息总线：<code>concepts/patterns/channel-routing.md</code> / <code>hybrid-subscription-modes.md</code></li>
+<li>视频同步：<a href="https://github.com/JLChnToZ/VVMW">VVMW（GitHub）</a>（案例）/ <code>entities/world/vvmw.md</code>（工具）</li>
+<li>Shader 选型：<code>entities/avatar/shader/index.md</code></li>
+<li>Avatar 摄影工具：<code>concepts/hybrid/avatar-camera-plugins.md</code>（Avatar 端鱼眼相机插件）</li>
+<li>VRChatSDK 概览：<code>entities/vrchatsdk/index.md</code></li>
+</ul>
+<hr>
+<h2 id="知识完整性原则">知识完整性原则</h2>
+<blockquote>
+<p>⚠️ <strong>所有知识库索引必须指向现行知识页根 <code>LLMWikiPage/</code></strong></p>
+<ul>
+<li>外部文档随时可能删除或丢失</li>
+<li>工具安装链接（VPM/BOOTH）可以保留（操作指引，非知识本身）</li>
+<li>知识来源必须可追溯（URL 或源材料引用）；raw 源材料层不随发布包分发</li>
+</ul>
+</blockquote>
+<hr>
+<ul>
+<li>⚠️ <code>vrchatsdk/</code>: 中英混合命名（建议未来统一）</li>
+</ul>
+<h3 id="关键工程-specs从-2026-06-10-知识库更新中沉淀">关键工程 Specs（从 2026-06-10 知识库更新中沉淀）</h3>
+<blockquote>
+<p>这些规格是 VRChat 平台的硬性限制,不属于过程性记录,沉淀在此供长期参考。</p>
+</blockquote>
+<h4 id="vrcshadersetglobal-限制">VRCShader.SetGlobal 限制</h4>
+<ul>
+<li>属性名必须以 <code>_Udon</code> 为前缀(用于全局设置)</li>
+<li>详见 <a href="/STELLASTOPVRC/posts/kb-world-udon-vrc-graphics-index/">index</a></li>
+</ul>
+<h4 id="networking-specs">Networking Specs</h4>
+<ul>
+<li><strong>总带宽</strong>: ~11 KB/s</li>
+<li><strong>Manual sync</strong>: 280,496 bytes/serialization</li>
+<li><strong>Continuous sync</strong>: ~200 bytes/serialization</li>
+<li>详见 <code>entities/api/networking.md</code></li>
+</ul>
+<h4 id="persistence-compression">Persistence Compression</h4>
+<ul>
+<li>实际存储: 100 KB/player/world（压缩后）</li>
+<li>可压缩数据: ~300 KB 原始数据</li>
+<li>详见 <code>entities/api/persistence.md</code></li>
+</ul>
+<hr>
+<h3 id="2026-07-04-新增参考工程">2026-07-04 新增参考工程</h3>
+<blockquote>
+<p>来源：86vrchat 笔记（VRCD 中文社区），P2 级知识点已纳入</p>
+</blockquote>
+<h4 id="创作者工具链参考86vrchat-视角">创作者工具链参考（86vrchat 视角）</h4>
+<ul>
+<li>
+<p><strong>国内创作者账号注册流程</strong>：hCaptcha + VPN 检测 + Watt Toolkit 辅助</p>
+<ul>
+<li>详见 <code>entities/platform/account-registration-cn.md</code></li>
+</ul>
+</li>
+<li>
+<p><strong>Unity Hub 国内安装</strong>：国际版 vs 中国版 + NoUnityCN 第三方下载源</p>
+<ul>
+<li>详见 <code>entities/platform/unity-install-cn.md</code></li>
+</ul>
+</li>
+<li>
+<p><strong>VN3 协议</strong>：日韩圈 VRC 商业模型许可证框架</p>
+<ul>
+<li>详见 <a href="https://www.vn3.org">VN3（官方）</a></li>
+</ul>
+</li>
+<li>
+<p><strong>Blender 预处理工具链</strong>：CATS（2021 停更，0.19.0）+ VRM Addon for Blender（活跃维护）</p>
+<ul>
+<li>详见 <a href="https://github.com/absolute-quantum/cats-blender-plugin">CATS Blender 插件（GitHub）</a></li>
+</ul>
+</li>
+<li>
+<p><strong>创作者备份策略</strong>：UnityHub + VCC/ALCOM + VRChat 三个核心存储位置</p>
+<ul>
+<li>详见 <code>entities/platform/backup-strategy.md</code></li>
+</ul>
+</li>
+<li>
+<p><strong>VRC 法律合规</strong>：量贩模型法律红线 + Filian/竜胆案例（社区转述）</p>
+<ul>
+<li>详见 <code>entities/avatar/legal-and-licensing.md</code></li>
+</ul>
+</li>
+<li>
+<p><strong>VRC 委托价格</strong>：三档预算（低/中/高）+ 三种工具链对比</p>
+<ul>
+<li>详见 <code>entities/avatar/commission-pricing.md</code></li>
+</ul>
+</li>
+</ul>
+<blockquote>
+<p><strong>纳入决策</strong>：见 86vrchat 对比分析的源材料纳入指南（源资料层，不随发布包分发）
+<strong>标记体系</strong>：[FACT-OFFICIAL] / [FACT-VN3] / [FACT-OFFICIAL-REPO] / [COMMUNITY-86vrchat] / [INFERENCE] / [UNKNOWN]</p>
+</blockquote>
+<hr>
+<h2 id="最低限度原则soul--fact-边界">最低限度原则（SOUL / FACT 边界）</h2>
+<blockquote>
+<p>本文件(SOUL.md + FACT.md)仅存储<strong>长期有效的最低限度原则</strong>,不存储过程性工作协议。</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>内容类别</th>
+<th>存储位置</th>
+<th>理由</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>人格身份、语气、核心使命</td>
+<td><code>SOUL.md</code></td>
+<td>每个会话必须加载</td>
+</tr>
+<tr>
+<td>知识库结构、核心约束、长期经验</td>
+<td><a href="/STELLASTOPVRC/posts/kb-fact/">FACT</a>(本文件)</td>
+<td>每个会话必须加载</td>
+</tr>
+<tr>
+<td>6 工作模式、Domain/Knowledge First、Knowledge Priority、Evidence、Failure Policy、Output、Retrieval、Entry Points、Ultimate Goal</td>
+<td><code>特殊Agent提示词/知识库整理Agent_V3.1.md</code></td>
+<td>仅 Curator 模式按需参考</td>
+</tr>
+<tr>
+<td>废弃文件处理规则、多文档同步 Checklist、Phase 历史、A 阶段记录</td>
+<td><code>特殊Agent提示词/知识库整理Agent_V3.1.md</code></td>
+<td>过程性/规则性,无需每次加载</td>
+</tr>
+</tbody>
+</table> </div> <p class="kb-source-note" data-astro-cid-lvjzyg5v>
+本文由 VRChat 开发知识库自动整理（社区整理  · 可信度 High  · 最后校对 2026-08-20），
+          遇到与手写教程冲突的地方，以官方文档为最高优先级。
+</p> <section class="comments" id="comments" data-astro-cid-lvjzyg5v> <h2 class="comments__title" data-astro-cid-lvjzyg5v>✦ 旅人留言（0）</h2> <p class="comments__empty" id="commentsEmpty" data-astro-cid-lvjzyg5v>
+还没有旅人留言 —— 有疑问就写在下面，站长都会回复。
+</p> <form class="comment-form" id="commentForm" data-target="kb-fact" data-astro-cid-lvjzyg5v> <p class="comment-form__title" data-astro-cid-lvjzyg5v>写下你的留言</p> <input id="cAuthor" maxlength="20" placeholder="昵称（留空则为「旅人」）" data-astro-cid-lvjzyg5v> <textarea id="cBody" maxlength="1000" required placeholder="想问的问题、想说的感谢都可以（最多 1000 字）" data-astro-cid-lvjzyg5v></textarea> <div class="comment-form__actions" data-astro-cid-lvjzyg5v> <button class="btn btn--primary" type="submit" data-astro-cid-lvjzyg5v>发布留言</button> <span class="form-hint" data-astro-cid-lvjzyg5v>留言保存在本站，站长在写作台里能看到</span> <span class="form-msg" id="cMsg" data-astro-cid-lvjzyg5v></span> </div> </form> </section> <nav class="station-nav" aria-label="站间导航" data-astro-cid-lvjzyg5v> <a href="/STELLASTOPVRC/posts/upload-first-avatar/" data-astro-cid-lvjzyg5v> <span class="dir" data-astro-cid-lvjzyg5v>← 上一站 · 更新的星光</span> <span class="to" data-astro-cid-lvjzyg5v>从零上传第一个 VRChat 虚拟形象</span> </a> <a href="/STELLASTOPVRC/posts/kb-api-vrc-billboard/" data-astro-cid-lvjzyg5v> <span class="dir" data-astro-cid-lvjzyg5v>下一站 · 更早的星光 →</span> <span class="to" data-astro-cid-lvjzyg5v>VRCBillboard — 原生公告板（Billboard）API 类</span> </a> </nav> </div> <aside class="toc" id="toc" hidden> <p class="toc__title">✦ 本页星图</p> <nav id="tocNav" aria-label="文章目录"></nav> </aside> <script type="module">const i=document.querySelector(".prose"),d=document.getElementById("toc"),u=document.getElementById("tocNav"),l=[];if(i&&d&&u){const c=[...i.querySelectorAll("h1, h2, h3")];if(c.length>=3){d.hidden=!1,c.forEach((o,e)=>{o.id||(o.id=`sec-${e}`);const n=document.createElement("a");n.href=`#${o.id}`;const s=(o.textContent??"").replace(/\s+/g," ").trim(),r=s.search(/[：:]/),a=r>=4?s.slice(0,r):s;n.textContent=a.length>40?`${a.slice(0,40)}…`:a,n.title=s,u.appendChild(n),l.push({a:n,h:o})});const t=()=>{let o=l[0];for(const e of l)e.h.getBoundingClientRect().top<=130&&(o=e);for(const e of l)e.a.classList.toggle("is-active",e===o)};addEventListener("scroll",t,{passive:!0}),t()}}document.querySelectorAll(".prose pre").forEach(c=>{const t=document.createElement("button");t.className="code-copy",t.type="button",t.textContent="复制",t.addEventListener("click",async()=>{const o=c.querySelector("code")?.innerText??c.innerText;try{await navigator.clipboard.writeText(o)}catch{const e=document.createElement("textarea");e.value=o,document.body.appendChild(e),e.select(),document.execCommand("copy"),e.remove()}t.textContent="已复制 ✓",t.classList.add("is-ok"),setTimeout(()=>{t.textContent="复制",t.classList.remove("is-ok")},1500)}),c.appendChild(t)});</script> </article>  </main> <footer class="site-footer"> <div class="wrap"> <p class="star-line" aria-hidden="true"> <svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> <svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> </p> <p>星之驿站 StellaStop —— 在虚拟宇宙中，为你保留一座驿站</p> <p class="site-footer__disclaimer">
+该网页目前是测试阶段，仅用于测试，所有内容仅供参考；内容全部为引用互联网当中的信息。
+</p> <p>© 2026 星之驿站 · 由 <a href="https://astro.build">Astro</a> 与星光驱动</p> <p> <a data-desk-login hidden title="写作台：登录 / 注册">登录 / 注册</a> ·
+<a href="/STELLASTOPVRC/announcements/">官方公告</a> ·
+<a href="/STELLASTOPVRC/ai/">问星 AI</a> ·
+<a href="/STELLASTOPVRC/feedback/">旅人留言板</a> </p> </div> </footer> <button class="to-top" id="toTop" aria-label="回到顶部"> <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"> <path d="M12 20V5"></path> <path d="M5.5 11.5 12 5l6.5 6.5"></path> </svg> </button> <script type="module">const e=document.getElementById("toTop");if(e){const t=()=>e.classList.toggle("is-visible",scrollY>480);addEventListener("scroll",t,{passive:!0}),t(),e.addEventListener("click",()=>{const o=matchMedia("(prefers-reduced-motion: reduce)").matches;scrollTo({top:0,behavior:o?"auto":"smooth"})})}</script> <script>(function(){const deskConfigured = "";
+
+      /* 写作台探测（页面尾部执行，DOM 已就绪）：
+         1. 计算写作台地址：站点配置 deskUrl（公网部署时填）> 本机默认 localhost:4322 > 同主机 4322
+         2. 探测 /api/gate/status —— 在线才点亮「登录 / 注册」入口，并复用给验证门横幅
+         3. 不在线则保持隐藏，绝不会把访客拽进内网地址；同时给出一次性「镜像模式」提示 */
+      (function () {
+        var host = location.hostname;
+        var isLocal = host === 'localhost' || host === '127.0.0.1' || host === '[::1]';
+        var desk = deskConfigured ||
+          (isLocal ? 'http://localhost:4322' : location.protocol + '//' + host + ':4322');
+        window.STELLA_DESK = desk;
+
+        function revealLogin() {
+          document.querySelectorAll('[data-desk-login]').forEach(function (a) {
+            a.href = desk + '/admin';
+            a.removeAttribute('hidden');
+          });
+        }
+        function showBanner(css, html, shiftHeader) {
+          var bar = document.createElement('div');
+          bar.style.cssText = css;
+          bar.innerHTML = html;
+          document.body.prepend(bar);
+          if (shiftHeader) {
+            var header = document.querySelector('.site-header');
+            if (header) header.style.marginTop = '42px';
+          }
+        }
+        function hintMirrorMode() {
+          try {
+            if (sessionStorage.getItem('stella-desk-hint')) return;
+            sessionStorage.setItem('stella-desk-hint', '1');
+          } catch (e) { /* 无痕模式等：忽略 */ }
+          var tip = document.createElement('div');
+          tip.style.cssText = 'position:fixed;left:14px;bottom:14px;z-index:9998;max-width:min(92vw,430px);padding:.65rem .9rem;border-radius:12px;background:rgba(18,20,44,.92);border:1px solid rgba(150,142,255,.35);color:#e8e6ff;font-size:.82rem;line-height:1.6;font-family:system-ui,sans-serif;box-shadow:0 8px 30px rgba(0,0,0,.35)';
+          tip.innerHTML = 'ℹ️ 静态镜像模式：登录 / 评论 / AI 等互动功能需要站长写作台在线，当前不可用。' +
+            '<span id="stellaDeskHintClose" style="float:right;cursor:pointer;opacity:.75;font-weight:700;margin-left:.6rem" title="关闭">×</span>';
+          document.body.appendChild(tip);
+          var close = function () { tip.remove(); };
+          tip.querySelector('#stellaDeskHintClose').addEventListener('click', close);
+          setTimeout(close, 9000);
+        }
+
+        try {
+          var ctrl = new AbortController();
+          var timer = setTimeout(function () { ctrl.abort(); }, 2500);
+          fetch(desk + '/api/gate/status', { credentials: 'include', signal: ctrl.signal })
+            .then(function (r) { return r.ok ? r.json() : null; })
+            .then(function (d) {
+              clearTimeout(timer);
+              if (!d) throw new Error('desk-offline');
+              window.STELLA_DESK_OK = true;
+              revealLogin();
+              if (d.regionBlocked) {
+                showBanner(
+                  'position:fixed;top:0;left:0;right:0;z-index:9999;padding:1.2rem;text-align:center;background:#1a0a0a;color:#ff9ed2;font-size:.95rem;border-bottom:2px solid #ff4d6d;font-family:system-ui,sans-serif',
+                  '⛔ 你所在的地区（' + (d.regionCountry || '未知') + '）暂不开放访问。',
+                  false
+                );
+                return;
+              }
+              if (d.enabled && !d.passed) {
+                showBanner(
+                  'position:fixed;top:0;left:0;right:0;z-index:9999;padding:0.7rem;text-align:center;background:linear-gradient(94deg,rgba(143,127,247,.25),rgba(98,200,245,.18));border-bottom:1px solid rgba(150,142,255,.3);color:#f0efff;font-size:.88rem;font-family:system-ui,sans-serif',
+                  '🔒 本站启用了安全验证 —— <a href="' + desk + '/gate?next=' + encodeURIComponent(location.href) + '" style="color:#ffd98e;font-weight:700;text-decoration:underline">点击完成验证</a>，通过后即可使用全部功能（30 天免验）。',
+                  true
+                );
+              }
+            })
+            .catch(function () {
+              clearTimeout(timer);
+              window.STELLA_DESK_OK = false;
+              hintMirrorMode();
+            });
+        } catch (e) { /* 忽略 */ }
+      })();
+    })();</script> </body> </html> <script type="module">const m=document.getElementById("commentForm"),s=document.getElementById("cMsg"),u=`${location.protocol}//${location.hostname}:4322/api/message`;function r(e,t=!1){s&&(s.textContent=e,s.classList.toggle("is-err",t),s.classList.toggle("is-ok",!t))}function y(){const e=new Date,t=n=>String(n).padStart(2,"0");return`${e.getFullYear()}-${t(e.getMonth()+1)}-${t(e.getDate())}`}function f(e){let t=7;for(const n of e)t=(t*31+n.charCodeAt(0))%360;return t}function g(e,t){const n=document.createElement("li");n.className="comment",n.innerHTML=`
+      <span class="comment__avatar"></span>
+      <div class="comment__bubble">
+        <div class="comment__head">
+          <span class="comment__name"></span>
+          <time class="comment__date">${y()}</time>
+        </div>
+        <p class="comment__body"></p>
+      </div>`;const o=n.querySelector(".comment__avatar");return o.style.setProperty("--h",String(f(e))),o.textContent=e.slice(0,1),n.querySelector(".comment__name").textContent=e,n.querySelector(".comment__body").textContent=t,n}m?.addEventListener("submit",async e=>{e.preventDefault();const t=document.getElementById("cBody").value.trim();if(!t)return r("留言内容不能为空哦",!0);const n=document.getElementById("cAuthor").value.trim()||"旅人",o=m.querySelector("button");o&&(o.disabled=!0);try{const c=await fetch(u,{credentials:"include",method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({target:m.dataset.target,kind:"comment",author:n,body:t})}),d=await c.json().catch(()=>({}));if(!c.ok)throw new Error(d.error||`发送失败（${c.status}）`);const l=document.querySelector(".comment-list");l&&l.appendChild(g(n,t)),document.getElementById("commentsEmpty")?.remove(),document.getElementById("cBody").value="",r("留言已发布，感谢支持 ✦");const a=document.querySelector(".comments__title"),i=a?.textContent?.match(/（(\d+)）/);a&&i&&(a.textContent=a.textContent.replace(/（\d+）/,`（${Number(i[1])+1}）`))}catch(c){r(c instanceof TypeError?"写作台没在运行，暂时收不到留言 —— 双击「启动博客.bat」就好":c.message,!0)}finally{o&&(o.disabled=!1)}});</script> 

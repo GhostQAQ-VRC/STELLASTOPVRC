@@ -1,0 +1,2319 @@
+<!DOCTYPE html><html lang="zh-CN"> <head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="generator" content="Astro v5.18.2"><meta name="description" content="1. OSC 基础"><meta name="theme-color" content="#070a1c"><meta property="og:title" content="VRChat OSC 协议完整数据库 · 星之驿站 StellaStop"><meta property="og:description" content="1. OSC 基础"><meta property="og:type" content="website"><meta name="twitter:card" content="summary"><link rel="icon" type="image/svg+xml" href="/STELLASTOPVRC/favicon.svg"><script>
+      // 在渲染前恢复主题与特效档位，避免闪一下默认状态
+      try {
+        document.documentElement.dataset.theme =
+          localStorage.getItem('stella-theme') || 'nebula';
+        document.documentElement.dataset.fx =
+          localStorage.getItem('stella-fx') || 'standard';
+      } catch {
+        /* 隐私模式读不到就算了 */
+      }
+    </script><link rel="stylesheet" href="/STELLASTOPVRC/custom-vars.css"><title>VRChat OSC 协议完整数据库 · 星之驿站 StellaStop</title><link rel="stylesheet" href="/STELLASTOPVRC/_astro/about.Bgh6wcGl.css">
+<style>.post-head__meta[data-astro-cid-lvjzyg5v]{color:var(--ink-faint);font-family:var(--font-mono);font-size:.82rem}.post-head[data-astro-cid-lvjzyg5v] .chip-row[data-astro-cid-lvjzyg5v]{margin-top:1rem}.kb-source-note[data-astro-cid-lvjzyg5v]{max-width:760px;margin:2.2rem auto 0;font-size:.82rem;color:var(--ink-faint);border-top:1px dashed var(--line);padding-top:1rem}
+</style></head> <body> <div class="site-notice" id="siteNotice"> <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> <span class="site-notice__text">欢迎来到星之驿站！</span> <button class="site-notice__close" id="noticeClose" type="button" aria-label="关闭公告">
+×
+</button> </div> <a class="skip-link" href="#main">跳到主要内容</a> <canvas id="starfield" aria-hidden="true" data-astro-cid-ra7sfcwn></canvas> <div class="fx-aurora fx-aurora--a" aria-hidden="true" data-astro-cid-ra7sfcwn></div> <div class="fx-aurora fx-aurora--b" aria-hidden="true" data-astro-cid-ra7sfcwn></div>  <script type="module">const u=document.getElementById("starfield");if(u){let F=function(){const n=Math.random();return n<.1?"gold":n<.42?"blue":"white"},v=function(){const n=Math.min(window.devicePixelRatio||1,2);s=window.innerWidth,d=window.innerHeight,u.width=s*n,u.height=d*n,u.style.width=`${s}px`,u.style.height=`${d}px`,t.setTransform(n,0,0,n,0,0);const e=Math.min(190,Math.round(s*d/8500));l=Array.from({length:e},()=>({x:Math.random()*s,y:Math.random()*d,r:r(.4,1.7),base:r(.25,.8),amp:r(.12,.4),speed:r(6e-4,.0022),phase:r(0,Math.PI*2),c:F()})),C=Array.from({length:26},()=>({x:Math.random()*s,y:Math.random()*d,r:r(.9,2.4),vx:r(-.006,.006),vy:r(-.02,-.006),base:r(.2,.5),speed:r(8e-4,.002),phase:r(0,Math.PI*2),c:Math.random()<.5?"gold":"violet"})),c==="off"&&m(0,!0)},D=function(n){const e=Math.random()<.5?1:-1,o=r(Math.PI/7,Math.PI/5),a=r(.45,.75);y.push({x:r(s*.15,s*.85),y:r(-20,d*.3),vx:Math.cos(o)*a*e,vy:Math.sin(o)*a,born:n,life:r(750,1050),len:r(100,170)})},S=function(n){y=y.filter(e=>n-e.born<e.life);for(const e of y){const o=(n-e.born)/e.life,a=e.x+e.vx*(n-e.born),i=e.y+e.vy*(n-e.born),f=o<.15?o/.15:o>.7?(1-o)/.3:1,h=Math.hypot(e.vx,e.vy),x=e.vx/h,g=e.vy/h,b=t.createLinearGradient(a,i,a-x*e.len,i-g*e.len);b.addColorStop(0,`rgba(236,242,255,${(.85*f).toFixed(3)})`),b.addColorStop(1,"rgba(236,242,255,0)"),t.strokeStyle=b,t.lineWidth=1.6,t.lineCap="round",t.beginPath(),t.moveTo(a,i),t.lineTo(a-x*e.len,i-g*e.len),t.stroke()}},B=function(){let o=0;t.lineWidth=.7;for(let a=0;a<l.length&&o<26;a++)for(let i=a+1;i<l.length&&o<26;i++){const f=l[a].x-l[i].x,h=l[a].y-l[i].y,x=f*f+h*h;if(x<16900){const g=(1-Math.sqrt(x)/130)*.17;t.strokeStyle=`rgba(178,170,255,${g.toFixed(3)})`,t.beginPath(),t.moveTo(l[a].x,l[a].y),t.lineTo(l[i].x,l[i].y),t.stroke(),o++}}},X=function(n){for(const e of C){e.x+=e.vx*16,e.y+=e.vy*16,e.y<-12&&(e.y=d+10),e.x<-12&&(e.x=s+10),e.x>s+12&&(e.x=-10);const o=Math.max(.05,e.base+.25*Math.sin(n*e.speed+e.phase)),[a,i,f]=A[e.c];t.beginPath(),t.arc(e.x,e.y,e.r,0,7),t.shadowBlur=9,t.shadowColor=`rgba(${a},${i},${f},0.9)`,t.fillStyle=`rgba(${a},${i},${f},${o.toFixed(3)})`,t.fill()}t.shadowBlur=0},m=function(n,e=!1){t.clearRect(0,0,s,d);for(const o of l){const a=c==="off"?o.base:Math.max(.05,o.base+o.amp*Math.sin(n*o.speed+o.phase)),[i,f,h]=A[o.c];t.beginPath(),t.arc(o.x,o.y,o.r,0,7),o.r>1.25?(t.shadowBlur=7,t.shadowColor=`rgba(${i},${f},${h},0.85)`):t.shadowBlur=0,t.fillStyle=`rgba(${i},${f},${h},${a.toFixed(3)})`,t.fill()}if(t.shadowBlur=0,c!=="off"&&!e){c==="fancy"&&(B(),X(n));const o=c==="fancy"?r(2600,6e3):r(4200,9500);n>P&&(D(n),P=n+o),S(n)}},$=function(n){m(n),M=requestAnimationFrame($)},p=function(){if(c==="off"){m(0,!0);return}cancelAnimationFrame(M),M=requestAnimationFrame($)},w=function(){cancelAnimationFrame(M),t.clearRect(0,0,s,d),m(0,!0)};const t=u.getContext("2d"),k=matchMedia("(prefers-reduced-motion: reduce)").matches,A={white:[240,240,255],blue:[150,215,250],gold:[255,218,150],violet:[178,170,255]};let s=0,d=0,l=[],C=[],y=[],P=2500,M=0,c=document.documentElement.dataset.fx||"standard";k&&(c="off");const r=(n,e)=>n+Math.random()*(e-n);v(),addEventListener("resize",v),document.addEventListener("stella-fx-change",n=>{c=n.detail,c==="off"?w():p()}),c==="off"?m(0,!0):(p(),document.addEventListener("visibilitychange",()=>{document.hidden?w():p()}))}</script> <header class="site-header"> <div class="wrap site-header__inner"> <a class="logo" href="/STELLASTOPVRC/"> <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> <span>星之驿站</span> <span class="logo__romaji">StellaStop</span> </a> <div class="header-right"> <nav class="site-nav" aria-label="站内导航"> <a href="/STELLASTOPVRC/"> 首页 </a><a href="/STELLASTOPVRC/start/"> 新手 </a><a href="/STELLASTOPVRC/posts/"> 教程 </a><a href="/STELLASTOPVRC/videos/"> 视频 </a><a href="/STELLASTOPVRC/resources/"> 资源 </a><a href="/STELLASTOPVRC/booth/"> Booth </a><a href="/STELLASTOPVRC/announcements/"> 公告 </a><a href="/STELLASTOPVRC/ai/"> 问星 </a><a href="/STELLASTOPVRC/changelog/"> 更新日志 </a><a href="/STELLASTOPVRC/about/"> 关于 </a> </nav> <a class="login-link" data-desk-login hidden title="写作台：登录 / 注册后可发教程、传资源">
+登录 / 注册
+</a> <div class="theme-switch"> <button class="theme-switch__btn" id="themeBtn" type="button" aria-haspopup="listbox" aria-expanded="false" aria-label="切换主题配色" title="切换主题配色"> <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"> <path d="M12 3a9 9 0 1 0 9 9c0-1.2-1-2-2.2-2H17a2 2 0 0 1-2-2V6.2C15 5 14.2 4 13 4.4A9 9 0 0 0 12 3Z"></path> <circle cx="7.5" cy="11.5" r="1" fill="currentColor" stroke="none"></circle> <circle cx="10" cy="7.5" r="1" fill="currentColor" stroke="none"></circle> <circle cx="15" cy="7" r="1" fill="currentColor" stroke="none"></circle> </svg> </button> <div class="theme-pop" id="themePop" role="listbox" aria-label="选择主题" hidden> <button class="theme-opt" type="button" role="option" data-theme-value="nebula" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#8f7ff7"></span><span class="dot" style="background:#62c8f5"></span><span class="dot" style="background:#ffd98e"></span> </span> <span class="theme-opt__name">星云 · 蓝紫</span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt" type="button" role="option" data-theme-value="sakura" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#ff8fc7"></span><span class="dot" style="background:#c79bff"></span><span class="dot" style="background:#ffd08e"></span> </span> <span class="theme-opt__name">樱语 · 粉紫</span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt" type="button" role="option" data-theme-value="miku" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#2ed3c2"></span><span class="dot" style="background:#6ea8ff"></span><span class="dot" style="background:#ffe08e"></span> </span> <span class="theme-opt__name">葱色 · 青绿</span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt" type="button" role="option" data-theme-value="ember" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#ffb35c"></span><span class="dot" style="background:#ff7e6b"></span><span class="dot" style="background:#ffd98e"></span> </span> <span class="theme-opt__name">暮金 · 暖橙</span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt" type="button" role="option" data-theme-value="dawn" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#6a5ce8"></span><span class="dot" style="background:#e0568f"></span><span class="dot" style="background:#b8821e"></span> </span> <span class="theme-opt__name">晨星 · 浅色</span> <span class="theme-opt__mark">✦</span> </button> </div> </div> <script type="module">const a=document.getElementById("themeBtn"),n=document.getElementById("themePop");function s(c){document.documentElement.dataset.theme=c;try{localStorage.setItem("stella-theme",c)}catch{}const e=getComputedStyle(document.documentElement).getPropertyValue("--bg-deep").trim();document.querySelector('meta[name="theme-color"]')?.setAttribute("content",e||"#070a1c"),document.querySelectorAll(".theme-opt").forEach(t=>{const d=t.dataset.themeValue===c;t.classList.toggle("is-active",d),t.setAttribute("aria-selected",String(d))})}if(a&&n){const c=document.documentElement.dataset.theme||"nebula";document.querySelectorAll(".theme-opt").forEach(e=>{const t=e.dataset.themeValue===c;e.classList.toggle("is-active",t),e.setAttribute("aria-selected",String(t))}),a.addEventListener("click",e=>{e.stopPropagation();const t=n.hidden;n.hidden=!t,a.setAttribute("aria-expanded",String(t))}),document.addEventListener("click",e=>{!n.hidden&&!e.target.closest(".theme-switch")&&(n.hidden=!0,a.setAttribute("aria-expanded","false"))}),document.addEventListener("keydown",e=>{e.key==="Escape"&&!n.hidden&&(n.hidden=!0,a.setAttribute("aria-expanded","false"),a.focus())}),n.addEventListener("click",e=>{const t=e.target.closest(".theme-opt");t&&(s(t.dataset.themeValue??"nebula"),n.hidden=!0,a.setAttribute("aria-expanded","false"))})}</script> <div class="theme-switch fx-switch"> <button class="theme-switch__btn" id="fxBtn" type="button" aria-haspopup="listbox" aria-expanded="false" aria-label="背景特效设置" title="背景特效设置"> <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"> <path d="M5 3v4M3 5h4M6.5 17.5v3M5 19h3"></path> <path d="M14.5 4.5 16 9l4.5 1.5L16 12l-1.5 4.5L13 12l-4.5-1.5L13 9l1.5-4.5Z"></path> </svg> </button> <div class="theme-pop" id="fxPop" role="listbox" aria-label="背景特效" hidden> <button class="theme-opt fx-opt" type="button" role="option" data-fx-value="off" aria-selected="false"> <span class="fx-opt__body"> <span class="fx-opt__name">关闭特效</span> <span class="fx-opt__hint">最省电</span> </span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt fx-opt" type="button" role="option" data-fx-value="standard" aria-selected="false"> <span class="fx-opt__body"> <span class="fx-opt__name">标准</span> <span class="fx-opt__hint">闪烁星空 + 流星</span> </span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt fx-opt" type="button" role="option" data-fx-value="fancy" aria-selected="false"> <span class="fx-opt__body"> <span class="fx-opt__name">华丽</span> <span class="fx-opt__hint">追加极光 / 星座 / 光尘</span> </span> <span class="theme-opt__mark">✦</span> </button> </div> </div> <script type="module">const n=document.getElementById("fxBtn"),a=document.getElementById("fxPop");function s(d){document.documentElement.dataset.fx=d;try{localStorage.setItem("stella-fx",d)}catch{}document.querySelectorAll("#fxPop .fx-opt").forEach(t=>{const e=t.dataset.fxValue===d;t.classList.toggle("is-active",e),t.setAttribute("aria-selected",String(e))}),document.dispatchEvent(new CustomEvent("stella-fx-change",{detail:d}))}if(n&&a){const d=document.documentElement.dataset.fx||"standard";document.querySelectorAll("#fxPop .fx-opt").forEach(t=>{const e=t.dataset.fxValue===d;t.classList.toggle("is-active",e),t.setAttribute("aria-selected",String(e))}),n.addEventListener("click",t=>{t.stopPropagation();const e=a.hidden;a.hidden=!e,n.setAttribute("aria-expanded",String(e))}),document.addEventListener("click",t=>{!a.hidden&&!t.target.closest(".fx-switch")&&(a.hidden=!0,n.setAttribute("aria-expanded","false"))}),document.addEventListener("keydown",t=>{t.key==="Escape"&&!a.hidden&&(a.hidden=!0,n.setAttribute("aria-expanded","false"),n.focus())}),a.addEventListener("click",t=>{const e=t.target.closest(".fx-opt");e&&(s(e.dataset.fxValue??"standard"),a.hidden=!0,n.setAttribute("aria-expanded","false"))})}</script> </div> </div> </header> <main id="main">  <article class="wrap post-layout" data-astro-cid-lvjzyg5v> <div class="post-main page-fade" data-astro-cid-lvjzyg5v> <header class="post-head" data-astro-cid-lvjzyg5v> <a class="crumb" href="/STELLASTOPVRC/posts/" data-astro-cid-lvjzyg5v>← 返回教程档案</a> <div class="post-head__meta" style="--accent:var(--ink-dim)" data-astro-cid-lvjzyg5v> <span class="badge" data-cat="工具链与 Hybrid" data-astro-cid-lvjzyg5v>工具链与 Hybrid</span> <time datetime="2026-06-30" data-astro-cid-lvjzyg5v>2026-06-30</time> <span class="post-head__reading" data-astro-cid-lvjzyg5v>⏱ 约 58 分钟</span>  </div> <h1 class="post-head__title" data-astro-cid-lvjzyg5v>VRChat OSC 协议完整数据库</h1> <p class="post-head__lead" data-astro-cid-lvjzyg5v>1. OSC 基础</p> <div class="chip-row" data-astro-cid-lvjzyg5v> <a class="chip" href="/STELLASTOPVRC/posts/?tag=%E7%9F%A5%E8%AF%86%E5%BA%93" data-astro-cid-lvjzyg5v> 知识库 </a><a class="chip" href="/STELLASTOPVRC/posts/?tag=concepts" data-astro-cid-lvjzyg5v> concepts </a> </div> </header> <div class="prose" data-astro-cid-lvjzyg5v> <h1 id="vrchat-osc-协议完整数据库">VRChat OSC 协议完整数据库</h1>
+<hr>
+<h2 id="目录">目录</h2>
+<ol>
+<li><a href="#1-osc-%E5%9F%BA%E7%A1%80">OSC 基础</a></li>
+<li><a href="#2-avatar-parameters-api">Avatar Parameters API</a></li>
+<li><a href="#3-avatar-scaling-api">Avatar Scaling API</a></li>
+<li><a href="#4-input-control-api">Input Control API</a></li>
+<li><a href="#5-tracking-api">Tracking API</a></li>
+<li><a href="#6-eye-tracking-api">Eye Tracking API</a></li>
+<li><a href="#7-camera-api-202533-%E6%96%B0%E5%A2%9E">Camera API</a></li>
+<li><a href="#8-chatbox-api">Chatbox API</a></li>
+<li><a href="#9-oscquery-%E8%87%AA%E5%8A%A8%E5%8F%91%E7%8E%B0">OSCQuery 自动发现</a></li>
+</ol>
+<hr>
+<h2 id="1-osc-基础">1. OSC 基础</h2>
+<blockquote>
+<p><strong>OSC 定义</strong>: Open Sound Control 是设备/应用间通信协议，源于 Stanford CNMAT。
+出处: <a href="https://opensoundcontrol.stanford.edu/index.html">https://opensoundcontrol.stanford.edu/index.html</a></p>
+</blockquote>
+<h3 id="端口配置">端口配置</h3>
+<table>
+<thead>
+<tr>
+<th>用途</th>
+<th>端口</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>接收 (VRChat 监听)</td>
+<td>9000</td>
+<td>外部应用发送到 VRChat</td>
+</tr>
+<tr>
+<td>发送 (VRChat 输出)</td>
+<td>9001</td>
+<td>VRChat 发送到外部应用</td>
+</tr>
+</tbody>
+</table>
+<h3 id="命令行参数">命令行参数</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>--osc=&#x3C;inPort>:&#x3C;senderIP>:&#x3C;outPort></span></span></code></pre>
+<table>
+<thead>
+<tr>
+<th>完整命令示例</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>--osc=9000:127.0.0.1:9001</code></td>
+<td>默认配置（与无参数等价）</td>
+</tr>
+<tr>
+<td><code>--osc=9000:localhost:9001</code></td>
+<td><code>localhost</code> 与 <code>127.0.0.1</code> 等价</td>
+</tr>
+<tr>
+<td><code>--osc=9000:192.168.1.42:9001</code></td>
+<td>跨设备（VRChat 推送到 192.168.1.42）</td>
+</tr>
+</tbody>
+</table>
+<h3 id="消息格式-2026-06-30-新增">消息格式 (2026-06-30 新增)</h3>
+<ul>
+<li><strong>结构</strong>: 一个 OSC 消息 = 地址 (address) + 值 (value)</li>
+<li><strong>地址</strong>: <code>/category/endpoint</code> 形式，<strong>必须以 <code>/</code> 开头</strong>，用 <code>/</code> 分隔层级
+<ul>
+<li>例: <code>/avatar/parameters/VRCEmote</code></li>
+</ul>
+</li>
+<li><strong>值类型</strong>: Avatar Parameters 仅支持 <code>int</code> / <code>float</code> / <code>bool</code></li>
+<li><strong>传输</strong>: 单连接单向（Sender → Receiver），<strong>UDP 无握手</strong>
+<ul>
+<li>启动顺序无关（Sender/Receiver 谁先启动都行）</li>
+<li>没有连接建立/断开过程</li>
+</ul>
+</li>
+</ul>
+<h3 id="启用方法-2026-06-30-新增">启用方法 (2026-06-30 新增)</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>Action Menu → OSC → Enabled</span></span></code></pre>
+<p>开启后 OSC 默认监听 9000 端口接收外部消息。</p>
+<hr>
+<h2 id="2-avatar-parameters-api">2. Avatar Parameters API</h2>
+<blockquote>
+<p>控制 Avatar 参数，支持输入和输出</p>
+</blockquote>
+<h3 id="地址格式">地址格式</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>/avatar/parameters/{ParameterName}</span></span>
+<span class="line"><span>/avatar/change  (Avatar 切换通知)</span></span></code></pre>
+<h3 id="avatar-切换">Avatar 切换</h3>
+<table>
+<thead>
+<tr>
+<th>地址</th>
+<th>类型</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>/avatar/change</code></td>
+<td>string</td>
+<td>当本地玩家加载新 Avatar 时发送，包含 Avatar ID</td>
+</tr>
+</tbody>
+</table>
+<h3 id="内置只读参数">内置只读参数</h3>
+<table>
+<thead>
+<tr>
+<th>参数名</th>
+<th>类型</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>VRCEmote</code></td>
+<td>int</td>
+<td>默认动画 (1-16)</td>
+</tr>
+<tr>
+<td><code>VRCFaceBlendV</code></td>
+<td>float</td>
+<td>面部混合 V</td>
+</tr>
+<tr>
+<td><code>VRCFaceBlendH</code></td>
+<td>float</td>
+<td>面部混合 H</td>
+</tr>
+<tr>
+<td><code>PreviewMode</code></td>
+<td>int</td>
+<td>菜单预览中=1，否则=0</td>
+</tr>
+<tr>
+<td><code>IsOnFriendsList</code></td>
+<td>bool</td>
+<td>观看者是否是穿着者好友</td>
+</tr>
+<tr>
+<td><code>IsAnimatorEnabled</code></td>
+<td>bool</td>
+<td>Animator 是否启用</td>
+</tr>
+<tr>
+<td><code>AvatarVersion</code></td>
+<td>int</td>
+<td>SDK3=3，否则=0</td>
+</tr>
+</tbody>
+</table>
+<h3 id="手势参数">手势参数</h3>
+<table>
+<thead>
+<tr>
+<th>参数名</th>
+<th>类型</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>GestureRight</code></td>
+<td>int</td>
+<td>右手手势 (0-7)</td>
+</tr>
+<tr>
+<td><code>GestureLeft</code></td>
+<td>int</td>
+<td>左手手势 (0-7)</td>
+</tr>
+<tr>
+<td><code>GestureRightWeight</code></td>
+<td>float</td>
+<td>右手手势权重 (0.0-1.0)</td>
+</tr>
+<tr>
+<td><code>GestureLeftWeight</code></td>
+<td>float</td>
+<td>左手手势权重 (0.0-1.0)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="缩放参数">缩放参数</h3>
+<table>
+<thead>
+<tr>
+<th>参数名</th>
+<th>类型</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ScaleModified</code></td>
+<td>bool</td>
+<td>是否修改过缩放</td>
+</tr>
+<tr>
+<td><code>ScaleFactor</code></td>
+<td>float</td>
+<td>当前高度/默认高度</td>
+</tr>
+<tr>
+<td><code>ScaleFactorInverse</code></td>
+<td>float</td>
+<td>1/ScaleFactor</td>
+</tr>
+<tr>
+<td><code>EyeHeightAsMeters</code></td>
+<td>float</td>
+<td>眼睛高度（米）</td>
+</tr>
+<tr>
+<td><code>EyeHeightAsPercent</code></td>
+<td>float</td>
+<td>眼睛高度百分比</td>
+</tr>
+</tbody>
+</table>
+<h3 id="声音参数">声音参数</h3>
+<table>
+<thead>
+<tr>
+<th>参数名</th>
+<th>类型</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Viseme</code></td>
+<td>int</td>
+<td>嘴型 (0-14)</td>
+</tr>
+<tr>
+<td><code>Voice</code></td>
+<td>float</td>
+<td>麦克风音量 (0.0-1.0)</td>
+</tr>
+<tr>
+<td><code>Earmuffs</code></td>
+<td>bool</td>
+<td>耳塞模式</td>
+</tr>
+<tr>
+<td><code>MuteSelf</code></td>
+<td>bool</td>
+<td>自我静音</td>
+</tr>
+</tbody>
+</table>
+<h3 id="玩家状态参数">玩家状态参数</h3>
+<table>
+<thead>
+<tr>
+<th>参数名</th>
+<th>类型</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>AFK</code></td>
+<td>bool</td>
+<td>离开</td>
+</tr>
+<tr>
+<td><code>InStation</code></td>
+<td>bool</td>
+<td>在载具中</td>
+</tr>
+<tr>
+<td><code>Seated</code></td>
+<td>bool</td>
+<td>坐着</td>
+</tr>
+<tr>
+<td><code>VRMode</code></td>
+<td>int</td>
+<td>VR模式=1</td>
+</tr>
+<tr>
+<td><code>TrackingType</code></td>
+<td>int</td>
+<td>追踪点数</td>
+</tr>
+</tbody>
+</table>
+<h3 id="位置参数">位置参数</h3>
+<table>
+<thead>
+<tr>
+<th>参数名</th>
+<th>类型</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Grounded</code></td>
+<td>bool</td>
+<td>触地</td>
+</tr>
+<tr>
+<td><code>Upright</code></td>
+<td>float</td>
+<td>直立程度 (0-1)</td>
+</tr>
+<tr>
+<td><code>AngularY</code></td>
+<td>float</td>
+<td>Y轴角速度</td>
+</tr>
+<tr>
+<td><code>VelocityX</code></td>
+<td>float</td>
+<td>右向速度 (m/s)</td>
+</tr>
+<tr>
+<td><code>VelocityY</code></td>
+<td>float</td>
+<td>向上速度 (m/s)</td>
+</tr>
+<tr>
+<td><code>VelocityZ</code></td>
+<td>float</td>
+<td>前进速度 (m/s)</td>
+</tr>
+<tr>
+<td><code>VelocityMagnitude</code></td>
+<td>float</td>
+<td>总速度</td>
+</tr>
+</tbody>
+</table>
+<h3 id="trackingtype-值">TrackingType 值</h3>
+<table>
+<thead>
+<tr>
+<th>值</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td>未初始化</td>
+</tr>
+<tr>
+<td>1</td>
+<td>Generic 骨骼</td>
+</tr>
+<tr>
+<td>2</td>
+<td>仅手部追踪（过渡状态）</td>
+</tr>
+<tr>
+<td>3</td>
+<td>3点追踪（头+手）/ Desktop 人形</td>
+</tr>
+<tr>
+<td>4</td>
+<td>4点追踪（+臀部）</td>
+</tr>
+<tr>
+<td>5</td>
+<td>5点追踪（+脚）</td>
+</tr>
+<tr>
+<td>6</td>
+<td>6点全身追踪</td>
+</tr>
+</tbody>
+</table>
+<h3 id="手势值-gestureleftright">手势值 (GestureLeft/Right)</h3>
+<table>
+<thead>
+<tr>
+<th>值</th>
+<th>手势</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td>空</td>
+</tr>
+<tr>
+<td>1</td>
+<td>张开</td>
+</tr>
+<tr>
+<td>2</td>
+<td>拳头</td>
+</tr>
+<tr>
+<td>3</td>
+<td>手掌</td>
+</tr>
+<tr>
+<td>4</td>
+<td>指向</td>
+</tr>
+<tr>
+<td>5</td>
+<td>耶</td>
+</tr>
+<tr>
+<td>6</td>
+<td>好</td>
+</tr>
+<tr>
+<td>7</td>
+<td>停</td>
+</tr>
+</tbody>
+</table>
+<h3 id="嘴型值-viseme">嘴型值 (Viseme)</h3>
+<table>
+<thead>
+<tr>
+<th>值</th>
+<th>嘴型</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td>sil</td>
+</tr>
+<tr>
+<td>1</td>
+<td>PP</td>
+</tr>
+<tr>
+<td>2</td>
+<td>FF</td>
+</tr>
+<tr>
+<td>3</td>
+<td>TH</td>
+</tr>
+<tr>
+<td>4</td>
+<td>DD</td>
+</tr>
+<tr>
+<td>5</td>
+<td>kk</td>
+</tr>
+<tr>
+<td>6</td>
+<td>CH</td>
+</tr>
+<tr>
+<td>7</td>
+<td>SS</td>
+</tr>
+<tr>
+<td>8</td>
+<td>nn</td>
+</tr>
+<tr>
+<td>9</td>
+<td>RR</td>
+</tr>
+<tr>
+<td>10</td>
+<td>aa</td>
+</tr>
+<tr>
+<td>11</td>
+<td>E</td>
+</tr>
+<tr>
+<td>12</td>
+<td>I</td>
+</tr>
+<tr>
+<td>13</td>
+<td>O</td>
+</tr>
+<tr>
+<td>14</td>
+<td>U</td>
+</tr>
+</tbody>
+</table>
+<h3 id="配置文件">配置文件</h3>
+<p>路径: <code>~\AppData\LocalLow\VRChat\VRChat\OSC\{userId}\Avatars\{avatarId}.json</code></p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="json"><code><span class="line"><span style="color:#E1E4E8">{</span></span>
+<span class="line"><span style="color:#79B8FF">    "id"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"avtr_xxx"</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#79B8FF">    "name"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"AvatarName"</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#79B8FF">    "parameters"</span><span style="color:#E1E4E8">: [</span></span>
+<span class="line"><span style="color:#E1E4E8">        {</span></span>
+<span class="line"><span style="color:#79B8FF">            "name"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"Face"</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#79B8FF">            "input"</span><span style="color:#E1E4E8">: { </span><span style="color:#79B8FF">"address"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"/avatar/parameters/Face"</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">"type"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"Int"</span><span style="color:#E1E4E8"> },</span></span>
+<span class="line"><span style="color:#79B8FF">            "output"</span><span style="color:#E1E4E8">: { </span><span style="color:#79B8FF">"address"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"/custom/app/trackselect"</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">"type"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"Float"</span><span style="color:#E1E4E8"> }</span></span>
+<span class="line"><span style="color:#E1E4E8">        }</span></span>
+<span class="line"><span style="color:#E1E4E8">    ]</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<h3 id="-字段类型与大小写敏感性-2026-06-30-修正">📦 字段类型与大小写敏感性 (2026-06-30 修正)</h3>
+<table>
+<thead>
+<tr>
+<th>端点</th>
+<th>合法 type 值</th>
+<th>大小写</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>input.type</code></td>
+<td><code>"Int"</code> / <code>"Bool"</code> / <code>"Float"</code></td>
+<td><strong>大写</strong></td>
+</tr>
+<tr>
+<td><code>output.type</code></td>
+<td><code>"Int"</code> / <code>"bool"</code> / <code>"Float"</code></td>
+<td><strong>注意</strong>：<code>"bool"</code> 是<strong>小写</strong>！</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>旧版文档未明确大小写敏感性，<strong>这是常见错误源</strong>。</p>
+</blockquote>
+<h3 id="️-build--test-行为-2026-06-30-新增">⚠️ Build &#x26; Test 行为 (2026-06-30 新增)</h3>
+<ul>
+<li><strong>Build &#x26; Test 模式不会保存配置文件</strong>到磁盘</li>
+<li>可以使用 OSC，但 <code>~\AppData\LocalLow\...</code> 路径下看不到配置文件</li>
+<li>配置文件仅在 <strong>Published Avatar</strong>（发布后的 Avatar）加载时才会读取/生成</li>
+</ul>
+<h3 id="️-stop-gap-临时方案-2026-06-30-新增">⚠️ Stop-gap 临时方案 (2026-06-30 新增)</h3>
+<blockquote>
+<p>配置文件系统是 VRChat 的<strong>临时方案</strong>，目的是在客户端内 OSC UI 集成完成前允许部分定制。</p>
+<p><strong>未来可能移除</strong>。长期依赖此功能的用户应关注 VRChat 公告并准备迁移。</p>
+</blockquote>
+<hr>
+<h2 id="3-avatar-scaling-api">3. Avatar Scaling API</h2>
+<blockquote>
+<p>Avatar 缩放控制</p>
+</blockquote>
+<h3 id="眼睛高度端点">眼睛高度端点</h3>
+<table>
+<thead>
+<tr>
+<th>地址</th>
+<th>类型</th>
+<th>权限</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>/avatar/eyeheight</code></td>
+<td>float</td>
+<td>读/写</td>
+<td>当前眼睛高度（米）</td>
+</tr>
+<tr>
+<td><code>/avatar/eyeheightmin</code></td>
+<td>float</td>
+<td>只读</td>
+<td>最小可选高度（默认0.2）</td>
+</tr>
+<tr>
+<td><code>/avatar/eyeheightmax</code></td>
+<td>float</td>
+<td>只读</td>
+<td>最大可选高度（默认5.0）</td>
+</tr>
+<tr>
+<td><code>/avatar/eyeheightscalingallowed</code></td>
+<td>bool</td>
+<td>只读</td>
+<td>是否允许 OSC 缩放</td>
+</tr>
+</tbody>
+</table>
+<h3 id="眼睛高度范围">眼睛高度范围</h3>
+<ul>
+<li>最小值: 0.01m (1cm)</li>
+<li>最大值: 10000m (10km)</li>
+<li>官方支持范围: 0.1m - 100m</li>
+<li>超出官方范围会显示警告</li>
+</ul>
+<h3 id="-udon-强制覆盖-2026-06-30-新增">🎮 Udon 强制覆盖 (2026-06-30 新增)</h3>
+<blockquote>
+<p>关键：世界脚本（Udon）<strong>可强制覆盖</strong>用户或 OSC 设置的 eye height，绕过 <code>eyeheightmin</code>/<code>eyeheightmax</code> UI 限制。</p>
+</blockquote>
+<p><strong>回环机制</strong>（事件流）：</p>
+<ol>
+<li>收到用户/OSC 设置的 eye height（作为事件）</li>
+<li>收到 Udon 强制覆盖的实际值（作为事件）</li>
+<li>监听端可观察两个事件以区分意图</li>
+</ol>
+<h3 id="️-越界警告与免责声明-2026-06-30-新增">⚠️ 越界警告与免责声明 (2026-06-30 新增)</h3>
+<table>
+<thead>
+<tr>
+<th>行为</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>越界显示</td>
+<td>eye height &#x3C; 0.1m 或 > 100m 时，HUD 会显示警告</td>
+</tr>
+<tr>
+<td><strong>官方支持</strong></td>
+<td>仅 0.1m - 100m</td>
+</tr>
+<tr>
+<td><strong>免责</strong></td>
+<td>越界时出现的问题<strong>不支持</strong>联系 VRChat 客服或提交 bug 报告</td>
+</tr>
+</tbody>
+</table>
+<h3 id="avatarscale-202621-新增">/avatar/scale (2026.2.1 新增)</h3>
+<p>支持超出默认 UI 限制的更大缩放。</p>
+<hr>
+<h2 id="4-input-control-api">4. Input Control API</h2>
+<blockquote>
+<p>模拟用户输入</p>
+</blockquote>
+<h3 id="连续值--1-到-1">连续值 (-1 到 1)</h3>
+<table>
+<thead>
+<tr>
+<th>地址</th>
+<th>功能</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>/input/Vertical</code></td>
+<td>前进(1) / 后退(-1)</td>
+</tr>
+<tr>
+<td><code>/input/Horizontal</code></td>
+<td>右移(1) / 左移(-1)</td>
+</tr>
+<tr>
+<td><code>/input/LookHorizontal</code></td>
+<td>视角左右 / VR快转</td>
+</tr>
+<tr>
+<td><code>/input/MoveHoldFB</code></td>
+<td>移动持有物体前后</td>
+</tr>
+<tr>
+<td><code>/input/MoveHoldLR</code></td>
+<td>移动持有物体左右</td>
+</tr>
+<tr>
+<td><code>/input/SpinHoldCwCcw</code></td>
+<td>旋转持有物体</td>
+</tr>
+<tr>
+<td><code>/input/SpinHoldUD</code></td>
+<td>旋转持有物体 上下</td>
+</tr>
+<tr>
+<td><code>/input/SpinHoldLR</code></td>
+<td>旋转持有物体 左右</td>
+</tr>
+<tr>
+<td><code>/input/UseAxisRight</code></td>
+<td>右手使用轴 <strong>[UNKNOWN]</strong> 源文档标注 “not sure if this works”，待官方确认</td>
+</tr>
+<tr>
+<td><code>/input/GrabAxisRight</code></td>
+<td>右手抓取轴 <strong>[UNKNOWN]</strong> 源文档标注 “not sure if this works”，待官方确认</td>
+</tr>
+</tbody>
+</table>
+<h3 id="保持式移动按钮-2026-06-30-新增">保持式移动按钮 (2026-06-30 新增)</h3>
+<table>
+<thead>
+<tr>
+<th>地址</th>
+<th>功能</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>/input/MoveForward</code></td>
+<td>保持前进（区别于 Vertical axis）</td>
+</tr>
+<tr>
+<td><code>/input/MoveBackward</code></td>
+<td>保持后退</td>
+</tr>
+<tr>
+<td><code>/input/MoveLeft</code></td>
+<td>保持左移</td>
+</tr>
+<tr>
+<td><code>/input/MoveRight</code></td>
+<td>保持右移</td>
+</tr>
+<tr>
+<td><code>/input/LookLeft</code></td>
+<td>保持视角左转（Desktop 平滑，VR 在 Comfort Turning 开启时为快转）</td>
+</tr>
+<tr>
+<td><code>/input/LookRight</code></td>
+<td>保持视角右转（同上）</td>
+</tr>
+</tbody>
+</table>
+<h3 id="按钮值-01">按钮值 (0/1)</h3>
+<blockquote>
+<p><strong>🔴 2026-06-30 修正</strong>: 源文档 <strong>不提供通用名</strong> <code>Use</code>/<code>Grab</code>/<code>Drop</code>，仅保留 VR 专用分支 <code>UseRight</code>/<code>UseLeft</code>/<code>GrabRight</code>/<code>GrabLeft</code>/<code>DropRight</code>/<code>DropLeft</code>。</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>地址</th>
+<th>功能</th>
+<th>平台</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>/input/Jump</code></td>
+<td>跳跃</td>
+<td>Desktop/VR</td>
+</tr>
+<tr>
+<td><code>/input/Run</code></td>
+<td>跑步</td>
+<td>Desktop/VR</td>
+</tr>
+<tr>
+<td><code>/input/Voice</code></td>
+<td>语音/静音（双模式行为见下）</td>
+<td>Desktop/VR</td>
+</tr>
+<tr>
+<td><code>/input/ComfortLeft</code></td>
+<td>快转左</td>
+<td>VR</td>
+</tr>
+<tr>
+<td><code>/input/ComfortRight</code></td>
+<td>快转右</td>
+<td>VR</td>
+</tr>
+<tr>
+<td><code>/input/GrabRight</code></td>
+<td>右手抓取</td>
+<td>VR</td>
+</tr>
+<tr>
+<td><code>/input/GrabLeft</code></td>
+<td>左手抓取</td>
+<td>VR</td>
+</tr>
+<tr>
+<td><code>/input/DropRight</code></td>
+<td>右手放下</td>
+<td>VR</td>
+</tr>
+<tr>
+<td><code>/input/DropLeft</code></td>
+<td>左手放下</td>
+<td>VR</td>
+</tr>
+<tr>
+<td><code>/input/UseRight</code></td>
+<td>右手使用</td>
+<td>VR</td>
+</tr>
+<tr>
+<td><code>/input/UseLeft</code></td>
+<td>左手使用</td>
+<td>VR</td>
+</tr>
+<tr>
+<td><code>/input/QuickMenuToggleLeft</code></td>
+<td>左手快捷菜单</td>
+<td>VR</td>
+</tr>
+<tr>
+<td><code>/input/QuickMenuToggleRight</code></td>
+<td>右手快捷菜单</td>
+<td>VR</td>
+</tr>
+<tr>
+<td><code>/input/PanicButton</code></td>
+<td>安全模式</td>
+<td>Desktop/VR</td>
+</tr>
+</tbody>
+</table>
+<h3 id="voice-双模式行为-2026-06-30-新增">Voice 双模式行为 (2026-06-30 新增)</h3>
+<table>
+<thead>
+<tr>
+<th>模式</th>
+<th>行为</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Toggle Voice 开启</strong>（Settings）</td>
+<td><code>/input/Voice</code> 从 0→1 切换静音状态，之后必须重置为 0。<strong>按住 1 时不能用控制器/键盘切换</strong></td>
+</tr>
+<tr>
+<td><strong>Toggle Voice 关闭</strong>（默认）</td>
+<td>Push-To-Mute 模式：0 = 静音，1 = 解除静音</td>
+</tr>
+</tbody>
+</table>
+<h3 id="-voice-音量滑块范围提醒-202542-steam-audio">🔔 Voice 音量滑块范围提醒 (2025.4.2+ Steam Audio)</h3>
+<blockquote>
+<p><strong>FACT</strong> (2025.4.2 Steam Audio 替换 ONSP):Voice 音量滑块的<strong>等效范围发生变化</strong>。</p>
+<ul>
+<li>旧音频系统:Voice 滑块 100% ≈ 100% 实际输出</li>
+<li>新音频系统:Voice 滑块 100% ≈ 150% 实际输出</li>
+<li><strong>等效值</strong>:<strong>新 65% ≈ 旧 100%</strong></li>
+</ul>
+</blockquote>
+<h4 id="影响范围">影响范围</h4>
+<table>
+<thead>
+<tr>
+<th>对象</th>
+<th>影响</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>教程/教学用户</strong></td>
+<td>提醒”调回 100% 会非常响”</td>
+</tr>
+<tr>
+<td><strong>OSC 应用</strong></td>
+<td>如果通过 OSC 设置用户 Voice 音量,<strong>需考虑新等效值</strong></td>
+</tr>
+<tr>
+<td><strong>第三方工具</strong></td>
+<td>旧值映射需更新</td>
+</tr>
+</tbody>
+</table>
+<h4 id="文档引用">文档引用</h4>
+<blockquote>
+<p>完整内容详见 <code>memory/world/audio-steam.md</code> §“Voice 音量滑块范围变更”</p>
+</blockquote>
+<h3 id="️-官方-osc-不暴露原始-vr-硬件按键2026-06-15-补充--2026-06-30-修正">⚠️ 官方 OSC 不暴露原始 VR 硬件按键(2026-06-15 补充 / 2026-06-30 修正)</h3>
+<blockquote>
+<p><strong>🔴 关键约束</strong>: VRChat 官方 OSC Input Control API <strong>只支持语义化输入</strong>(<code>/input/Jump</code>、<code>/input/UseRight</code>、<code>/input/GrabRight</code> 等),<strong>不暴露 X/Y/A/B 等原始 VR 硬件按键</strong>。</p>
+</blockquote>
+<p><strong>【FACT,来源:github.com/vrchat-community/osc/docs/Input.md】</strong></p>
+<table>
+<thead>
+<tr>
+<th>类别</th>
+<th>地址</th>
+<th>数量</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>语义化输入</td>
+<td>Jump/Run/Voice/UseRight/UseLeft/GrabRight/GrabLeft/DropRight/DropLeft/ComfortLeft/ComfortRight/QuickMenuToggleLeft/Right/PanicButton</td>
+<td>~17 个</td>
+</tr>
+<tr>
+<td>原始 VR 硬件按键</td>
+<td>X/Y/A/B/Trigger Touch/Grip Touch 等</td>
+<td><strong>0 个(不支持)</strong></td>
+</tr>
+</tbody>
+</table>
+<h3 id="监听-x-键的-osc-方案必须用第三方">监听 X 键的 OSC 方案(必须用第三方)</h3>
+<p>VRChat 官方未提供 <code>/input/Oculus_Cross_Left</code> 之类的地址。<strong>要让外部应用监听 X 键的 OSC,必须用第三方桥接程序</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>方案</th>
+<th>机制</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>I5UCC/VRCThumbParamsOSC</strong></td>
+<td>读取 SteamVR Controller Actions,转 OSC</td>
+<td>开源、活跃,推荐</td>
+</tr>
+<tr>
+<td><strong>VRChat Inputs Spreadsheet</strong></td>
+<td>仅文档参考,非 OSC</td>
+<td>社区维护的轴名清单</td>
+</tr>
+</tbody>
+</table>
+<h4 id="i5uccvrcthumbparamsosc-命名约定">I5UCC/VRCThumbParamsOSC 命名约定</h4>
+<p>注意该项目的 A/B 命名约定是 <strong>Oculus Touch 命名</strong>(对应物理按键 X/Y):</p>
+<table>
+<thead>
+<tr>
+<th>OSC 参数(Avatar)</th>
+<th>物理按键</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>/avatar/parameters/LeftAButton</code></td>
+<td><strong>左手 X</strong> 键</td>
+<td>Bool</td>
+</tr>
+<tr>
+<td><code>/avatar/parameters/LeftBButton</code></td>
+<td><strong>左手 Y</strong> 键</td>
+<td>Bool</td>
+</tr>
+<tr>
+<td><code>/avatar/parameters/RightAButton</code></td>
+<td><strong>右手 A</strong> 键</td>
+<td>Bool</td>
+</tr>
+<tr>
+<td><code>/avatar/parameters/RightBButton</code></td>
+<td><strong>右手 B</strong> 键</td>
+<td>Bool</td>
+</tr>
+<tr>
+<td><code>/avatar/parameters/LeftThumb</code></td>
+<td>左手拇指位置</td>
+<td>Int 0-4 (0=无,1=A/X,2=B/Y,3=Trackpad,4=Thumbstick)</td>
+</tr>
+<tr>
+<td><code>/avatar/parameters/RightThumb</code></td>
+<td>右手拇指位置</td>
+<td>Int 0-4</td>
+</tr>
+<tr>
+<td><code>/avatar/parameters/ControllerType</code></td>
+<td>控制器类型</td>
+<td>Int 0/1/2/10/11/12</td>
+</tr>
+</tbody>
+</table>
+<p>支持设备:<strong>Valve Index / Meta Touch / SteamVR Trackers / XInput Controllers</strong>。</p>
+<p><strong>使用方式</strong>:</p>
+<ol>
+<li>安装并运行 VRCThumbParamsOSC 作为后台进程</li>
+<li>它读取 SteamVR Controller Actions</li>
+<li>通过 OSC 发送为 Avatar Parameters(给本地 Avatar)</li>
+<li>Avatar 的 Expression Parameters 资产中添加对应参数(<code>LeftAButton</code> 等)</li>
+<li>外部应用监听 <code>/avatar/parameters/LeftAButton</code> 即可</li>
+</ol>
+<p><strong>延迟</strong>:本地 Avatar 端 OSC 入站约 50-200ms,适合非实时场景(直播控台、统计),不适合精确计时。</p>
+<h3 id="替代方案udon-内直接读取">替代方案:Udon 内直接读取</h3>
+<p>如果不需要外部应用,直接在 Udon 中用 Unity Input API 读取 X 键(详见 <code>memory/world/udon/input-events.md</code> “精确按键识别限制”章节):</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="csharp"><code><span class="line"><span style="color:#F97583">bool</span><span style="color:#B392F0"> xHeld</span><span style="color:#F97583"> =</span><span style="color:#E1E4E8"> Input.</span><span style="color:#B392F0">GetButton</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"Oculus_CrossPlatform_Button2"</span><span style="color:#E1E4E8">);</span></span></code></pre>
+<hr>
+<h2 id="5-tracking-api">5. Tracking API</h2>
+<blockquote>
+<p>人体追踪数据输入（Full Body IK）</p>
+</blockquote>
+<h3 id="追踪器地址-8个追踪器">追踪器地址 (8个追踪器)</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>/tracking/trackers/{1-8}/position  (Vector3: X,Y,Z)</span></span>
+<span class="line"><span>/tracking/trackers/{1-8}/rotation  (Vector3: Euler角度)</span></span></code></pre>
+<h3 id="追踪器映射">追踪器映射</h3>
+<table>
+<thead>
+<tr>
+<th>编号</th>
+<th>位置</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>臀部 (Hip)</td>
+</tr>
+<tr>
+<td>2</td>
+<td>胸部 (Chest)</td>
+</tr>
+<tr>
+<td>3</td>
+<td>脚1 (Foot 1)</td>
+</tr>
+<tr>
+<td>4</td>
+<td>脚2 (Foot 2)</td>
+</tr>
+<tr>
+<td>5</td>
+<td>膝盖1 (Knee 1)</td>
+</tr>
+<tr>
+<td>6</td>
+<td>膝盖2 (Knee 2)</td>
+</tr>
+<tr>
+<td>7</td>
+<td>手肘1 (Elbow 1)</td>
+</tr>
+<tr>
+<td>8</td>
+<td>手肘2 (Elbow 2)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="追踪空间假设-2026-06-30-新增">追踪空间假设 (2026-06-30 新增)</h3>
+<table>
+<thead>
+<tr>
+<th>项</th>
+<th>值</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>坐标系</td>
+<td>Unity 左手坐标系</td>
+<td>+y up, +x right, +z forward</td>
+</tr>
+<tr>
+<td>单位</td>
+<td>1.0f = 1m</td>
+<td>发送端需用户输入真实身高做缩放</td>
+</tr>
+<tr>
+<td>Euler 顺序</td>
+<td>Z, X, Y</td>
+<td>内部分别应用生成四元数</td>
+</tr>
+<tr>
+<td>方向约定</td>
+<td>与 SteamVR 追踪器一致</td>
+<td>复用 VRChat 现有实现</td>
+</tr>
+</tbody>
+</table>
+<h3 id="️-发送数量建议-2026-06-30-新增">⚠️ 发送数量建议 (2026-06-30 新增)</h3>
+<blockquote>
+<p>📘 <strong>少而准优于多而差</strong></p>
+<ul>
+<li>追踪数据越少（高准确度），VRChat IK 补偿效果越好</li>
+<li>初始阶段建议<strong>仅发送脚+臀</strong>（3-4 个追踪器）</li>
+<li>追踪数据绝对位置/旋转无漂移时，才逐步增加追踪点</li>
+<li>8 个全开不一定带来更好效果，可能引入更多抖动</li>
+</ul>
+</blockquote>
+<h3 id="头部对齐">头部对齐</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>/tracking/trackers/head/position  (Vector3)</span></span>
+<span class="line"><span>/tracking/trackers/head/rotation  (Euler)</span></span></code></pre>
+<ul>
+<li>position 用于空间对齐（<strong>无插值</strong>，每帧完全对齐）</li>
+<li>rotation 用于偏航对齐（<strong>缓慢 lerp</strong>）</li>
+<li>可单独发送 position / rotation / 两者 / 都不发</li>
+</ul>
+<h3 id="-head-rotation-300ms-阈值-2026-06-30-新增">🕐 Head Rotation 300ms 阈值 (2026-06-30 新增)</h3>
+<table>
+<thead>
+<tr>
+<th>行为</th>
+<th>触发条件</th>
+<th>VRChat 反应</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>单次消息</strong></td>
+<td>仅一条 head rotation 消息，300ms 内无后续</td>
+<td>一次性即时对齐 yaw（不 lerp）</td>
+</tr>
+<tr>
+<td><strong>持续流</strong></td>
+<td>300ms 内收到第二条 head rotation</td>
+<td>进入正常 lerp 模式 + 10 秒数据超时</td>
+</tr>
+<tr>
+<td><strong>位置/旋转分离</strong></td>
+<td>position 单独发</td>
+<td>仅做位置对齐，<strong>不会触发 yaw 对齐</strong></td>
+</tr>
+<tr>
+<td><strong>仅旋转无位置</strong></td>
+<td>rotation 单独发</td>
+<td>仅做 yaw 对齐</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>使用场景</strong>: 单次模式适合发送端没有稳定头戴传感器时（例如校准过程中用户被假定面朝前方）。</p>
+</blockquote>
+<h3 id="auto-center-osc-trackers-按钮-2026-06-30-新增">Auto-center OSC Trackers 按钮 (2026-06-30 新增)</h3>
+<blockquote>
+<p>🚧 <strong>该按钮部分文档可能已过时</strong></p>
+</blockquote>
+<ul>
+<li><strong>位置</strong>: Quick Menu → Tracking &#x26; IK → 齿轮图标</li>
+<li><strong>功能</strong>: 自动找 Y 轴最低的 2 个追踪器，其中点对齐到用户头部位置正下方</li>
+<li><strong>前向推断</strong>: 假设最低的 2 个追踪器是左右脚，由此推断前向</li>
+<li><strong>方向切换</strong>: 反复点击按钮会在两个前向方向间切换（因为仅靠 Y 高度无法判断前后）</li>
+</ul>
+<h3 id="tracker-models-调试模式-2026-06-30-新增">Tracker Models 调试模式 (2026-06-30 新增)</h3>
+<ul>
+<li><strong>位置</strong>: Quick Menu → Tracking &#x26; IK → 齿轮图标 → Tracker display model</li>
+<li><strong>设置 “Tracker: System”</strong>: 模型<strong>校准后仍保持显示</strong>，便于调试 OSC 追踪数据流</li>
+</ul>
+<h3 id="头部对齐细节">头部对齐细节</h3>
+<ul>
+<li><code>position</code> 与 avatar 头部骨骼（<strong>不是眼位</strong>）位置对齐</li>
+<li>整个 OSC 追踪空间平移以使 <code>head/position</code> 对齐到头骨根</li>
+<li><code>rotation</code> 假定 Euler(0,0,0) = 中性面朝前</li>
+</ul>
+<h3 id="限制">限制</h3>
+<ul>
+<li>仅 VR 模式有效</li>
+<li>Desktop 模式不支持</li>
+</ul>
+<hr>
+<h2 id="6-eye-tracking-api">6. Eye Tracking API</h2>
+<blockquote>
+<p>眼部追踪数据输入（VR 模式）</p>
+</blockquote>
+<h3 id="眼睑">眼睑</h3>
+<table>
+<thead>
+<tr>
+<th>地址</th>
+<th>类型</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>/tracking/eye/EyesClosedAmount</code></td>
+<td>float</td>
+<td>眼睛闭合程度 (0-1)，同时控制双眼</td>
+</tr>
+</tbody>
+</table>
+<h3 id="眼球追踪-选择一种">眼球追踪 (选择一种)</h3>
+<blockquote>
+<p>🚧 <strong>同时仅支持一个 eye-look 地址</strong></p>
+<p>发送多个不同格式的 eye-look 地址可能产生未定义行为。建议仅实现其中 1-2 种格式。</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>地址</th>
+<th>类型</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>/tracking/eye/CenterPitchYaw</code></td>
+<td>float[2]</td>
+<td>中心俯仰角+偏航角 (°)</td>
+</tr>
+<tr>
+<td><code>/tracking/eye/CenterPitchYawDist</code></td>
+<td>float[3]</td>
+<td>+距离 (m)</td>
+</tr>
+<tr>
+<td><code>/tracking/eye/CenterVec</code></td>
+<td>float[3]</td>
+<td>中心方向向量（归一化，raycast 找距离）</td>
+</tr>
+<tr>
+<td><code>/tracking/eye/CenterVecFull</code></td>
+<td>float[3]</td>
+<td>完整中心向量（<strong>长度有意义</strong>，单位 m 决定 raycast 距离）</td>
+</tr>
+<tr>
+<td><code>/tracking/eye/LeftRightPitchYaw</code></td>
+<td>float[4]</td>
+<td>左右分开 pitch+yaw</td>
+</tr>
+<tr>
+<td><code>/tracking/eye/LeftRightVec</code></td>
+<td>float[6]</td>
+<td>左右分开方向向量</td>
+</tr>
+</tbody>
+</table>
+<h3 id="-10-秒超时-2026-06-30-新增">🕐 10 秒超时 (2026-06-30 新增)</h3>
+<blockquote>
+<p><strong>关键行为</strong>: 10 秒未收到数据后，眼动行为恢复默认值（自动看 / 自动眨眼）。</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>数据类型</th>
+<th>独立超时</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>眼睑 (<code>EyesClosedAmount</code>)</td>
+<td>✅ 独立计时</td>
+</tr>
+<tr>
+<td>眼球追踪 (eye-look)</td>
+<td>✅ 独立计时</td>
+</tr>
+</tbody>
+</table>
+<h3 id="unity-坐标约定-2026-06-30-新增">Unity 坐标约定 (2026-06-30 新增)</h3>
+<table>
+<thead>
+<tr>
+<th>项</th>
+<th>值</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>坐标系</td>
+<td>左手（与 HMD 局部一致）</td>
+</tr>
+<tr>
+<td>方向约定</td>
+<td>+x right, +y up, +z forward</td>
+</tr>
+<tr>
+<td>pitch 正值</td>
+<td><strong>朝下</strong></td>
+</tr>
+<tr>
+<td>yaw 正值</td>
+<td><strong>朝右</strong></td>
+</tr>
+</tbody>
+</table>
+<h3 id="案例参考数据-2026-06-30-新增">案例参考数据 (2026-06-30 新增)</h3>
+<blockquote>
+<p>用户 IPD = 64mm，眼目标：头部上方 15°，右方 20°，距离 50cm</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>端点</th>
+<th>案例数据</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>CenterPitchYaw</code></td>
+<td><code>-15.252, 20.128</code></td>
+</tr>
+<tr>
+<td><code>CenterPitchYawDist</code></td>
+<td><code>-15.252, 20.128, 0.503</code></td>
+</tr>
+<tr>
+<td><code>CenterVec</code></td>
+<td><code>0.332, 0.263, 0.905</code></td>
+</tr>
+<tr>
+<td><code>CenterVecFull</code></td>
+<td><code>0.167, 0.132, 0.456</code></td>
+</tr>
+<tr>
+<td><code>LeftRightPitchYaw</code></td>
+<td><code>-14.903, 23.592, -15.560, 16.503</code></td>
+</tr>
+<tr>
+<td><code>LeftRightVec</code></td>
+<td><code>0.387, 0.257, 0.886, 0.274, 0.268, 0.923</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="实现参考">实现参考</h3>
+<ul>
+<li><strong>官方 Gist 示例</strong>: <a href="https://gist.github.com/vrchat-developer/bc07d3dba46206f6ee42d36323c034eb">https://gist.github.com/vrchat-developer/bc07d3dba46206f6ee42d36323c034eb</a></li>
+<li>假设项目有 “eye root” + “eye target” Transform，需设置用户 IPD</li>
+<li><strong>不要直接复制</strong>——是教学参考，需根据实际情况调整</li>
+</ul>
+<h3 id="说明">说明</h3>
+<ul>
+<li>目前仅支持同时控制双眼眨眼</li>
+<li>未来可能支持单眼眨眼</li>
+<li>地址<strong>大小写敏感</strong></li>
+</ul>
+<hr>
+<h2 id="7-camera-api-202533-新增">7. Camera API (2025.3.3 新增)</h2>
+<blockquote>
+<p>相机控制端点，约30+个，全部支持读写</p>
+</blockquote>
+<h3 id="模式">模式</h3>
+<table>
+<thead>
+<tr>
+<th>地址</th>
+<th>类型</th>
+<th>值</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>/usercamera/Mode</code></td>
+<td>int</td>
+<td>0:关闭 1:照片 2:直播 3:Emoji 4:多层 5:打印 6:无人机</td>
+</tr>
+</tbody>
+</table>
+<h3 id="姿态">姿态</h3>
+<table>
+<thead>
+<tr>
+<th>地址</th>
+<th>类型</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>/usercamera/Pose</code></td>
+<td>Vector3+Quaternion</td>
+<td>位置和旋转</td>
+</tr>
+</tbody>
+</table>
+<h3 id="动作">动作</h3>
+<table>
+<thead>
+<tr>
+<th>地址</th>
+<th>类型</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>/usercamera/Close</code></td>
+<td>-</td>
+<td>关闭相机</td>
+</tr>
+<tr>
+<td><code>/usercamera/Capture</code></td>
+<td>-</td>
+<td>拍照</td>
+</tr>
+<tr>
+<td><code>/usercamera/CaptureDelayed</code></td>
+<td>-</td>
+<td>定时拍照</td>
+</tr>
+</tbody>
+</table>
+<h3 id="切换-bool">切换 (bool)</h3>
+<table>
+<thead>
+<tr>
+<th>地址</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>/usercamera/ShowUIInCamera</code></td>
+<td>UI 遮罩</td>
+</tr>
+<tr>
+<td><code>/usercamera/Lock</code></td>
+<td>锁定</td>
+</tr>
+<tr>
+<td><code>/usercamera/LocalPlayer</code></td>
+<td>本地玩家遮罩</td>
+</tr>
+<tr>
+<td><code>/usercamera/RemotePlayer</code></td>
+<td>远程玩家遮罩</td>
+</tr>
+<tr>
+<td><code>/usercamera/Environment</code></td>
+<td>环境遮罩</td>
+</tr>
+<tr>
+<td><code>/usercamera/GreenScreen</code></td>
+<td>绿幕</td>
+</tr>
+<tr>
+<td><code>/usercamera/SmoothMovement</code></td>
+<td>平滑移动</td>
+</tr>
+<tr>
+<td><code>/usercamera/LookAtMe</code></td>
+<td>看我行为</td>
+</tr>
+<tr>
+<td><code>/usercamera/AutoLevelRoll</code></td>
+<td>自动水平翻滚</td>
+</tr>
+<tr>
+<td><code>/usercamera/AutoLevelPitch</code></td>
+<td>自动水平俯仰</td>
+</tr>
+<tr>
+<td><code>/usercamera/Flying</code></td>
+<td>飞行模式</td>
+</tr>
+<tr>
+<td><code>/usercamera/TriggerTakesPhotos</code></td>
+<td>触发拍照</td>
+</tr>
+<tr>
+<td><code>/usercamera/DollyPathsStayVisible</code></td>
+<td>路径可见</td>
+</tr>
+<tr>
+<td><code>/usercamera/CameraEars</code></td>
+<td>相机音频</td>
+</tr>
+<tr>
+<td><code>/usercamera/ShowFocus</code></td>
+<td>对焦叠加</td>
+</tr>
+<tr>
+<td><code>/usercamera/Streaming</code></td>
+<td>Spout 推流</td>
+</tr>
+<tr>
+<td><code>/usercamera/RollWhileFlying</code></td>
+<td>飞行时翻滚</td>
+</tr>
+<tr>
+<td><code>/usercamera/OrientationIsLandscape</code></td>
+<td>横屏方向</td>
+</tr>
+</tbody>
+</table>
+<h3 id="滑块-float">滑块 (float)</h3>
+<table>
+<thead>
+<tr>
+<th>地址</th>
+<th>默认</th>
+<th>范围</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>/usercamera/Zoom</code></td>
+<td>45</td>
+<td>20-150</td>
+<td>缩放</td>
+</tr>
+<tr>
+<td><code>/usercamera/Exposure</code></td>
+<td>0</td>
+<td>-10~10</td>
+<td>曝光</td>
+</tr>
+<tr>
+<td><code>/usercamera/FocalDistance</code></td>
+<td>-</td>
+<td>-</td>
+<td>焦距</td>
+</tr>
+<tr>
+<td><code>/usercamera/Aperture</code></td>
+<td>-</td>
+<td>-</td>
+<td>光圈</td>
+</tr>
+<tr>
+<td><code>/usercamera/Hue</code></td>
+<td>-</td>
+<td>-</td>
+<td>绿幕色调</td>
+</tr>
+<tr>
+<td><code>/usercamera/Saturation</code></td>
+<td>-</td>
+<td>-</td>
+<td>绿幕饱和度</td>
+</tr>
+<tr>
+<td><code>/usercamera/Lightness</code></td>
+<td>-</td>
+<td>-</td>
+<td>绿幕亮度</td>
+</tr>
+<tr>
+<td><code>/usercamera/LookAtMeXOffset</code></td>
+<td>-</td>
+<td>-</td>
+<td>LAM X偏移</td>
+</tr>
+<tr>
+<td><code>/usercamera/LookAtMeYOffset</code></td>
+<td>-</td>
+<td>-</td>
+<td>LAM Y偏移</td>
+</tr>
+<tr>
+<td><code>/usercamera/FlySpeed</code></td>
+<td>-</td>
+<td>-</td>
+<td>飞行速度</td>
+</tr>
+<tr>
+<td><code>/usercamera/TurnSpeed</code></td>
+<td>-</td>
+<td>-</td>
+<td>转向速度</td>
+</tr>
+<tr>
+<td><code>/usercamera/SmoothingStrength</code></td>
+<td>-</td>
+<td>-</td>
+<td>平滑强度</td>
+</tr>
+<tr>
+<td><code>/usercamera/PhotoRate</code></td>
+<td>-</td>
+<td>-</td>
+<td>路径拍照速率</td>
+</tr>
+<tr>
+<td><code>/usercamera/Duration</code></td>
+<td>-</td>
+<td>-</td>
+<td>路径持续时间</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="8-chatbox-api">8. Chatbox API</h2>
+<blockquote>
+<p>聊天输入和状态</p>
+</blockquote>
+<h3 id="地址">地址</h3>
+<table>
+<thead>
+<tr>
+<th>地址</th>
+<th>签名</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>/chatbox/input</code></td>
+<td><code>(string text, bool send, bool notify)</code></td>
+<td>发送聊天消息（<strong>3 参数</strong>，见下）</td>
+</tr>
+<tr>
+<td><code>/chatbox/typing</code></td>
+<td><code>(bool)</code></td>
+<td>打字状态</td>
+</tr>
+</tbody>
+</table>
+<h3 id="-chatboxinput-3-参数签名-2026-06-30-修正">📦 <code>/chatbox/input</code> 3 参数签名 (2026-06-30 修正)</h3>
+<blockquote>
+<p><strong>🔴 关键修正</strong>: 旧版”单参数 string”是<strong>错误</strong>的。官方明确为 3 参数 <code>s b n</code>。</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>位置</th>
+<th>参数</th>
+<th>类型</th>
+<th>默认</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>s</code></td>
+<td>text</td>
+<td>string</td>
+<td>—</td>
+<td>聊天框文本</td>
+</tr>
+<tr>
+<td><code>b</code></td>
+<td>send</td>
+<td>bool</td>
+<td>—</td>
+<td><code>True</code> 立即发送（绕过键盘）；<code>False</code> 打开键盘预填充</td>
+</tr>
+<tr>
+<td><code>n</code></td>
+<td>notify</td>
+<td>bool</td>
+<td><code>True</code></td>
+<td><code>False</code> 静音通知音效；省略时默认触发音效</td>
+</tr>
+</tbody>
+</table>
+<h3 id="-chatbox-显示限制-2026-06-30-新增">📏 Chatbox 显示限制 (2026-06-30 新增)</h3>
+<table>
+<thead>
+<tr>
+<th>限制</th>
+<th>值</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>字符数上限</td>
+<td><strong>144 字符</strong></td>
+</tr>
+<tr>
+<td>显示行数上限</td>
+<td><strong>9 行</strong>（含换行与折行）</td>
+</tr>
+</tbody>
+</table>
+<p>超出限制的内容会被截断/省略。</p>
+<hr>
+<h2 id="9-oscquery-自动发现">9. OSCQuery 自动发现</h2>
+<blockquote>
+<p>VRChat 2023.3.1+ 支持</p>
+</blockquote>
+<h3 id="功能">功能</h3>
+<ul>
+<li>mDNS/Bonjour 服务发现</li>
+<li>TCP 查询地址空间和值</li>
+<li>自动配置 IP 和端口</li>
+</ul>
+<h3 id="vrchat-接收的-oscquery-路径">VRChat 接收的 OSCQuery 路径</h3>
+<table>
+<thead>
+<tr>
+<th>路径</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>/avatar</code></td>
+<td>/avatar/change + /avatar/parameters/*</td>
+</tr>
+<tr>
+<td><code>/tracking/vrsystem</code></td>
+<td>/tracking/vrsystem/head, /leftwrist, /rightwrist, /pose</td>
+</tr>
+</tbody>
+</table>
+<h3 id="参考资源-2026-06-30-新增">参考资源 (2026-06-30 新增)</h3>
+<table>
+<thead>
+<tr>
+<th>资源</th>
+<th>链接</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>OSCQuery 规范</strong></td>
+<td><a href="https://github.com/Vidvox/OSCQueryProposal">https://github.com/Vidvox/OSCQueryProposal</a></td>
+<td>协议规范</td>
+</tr>
+<tr>
+<td><strong>VRChat Wiki</strong></td>
+<td><a href="https://github.com/vrchat-community/osc/wiki/OSCQuery">https://github.com/vrchat-community/osc/wiki/OSCQuery</a></td>
+<td>VRChat 集成指南</td>
+</tr>
+<tr>
+<td><strong>官方 C# 库</strong></td>
+<td><a href="https://github.com/vrchat-community/vrc-oscquery-lib">https://github.com/vrchat-community/vrc-oscquery-lib</a></td>
+<td>开源 OSCQuery 库</td>
+</tr>
+<tr>
+<td><strong>VRChat 起始版本</strong></td>
+<td>2023.3.1</td>
+<td>OSCQuery 支持起点</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="版本历史">版本历史</h2>
+<table>
+<thead>
+<tr>
+<th>版本</th>
+<th>日期</th>
+<th>变更</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>1.2</strong></td>
+<td><strong>2026-06-30</strong></td>
+<td><strong>重大修正</strong>: 1) Chatbox <code>/chatbox/input</code> 3 参数签名 2) 删除 Input 通用名 (Use/Grab/Drop) 3) 修正 Debug 路径 4) 补充 Eye Tracking 10s 超时 + 互斥规则 + 案例数据 5) 补充 Tracker 300ms 阈值 + 坐标约定 + 数量建议 + Auto-center 6) 补充 Avatar Scaling Udon 强制覆盖 + 越界免责 7) 补充 Build &#x26; Test 行为 + stop-gap 警告 + type 大小写 8) 补充 TouchOSC 直链 + OSCQuery 链接 + 实现 Gist 链接 9) 新增附录 G(实现参考) + 附录 H(资源分类索引)</td>
+</tr>
+<tr>
+<td>1.1</td>
+<td>2026-06-10</td>
+<td>补充 OSC 库推荐、线程安全、Debug Interface、Input 重置要求、TouchOSC 布局文件</td>
+</tr>
+<tr>
+<td>1.0</td>
+<td>2026-06-05</td>
+<td>初始整理</td>
+</tr>
+</tbody>
+</table>
+<h2 id="来源">来源</h2>
+<ul>
+<li>docs.vrchat.com（官方文档）— 2026-06-30 抓取 (本次审计主源)</li>
+<li>docs.vrchat.com 更新日志（2025.3.3, 2026.2.1）</li>
+<li>vrchat-community/osc GitHub Wiki</li>
+<li>wiki.vrchat.com</li>
+<li>deepwiki.com/vrchat-community/osc (2026-06-10)</li>
+<li>参考文献/SP/osc/*.md (2026-06-30 抓取自 docs.vrchat.com/llms.txt)</li>
+</ul>
+<h2 id="备注">备注</h2>
+<ul>
+<li>Camera OSC 端点在 creators.vrchat.com 官方文档中<strong>缺失</strong>，仅在 changelog 中出现</li>
+<li>部分 Camera 端点的值变更通知存在问题（已反馈）</li>
+<li><del><code>/chatbox/input</code> 参数以知识库为准（单参数 string）</del> <strong>已修正 2026-06-30</strong>：<code>/chatbox/input</code> 官方为 3 参数签名 <code>s b n</code>（text + send-bool + notify-bool），源见 <code>osc-as-input-controller.md §Chatbox</code></li>
+</ul>
+<hr>
+<h2 id="附录-a-推荐-osc-库">附录 A: 推荐 OSC 库</h2>
+<blockquote>
+<p>来源: vrchat-community/osc DIY Integration Guide</p>
+</blockquote>
+<h3 id="官方推荐库">官方推荐库</h3>
+<table>
+<thead>
+<tr>
+<th>语言</th>
+<th>库</th>
+<th>仓库</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>C#</td>
+<td>OscCore</td>
+<td>vrchat/osccore (all-in-one branch)</td>
+<td>VRChat 客户端内部使用，性能最佳</td>
+</tr>
+<tr>
+<td>Python</td>
+<td>python-osc</td>
+<td>attwad/python-osc</td>
+<td>VRChat 团队内部测试使用</td>
+</tr>
+<tr>
+<td>多种</td>
+<td>CNMAT OSC</td>
+<td>cnmat.org/OpenSoundControl</td>
+<td>社区参考，全面语言支持</td>
+</tr>
+</tbody>
+</table>
+<h3 id="osccore-特点">OscCore 特点</h3>
+<ul>
+<li>性能优化：最小内存分配</li>
+<li>高吞吐量消息处理</li>
+<li>减少垃圾回收开销</li>
+</ul>
+<hr>
+<h2 id="附录-b-线程安全注意事项">附录 B: 线程安全注意事项</h2>
+<blockquote>
+<p>来源: vrchat-community/osc DIY Integration Guide</p>
+</blockquote>
+<h3 id="关键要求">关键要求</h3>
+<table>
+<thead>
+<tr>
+<th>阶段</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>接收</strong></td>
+<td>OSC 数据接收发生在后台线程</td>
+</tr>
+<tr>
+<td><strong>传输</strong></td>
+<td>Unity 应用必须将数据转到主线程</td>
+</tr>
+<tr>
+<td><strong>处理</strong></td>
+<td>使用线程安全的数据结构进行线程间通信</td>
+</tr>
+</tbody>
+</table>
+<h3 id="推荐实现模式">推荐实现模式</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>1. OSC Receiver 在后台线程捕获数据</span></span>
+<span class="line"><span>2. 将数据存储在线程安全的 buffer 中</span></span>
+<span class="line"><span>3. 主应用线程在 Update/帧循环中处理 buffer 中的数据</span></span></code></pre>
+<h3 id="错误处理建议">错误处理建议</h3>
+<ul>
+<li>消息验证</li>
+<li>超时处理（针对期望的响应）</li>
+<li>网络中断的优雅处理</li>
+</ul>
+<hr>
+<h2 id="附录-c-debug-interface-完整说明">附录 C: Debug Interface 完整说明</h2>
+<blockquote>
+<p>来源: vrchat-community/osc Debugging OSC</p>
+</blockquote>
+<h3 id="访问方式-2026-06-30-修正">访问方式 (2026-06-30 修正)</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>Action Menu → OSC → OSC Debug</span></span></code></pre>
+<blockquote>
+<p><strong>修正</strong>: 正确路径是 <strong>OSC → OSC Debug</strong>（不是 OSC → Debug）。</p>
+</blockquote>
+<h3 id="功能特性">功能特性</h3>
+<table>
+<thead>
+<tr>
+<th>功能</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>自动激活</strong></td>
+<td>打开 Debug 界面时<strong>自动启用 OSC</strong>（即使之前在 Action Menu 中禁用了 OSC）</td>
+</tr>
+<tr>
+<td><strong>实时监控</strong></td>
+<td>显示传入 OSC 消息</td>
+</tr>
+<tr>
+<td><strong>参数验证</strong></td>
+<td>显示地址、值范围、当前值</td>
+</tr>
+</tbody>
+</table>
+<h3 id="显示内容">显示内容</h3>
+<ul>
+<li>OSC 地址 (e.g., <code>/avatar/parameters/parameterName</code>)</li>
+<li>值范围 (预期范围)</li>
+<li>当前值 (实时数据)</li>
+</ul>
+<h3 id="限制-1">限制</h3>
+<table>
+<thead>
+<tr>
+<th>限制项</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>仅传入消息</td>
+<td>不显示 VRChat 发出的消息</td>
+</tr>
+<tr>
+<td>内部变化不显示</td>
+<td>不显示 VRChat 内部参数变化</td>
+</tr>
+<tr>
+<td>网络问题不可见</td>
+<td>防火墙/端口配置问题不会在界面体现</td>
+</tr>
+<tr>
+<td>性能影响</td>
+<td>高频消息可能影响性能</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="附录-d-input-值重置要求">附录 D: Input 值重置要求</h2>
+<blockquote>
+<p>来源: vrchat-community/osc Avatar Parameters and Input Control</p>
+</blockquote>
+<h3 id="-通用规则-2026-06-30-强化">🔴 通用规则 (2026-06-30 强化)</h3>
+<blockquote>
+<p><strong>所有 axes 和 buttons 在每次操作后都必须重置为 0</strong>。
+持续的非零值会导致连续输入（如持续前进、持续旋转）。
+下列表格仅列示例，<strong>未列出的端点同样适用此规则</strong>。</p>
+</blockquote>
+<h3 id="连续值-axes">连续值 (Axes)</h3>
+<table>
+<thead>
+<tr>
+<th>地址</th>
+<th>说明</th>
+<th>重置要求</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>/input/Vertical</code></td>
+<td>前进(1) / 后退(-1)</td>
+<td><strong>必须重置为 0</strong></td>
+</tr>
+<tr>
+<td><code>/input/Horizontal</code></td>
+<td>右移(1) / 左移(-1)</td>
+<td><strong>必须重置为 0</strong></td>
+</tr>
+<tr>
+<td><code>/input/LookHorizontal</code></td>
+<td>视角左右 / VR快转</td>
+<td><strong>必须重置为 0</strong></td>
+</tr>
+<tr>
+<td><code>/input/MoveHoldFB</code></td>
+<td>移动持有物体前后</td>
+<td><strong>必须重置为 0</strong></td>
+</tr>
+<tr>
+<td><code>/input/SpinHoldCwCcw</code></td>
+<td>旋转持有物体</td>
+<td><strong>必须重置为 0</strong></td>
+</tr>
+<tr>
+<td><code>/input/SpinHoldUD</code></td>
+<td>旋转持有物体 上下</td>
+<td><strong>必须重置为 0</strong></td>
+</tr>
+<tr>
+<td><code>/input/SpinHoldLR</code></td>
+<td>旋转持有物体 左右</td>
+<td><strong>必须重置为 0</strong></td>
+</tr>
+<tr>
+<td>所有其他 axes</td>
+<td>—</td>
+<td><strong>必须重置为 0</strong></td>
+</tr>
+</tbody>
+</table>
+<h3 id="按钮值-buttons">按钮值 (Buttons)</h3>
+<table>
+<thead>
+<tr>
+<th>地址</th>
+<th>说明</th>
+<th>重置要求</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>/input/Jump</code></td>
+<td>跳跃</td>
+<td><strong>必须重置为 0</strong></td>
+</tr>
+<tr>
+<td><code>/input/Run</code></td>
+<td>跑步</td>
+<td><strong>必须重置为 0</strong></td>
+</tr>
+<tr>
+<td><code>/input/Voice</code></td>
+<td>语音/静音</td>
+<td><strong>必须重置为 0</strong></td>
+</tr>
+<tr>
+<td><code>/input/MoveForward</code></td>
+<td>保持前进</td>
+<td><strong>必须重置为 0</strong></td>
+</tr>
+<tr>
+<td><code>/input/MoveBackward</code></td>
+<td>保持后退</td>
+<td><strong>必须重置为 0</strong></td>
+</tr>
+<tr>
+<td><code>/input/MoveLeft</code></td>
+<td>保持左移</td>
+<td><strong>必须重置为 0</strong></td>
+</tr>
+<tr>
+<td><code>/input/MoveRight</code></td>
+<td>保持右移</td>
+<td><strong>必须重置为 0</strong></td>
+</tr>
+<tr>
+<td><code>/input/LookLeft</code></td>
+<td>保持视角左转</td>
+<td><strong>必须重置为 0</strong></td>
+</tr>
+<tr>
+<td><code>/input/LookRight</code></td>
+<td>保持视角右转</td>
+<td><strong>必须重置为 0</strong></td>
+</tr>
+<tr>
+<td>所有其他按钮</td>
+<td>—</td>
+<td><strong>必须重置为 0</strong></td>
+</tr>
+</tbody>
+</table>
+<h3 id="原因">原因</h3>
+<p>持续的非零值会导致连续输入（如持续前进、持续旋转）。每次操作后必须重置为 0。</p>
+<blockquote>
+<p>⚠️ <strong>特别注意 <code>send=True</code> 误用</strong>: Chatbox <code>/chatbox/input</code> 第二个参数 <code>send</code> 也需要重置回 <code>False</code>，否则会持续发送。</p>
+</blockquote>
+<hr>
+<h2 id="附录-e-touchosc-布局文件">附录 E: TouchOSC 布局文件</h2>
+<blockquote>
+<p>来源: vrchat-community/osc Example Files and Configurations</p>
+</blockquote>
+<h3 id="布局文件列表-2026-06-30-补充直链">布局文件列表 (2026-06-30 补充直链)</h3>
+<table>
+<thead>
+<tr>
+<th>文件</th>
+<th>用途</th>
+<th>目标 API</th>
+<th>直链</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>vrc-emote.tosc</code></td>
+<td>Avatar 表情和手势控制</td>
+<td>Avatar Parameters API</td>
+<td><a href="https://github.com/vrchat-community/osc/raw/main/files/touch-osc/vrc-emote.tosc">https://github.com/vrchat-community/osc/raw/main/files/touch-osc/vrc-emote.tosc</a></td>
+</tr>
+<tr>
+<td><code>vrc-input.tosc</code></td>
+<td>游戏输入模拟（含 Vertical/Horizontal/Jump）</td>
+<td>Input Control API</td>
+<td><a href="https://github.com/vrchat-community/osc/raw/main/files/touch-osc/vrc-input.tosc">https://github.com/vrchat-community/osc/raw/main/files/touch-osc/vrc-input.tosc</a></td>
+</tr>
+</tbody>
+</table>
+<h3 id="使用方法">使用方法</h3>
+<ol>
+<li>将 <code>.tosc</code> 文件传输到移动设备</li>
+<li>在 TouchOSC 中导入布局</li>
+<li>配置 OSC 连接指向 VRChat（通常是 <code>localhost:9000</code>）</li>
+<li>使用界面控制 Avatar 参数或游戏输入</li>
+</ol>
+<h3 id="布局文件格式">布局文件格式</h3>
+<ul>
+<li>文件扩展名: <code>.tosc</code></li>
+<li>内容: 编码的 UI 布局定义、控制映射、OSC 路由</li>
+<li>兼容性: TouchOSC 1.x 和 2.x</li>
+<li>平台: iOS、Android、桌面跨平台</li>
+</ul>
+<h3 id="配置文件示例">配置文件示例</h3>
+<ul>
+<li><strong>Avatar Config</strong>: <a href="https://github.com/vrchat-community/osc/raw/main/files/avatar-parameters/configs/example-avatar-config.json">https://github.com/vrchat-community/osc/raw/main/files/avatar-parameters/configs/example-avatar-config.json</a></li>
+</ul>
+<hr>
+<h2 id="附录-f-社区资源管理">附录 F: 社区资源管理</h2>
+<blockquote>
+<p>来源: vrchat-community/osc Community Resources and Tools</p>
+</blockquote>
+<h3 id="️-整体安全警告-2026-06-30-强化">⚠️ 整体安全警告 (2026-06-30 强化)</h3>
+<blockquote>
+<p><strong>🔴 USE THESE AT YOUR OWN RISK!</strong></p>
+<p>运行他人编写的代码<strong>本质上就有风险</strong>。下列大多数项目都是开源的，可自行审查安全性。
+<strong>强烈建议</strong>:</p>
+<ul>
+<li>阅读源代码而非使用预编译二进制</li>
+<li>仅从可信来源下载</li>
+<li>使用前验证应用完整性</li>
+</ul>
+</blockquote>
+<h3 id="提交要求">提交要求</h3>
+<table>
+<thead>
+<tr>
+<th>要求</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>文档</strong></td>
+<td>必须包含清晰的使用说明</td>
+</tr>
+<tr>
+<td><strong>开源</strong></td>
+<td>源代码必须公开可审查</td>
+</tr>
+<tr>
+<td><strong>许可证</strong></td>
+<td>必须包含适当的开源许可证</td>
+</tr>
+<tr>
+<td><strong>TOS 合规</strong></td>
+<td>不得违反 VRChat 服务条款</td>
+</tr>
+</tbody>
+</table>
+<h3 id="提交流程">提交流程</h3>
+<ol>
+<li>在 GitHub Discussions 的 “Show and Tell” 分类发布</li>
+<li>通过审查标准后纳入官方资源列表（官方每周更新）</li>
+</ol>
+<hr>
+<h2 id="附录-g-osc-实现参考-2026-06-30-新增">附录 G: OSC 实现参考 (2026-06-30 新增)</h2>
+<blockquote>
+<p>来源: 官方 Developer Gist 仓库</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>主题</th>
+<th>链接</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Eye Tracking</strong></td>
+<td><a href="https://gist.github.com/vrchat-developer/bc07d3dba46206f6ee42d36323c034eb">https://gist.github.com/vrchat-developer/bc07d3dba46206f6ee42d36323c034eb</a></td>
+<td>假设有 eye root + eye target Transform，需设置 IPD，<strong>不要直接复制</strong></td>
+</tr>
+<tr>
+<td><strong>Full Body Trackers</strong></td>
+<td><a href="https://gist.github.com/vrchat-developer/129c1647667945158b14709f8d65d471">https://gist.github.com/vrchat-developer/129c1647667945158b14709f8d65d471</a></td>
+<td>假设有用于位姿追踪的 avatar 骨骼，需根据实际身高调整</td>
+</tr>
+</tbody>
+</table>
+<h3 id="gist-使用约定">Gist 使用约定</h3>
+<ul>
+<li>均为<strong>教学参考</strong>，不是即用方案</li>
+<li>需根据实际项目结构调整</li>
+<li>阅读代码理解原理，不要盲目复制</li>
+</ul>
+<hr>
+<h2 id="附录-h-社区资源分类索引-2026-06-30-新增">附录 H: 社区资源分类索引 (2026-06-30 新增)</h2>
+<blockquote>
+<p>⚠️ <strong>不收录完整链接列表</strong>（维护成本高、链接易失效），仅保留分类索引。
+完整列表见源文档 <code>参考文献/SP/osc/osc-resources.md</code></p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>类别</th>
+<th>典型项目（标杆）</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Controllers</strong></td>
+<td>BrainFlowsIntoVRChat, VRChat Hotkeys OSC</td>
+<td>脑电、键盘热键 → Avatar</td>
+</tr>
+<tr>
+<td><strong>Face Tracking</strong></td>
+<td>VSeeFace, VRCFaceTracking</td>
+<td>面部/唇动 → Avatar</td>
+</tr>
+<tr>
+<td><strong>Hand Tracking</strong></td>
+<td>leapmotion-osc</td>
+<td>Leap Motion 手指追踪</td>
+</tr>
+<tr>
+<td><strong>Haptics</strong></td>
+<td>bHaptics VRChat-OSC</td>
+<td>bHaptics 触觉反馈</td>
+</tr>
+<tr>
+<td><strong>Heart Rate</strong></td>
+<td>HRPresence, OyasumiVR, Pulsoid</td>
+<td>心率 → Avatar (睡眠检测等)</td>
+</tr>
+<tr>
+<td><strong>IRL Control</strong></td>
+<td>vrc-osc-audio-controls, vrcwatch</td>
+<td>系统音频、时间、CPU/RAM</td>
+</tr>
+<tr>
+<td><strong>Library</strong></td>
+<td>OscCore (官方), phorcys, VRC_OSCLib</td>
+<td>OSC 库 (C#/Rust)</td>
+</tr>
+<tr>
+<td><strong>Text</strong></td>
+<td>TTS-Voice-Wizard</td>
+<td>TTS → Avatar 显示</td>
+</tr>
+<tr>
+<td><strong>Twitch</strong></td>
+<td>Spooder, EZTwitchOSCBot</td>
+<td>Twitch 直播联动</td>
+</tr>
+<tr>
+<td><strong>Utilities</strong></td>
+<td>VRCOSC, Protokol, TouchOSC</td>
+<td>综合 OSC 工具</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>维护建议：仅在调研具体功能时按类别查找项目，<strong>不要逐个跟踪更新状态</strong>。</p>
+</blockquote> </div> <p class="kb-source-note" data-astro-cid-lvjzyg5v>
+本文由 VRChat 开发知识库自动整理（社区整理  · 可信度 High  · 最后校对 2026-06-30），
+          遇到与手写教程冲突的地方，以官方文档为最高优先级。
+</p> <section class="comments" id="comments" data-astro-cid-lvjzyg5v> <h2 class="comments__title" data-astro-cid-lvjzyg5v>✦ 旅人留言（0）</h2> <p class="comments__empty" id="commentsEmpty" data-astro-cid-lvjzyg5v>
+还没有旅人留言 —— 有疑问就写在下面，站长都会回复。
+</p> <form class="comment-form" id="commentForm" data-target="kb-concepts-hybrid-osc-protocol" data-astro-cid-lvjzyg5v> <p class="comment-form__title" data-astro-cid-lvjzyg5v>写下你的留言</p> <input id="cAuthor" maxlength="20" placeholder="昵称（留空则为「旅人」）" data-astro-cid-lvjzyg5v> <textarea id="cBody" maxlength="1000" required placeholder="想问的问题、想说的感谢都可以（最多 1000 字）" data-astro-cid-lvjzyg5v></textarea> <div class="comment-form__actions" data-astro-cid-lvjzyg5v> <button class="btn btn--primary" type="submit" data-astro-cid-lvjzyg5v>发布留言</button> <span class="form-hint" data-astro-cid-lvjzyg5v>留言保存在本站，站长在写作台里能看到</span> <span class="form-msg" id="cMsg" data-astro-cid-lvjzyg5v></span> </div> </form> </section> <nav class="station-nav" aria-label="站间导航" data-astro-cid-lvjzyg5v> <a href="/STELLASTOPVRC/posts/kb-avatar-impostor-fallback/" data-astro-cid-lvjzyg5v> <span class="dir" data-astro-cid-lvjzyg5v>← 上一站 · 更新的星光</span> <span class="to" data-astro-cid-lvjzyg5v>Avatar Impostor &amp; Fallback — 替代 Avatar 机制</span> </a> <a href="/STELLASTOPVRC/posts/kb-platform-player-config/" data-astro-cid-lvjzyg5v> <span class="dir" data-astro-cid-lvjzyg5v>下一站 · 更早的星光 →</span> <span class="to" data-astro-cid-lvjzyg5v>VRChat Performance Options — 玩家性能设置面板</span> </a> </nav> </div> <aside class="toc" id="toc" hidden> <p class="toc__title">✦ 本页星图</p> <nav id="tocNav" aria-label="文章目录"></nav> </aside> <script type="module">const i=document.querySelector(".prose"),d=document.getElementById("toc"),u=document.getElementById("tocNav"),l=[];if(i&&d&&u){const c=[...i.querySelectorAll("h1, h2, h3")];if(c.length>=3){d.hidden=!1,c.forEach((o,e)=>{o.id||(o.id=`sec-${e}`);const n=document.createElement("a");n.href=`#${o.id}`;const s=(o.textContent??"").replace(/\s+/g," ").trim(),r=s.search(/[：:]/),a=r>=4?s.slice(0,r):s;n.textContent=a.length>40?`${a.slice(0,40)}…`:a,n.title=s,u.appendChild(n),l.push({a:n,h:o})});const t=()=>{let o=l[0];for(const e of l)e.h.getBoundingClientRect().top<=130&&(o=e);for(const e of l)e.a.classList.toggle("is-active",e===o)};addEventListener("scroll",t,{passive:!0}),t()}}document.querySelectorAll(".prose pre").forEach(c=>{const t=document.createElement("button");t.className="code-copy",t.type="button",t.textContent="复制",t.addEventListener("click",async()=>{const o=c.querySelector("code")?.innerText??c.innerText;try{await navigator.clipboard.writeText(o)}catch{const e=document.createElement("textarea");e.value=o,document.body.appendChild(e),e.select(),document.execCommand("copy"),e.remove()}t.textContent="已复制 ✓",t.classList.add("is-ok"),setTimeout(()=>{t.textContent="复制",t.classList.remove("is-ok")},1500)}),c.appendChild(t)});</script> </article>  </main> <footer class="site-footer"> <div class="wrap"> <p class="star-line" aria-hidden="true"> <svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> <svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> </p> <p>星之驿站 StellaStop —— 在虚拟宇宙中，为你保留一座驿站</p> <p class="site-footer__disclaimer">
+该网页目前是测试阶段，仅用于测试，所有内容仅供参考；内容全部为引用互联网当中的信息。
+</p> <p>© 2026 星之驿站 · 由 <a href="https://astro.build">Astro</a> 与星光驱动</p> <p> <a data-desk-login hidden title="写作台：登录 / 注册">登录 / 注册</a> ·
+<a href="/STELLASTOPVRC/announcements/">官方公告</a> ·
+<a href="/STELLASTOPVRC/ai/">问星 AI</a> ·
+<a href="/STELLASTOPVRC/feedback/">旅人留言板</a> </p> </div> </footer> <button class="to-top" id="toTop" aria-label="回到顶部"> <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"> <path d="M12 20V5"></path> <path d="M5.5 11.5 12 5l6.5 6.5"></path> </svg> </button> <script type="module">const e=document.getElementById("toTop");if(e){const t=()=>e.classList.toggle("is-visible",scrollY>480);addEventListener("scroll",t,{passive:!0}),t(),e.addEventListener("click",()=>{const o=matchMedia("(prefers-reduced-motion: reduce)").matches;scrollTo({top:0,behavior:o?"auto":"smooth"})})}</script> <script>(function(){const deskConfigured = "";
+
+      /* 写作台探测（页面尾部执行，DOM 已就绪）：
+         1. 计算写作台地址：站点配置 deskUrl（公网部署时填）> 本机默认 localhost:4322 > 同主机 4322
+         2. 探测 /api/gate/status —— 在线才点亮「登录 / 注册」入口，并复用给验证门横幅
+         3. 不在线则保持隐藏，绝不会把访客拽进内网地址；同时给出一次性「镜像模式」提示 */
+      (function () {
+        var host = location.hostname;
+        var isLocal = host === 'localhost' || host === '127.0.0.1' || host === '[::1]';
+        var desk = deskConfigured ||
+          (isLocal ? 'http://localhost:4322' : location.protocol + '//' + host + ':4322');
+        window.STELLA_DESK = desk;
+
+        function revealLogin() {
+          document.querySelectorAll('[data-desk-login]').forEach(function (a) {
+            a.href = desk + '/admin';
+            a.removeAttribute('hidden');
+          });
+        }
+        function showBanner(css, html, shiftHeader) {
+          var bar = document.createElement('div');
+          bar.style.cssText = css;
+          bar.innerHTML = html;
+          document.body.prepend(bar);
+          if (shiftHeader) {
+            var header = document.querySelector('.site-header');
+            if (header) header.style.marginTop = '42px';
+          }
+        }
+        function hintMirrorMode() {
+          try {
+            if (sessionStorage.getItem('stella-desk-hint')) return;
+            sessionStorage.setItem('stella-desk-hint', '1');
+          } catch (e) { /* 无痕模式等：忽略 */ }
+          var tip = document.createElement('div');
+          tip.style.cssText = 'position:fixed;left:14px;bottom:14px;z-index:9998;max-width:min(92vw,430px);padding:.65rem .9rem;border-radius:12px;background:rgba(18,20,44,.92);border:1px solid rgba(150,142,255,.35);color:#e8e6ff;font-size:.82rem;line-height:1.6;font-family:system-ui,sans-serif;box-shadow:0 8px 30px rgba(0,0,0,.35)';
+          tip.innerHTML = 'ℹ️ 静态镜像模式：登录 / 评论 / AI 等互动功能需要站长写作台在线，当前不可用。' +
+            '<span id="stellaDeskHintClose" style="float:right;cursor:pointer;opacity:.75;font-weight:700;margin-left:.6rem" title="关闭">×</span>';
+          document.body.appendChild(tip);
+          var close = function () { tip.remove(); };
+          tip.querySelector('#stellaDeskHintClose').addEventListener('click', close);
+          setTimeout(close, 9000);
+        }
+
+        try {
+          var ctrl = new AbortController();
+          var timer = setTimeout(function () { ctrl.abort(); }, 2500);
+          fetch(desk + '/api/gate/status', { credentials: 'include', signal: ctrl.signal })
+            .then(function (r) { return r.ok ? r.json() : null; })
+            .then(function (d) {
+              clearTimeout(timer);
+              if (!d) throw new Error('desk-offline');
+              window.STELLA_DESK_OK = true;
+              revealLogin();
+              if (d.regionBlocked) {
+                showBanner(
+                  'position:fixed;top:0;left:0;right:0;z-index:9999;padding:1.2rem;text-align:center;background:#1a0a0a;color:#ff9ed2;font-size:.95rem;border-bottom:2px solid #ff4d6d;font-family:system-ui,sans-serif',
+                  '⛔ 你所在的地区（' + (d.regionCountry || '未知') + '）暂不开放访问。',
+                  false
+                );
+                return;
+              }
+              if (d.enabled && !d.passed) {
+                showBanner(
+                  'position:fixed;top:0;left:0;right:0;z-index:9999;padding:0.7rem;text-align:center;background:linear-gradient(94deg,rgba(143,127,247,.25),rgba(98,200,245,.18));border-bottom:1px solid rgba(150,142,255,.3);color:#f0efff;font-size:.88rem;font-family:system-ui,sans-serif',
+                  '🔒 本站启用了安全验证 —— <a href="' + desk + '/gate?next=' + encodeURIComponent(location.href) + '" style="color:#ffd98e;font-weight:700;text-decoration:underline">点击完成验证</a>，通过后即可使用全部功能（30 天免验）。',
+                  true
+                );
+              }
+            })
+            .catch(function () {
+              clearTimeout(timer);
+              window.STELLA_DESK_OK = false;
+              hintMirrorMode();
+            });
+        } catch (e) { /* 忽略 */ }
+      })();
+    })();</script> </body> </html> <script type="module">const m=document.getElementById("commentForm"),s=document.getElementById("cMsg"),u=`${location.protocol}//${location.hostname}:4322/api/message`;function r(e,t=!1){s&&(s.textContent=e,s.classList.toggle("is-err",t),s.classList.toggle("is-ok",!t))}function y(){const e=new Date,t=n=>String(n).padStart(2,"0");return`${e.getFullYear()}-${t(e.getMonth()+1)}-${t(e.getDate())}`}function f(e){let t=7;for(const n of e)t=(t*31+n.charCodeAt(0))%360;return t}function g(e,t){const n=document.createElement("li");n.className="comment",n.innerHTML=`
+      <span class="comment__avatar"></span>
+      <div class="comment__bubble">
+        <div class="comment__head">
+          <span class="comment__name"></span>
+          <time class="comment__date">${y()}</time>
+        </div>
+        <p class="comment__body"></p>
+      </div>`;const o=n.querySelector(".comment__avatar");return o.style.setProperty("--h",String(f(e))),o.textContent=e.slice(0,1),n.querySelector(".comment__name").textContent=e,n.querySelector(".comment__body").textContent=t,n}m?.addEventListener("submit",async e=>{e.preventDefault();const t=document.getElementById("cBody").value.trim();if(!t)return r("留言内容不能为空哦",!0);const n=document.getElementById("cAuthor").value.trim()||"旅人",o=m.querySelector("button");o&&(o.disabled=!0);try{const c=await fetch(u,{credentials:"include",method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({target:m.dataset.target,kind:"comment",author:n,body:t})}),d=await c.json().catch(()=>({}));if(!c.ok)throw new Error(d.error||`发送失败（${c.status}）`);const l=document.querySelector(".comment-list");l&&l.appendChild(g(n,t)),document.getElementById("commentsEmpty")?.remove(),document.getElementById("cBody").value="",r("留言已发布，感谢支持 ✦");const a=document.querySelector(".comments__title"),i=a?.textContent?.match(/（(\d+)）/);a&&i&&(a.textContent=a.textContent.replace(/（\d+）/,`（${Number(i[1])+1}）`))}catch(c){r(c instanceof TypeError?"写作台没在运行，暂时收不到留言 —— 双击「启动博客.bat」就好":c.message,!0)}finally{o&&(o.disabled=!1)}});</script> 

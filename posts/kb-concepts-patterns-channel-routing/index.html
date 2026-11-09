@@ -1,0 +1,497 @@
+<!DOCTYPE html><html lang="zh-CN"> <head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="generator" content="Astro v5.18.2"><meta name="description" content="在 Pub/Sub 消息系统中，同一信号可能被多组订阅者需要差异化处理："><meta name="theme-color" content="#070a1c"><meta property="og:title" content="Channel-Based Pub/Sub Routing (频道路由) · 星之驿站 StellaStop"><meta property="og:description" content="在 Pub/Sub 消息系统中，同一信号可能被多组订阅者需要差异化处理："><meta property="og:type" content="website"><meta name="twitter:card" content="summary"><link rel="icon" type="image/svg+xml" href="/STELLASTOPVRC/favicon.svg"><script>
+      // 在渲染前恢复主题与特效档位，避免闪一下默认状态
+      try {
+        document.documentElement.dataset.theme =
+          localStorage.getItem('stella-theme') || 'nebula';
+        document.documentElement.dataset.fx =
+          localStorage.getItem('stella-fx') || 'standard';
+      } catch {
+        /* 隐私模式读不到就算了 */
+      }
+    </script><link rel="stylesheet" href="/STELLASTOPVRC/custom-vars.css"><title>Channel-Based Pub/Sub Routing (频道路由) · 星之驿站 StellaStop</title><link rel="stylesheet" href="/STELLASTOPVRC/_astro/about.Bgh6wcGl.css">
+<style>.post-head__meta[data-astro-cid-lvjzyg5v]{color:var(--ink-faint);font-family:var(--font-mono);font-size:.82rem}.post-head[data-astro-cid-lvjzyg5v] .chip-row[data-astro-cid-lvjzyg5v]{margin-top:1rem}.kb-source-note[data-astro-cid-lvjzyg5v]{max-width:760px;margin:2.2rem auto 0;font-size:.82rem;color:var(--ink-faint);border-top:1px dashed var(--line);padding-top:1rem}
+</style></head> <body> <div class="site-notice" id="siteNotice"> <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> <span class="site-notice__text">欢迎来到星之驿站！</span> <button class="site-notice__close" id="noticeClose" type="button" aria-label="关闭公告">
+×
+</button> </div> <a class="skip-link" href="#main">跳到主要内容</a> <canvas id="starfield" aria-hidden="true" data-astro-cid-ra7sfcwn></canvas> <div class="fx-aurora fx-aurora--a" aria-hidden="true" data-astro-cid-ra7sfcwn></div> <div class="fx-aurora fx-aurora--b" aria-hidden="true" data-astro-cid-ra7sfcwn></div>  <script type="module">const u=document.getElementById("starfield");if(u){let F=function(){const n=Math.random();return n<.1?"gold":n<.42?"blue":"white"},v=function(){const n=Math.min(window.devicePixelRatio||1,2);s=window.innerWidth,d=window.innerHeight,u.width=s*n,u.height=d*n,u.style.width=`${s}px`,u.style.height=`${d}px`,t.setTransform(n,0,0,n,0,0);const e=Math.min(190,Math.round(s*d/8500));l=Array.from({length:e},()=>({x:Math.random()*s,y:Math.random()*d,r:r(.4,1.7),base:r(.25,.8),amp:r(.12,.4),speed:r(6e-4,.0022),phase:r(0,Math.PI*2),c:F()})),C=Array.from({length:26},()=>({x:Math.random()*s,y:Math.random()*d,r:r(.9,2.4),vx:r(-.006,.006),vy:r(-.02,-.006),base:r(.2,.5),speed:r(8e-4,.002),phase:r(0,Math.PI*2),c:Math.random()<.5?"gold":"violet"})),c==="off"&&m(0,!0)},D=function(n){const e=Math.random()<.5?1:-1,o=r(Math.PI/7,Math.PI/5),a=r(.45,.75);y.push({x:r(s*.15,s*.85),y:r(-20,d*.3),vx:Math.cos(o)*a*e,vy:Math.sin(o)*a,born:n,life:r(750,1050),len:r(100,170)})},S=function(n){y=y.filter(e=>n-e.born<e.life);for(const e of y){const o=(n-e.born)/e.life,a=e.x+e.vx*(n-e.born),i=e.y+e.vy*(n-e.born),f=o<.15?o/.15:o>.7?(1-o)/.3:1,h=Math.hypot(e.vx,e.vy),x=e.vx/h,g=e.vy/h,b=t.createLinearGradient(a,i,a-x*e.len,i-g*e.len);b.addColorStop(0,`rgba(236,242,255,${(.85*f).toFixed(3)})`),b.addColorStop(1,"rgba(236,242,255,0)"),t.strokeStyle=b,t.lineWidth=1.6,t.lineCap="round",t.beginPath(),t.moveTo(a,i),t.lineTo(a-x*e.len,i-g*e.len),t.stroke()}},B=function(){let o=0;t.lineWidth=.7;for(let a=0;a<l.length&&o<26;a++)for(let i=a+1;i<l.length&&o<26;i++){const f=l[a].x-l[i].x,h=l[a].y-l[i].y,x=f*f+h*h;if(x<16900){const g=(1-Math.sqrt(x)/130)*.17;t.strokeStyle=`rgba(178,170,255,${g.toFixed(3)})`,t.beginPath(),t.moveTo(l[a].x,l[a].y),t.lineTo(l[i].x,l[i].y),t.stroke(),o++}}},X=function(n){for(const e of C){e.x+=e.vx*16,e.y+=e.vy*16,e.y<-12&&(e.y=d+10),e.x<-12&&(e.x=s+10),e.x>s+12&&(e.x=-10);const o=Math.max(.05,e.base+.25*Math.sin(n*e.speed+e.phase)),[a,i,f]=A[e.c];t.beginPath(),t.arc(e.x,e.y,e.r,0,7),t.shadowBlur=9,t.shadowColor=`rgba(${a},${i},${f},0.9)`,t.fillStyle=`rgba(${a},${i},${f},${o.toFixed(3)})`,t.fill()}t.shadowBlur=0},m=function(n,e=!1){t.clearRect(0,0,s,d);for(const o of l){const a=c==="off"?o.base:Math.max(.05,o.base+o.amp*Math.sin(n*o.speed+o.phase)),[i,f,h]=A[o.c];t.beginPath(),t.arc(o.x,o.y,o.r,0,7),o.r>1.25?(t.shadowBlur=7,t.shadowColor=`rgba(${i},${f},${h},0.85)`):t.shadowBlur=0,t.fillStyle=`rgba(${i},${f},${h},${a.toFixed(3)})`,t.fill()}if(t.shadowBlur=0,c!=="off"&&!e){c==="fancy"&&(B(),X(n));const o=c==="fancy"?r(2600,6e3):r(4200,9500);n>P&&(D(n),P=n+o),S(n)}},$=function(n){m(n),M=requestAnimationFrame($)},p=function(){if(c==="off"){m(0,!0);return}cancelAnimationFrame(M),M=requestAnimationFrame($)},w=function(){cancelAnimationFrame(M),t.clearRect(0,0,s,d),m(0,!0)};const t=u.getContext("2d"),k=matchMedia("(prefers-reduced-motion: reduce)").matches,A={white:[240,240,255],blue:[150,215,250],gold:[255,218,150],violet:[178,170,255]};let s=0,d=0,l=[],C=[],y=[],P=2500,M=0,c=document.documentElement.dataset.fx||"standard";k&&(c="off");const r=(n,e)=>n+Math.random()*(e-n);v(),addEventListener("resize",v),document.addEventListener("stella-fx-change",n=>{c=n.detail,c==="off"?w():p()}),c==="off"?m(0,!0):(p(),document.addEventListener("visibilitychange",()=>{document.hidden?w():p()}))}</script> <header class="site-header"> <div class="wrap site-header__inner"> <a class="logo" href="/STELLASTOPVRC/"> <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> <span>星之驿站</span> <span class="logo__romaji">StellaStop</span> </a> <div class="header-right"> <nav class="site-nav" aria-label="站内导航"> <a href="/STELLASTOPVRC/"> 首页 </a><a href="/STELLASTOPVRC/start/"> 新手 </a><a href="/STELLASTOPVRC/posts/"> 教程 </a><a href="/STELLASTOPVRC/videos/"> 视频 </a><a href="/STELLASTOPVRC/resources/"> 资源 </a><a href="/STELLASTOPVRC/booth/"> Booth </a><a href="/STELLASTOPVRC/announcements/"> 公告 </a><a href="/STELLASTOPVRC/ai/"> 问星 </a><a href="/STELLASTOPVRC/changelog/"> 更新日志 </a><a href="/STELLASTOPVRC/about/"> 关于 </a> </nav> <a class="login-link" data-desk-login hidden title="写作台：登录 / 注册后可发教程、传资源">
+登录 / 注册
+</a> <div class="theme-switch"> <button class="theme-switch__btn" id="themeBtn" type="button" aria-haspopup="listbox" aria-expanded="false" aria-label="切换主题配色" title="切换主题配色"> <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"> <path d="M12 3a9 9 0 1 0 9 9c0-1.2-1-2-2.2-2H17a2 2 0 0 1-2-2V6.2C15 5 14.2 4 13 4.4A9 9 0 0 0 12 3Z"></path> <circle cx="7.5" cy="11.5" r="1" fill="currentColor" stroke="none"></circle> <circle cx="10" cy="7.5" r="1" fill="currentColor" stroke="none"></circle> <circle cx="15" cy="7" r="1" fill="currentColor" stroke="none"></circle> </svg> </button> <div class="theme-pop" id="themePop" role="listbox" aria-label="选择主题" hidden> <button class="theme-opt" type="button" role="option" data-theme-value="nebula" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#8f7ff7"></span><span class="dot" style="background:#62c8f5"></span><span class="dot" style="background:#ffd98e"></span> </span> <span class="theme-opt__name">星云 · 蓝紫</span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt" type="button" role="option" data-theme-value="sakura" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#ff8fc7"></span><span class="dot" style="background:#c79bff"></span><span class="dot" style="background:#ffd08e"></span> </span> <span class="theme-opt__name">樱语 · 粉紫</span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt" type="button" role="option" data-theme-value="miku" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#2ed3c2"></span><span class="dot" style="background:#6ea8ff"></span><span class="dot" style="background:#ffe08e"></span> </span> <span class="theme-opt__name">葱色 · 青绿</span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt" type="button" role="option" data-theme-value="ember" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#ffb35c"></span><span class="dot" style="background:#ff7e6b"></span><span class="dot" style="background:#ffd98e"></span> </span> <span class="theme-opt__name">暮金 · 暖橙</span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt" type="button" role="option" data-theme-value="dawn" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#6a5ce8"></span><span class="dot" style="background:#e0568f"></span><span class="dot" style="background:#b8821e"></span> </span> <span class="theme-opt__name">晨星 · 浅色</span> <span class="theme-opt__mark">✦</span> </button> </div> </div> <script type="module">const a=document.getElementById("themeBtn"),n=document.getElementById("themePop");function s(c){document.documentElement.dataset.theme=c;try{localStorage.setItem("stella-theme",c)}catch{}const e=getComputedStyle(document.documentElement).getPropertyValue("--bg-deep").trim();document.querySelector('meta[name="theme-color"]')?.setAttribute("content",e||"#070a1c"),document.querySelectorAll(".theme-opt").forEach(t=>{const d=t.dataset.themeValue===c;t.classList.toggle("is-active",d),t.setAttribute("aria-selected",String(d))})}if(a&&n){const c=document.documentElement.dataset.theme||"nebula";document.querySelectorAll(".theme-opt").forEach(e=>{const t=e.dataset.themeValue===c;e.classList.toggle("is-active",t),e.setAttribute("aria-selected",String(t))}),a.addEventListener("click",e=>{e.stopPropagation();const t=n.hidden;n.hidden=!t,a.setAttribute("aria-expanded",String(t))}),document.addEventListener("click",e=>{!n.hidden&&!e.target.closest(".theme-switch")&&(n.hidden=!0,a.setAttribute("aria-expanded","false"))}),document.addEventListener("keydown",e=>{e.key==="Escape"&&!n.hidden&&(n.hidden=!0,a.setAttribute("aria-expanded","false"),a.focus())}),n.addEventListener("click",e=>{const t=e.target.closest(".theme-opt");t&&(s(t.dataset.themeValue??"nebula"),n.hidden=!0,a.setAttribute("aria-expanded","false"))})}</script> <div class="theme-switch fx-switch"> <button class="theme-switch__btn" id="fxBtn" type="button" aria-haspopup="listbox" aria-expanded="false" aria-label="背景特效设置" title="背景特效设置"> <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"> <path d="M5 3v4M3 5h4M6.5 17.5v3M5 19h3"></path> <path d="M14.5 4.5 16 9l4.5 1.5L16 12l-1.5 4.5L13 12l-4.5-1.5L13 9l1.5-4.5Z"></path> </svg> </button> <div class="theme-pop" id="fxPop" role="listbox" aria-label="背景特效" hidden> <button class="theme-opt fx-opt" type="button" role="option" data-fx-value="off" aria-selected="false"> <span class="fx-opt__body"> <span class="fx-opt__name">关闭特效</span> <span class="fx-opt__hint">最省电</span> </span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt fx-opt" type="button" role="option" data-fx-value="standard" aria-selected="false"> <span class="fx-opt__body"> <span class="fx-opt__name">标准</span> <span class="fx-opt__hint">闪烁星空 + 流星</span> </span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt fx-opt" type="button" role="option" data-fx-value="fancy" aria-selected="false"> <span class="fx-opt__body"> <span class="fx-opt__name">华丽</span> <span class="fx-opt__hint">追加极光 / 星座 / 光尘</span> </span> <span class="theme-opt__mark">✦</span> </button> </div> </div> <script type="module">const n=document.getElementById("fxBtn"),a=document.getElementById("fxPop");function s(d){document.documentElement.dataset.fx=d;try{localStorage.setItem("stella-fx",d)}catch{}document.querySelectorAll("#fxPop .fx-opt").forEach(t=>{const e=t.dataset.fxValue===d;t.classList.toggle("is-active",e),t.setAttribute("aria-selected",String(e))}),document.dispatchEvent(new CustomEvent("stella-fx-change",{detail:d}))}if(n&&a){const d=document.documentElement.dataset.fx||"standard";document.querySelectorAll("#fxPop .fx-opt").forEach(t=>{const e=t.dataset.fxValue===d;t.classList.toggle("is-active",e),t.setAttribute("aria-selected",String(e))}),n.addEventListener("click",t=>{t.stopPropagation();const e=a.hidden;a.hidden=!e,n.setAttribute("aria-expanded",String(e))}),document.addEventListener("click",t=>{!a.hidden&&!t.target.closest(".fx-switch")&&(a.hidden=!0,n.setAttribute("aria-expanded","false"))}),document.addEventListener("keydown",t=>{t.key==="Escape"&&!a.hidden&&(a.hidden=!0,n.setAttribute("aria-expanded","false"),n.focus())}),a.addEventListener("click",t=>{const e=t.target.closest(".fx-opt");e&&(s(e.dataset.fxValue??"standard"),a.hidden=!0,n.setAttribute("aria-expanded","false"))})}</script> </div> </div> </header> <main id="main">  <article class="wrap post-layout" data-astro-cid-lvjzyg5v> <div class="post-main page-fade" data-astro-cid-lvjzyg5v> <header class="post-head" data-astro-cid-lvjzyg5v> <a class="crumb" href="/STELLASTOPVRC/posts/" data-astro-cid-lvjzyg5v>← 返回教程档案</a> <div class="post-head__meta" style="--accent:var(--ink-dim)" data-astro-cid-lvjzyg5v> <span class="badge" data-cat="设计模式" data-astro-cid-lvjzyg5v>设计模式</span> <time datetime="2026-06-20" data-astro-cid-lvjzyg5v>2026-06-20</time> <span class="post-head__reading" data-astro-cid-lvjzyg5v>⏱ 约 16 分钟</span>  </div> <h1 class="post-head__title" data-astro-cid-lvjzyg5v>Channel-Based Pub/Sub Routing (频道路由)</h1> <p class="post-head__lead" data-astro-cid-lvjzyg5v>在 Pub/Sub 消息系统中，同一信号可能被多组订阅者需要差异化处理：</p> <div class="chip-row" data-astro-cid-lvjzyg5v> <a class="chip" href="/STELLASTOPVRC/posts/?tag=%E7%9F%A5%E8%AF%86%E5%BA%93" data-astro-cid-lvjzyg5v> 知识库 </a><a class="chip" href="/STELLASTOPVRC/posts/?tag=concepts" data-astro-cid-lvjzyg5v> concepts </a> </div> </header> <div class="prose" data-astro-cid-lvjzyg5v> <h1 id="pattern-channel-based-pubsub-routing-频道路由">Pattern: Channel-Based Pub/Sub Routing (频道路由)</h1>
+<blockquote>
+<p>SDK Version: 3.10.x
+Last Verified: 2026-06-20
+Reference: <code>memory/sources/sardinal.md</code>
+来源标注: ⭐S (Sardinal 独有模式)</p>
+</blockquote>
+<hr>
+<h2 id="problem--context">Problem / Context</h2>
+<p>在 Pub/Sub 消息系统中，<strong>同一信号可能被多组订阅者需要差异化处理</strong>：</p>
+<ul>
+<li>UI 订阅者需要”按钮变色”</li>
+<li>Audio 订阅者需要”播放音效”</li>
+<li>Network 订阅者需要”转发给其他玩家”</li>
+</ul>
+<p><strong>传统方案</strong>：</p>
+<ul>
+<li>❌ 定义多个信号（<code>UI_EnemyKilled</code> / <code>Audio_EnemyKilled</code>）→ 维护成本高、调用方需选错</li>
+<li>❌ 所有订阅者全部触发 + 在方法内 <code>if (channel == "UI")</code> → 散落判断、性能浪费</li>
+<li>❌ 用 Dictionary 索引 channel → Udon 不支持 Dictionary</li>
+</ul>
+<p>Sardinal 场景：<code>EnemyKilled</code> 事件需要 4 个模块独立响应（UI / Audio / 成就 / 统计），但每个模块只关心自己那一份。</p>
+<hr>
+<h2 id="udon-constraints-影响">Udon Constraints 影响</h2>
+<table>
+<thead>
+<tr>
+<th>约束</th>
+<th>影响</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>无 <code>Dictionary&#x3C;object, T></code></td>
+<td>无法用 channel 作 key 索引</td>
+</tr>
+<tr>
+<td>无泛型委托</td>
+<td>无法 <code>Action&#x3C;ChannelType></code> 区分</td>
+</tr>
+<tr>
+<td>无运行时类型检查</td>
+<td>频道比较需用 <code>object.Equals</code>（值类型装箱）</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="solution">Solution</h2>
+<p><strong>核心思想</strong>：在 <code>[Subscriber]</code> 特性上加可选的 <code>object Channel</code> 参数，Publish 时可选 <code>WithChannel(...)</code>，运行时按 channel 过滤。</p>
+<h3 id="关键机制">关键机制</h3>
+<h4 id="1-subscriber-特性支持可选-channel">1. Subscriber 特性支持可选 channel</h4>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="csharp"><code><span class="line"><span style="color:#6A737D">// SubscriberAttribute.cs</span></span>
+<span class="line"><span style="color:#E1E4E8">[</span><span style="color:#B392F0">AttributeUsage</span><span style="color:#E1E4E8">(AttributeTargets.Method, </span><span style="color:#B392F0">AllowMultiple</span><span style="color:#F97583"> =</span><span style="color:#79B8FF"> false</span><span style="color:#E1E4E8">, </span><span style="color:#B392F0">Inherited</span><span style="color:#F97583"> =</span><span style="color:#79B8FF"> false</span><span style="color:#E1E4E8">)]</span></span>
+<span class="line"><span style="color:#F97583">public</span><span style="color:#F97583"> sealed</span><span style="color:#F97583"> class</span><span style="color:#B392F0"> SubscriberAttribute</span><span style="color:#E1E4E8"> : </span><span style="color:#B392F0">Attribute</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#F97583">    public</span><span style="color:#F97583"> readonly</span><span style="color:#B392F0"> Type</span><span style="color:#B392F0"> Topic</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">    public</span><span style="color:#F97583"> readonly</span><span style="color:#F97583"> object</span><span style="color:#B392F0"> Channel</span><span style="color:#E1E4E8">;  </span><span style="color:#6A737D">// 可选</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">    public</span><span style="color:#B392F0"> SubscriberAttribute</span><span style="color:#E1E4E8">(</span><span style="color:#B392F0">Type</span><span style="color:#B392F0"> topic</span><span style="color:#E1E4E8">, </span><span style="color:#F97583">object</span><span style="color:#B392F0"> channel</span><span style="color:#F97583"> =</span><span style="color:#79B8FF"> null</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#E1E4E8">        Topic </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> topic;</span></span>
+<span class="line"><span style="color:#E1E4E8">        Channel </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> channel;</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<h4 id="2-subscriber-标记时声明所属-channel">2. Subscriber 标记时声明所属 channel</h4>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="csharp"><code><span class="line"><span style="color:#F97583">public</span><span style="color:#F97583"> class</span><span style="color:#B392F0"> UISystem</span><span style="color:#E1E4E8"> : </span><span style="color:#B392F0">UdonSharpBehaviour</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#E1E4E8">    [</span><span style="color:#B392F0">Subscriber</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">typeof</span><span style="color:#E1E4E8">(</span><span style="color:#B392F0">EnemyKilled</span><span style="color:#E1E4E8">), </span><span style="color:#9ECBFF">"UI"</span><span style="color:#E1E4E8">)]</span></span>
+<span class="line"><span style="color:#F97583">    public</span><span style="color:#F97583"> void</span><span style="color:#B392F0"> OnEnemyKilledUI</span><span style="color:#E1E4E8">(</span><span style="color:#B392F0">Enemy</span><span style="color:#B392F0"> e</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#6A737D">        // 更新血条、击杀计数</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">public</span><span style="color:#F97583"> class</span><span style="color:#B392F0"> AudioSystem</span><span style="color:#E1E4E8"> : </span><span style="color:#B392F0">UdonSharpBehaviour</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#E1E4E8">    [</span><span style="color:#B392F0">Subscriber</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">typeof</span><span style="color:#E1E4E8">(</span><span style="color:#B392F0">EnemyKilled</span><span style="color:#E1E4E8">), </span><span style="color:#9ECBFF">"Audio"</span><span style="color:#E1E4E8">)]</span></span>
+<span class="line"><span style="color:#F97583">    public</span><span style="color:#F97583"> void</span><span style="color:#B392F0"> OnEnemyKilledAudio</span><span style="color:#E1E4E8">(</span><span style="color:#B392F0">Enemy</span><span style="color:#B392F0"> e</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#6A737D">        // 播放击杀音效</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">public</span><span style="color:#F97583"> class</span><span style="color:#B392F0"> UniversalSystem</span><span style="color:#E1E4E8"> : </span><span style="color:#B392F0">UdonSharpBehaviour</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#E1E4E8">    [</span><span style="color:#B392F0">Subscriber</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">typeof</span><span style="color:#E1E4E8">(</span><span style="color:#B392F0">EnemyKilled</span><span style="color:#E1E4E8">)]  </span><span style="color:#6A737D">// 无 channel = 接收所有</span></span>
+<span class="line"><span style="color:#E1E4E8">    public </span><span style="color:#F97583">void</span><span style="color:#B392F0"> OnEnemyKilledUniversal</span><span style="color:#E1E4E8">(Enemy e) {</span></span>
+<span class="line"><span style="color:#6A737D">        // 统计、成就、日志（全部需要）</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<h4 id="3-publish-时可选指定-channel">3. Publish 时可选指定 channel</h4>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="csharp"><code><span class="line"><span style="color:#6A737D">// SignalExtensions.cs: WithChannel</span></span>
+<span class="line"><span style="color:#F97583">public</span><span style="color:#F97583"> static</span><span style="color:#B392F0"> Signal</span><span style="color:#B392F0"> WithChannel</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">this</span><span style="color:#B392F0"> Signal</span><span style="color:#B392F0"> self</span><span style="color:#E1E4E8">, </span><span style="color:#F97583">object</span><span style="color:#B392F0"> channel</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#F97583">    var</span><span style="color:#B392F0"> _self</span><span style="color:#F97583"> =</span><span style="color:#E1E4E8"> (</span><span style="color:#F97583">object</span><span style="color:#E1E4E8">[])(</span><span style="color:#F97583">object</span><span style="color:#E1E4E8">)self;</span></span>
+<span class="line"><span style="color:#E1E4E8">    _self[</span><span style="color:#79B8FF">2</span><span style="color:#E1E4E8">] </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> channel;  </span><span style="color:#6A737D">// 频道存在 _self[2] 槽位</span></span>
+<span class="line"><span style="color:#F97583">    return</span><span style="color:#E1E4E8"> (</span><span style="color:#B392F0">Signal</span><span style="color:#E1E4E8">)(</span><span style="color:#F97583">object</span><span style="color:#E1E4E8">)_self;</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// 调用方</span></span>
+<span class="line"><span style="color:#E1E4E8">signal.</span><span style="color:#B392F0">WithChannel</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"UI"</span><span style="color:#E1E4E8">).</span><span style="color:#B392F0">Publish</span><span style="color:#E1E4E8">(enemy);     </span><span style="color:#6A737D">// 只触发 UI</span></span>
+<span class="line"><span style="color:#E1E4E8">signal.</span><span style="color:#B392F0">Publish</span><span style="color:#E1E4E8">(enemy);                        </span><span style="color:#6A737D">// 触发所有（频道=null 广播）</span></span></code></pre>
+<h4 id="4-运行时过滤核心热路径">4. 运行时过滤（核心热路径）</h4>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="csharp"><code><span class="line"><span style="color:#6A737D">// SardinalShim.Publish</span></span>
+<span class="line"><span style="color:#F97583">for</span><span style="color:#E1E4E8"> (</span><span style="color:#F97583">var</span><span style="color:#B392F0"> i</span><span style="color:#F97583"> =</span><span style="color:#79B8FF"> 0</span><span style="color:#E1E4E8">; i </span><span style="color:#F97583">&#x3C;</span><span style="color:#E1E4E8"> _7[idx]; i</span><span style="color:#F97583">++</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#6A737D">    // 关键：频道匹配检查</span></span>
+<span class="line"><span style="color:#F97583">    if</span><span style="color:#E1E4E8"> (channel </span><span style="color:#F97583">!=</span><span style="color:#79B8FF"> null</span><span style="color:#F97583"> &#x26;&#x26;</span><span style="color:#E1E4E8"> _8[idx][i] </span><span style="color:#F97583">!=</span><span style="color:#79B8FF"> null</span><span style="color:#F97583"> &#x26;&#x26;</span><span style="color:#F97583"> !</span><span style="color:#E1E4E8">_8[idx][i].</span><span style="color:#B392F0">Equals</span><span style="color:#E1E4E8">(channel))</span></span>
+<span class="line"><span style="color:#F97583">        continue</span><span style="color:#E1E4E8">;  </span><span style="color:#6A737D">// channel 不匹配则跳过</span></span>
+<span class="line"><span style="color:#6A737D">    // ... 触发</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<p><strong>过滤逻辑三态</strong>：</p>
+<table>
+<thead>
+<tr>
+<th>发布方 channel</th>
+<th>订阅方 channel</th>
+<th>触发？</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>null</code></td>
+<td><code>null</code></td>
+<td>✅</td>
+<td>广播模式，触发所有</td>
+</tr>
+<tr>
+<td><code>null</code></td>
+<td><code>"UI"</code></td>
+<td>✅</td>
+<td>广播模式也触发有 channel 的</td>
+</tr>
+<tr>
+<td><code>"UI"</code></td>
+<td><code>null</code></td>
+<td>❌</td>
+<td>订阅方未指定 channel = 接收所有，但发布指定 → 实际不匹配？<strong>【待验证】</strong></td>
+</tr>
+<tr>
+<td><code>"UI"</code></td>
+<td><code>"UI"</code></td>
+<td>✅</td>
+<td>精确匹配</td>
+</tr>
+<tr>
+<td><code>"UI"</code></td>
+<td><code>"Audio"</code></td>
+<td>❌</td>
+<td>频道不同</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>⚠️ <strong>第 3 行的语义</strong>：Sardinal 的代码逻辑是 <code>channel != null &#x26;&#x26; _8[idx][i] != null &#x26;&#x26; !Equals(channel)</code> —— 即当<strong>发布方有 channel 但订阅方无 channel</strong> 时，<strong>不会触发</strong>。这是 Sardinal 隐含的设计选择（“无 channel = 不接受定向广播”）。</p>
+</blockquote>
+<hr>
+<h2 id="networking-model">Networking Model</h2>
+<table>
+<thead>
+<tr>
+<th>维度</th>
+<th>取值</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>State Owner</td>
+<td>Publisher 决定 channel</td>
+</tr>
+<tr>
+<td>Source of Truth</td>
+<td>Subscriber 特性 + Publish 时 channel 参数</td>
+</tr>
+<tr>
+<td>Sync Type</td>
+<td>N/A（本地路由）</td>
+</tr>
+<tr>
+<td>Synced Variables</td>
+<td>无（channel 是方法参数，不是状态）</td>
+</tr>
+<tr>
+<td>Mutation Path</td>
+<td>Publisher 调 <code>WithChannel(channel).Publish(...)</code></td>
+</tr>
+<tr>
+<td>Ownership Path</td>
+<td>无（与所有权无关）</td>
+</tr>
+<tr>
+<td>Serialization Path</td>
+<td>无</td>
+</tr>
+<tr>
+<td>Receive Path</td>
+<td>频道匹配 → <code>SetProgramVariable</code> + <code>SendCustomEvent</code></td>
+</tr>
+<tr>
+<td>Late Joiner</td>
+<td>自动（订阅表在 Build 期固定）</td>
+</tr>
+<tr>
+<td>Conflict Strategy</td>
+<td>channel 唯一性（业务约束，框架不强制）</td>
+</tr>
+<tr>
+<td>Bandwidth Budget</td>
+<td>0（纯本地路由）</td>
+</tr>
+<tr>
+<td>Failure Mode</td>
+<td>发布/订阅 channel 字符串不匹配 → 静默失败</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="implementation-sketch">Implementation Sketch</h2>
+<h3 id="简化版单-channel-字段">简化版：单 channel 字段</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="csharp"><code><span class="line"><span style="color:#6A737D">// === Subscriber 特性 ===</span></span>
+<span class="line"><span style="color:#E1E4E8">[</span><span style="color:#B392F0">AttributeUsage</span><span style="color:#E1E4E8">(AttributeTargets.Method)]</span></span>
+<span class="line"><span style="color:#F97583">public</span><span style="color:#F97583"> sealed</span><span style="color:#F97583"> class</span><span style="color:#B392F0"> SubscriberAttribute</span><span style="color:#E1E4E8"> : </span><span style="color:#B392F0">Attribute</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#F97583">    public</span><span style="color:#B392F0"> Type</span><span style="color:#B392F0"> Topic</span><span style="color:#E1E4E8"> { </span><span style="color:#F97583">get</span><span style="color:#E1E4E8">; }</span></span>
+<span class="line"><span style="color:#F97583">    public</span><span style="color:#F97583"> object</span><span style="color:#B392F0"> Channel</span><span style="color:#E1E4E8"> { </span><span style="color:#F97583">get</span><span style="color:#E1E4E8">; }</span></span>
+<span class="line"><span style="color:#F97583">    public</span><span style="color:#B392F0"> SubscriberAttribute</span><span style="color:#E1E4E8">(</span><span style="color:#B392F0">Type</span><span style="color:#B392F0"> topic</span><span style="color:#E1E4E8">, </span><span style="color:#F97583">object</span><span style="color:#B392F0"> channel</span><span style="color:#F97583"> =</span><span style="color:#79B8FF"> null</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#E1E4E8">        Topic </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> topic; Channel </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> channel;</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// === Signal 类 ===</span></span>
+<span class="line"><span style="color:#F97583">public</span><span style="color:#F97583"> class</span><span style="color:#B392F0"> Signal</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#F97583">    string</span><span style="color:#B392F0"> topic</span><span style="color:#E1E4E8">;        </span><span style="color:#6A737D">// MD5 hash</span></span>
+<span class="line"><span style="color:#F97583">    object</span><span style="color:#B392F0"> channel</span><span style="color:#E1E4E8">;      </span><span style="color:#6A737D">// 可选频道</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">    public</span><span style="color:#B392F0"> Signal</span><span style="color:#B392F0"> WithChannel</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">object</span><span style="color:#B392F0"> ch</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#F97583">        var</span><span style="color:#B392F0"> s</span><span style="color:#F97583"> =</span><span style="color:#F97583"> new</span><span style="color:#B392F0"> Signal</span><span style="color:#E1E4E8"> { topic </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> topic, channel </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> ch };</span></span>
+<span class="line"><span style="color:#F97583">        return</span><span style="color:#E1E4E8"> s;</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">    public</span><span style="color:#F97583"> void</span><span style="color:#B392F0"> Publish</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">params</span><span style="color:#F97583"> object</span><span style="color:#E1E4E8">[] </span><span style="color:#B392F0">args</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#6A737D">        // 1. 找匹配 topic 的订阅者</span></span>
+<span class="line"><span style="color:#F97583">        var</span><span style="color:#B392F0"> subscribers</span><span style="color:#F97583"> =</span><span style="color:#B392F0"> GetSubscribers</span><span style="color:#E1E4E8">(topic);</span></span>
+<span class="line"><span style="color:#6A737D">        // 2. 频道过滤</span></span>
+<span class="line"><span style="color:#F97583">        foreach</span><span style="color:#E1E4E8"> (</span><span style="color:#F97583">var</span><span style="color:#B392F0"> sub</span><span style="color:#F97583"> in</span><span style="color:#E1E4E8"> subscribers) {</span></span>
+<span class="line"><span style="color:#F97583">            if</span><span style="color:#E1E4E8"> (channel </span><span style="color:#F97583">!=</span><span style="color:#79B8FF"> null</span><span style="color:#F97583"> &#x26;&#x26;</span><span style="color:#E1E4E8"> sub.Channel </span><span style="color:#F97583">!=</span><span style="color:#79B8FF"> null</span><span style="color:#F97583"> &#x26;&#x26;</span><span style="color:#F97583"> !</span><span style="color:#E1E4E8">sub.Channel.</span><span style="color:#B392F0">Equals</span><span style="color:#E1E4E8">(channel))</span></span>
+<span class="line"><span style="color:#F97583">                continue</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#6A737D">            // 3. 触发</span></span>
+<span class="line"><span style="color:#E1E4E8">            sub.Target.</span><span style="color:#B392F0">SetProgramVariable</span><span style="color:#E1E4E8">(sub.ParamSymbol, args[</span><span style="color:#79B8FF">0</span><span style="color:#E1E4E8">]);</span></span>
+<span class="line"><span style="color:#E1E4E8">            sub.Target.</span><span style="color:#B392F0">SendCustomEvent</span><span style="color:#E1E4E8">(sub.MethodSymbol);</span></span>
+<span class="line"><span style="color:#E1E4E8">        }</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// === 使用 ===</span></span>
+<span class="line"><span style="color:#E1E4E8">[</span><span style="color:#B392F0">Subscriber</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">typeof</span><span style="color:#E1E4E8">(</span><span style="color:#B392F0">EnemyKilled</span><span style="color:#E1E4E8">), </span><span style="color:#9ECBFF">"UI"</span><span style="color:#E1E4E8">)]</span></span>
+<span class="line"><span style="color:#F97583">public</span><span style="color:#F97583"> void</span><span style="color:#B392F0"> OnUI</span><span style="color:#E1E4E8">(</span><span style="color:#B392F0">Enemy</span><span style="color:#B392F0"> e</span><span style="color:#E1E4E8">) { </span><span style="color:#6A737D">/* ... */</span><span style="color:#E1E4E8"> }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">signal.</span><span style="color:#B392F0">WithChannel</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"UI"</span><span style="color:#E1E4E8">).</span><span style="color:#B392F0">Publish</span><span style="color:#E1E4E8">(enemy);  </span><span style="color:#6A737D">// 只触发 UI</span></span>
+<span class="line"><span style="color:#E1E4E8">signal.</span><span style="color:#B392F0">Publish</span><span style="color:#E1E4E8">(enemy);                     </span><span style="color:#6A737D">// 触发所有</span></span></code></pre>
+<hr>
+<h2 id="when-to-use">When To Use</h2>
+<p>✅ <strong>适用</strong>：</p>
+<ul>
+<li>同一事件需多模块差异化响应（UI / Audio / Network / 成就）</li>
+<li>模块边界清晰，channel 名稳定</li>
+<li>频道数 ≤ 5-10（避免 hardcode 维护）</li>
+</ul>
+<p>❌ <strong>不适用</strong>：</p>
+<ul>
+<li>频道数 > 20 → 考虑拆成多个 Signal</li>
+<li>频道内容是动态数据（如 <code>playerId</code>）→ 改用 <code>object</code> 引用（值类型会装箱）</li>
+<li>频道需要运行时注册 → Udon 反射限制做不到</li>
+</ul>
+<hr>
+<h2 id="频道命名规范建议">频道命名规范建议</h2>
+<table>
+<thead>
+<tr>
+<th>模式</th>
+<th>示例</th>
+<th>适用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>字符串常量</strong></td>
+<td><code>"UI"</code> / <code>"Audio"</code></td>
+<td>简单场景，编译期固定</td>
+</tr>
+<tr>
+<td><strong>类引用</strong></td>
+<td><code>typeof(UISystem)</code></td>
+<td>类型安全，编译期检查</td>
+</tr>
+<tr>
+<td><strong>枚举</strong></td>
+<td><code>Channel.UI</code></td>
+<td>受 Udon Enum 限制（见 always-load Enum 5 陷阱）</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Sardinal 用字符串</strong> —— 因为 Udon Enum 有 5 大陷阱（ToString 输出数字、cast 不能与操作符写一起等），字符串是最稳的选择。</p>
+<hr>
+<h2 id="性能开销">性能开销</h2>
+<table>
+<thead>
+<tr>
+<th>阶段</th>
+<th>开销</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>编译期</td>
+<td>频道字符串存入 SubscriberSchema</td>
+</tr>
+<tr>
+<td>Publish 时</td>
+<td>1 次 <code>object.Equals</code> / 订阅者（值类型装箱 1 次）</td>
+</tr>
+<tr>
+<td>内存</td>
+<td>每订阅者多 1 个 <code>object Channel</code> 引用（4-8 字节）</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>对比全触发</strong>：100 订阅者中只有 10 个匹配 channel → 节省 90 次 <code>SetProgramVariable</code> + <code>SendCustomEvent</code>（~5-10 µs / 次）</p>
+</blockquote>
+<hr>
+<h2 id="关键约束">关键约束</h2>
+<table>
+<thead>
+<tr>
+<th>约束</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>频道比较是 <code>object.Equals</code></strong></td>
+<td>值类型（int / enum）会装箱，慢 5-10 倍</td>
+</tr>
+<tr>
+<td><strong>频道字符串硬编码</strong></td>
+<td>typo 不会编译期报错（运行时静默失败）</td>
+</tr>
+<tr>
+<td><strong>频道语义不对称</strong></td>
+<td>发布方有 channel + 订阅方无 channel = 不触发（Sardinal 设计）</td>
+</tr>
+<tr>
+<td><strong>无 channel 冲突检查</strong></td>
+<td>多个 Subscriber 用同 channel 是合法的</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="项目实例">项目实例</h2>
+<table>
+<thead>
+<tr>
+<th>项目</th>
+<th>用法</th>
+<th>变体</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Sardinal</strong></td>
+<td><code>object Channel</code> + <code>WithChannel(...)</code> + <code>object.Equals</code> 过滤</td>
+<td>完整</td>
+</tr>
+<tr>
+<td>自建轻量 Pub/Sub</td>
+<td>字符串 channel + Dictionary（仅非 Udon）</td>
+<td>简化</td>
+</tr>
+<tr>
+<td>业务硬编码</td>
+<td><code>if (moduleType == "UI")</code> 写在 Subscriber 内</td>
+<td>❌ 反例</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="关联文档">关联文档</h2>
+<ul>
+<li><code>memory/sources/sardinal.md</code> — 项目溯源</li>
+<li><code>memory/patterns/inherited-subscriber.md</code> — 配套基类继承</li>
+<li><code>memory/patterns/hybrid-subscription-modes.md</code> — 配套双订阅模式</li>
+<li><code>memory/patterns/slot-parameter-passing.md</code> — 配套参数传递（16 重载）</li>
+<li><code>memory/FACT.md</code> § Sardinal</li>
+</ul> </div> <p class="kb-source-note" data-astro-cid-lvjzyg5v>
+本文由 VRChat 开发知识库自动整理（社区整理  · 可信度 High  · 最后校对 2026-06-20），
+          遇到与手写教程冲突的地方，以官方文档为最高优先级。
+</p> <section class="comments" id="comments" data-astro-cid-lvjzyg5v> <h2 class="comments__title" data-astro-cid-lvjzyg5v>✦ 旅人留言（0）</h2> <p class="comments__empty" id="commentsEmpty" data-astro-cid-lvjzyg5v>
+还没有旅人留言 —— 有疑问就写在下面，站长都会回复。
+</p> <form class="comment-form" id="commentForm" data-target="kb-concepts-patterns-channel-routing" data-astro-cid-lvjzyg5v> <p class="comment-form__title" data-astro-cid-lvjzyg5v>写下你的留言</p> <input id="cAuthor" maxlength="20" placeholder="昵称（留空则为「旅人」）" data-astro-cid-lvjzyg5v> <textarea id="cBody" maxlength="1000" required placeholder="想问的问题、想说的感谢都可以（最多 1000 字）" data-astro-cid-lvjzyg5v></textarea> <div class="comment-form__actions" data-astro-cid-lvjzyg5v> <button class="btn btn--primary" type="submit" data-astro-cid-lvjzyg5v>发布留言</button> <span class="form-hint" data-astro-cid-lvjzyg5v>留言保存在本站，站长在写作台里能看到</span> <span class="form-msg" id="cMsg" data-astro-cid-lvjzyg5v></span> </div> </form> </section> <nav class="station-nav" aria-label="站间导航" data-astro-cid-lvjzyg5v> <a href="/STELLASTOPVRC/posts/kb-concepts-patterns-bit-packed-flags/" data-astro-cid-lvjzyg5v> <span class="dir" data-astro-cid-lvjzyg5v>← 上一站 · 更新的星光</span> <span class="to" data-astro-cid-lvjzyg5v>Bit-Packed Flags</span> </a> <a href="/STELLASTOPVRC/posts/kb-concepts-patterns-code-generation-type-erasure/" data-astro-cid-lvjzyg5v> <span class="dir" data-astro-cid-lvjzyg5v>下一站 · 更早的星光 →</span> <span class="to" data-astro-cid-lvjzyg5v>Code Generation with Type Erasure (代码生成 + 类型擦除)</span> </a> </nav> </div> <aside class="toc" id="toc" hidden> <p class="toc__title">✦ 本页星图</p> <nav id="tocNav" aria-label="文章目录"></nav> </aside> <script type="module">const i=document.querySelector(".prose"),d=document.getElementById("toc"),u=document.getElementById("tocNav"),l=[];if(i&&d&&u){const c=[...i.querySelectorAll("h1, h2, h3")];if(c.length>=3){d.hidden=!1,c.forEach((o,e)=>{o.id||(o.id=`sec-${e}`);const n=document.createElement("a");n.href=`#${o.id}`;const s=(o.textContent??"").replace(/\s+/g," ").trim(),r=s.search(/[：:]/),a=r>=4?s.slice(0,r):s;n.textContent=a.length>40?`${a.slice(0,40)}…`:a,n.title=s,u.appendChild(n),l.push({a:n,h:o})});const t=()=>{let o=l[0];for(const e of l)e.h.getBoundingClientRect().top<=130&&(o=e);for(const e of l)e.a.classList.toggle("is-active",e===o)};addEventListener("scroll",t,{passive:!0}),t()}}document.querySelectorAll(".prose pre").forEach(c=>{const t=document.createElement("button");t.className="code-copy",t.type="button",t.textContent="复制",t.addEventListener("click",async()=>{const o=c.querySelector("code")?.innerText??c.innerText;try{await navigator.clipboard.writeText(o)}catch{const e=document.createElement("textarea");e.value=o,document.body.appendChild(e),e.select(),document.execCommand("copy"),e.remove()}t.textContent="已复制 ✓",t.classList.add("is-ok"),setTimeout(()=>{t.textContent="复制",t.classList.remove("is-ok")},1500)}),c.appendChild(t)});</script> </article>  </main> <footer class="site-footer"> <div class="wrap"> <p class="star-line" aria-hidden="true"> <svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> <svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> </p> <p>星之驿站 StellaStop —— 在虚拟宇宙中，为你保留一座驿站</p> <p class="site-footer__disclaimer">
+该网页目前是测试阶段，仅用于测试，所有内容仅供参考；内容全部为引用互联网当中的信息。
+</p> <p>© 2026 星之驿站 · 由 <a href="https://astro.build">Astro</a> 与星光驱动</p> <p> <a data-desk-login hidden title="写作台：登录 / 注册">登录 / 注册</a> ·
+<a href="/STELLASTOPVRC/announcements/">官方公告</a> ·
+<a href="/STELLASTOPVRC/ai/">问星 AI</a> ·
+<a href="/STELLASTOPVRC/feedback/">旅人留言板</a> </p> </div> </footer> <button class="to-top" id="toTop" aria-label="回到顶部"> <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"> <path d="M12 20V5"></path> <path d="M5.5 11.5 12 5l6.5 6.5"></path> </svg> </button> <script type="module">const e=document.getElementById("toTop");if(e){const t=()=>e.classList.toggle("is-visible",scrollY>480);addEventListener("scroll",t,{passive:!0}),t(),e.addEventListener("click",()=>{const o=matchMedia("(prefers-reduced-motion: reduce)").matches;scrollTo({top:0,behavior:o?"auto":"smooth"})})}</script> <script>(function(){const deskConfigured = "";
+
+      /* 写作台探测（页面尾部执行，DOM 已就绪）：
+         1. 计算写作台地址：站点配置 deskUrl（公网部署时填）> 本机默认 localhost:4322 > 同主机 4322
+         2. 探测 /api/gate/status —— 在线才点亮「登录 / 注册」入口，并复用给验证门横幅
+         3. 不在线则保持隐藏，绝不会把访客拽进内网地址；同时给出一次性「镜像模式」提示 */
+      (function () {
+        var host = location.hostname;
+        var isLocal = host === 'localhost' || host === '127.0.0.1' || host === '[::1]';
+        var desk = deskConfigured ||
+          (isLocal ? 'http://localhost:4322' : location.protocol + '//' + host + ':4322');
+        window.STELLA_DESK = desk;
+
+        function revealLogin() {
+          document.querySelectorAll('[data-desk-login]').forEach(function (a) {
+            a.href = desk + '/admin';
+            a.removeAttribute('hidden');
+          });
+        }
+        function showBanner(css, html, shiftHeader) {
+          var bar = document.createElement('div');
+          bar.style.cssText = css;
+          bar.innerHTML = html;
+          document.body.prepend(bar);
+          if (shiftHeader) {
+            var header = document.querySelector('.site-header');
+            if (header) header.style.marginTop = '42px';
+          }
+        }
+        function hintMirrorMode() {
+          try {
+            if (sessionStorage.getItem('stella-desk-hint')) return;
+            sessionStorage.setItem('stella-desk-hint', '1');
+          } catch (e) { /* 无痕模式等：忽略 */ }
+          var tip = document.createElement('div');
+          tip.style.cssText = 'position:fixed;left:14px;bottom:14px;z-index:9998;max-width:min(92vw,430px);padding:.65rem .9rem;border-radius:12px;background:rgba(18,20,44,.92);border:1px solid rgba(150,142,255,.35);color:#e8e6ff;font-size:.82rem;line-height:1.6;font-family:system-ui,sans-serif;box-shadow:0 8px 30px rgba(0,0,0,.35)';
+          tip.innerHTML = 'ℹ️ 静态镜像模式：登录 / 评论 / AI 等互动功能需要站长写作台在线，当前不可用。' +
+            '<span id="stellaDeskHintClose" style="float:right;cursor:pointer;opacity:.75;font-weight:700;margin-left:.6rem" title="关闭">×</span>';
+          document.body.appendChild(tip);
+          var close = function () { tip.remove(); };
+          tip.querySelector('#stellaDeskHintClose').addEventListener('click', close);
+          setTimeout(close, 9000);
+        }
+
+        try {
+          var ctrl = new AbortController();
+          var timer = setTimeout(function () { ctrl.abort(); }, 2500);
+          fetch(desk + '/api/gate/status', { credentials: 'include', signal: ctrl.signal })
+            .then(function (r) { return r.ok ? r.json() : null; })
+            .then(function (d) {
+              clearTimeout(timer);
+              if (!d) throw new Error('desk-offline');
+              window.STELLA_DESK_OK = true;
+              revealLogin();
+              if (d.regionBlocked) {
+                showBanner(
+                  'position:fixed;top:0;left:0;right:0;z-index:9999;padding:1.2rem;text-align:center;background:#1a0a0a;color:#ff9ed2;font-size:.95rem;border-bottom:2px solid #ff4d6d;font-family:system-ui,sans-serif',
+                  '⛔ 你所在的地区（' + (d.regionCountry || '未知') + '）暂不开放访问。',
+                  false
+                );
+                return;
+              }
+              if (d.enabled && !d.passed) {
+                showBanner(
+                  'position:fixed;top:0;left:0;right:0;z-index:9999;padding:0.7rem;text-align:center;background:linear-gradient(94deg,rgba(143,127,247,.25),rgba(98,200,245,.18));border-bottom:1px solid rgba(150,142,255,.3);color:#f0efff;font-size:.88rem;font-family:system-ui,sans-serif',
+                  '🔒 本站启用了安全验证 —— <a href="' + desk + '/gate?next=' + encodeURIComponent(location.href) + '" style="color:#ffd98e;font-weight:700;text-decoration:underline">点击完成验证</a>，通过后即可使用全部功能（30 天免验）。',
+                  true
+                );
+              }
+            })
+            .catch(function () {
+              clearTimeout(timer);
+              window.STELLA_DESK_OK = false;
+              hintMirrorMode();
+            });
+        } catch (e) { /* 忽略 */ }
+      })();
+    })();</script> </body> </html> <script type="module">const m=document.getElementById("commentForm"),s=document.getElementById("cMsg"),u=`${location.protocol}//${location.hostname}:4322/api/message`;function r(e,t=!1){s&&(s.textContent=e,s.classList.toggle("is-err",t),s.classList.toggle("is-ok",!t))}function y(){const e=new Date,t=n=>String(n).padStart(2,"0");return`${e.getFullYear()}-${t(e.getMonth()+1)}-${t(e.getDate())}`}function f(e){let t=7;for(const n of e)t=(t*31+n.charCodeAt(0))%360;return t}function g(e,t){const n=document.createElement("li");n.className="comment",n.innerHTML=`
+      <span class="comment__avatar"></span>
+      <div class="comment__bubble">
+        <div class="comment__head">
+          <span class="comment__name"></span>
+          <time class="comment__date">${y()}</time>
+        </div>
+        <p class="comment__body"></p>
+      </div>`;const o=n.querySelector(".comment__avatar");return o.style.setProperty("--h",String(f(e))),o.textContent=e.slice(0,1),n.querySelector(".comment__name").textContent=e,n.querySelector(".comment__body").textContent=t,n}m?.addEventListener("submit",async e=>{e.preventDefault();const t=document.getElementById("cBody").value.trim();if(!t)return r("留言内容不能为空哦",!0);const n=document.getElementById("cAuthor").value.trim()||"旅人",o=m.querySelector("button");o&&(o.disabled=!0);try{const c=await fetch(u,{credentials:"include",method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({target:m.dataset.target,kind:"comment",author:n,body:t})}),d=await c.json().catch(()=>({}));if(!c.ok)throw new Error(d.error||`发送失败（${c.status}）`);const l=document.querySelector(".comment-list");l&&l.appendChild(g(n,t)),document.getElementById("commentsEmpty")?.remove(),document.getElementById("cBody").value="",r("留言已发布，感谢支持 ✦");const a=document.querySelector(".comments__title"),i=a?.textContent?.match(/（(\d+)）/);a&&i&&(a.textContent=a.textContent.replace(/（\d+）/,`（${Number(i[1])+1}）`))}catch(c){r(c instanceof TypeError?"写作台没在运行，暂时收不到留言 —— 双击「启动博客.bat」就好":c.message,!0)}finally{o&&(o.disabled=!1)}});</script> 

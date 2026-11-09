@@ -1,0 +1,539 @@
+<!DOCTYPE html><html lang="zh-CN"> <head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="generator" content="Astro v5.18.2"><meta name="description" content="Persistence(持久化)允许 World 保存玩家的高分、物品栏、最后位置、货币、解锁内容、偏好设置等。当玩家离开 World 后再回来,Udon 仍能访问他们保存的数据。"><meta name="theme-color" content="#070a1c"><meta property="og:title" content="Persistence 实战教程 - 索引 · 星之驿站 StellaStop"><meta property="og:description" content="Persistence(持久化)允许 World 保存玩家的高分、物品栏、最后位置、货币、解锁内容、偏好设置等。当玩家离开 World 后再回来,Udon 仍能访问他们保存的数据。"><meta property="og:type" content="website"><meta name="twitter:card" content="summary"><link rel="icon" type="image/svg+xml" href="/STELLASTOPVRC/favicon.svg"><script>
+      // 在渲染前恢复主题与特效档位，避免闪一下默认状态
+      try {
+        document.documentElement.dataset.theme =
+          localStorage.getItem('stella-theme') || 'nebula';
+        document.documentElement.dataset.fx =
+          localStorage.getItem('stella-fx') || 'standard';
+      } catch {
+        /* 隐私模式读不到就算了 */
+      }
+    </script><link rel="stylesheet" href="/STELLASTOPVRC/custom-vars.css"><title>Persistence 实战教程 - 索引 · 星之驿站 StellaStop</title><link rel="stylesheet" href="/STELLASTOPVRC/_astro/about.Bgh6wcGl.css">
+<style>.post-head__meta[data-astro-cid-lvjzyg5v]{color:var(--ink-faint);font-family:var(--font-mono);font-size:.82rem}.post-head[data-astro-cid-lvjzyg5v] .chip-row[data-astro-cid-lvjzyg5v]{margin-top:1rem}.kb-source-note[data-astro-cid-lvjzyg5v]{max-width:760px;margin:2.2rem auto 0;font-size:.82rem;color:var(--ink-faint);border-top:1px dashed var(--line);padding-top:1rem}
+</style></head> <body> <div class="site-notice" id="siteNotice"> <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> <span class="site-notice__text">欢迎来到星之驿站！</span> <button class="site-notice__close" id="noticeClose" type="button" aria-label="关闭公告">
+×
+</button> </div> <a class="skip-link" href="#main">跳到主要内容</a> <canvas id="starfield" aria-hidden="true" data-astro-cid-ra7sfcwn></canvas> <div class="fx-aurora fx-aurora--a" aria-hidden="true" data-astro-cid-ra7sfcwn></div> <div class="fx-aurora fx-aurora--b" aria-hidden="true" data-astro-cid-ra7sfcwn></div>  <script type="module">const u=document.getElementById("starfield");if(u){let F=function(){const n=Math.random();return n<.1?"gold":n<.42?"blue":"white"},v=function(){const n=Math.min(window.devicePixelRatio||1,2);s=window.innerWidth,d=window.innerHeight,u.width=s*n,u.height=d*n,u.style.width=`${s}px`,u.style.height=`${d}px`,t.setTransform(n,0,0,n,0,0);const e=Math.min(190,Math.round(s*d/8500));l=Array.from({length:e},()=>({x:Math.random()*s,y:Math.random()*d,r:r(.4,1.7),base:r(.25,.8),amp:r(.12,.4),speed:r(6e-4,.0022),phase:r(0,Math.PI*2),c:F()})),C=Array.from({length:26},()=>({x:Math.random()*s,y:Math.random()*d,r:r(.9,2.4),vx:r(-.006,.006),vy:r(-.02,-.006),base:r(.2,.5),speed:r(8e-4,.002),phase:r(0,Math.PI*2),c:Math.random()<.5?"gold":"violet"})),c==="off"&&m(0,!0)},D=function(n){const e=Math.random()<.5?1:-1,o=r(Math.PI/7,Math.PI/5),a=r(.45,.75);y.push({x:r(s*.15,s*.85),y:r(-20,d*.3),vx:Math.cos(o)*a*e,vy:Math.sin(o)*a,born:n,life:r(750,1050),len:r(100,170)})},S=function(n){y=y.filter(e=>n-e.born<e.life);for(const e of y){const o=(n-e.born)/e.life,a=e.x+e.vx*(n-e.born),i=e.y+e.vy*(n-e.born),f=o<.15?o/.15:o>.7?(1-o)/.3:1,h=Math.hypot(e.vx,e.vy),x=e.vx/h,g=e.vy/h,b=t.createLinearGradient(a,i,a-x*e.len,i-g*e.len);b.addColorStop(0,`rgba(236,242,255,${(.85*f).toFixed(3)})`),b.addColorStop(1,"rgba(236,242,255,0)"),t.strokeStyle=b,t.lineWidth=1.6,t.lineCap="round",t.beginPath(),t.moveTo(a,i),t.lineTo(a-x*e.len,i-g*e.len),t.stroke()}},B=function(){let o=0;t.lineWidth=.7;for(let a=0;a<l.length&&o<26;a++)for(let i=a+1;i<l.length&&o<26;i++){const f=l[a].x-l[i].x,h=l[a].y-l[i].y,x=f*f+h*h;if(x<16900){const g=(1-Math.sqrt(x)/130)*.17;t.strokeStyle=`rgba(178,170,255,${g.toFixed(3)})`,t.beginPath(),t.moveTo(l[a].x,l[a].y),t.lineTo(l[i].x,l[i].y),t.stroke(),o++}}},X=function(n){for(const e of C){e.x+=e.vx*16,e.y+=e.vy*16,e.y<-12&&(e.y=d+10),e.x<-12&&(e.x=s+10),e.x>s+12&&(e.x=-10);const o=Math.max(.05,e.base+.25*Math.sin(n*e.speed+e.phase)),[a,i,f]=A[e.c];t.beginPath(),t.arc(e.x,e.y,e.r,0,7),t.shadowBlur=9,t.shadowColor=`rgba(${a},${i},${f},0.9)`,t.fillStyle=`rgba(${a},${i},${f},${o.toFixed(3)})`,t.fill()}t.shadowBlur=0},m=function(n,e=!1){t.clearRect(0,0,s,d);for(const o of l){const a=c==="off"?o.base:Math.max(.05,o.base+o.amp*Math.sin(n*o.speed+o.phase)),[i,f,h]=A[o.c];t.beginPath(),t.arc(o.x,o.y,o.r,0,7),o.r>1.25?(t.shadowBlur=7,t.shadowColor=`rgba(${i},${f},${h},0.85)`):t.shadowBlur=0,t.fillStyle=`rgba(${i},${f},${h},${a.toFixed(3)})`,t.fill()}if(t.shadowBlur=0,c!=="off"&&!e){c==="fancy"&&(B(),X(n));const o=c==="fancy"?r(2600,6e3):r(4200,9500);n>P&&(D(n),P=n+o),S(n)}},$=function(n){m(n),M=requestAnimationFrame($)},p=function(){if(c==="off"){m(0,!0);return}cancelAnimationFrame(M),M=requestAnimationFrame($)},w=function(){cancelAnimationFrame(M),t.clearRect(0,0,s,d),m(0,!0)};const t=u.getContext("2d"),k=matchMedia("(prefers-reduced-motion: reduce)").matches,A={white:[240,240,255],blue:[150,215,250],gold:[255,218,150],violet:[178,170,255]};let s=0,d=0,l=[],C=[],y=[],P=2500,M=0,c=document.documentElement.dataset.fx||"standard";k&&(c="off");const r=(n,e)=>n+Math.random()*(e-n);v(),addEventListener("resize",v),document.addEventListener("stella-fx-change",n=>{c=n.detail,c==="off"?w():p()}),c==="off"?m(0,!0):(p(),document.addEventListener("visibilitychange",()=>{document.hidden?w():p()}))}</script> <header class="site-header"> <div class="wrap site-header__inner"> <a class="logo" href="/STELLASTOPVRC/"> <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> <span>星之驿站</span> <span class="logo__romaji">StellaStop</span> </a> <div class="header-right"> <nav class="site-nav" aria-label="站内导航"> <a href="/STELLASTOPVRC/"> 首页 </a><a href="/STELLASTOPVRC/start/"> 新手 </a><a href="/STELLASTOPVRC/posts/"> 教程 </a><a href="/STELLASTOPVRC/videos/"> 视频 </a><a href="/STELLASTOPVRC/resources/"> 资源 </a><a href="/STELLASTOPVRC/booth/"> Booth </a><a href="/STELLASTOPVRC/announcements/"> 公告 </a><a href="/STELLASTOPVRC/ai/"> 问星 </a><a href="/STELLASTOPVRC/changelog/"> 更新日志 </a><a href="/STELLASTOPVRC/about/"> 关于 </a> </nav> <a class="login-link" data-desk-login hidden title="写作台：登录 / 注册后可发教程、传资源">
+登录 / 注册
+</a> <div class="theme-switch"> <button class="theme-switch__btn" id="themeBtn" type="button" aria-haspopup="listbox" aria-expanded="false" aria-label="切换主题配色" title="切换主题配色"> <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"> <path d="M12 3a9 9 0 1 0 9 9c0-1.2-1-2-2.2-2H17a2 2 0 0 1-2-2V6.2C15 5 14.2 4 13 4.4A9 9 0 0 0 12 3Z"></path> <circle cx="7.5" cy="11.5" r="1" fill="currentColor" stroke="none"></circle> <circle cx="10" cy="7.5" r="1" fill="currentColor" stroke="none"></circle> <circle cx="15" cy="7" r="1" fill="currentColor" stroke="none"></circle> </svg> </button> <div class="theme-pop" id="themePop" role="listbox" aria-label="选择主题" hidden> <button class="theme-opt" type="button" role="option" data-theme-value="nebula" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#8f7ff7"></span><span class="dot" style="background:#62c8f5"></span><span class="dot" style="background:#ffd98e"></span> </span> <span class="theme-opt__name">星云 · 蓝紫</span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt" type="button" role="option" data-theme-value="sakura" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#ff8fc7"></span><span class="dot" style="background:#c79bff"></span><span class="dot" style="background:#ffd08e"></span> </span> <span class="theme-opt__name">樱语 · 粉紫</span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt" type="button" role="option" data-theme-value="miku" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#2ed3c2"></span><span class="dot" style="background:#6ea8ff"></span><span class="dot" style="background:#ffe08e"></span> </span> <span class="theme-opt__name">葱色 · 青绿</span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt" type="button" role="option" data-theme-value="ember" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#ffb35c"></span><span class="dot" style="background:#ff7e6b"></span><span class="dot" style="background:#ffd98e"></span> </span> <span class="theme-opt__name">暮金 · 暖橙</span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt" type="button" role="option" data-theme-value="dawn" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#6a5ce8"></span><span class="dot" style="background:#e0568f"></span><span class="dot" style="background:#b8821e"></span> </span> <span class="theme-opt__name">晨星 · 浅色</span> <span class="theme-opt__mark">✦</span> </button> </div> </div> <script type="module">const a=document.getElementById("themeBtn"),n=document.getElementById("themePop");function s(c){document.documentElement.dataset.theme=c;try{localStorage.setItem("stella-theme",c)}catch{}const e=getComputedStyle(document.documentElement).getPropertyValue("--bg-deep").trim();document.querySelector('meta[name="theme-color"]')?.setAttribute("content",e||"#070a1c"),document.querySelectorAll(".theme-opt").forEach(t=>{const d=t.dataset.themeValue===c;t.classList.toggle("is-active",d),t.setAttribute("aria-selected",String(d))})}if(a&&n){const c=document.documentElement.dataset.theme||"nebula";document.querySelectorAll(".theme-opt").forEach(e=>{const t=e.dataset.themeValue===c;e.classList.toggle("is-active",t),e.setAttribute("aria-selected",String(t))}),a.addEventListener("click",e=>{e.stopPropagation();const t=n.hidden;n.hidden=!t,a.setAttribute("aria-expanded",String(t))}),document.addEventListener("click",e=>{!n.hidden&&!e.target.closest(".theme-switch")&&(n.hidden=!0,a.setAttribute("aria-expanded","false"))}),document.addEventListener("keydown",e=>{e.key==="Escape"&&!n.hidden&&(n.hidden=!0,a.setAttribute("aria-expanded","false"),a.focus())}),n.addEventListener("click",e=>{const t=e.target.closest(".theme-opt");t&&(s(t.dataset.themeValue??"nebula"),n.hidden=!0,a.setAttribute("aria-expanded","false"))})}</script> <div class="theme-switch fx-switch"> <button class="theme-switch__btn" id="fxBtn" type="button" aria-haspopup="listbox" aria-expanded="false" aria-label="背景特效设置" title="背景特效设置"> <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"> <path d="M5 3v4M3 5h4M6.5 17.5v3M5 19h3"></path> <path d="M14.5 4.5 16 9l4.5 1.5L16 12l-1.5 4.5L13 12l-4.5-1.5L13 9l1.5-4.5Z"></path> </svg> </button> <div class="theme-pop" id="fxPop" role="listbox" aria-label="背景特效" hidden> <button class="theme-opt fx-opt" type="button" role="option" data-fx-value="off" aria-selected="false"> <span class="fx-opt__body"> <span class="fx-opt__name">关闭特效</span> <span class="fx-opt__hint">最省电</span> </span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt fx-opt" type="button" role="option" data-fx-value="standard" aria-selected="false"> <span class="fx-opt__body"> <span class="fx-opt__name">标准</span> <span class="fx-opt__hint">闪烁星空 + 流星</span> </span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt fx-opt" type="button" role="option" data-fx-value="fancy" aria-selected="false"> <span class="fx-opt__body"> <span class="fx-opt__name">华丽</span> <span class="fx-opt__hint">追加极光 / 星座 / 光尘</span> </span> <span class="theme-opt__mark">✦</span> </button> </div> </div> <script type="module">const n=document.getElementById("fxBtn"),a=document.getElementById("fxPop");function s(d){document.documentElement.dataset.fx=d;try{localStorage.setItem("stella-fx",d)}catch{}document.querySelectorAll("#fxPop .fx-opt").forEach(t=>{const e=t.dataset.fxValue===d;t.classList.toggle("is-active",e),t.setAttribute("aria-selected",String(e))}),document.dispatchEvent(new CustomEvent("stella-fx-change",{detail:d}))}if(n&&a){const d=document.documentElement.dataset.fx||"standard";document.querySelectorAll("#fxPop .fx-opt").forEach(t=>{const e=t.dataset.fxValue===d;t.classList.toggle("is-active",e),t.setAttribute("aria-selected",String(e))}),n.addEventListener("click",t=>{t.stopPropagation();const e=a.hidden;a.hidden=!e,n.setAttribute("aria-expanded",String(e))}),document.addEventListener("click",t=>{!a.hidden&&!t.target.closest(".fx-switch")&&(a.hidden=!0,n.setAttribute("aria-expanded","false"))}),document.addEventListener("keydown",t=>{t.key==="Escape"&&!a.hidden&&(a.hidden=!0,n.setAttribute("aria-expanded","false"),n.focus())}),a.addEventListener("click",t=>{const e=t.target.closest(".fx-opt");e&&(s(e.dataset.fxValue??"standard"),a.hidden=!0,n.setAttribute("aria-expanded","false"))})}</script> </div> </div> </header> <main id="main">  <article class="wrap post-layout" data-astro-cid-lvjzyg5v> <div class="post-main page-fade" data-astro-cid-lvjzyg5v> <header class="post-head" data-astro-cid-lvjzyg5v> <a class="crumb" href="/STELLASTOPVRC/posts/" data-astro-cid-lvjzyg5v>← 返回教程档案</a> <div class="post-head__meta" style="--accent:var(--ink-dim)" data-astro-cid-lvjzyg5v> <span class="badge" data-cat="Udon 世界编程" data-astro-cid-lvjzyg5v>Udon 世界编程</span> <time datetime="2026-06-21" data-astro-cid-lvjzyg5v>2026-06-21</time> <span class="post-head__reading" data-astro-cid-lvjzyg5v>⏱ 约 17 分钟</span>  </div> <h1 class="post-head__title" data-astro-cid-lvjzyg5v>Persistence 实战教程 - 索引</h1> <p class="post-head__lead" data-astro-cid-lvjzyg5v>Persistence(持久化)允许 World 保存玩家的高分、物品栏、最后位置、货币、解锁内容、偏好设置等。当玩家离开 World 后再回来,Udon 仍能访问他们保存的数据。</p> <div class="chip-row" data-astro-cid-lvjzyg5v> <a class="chip" href="/STELLASTOPVRC/posts/?tag=%E7%9F%A5%E8%AF%86%E5%BA%93" data-astro-cid-lvjzyg5v> 知识库 </a><a class="chip" href="/STELLASTOPVRC/posts/?tag=world" data-astro-cid-lvjzyg5v> world </a> </div> </header> <div class="prose" data-astro-cid-lvjzyg5v> <h1 id="persistence-实战教程---索引">Persistence 实战教程 - 索引</h1>
+<blockquote>
+<p>SDK Version: 3.10+(Storage Information API) / 3.7+(核心 PlayerData/PlayerObject)
+官方文档:<a href="https://creators.vrchat.com/worlds/udon/persistence/">https://creators.vrchat.com/worlds/udon/persistence/</a>
+定位:<strong>实战教程</strong>(非 API 参考,API 速查见 <a href="/STELLASTOPVRC/posts/kb-api-persistence/">persistence</a>)</p>
+</blockquote>
+<hr>
+<h2 id="什么是-persistence">什么是 Persistence?</h2>
+<p>Persistence(持久化)允许 World 保存玩家的高分、物品栏、最后位置、货币、解锁内容、偏好设置等。<strong>当玩家离开 World 后再回来,Udon 仍能访问他们保存的数据</strong>。</p>
+<ul>
+<li><strong>存储位置</strong>:VRChat 服务器(与玩家账号绑定)</li>
+<li><strong>跨平台</strong>:PC ↔ Quest ↔ Android 同一账号共享</li>
+<li><strong>跨实例</strong>:同一 World 的所有实例共享数据</li>
+<li><strong>跨设备</strong>:玩家在 PC 上解锁的物品,Quest 重新加入时仍能恢复</li>
+</ul>
+<blockquote>
+<p><strong>关键事实</strong>:数据与 <strong>World ID + 玩家账号</strong> 绑定。不同 World 互不干扰。</p>
+</blockquote>
+<hr>
+<h2 id="两种持久化方案">两种持久化方案</h2>
+<p>VRChat 提供 <strong>2 种</strong> 持久化方案,覆盖绝大多数需求场景:</p>
+<table>
+<thead>
+<tr>
+<th>方案</th>
+<th>类型</th>
+<th>适合场景</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>PlayerData</strong></td>
+<td>键值数据库(Key-Value Store)</td>
+<td>设置、分数、解锁、库存、玩家偏好</td>
+</tr>
+<tr>
+<td><strong>PlayerObject</strong></td>
+<td>自动实例化的 GameObject(可挂 Udon + 同步变量)</td>
+<td>工具、武器、血条、复杂 per-player 状态</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>核心区别</strong>:PlayerData 是 <strong>数据</strong>,PlayerObject 是 <strong>带数据的 GameObject</strong>。</p>
+</blockquote>
+<hr>
+<h2 id="playerdata-vs-playerobject-完整对比">PlayerData vs PlayerObject 完整对比</h2>
+<table>
+<thead>
+<tr>
+<th>维度</th>
+<th>PlayerData</th>
+<th>PlayerObject</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>本质</strong></td>
+<td>键值数据库(扁平)</td>
+<td>GameObject 模板,VRChat 自动为每个玩家实例化</td>
+</tr>
+<tr>
+<td><strong>存储配额</strong></td>
+<td>100 KB / 玩家 / World(压缩后)</td>
+<td>100 KB / 玩家 / World(压缩后,<strong>独立配额</strong>)</td>
+</tr>
+<tr>
+<td><strong>原始数据上限</strong></td>
+<td>~300 KB(高度可压缩时)</td>
+<td>~300 KB(高度可压缩时)</td>
+</tr>
+<tr>
+<td><strong>API 风格</strong></td>
+<td>静态方法 <code>PlayerData.SetXxx(player, key, value)</code></td>
+<td>直接字段访问 <code>[UdonSynced] public int x;</code></td>
+</tr>
+<tr>
+<td><strong>数据可见性</strong></td>
+<td>任何 Udon 脚本可读写(写仅本地)</td>
+<td>通过 <code>[UdonSynced]</code> 同步给所有人</td>
+</tr>
+<tr>
+<td><strong>持久化机制</strong></td>
+<td>自动,无需标记</td>
+<td>必须加 <code>VRCEnablePersistence</code> 组件</td>
+</tr>
+<tr>
+<td><strong>Owner 机制</strong></td>
+<td>无(纯数据)</td>
+<td>玩家拥有该 GameObject,<strong>无法转移</strong></td>
+</tr>
+<tr>
+<td><strong>同步开销</strong></td>
+<td>写一次 = 发全部 PlayerData(manual sync 模式)</td>
+<td>单独同步,不影响其他数据</td>
+</tr>
+<tr>
+<td><strong>Late Joiner</strong></td>
+<td>自动获取最新值</td>
+<td>自动获取最新值(走 UdonSynced)</td>
+</tr>
+<tr>
+<td><strong>写入限制</strong></td>
+<td>只能写本地玩家的数据</td>
+<td>只能写自己 PlayerObject 的数据</td>
+</tr>
+<tr>
+<td><strong>删除 Key</strong></td>
+<td>❌ <strong>不支持</strong> 删除(只能覆盖值)</td>
+<td>走 UdonSynced 字段重置</td>
+</tr>
+<tr>
+<td><strong>Key 名长度</strong></td>
+<td>128 字符(建议值)</td>
+<td>N/A(用字段名)</td>
+</tr>
+<tr>
+<td><strong>String 值长度</strong></td>
+<td>~50 字符(建议值)</td>
+<td>N/A</td>
+</tr>
+<tr>
+<td><strong>最适合</strong></td>
+<td>简单 key-value(分数、设置)</td>
+<td>复杂 UdonBehaviour 状态(笔触、RPG)</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="何时使用哪种决策矩阵">何时使用哪种?决策矩阵</h2>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>你的数据是 key-value 形式吗?</span></span>
+<span class="line"><span>├─ 是 ── 数据量大(>20 字段) 或 频繁变化(>1Hz)?</span></span>
+<span class="line"><span>│         ├─ 是 ──→ PlayerObject(避免整体发送)</span></span>
+<span class="line"><span>│         └─ 否 ──→ PlayerData(简单直接)</span></span>
+<span class="line"><span>│</span></span>
+<span class="line"><span>└─ 否 ── 你是数据还是带数据的物体?</span></span>
+<span class="line"><span>          ├─ 纯数据(分数、设置) ──→ PlayerData</span></span>
+<span class="line"><span>          └─ 带行为/可视化的物体(笔、武器、血条) ──→ PlayerObject</span></span></code></pre>
+<h3 id="经验法则">经验法则</h3>
+<table>
+<thead>
+<tr>
+<th>场景</th>
+<th>推荐方案</th>
+<th>原因</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>玩家音量/亮度设置</td>
+<td>PlayerData</td>
+<td>简单 key-value,变化稀疏</td>
+</tr>
+<tr>
+<td>高分排行榜</td>
+<td>PlayerData</td>
+<td>1 个 float 字段,所有人可见</td>
+</tr>
+<tr>
+<td>成就解锁</td>
+<td>PlayerData</td>
+<td>bool 列表,简单</td>
+</tr>
+<tr>
+<td>自动点击器数量</td>
+<td>PlayerData</td>
+<td>简单 int</td>
+</tr>
+<tr>
+<td><strong>画笔笔触数据</strong>(>1KB,频繁变)</td>
+<td>PlayerObject</td>
+<td>大量数据 + 高频变化,不应走 PlayerData</td>
+</tr>
+<tr>
+<td>玩家血条</td>
+<td>PlayerObject</td>
+<td>需要同步给所有人 + 持久化</td>
+</tr>
+<tr>
+<td>玩家位置记忆</td>
+<td>PlayerObject</td>
+<td>复杂 per-player 状态</td>
+</tr>
+<tr>
+<td>RPG 角色等级/经验</td>
+<td>PlayerObject</td>
+<td>多个 UdonSynced 字段</td>
+</tr>
+<tr>
+<td>工具/武器(不可被偷)</td>
+<td>PlayerObject</td>
+<td>PlayerObject 所有权<strong>不能转移</strong>,天然防偷</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="关键工程约束必读">关键工程约束(必读)</h2>
+<h3 id="数据存储位置">数据存储位置</h3>
+<table>
+<thead>
+<tr>
+<th>环境</th>
+<th>存储位置</th>
+<th>测试注意</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>已发布 World</strong></td>
+<td>VRChat 服务器(跨平台/跨实例)</td>
+<td>同账号同 World 多开 → 数据冲突</td>
+</tr>
+<tr>
+<td><strong>Build &#x26; Test</strong></td>
+<td>本地(测试客户端)</td>
+<td>关闭测试客户端 → 数据删除</td>
+</tr>
+<tr>
+<td><strong>ClientSim</strong></td>
+<td>项目内 JSON 文件</td>
+<td>见 ClientSim 文档</td>
+</tr>
+</tbody>
+</table>
+<h3 id="100-kb-限制详解">100 KB 限制详解</h3>
+<blockquote>
+<p>⚠️ <strong>核心限制</strong>:每个玩家在每个 World 可使用 <strong>100 KB PlayerData + 100 KB PlayerObject</strong>(独立配额)。</p>
+</blockquote>
+<ul>
+<li>实际存储的是 <strong>压缩后</strong> 的大小</li>
+<li>原始数据可达 ~300 KB(高度可压缩时)</li>
+<li>超出 → VRChat 写错误日志,数据 <strong>未保存</strong></li>
+<li><strong>String max</strong> ~50 字符(建议值),<strong>Key max</strong> 128 字符(建议值)</li>
+</ul>
+<h3 id="时序约束90-玩家踩坑">时序约束(90% 玩家踩坑)</h3>
+<blockquote>
+<p>🔴 <strong>必须等待 <code>OnPlayerRestored</code> 触发后再读写 PlayerData/PlayerObject 数据</strong></p>
+</blockquote>
+<ul>
+<li><code>OnPlayerJoined</code> 触发时,数据可能还没从服务器拉取</li>
+<li>太早读写 → 你的写入 <strong>会</strong> 被服务器拉来的旧数据覆盖</li>
+<li><strong>必须</strong> 用 <code>_dataReady</code> flag 守卫</li>
+</ul>
+<h3 id="网络同步开销高频写场景">网络同步开销(高频写场景)</h3>
+<ul>
+<li>PlayerData 每次写 = 发 <strong>全部</strong> PlayerData(类似 Manual Sync)</li>
+<li>PlayerObject = 单独同步(开销分摊)</li>
+<li>高频写 PlayerData → 触发 <code>IsClogged = true</code></li>
+<li><strong>建议</strong>:高频 + 大量数据走 PlayerObject,稀疏 + 小数据走 PlayerData</li>
+</ul>
+<hr>
+<h2 id="key-命名空间避免冲突">Key 命名空间(避免冲突)</h2>
+<blockquote>
+<p>PlayerData 跨整个 World 的所有脚本共享,<strong>必须用 Prefab 名作为前缀</strong>:</p>
+</blockquote>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="text"><code><span class="line"><span>推荐格式: &#x3C;Prefab名>-&#x3C;功能描述></span></span>
+<span class="line"><span>示例:</span></span>
+<span class="line"><span>- Momo-PPP-BloomAmount        # 来自 Momo Post Processing</span></span>
+<span class="line"><span>- IdleGame-POINTS_KEY         # 来自 Persistent Idle Game</span></span>
+<span class="line"><span>- PenSystem-Line-Color-0      # 来自 Persistent Pen</span></span>
+<span class="line"><span>- RPG-Player-Level            # 来自 Simple RPG</span></span>
+<span class="line"><span>- UnlockItems-Achievement-1   # 来自 Unlock Items</span></span></code></pre>
+<p>❌ 错误:<code>score</code>、<code>level</code>、<code>health</code>(易冲突,多个 Prefab 共用时数据互相覆盖)</p>
+<hr>
+<h2 id="子目录导航">子目录导航</h2>
+<table>
+<thead>
+<tr>
+<th>文档</th>
+<th>主题</th>
+<th>推荐阅读</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="/STELLASTOPVRC/posts/kb-world-udon-persistence-player-data/">player-data.md</a></td>
+<td>PlayerData 完整 API(20+ 方法)</td>
+<td>第一次用 PlayerData</td>
+</tr>
+<tr>
+<td><a href="/STELLASTOPVRC/posts/kb-world-udon-persistence-player-object/">player-object.md</a></td>
+<td>PlayerObject + VRCEnablePersistence 设置</td>
+<td>第一次用 PlayerObject</td>
+</tr>
+<tr>
+<td><a href="/STELLASTOPVRC/posts/kb-world-udon-persistence-serialization/">serialization.md</a></td>
+<td>支持的 18 种数据类型 + byte[] 编码</td>
+<td>需要存复杂结构</td>
+</tr>
+<tr>
+<td><a href="/STELLASTOPVRC/posts/kb-world-udon-persistence-limits-and-quirks/">limits-and-quirks.md</a></td>
+<td>100KB 限制 + 压缩策略 + 写入时机优化</td>
+<td>优化阶段</td>
+</tr>
+<tr>
+<td><a href="/STELLASTOPVRC/posts/kb-world-udon-persistence-patterns-leaderboard/">patterns/leaderboard.md</a></td>
+<td>排行榜完整实现(浮动积分)</td>
+<td>实战</td>
+</tr>
+<tr>
+<td><a href="/STELLASTOPVRC/posts/kb-world-udon-persistence-patterns-unlock-items/">patterns/unlock-items.md</a></td>
+<td>成就/物品解锁系统</td>
+<td>实战</td>
+</tr>
+<tr>
+<td><a href="/STELLASTOPVRC/posts/kb-world-udon-persistence-patterns-persistent-pen/">patterns/persistent-pen.md</a></td>
+<td>持久画笔(复杂 PlayerObject)</td>
+<td>实战</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="5-个-persistence-事件速查">5 个 Persistence 事件速查</h2>
+<table>
+<thead>
+<tr>
+<th>事件</th>
+<th>触发时机</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>OnPlayerRestored(VRCPlayerApi player)</code></td>
+<td>玩家持久化数据加载完成后</td>
+<td><strong>核心</strong> - 加载/初始化数据</td>
+</tr>
+<tr>
+<td><code>OnPlayerDataUpdated(VRCPlayerApi player, PlayerData.Info[] infos)</code></td>
+<td>帧末,PlayerData 变更时</td>
+<td>监听其他玩家数据变化</td>
+</tr>
+<tr>
+<td><code>OnPlayerDataStorageWarning(VRCPlayerApi player)</code></td>
+<td>PlayerData 接近上限</td>
+<td>提示玩家清理</td>
+</tr>
+<tr>
+<td><code>OnPlayerDataStorageExceeded(VRCPlayerApi player)</code></td>
+<td>PlayerData 超出限制</td>
+<td>数据未保存,需提示</td>
+</tr>
+<tr>
+<td><code>OnPersistenceUsageUpdated(VRCPlayerApi player)</code></td>
+<td>调用 <code>RequestStorageUsageUpdate</code> 后</td>
+<td>获取实时存储用量</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>PlayerObject 事件</strong>: <code>OnPlayerObjectStorageWarning</code> / <code>OnPlayerObjectStorageExceeded</code>(独立配额)</p>
+</blockquote>
+<hr>
+<h2 id="4-种存储信息查询方法sdk-310">4 种存储信息查询方法(SDK 3.10+)</h2>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="csharp"><code><span class="line"><span style="color:#F97583">using</span><span style="color:#B392F0"> VRC</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">SDKBase</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// 1. 配额限制(常量)</span></span>
+<span class="line"><span style="color:#F97583">int</span><span style="color:#B392F0"> dataLimit</span><span style="color:#F97583"> =</span><span style="color:#E1E4E8"> player.</span><span style="color:#B392F0">GetPlayerDataStorageLimit</span><span style="color:#E1E4E8">();   </span><span style="color:#6A737D">// 100 * 1024</span></span>
+<span class="line"><span style="color:#F97583">int</span><span style="color:#B392F0"> objLimit</span><span style="color:#F97583"> =</span><span style="color:#E1E4E8"> player.</span><span style="color:#B392F0">GetPlayerObjectStorageLimit</span><span style="color:#E1E4E8">();  </span><span style="color:#6A737D">// 100 * 1024</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// 2. 当前用量(可能过期)</span></span>
+<span class="line"><span style="color:#F97583">int</span><span style="color:#B392F0"> dataUsed</span><span style="color:#F97583"> =</span><span style="color:#E1E4E8"> player.</span><span style="color:#B392F0">GetPlayerDataStorageUsage</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#F97583">int</span><span style="color:#B392F0"> objUsed</span><span style="color:#F97583"> =</span><span style="color:#E1E4E8"> player.</span><span style="color:#B392F0">GetPlayerObjectStorageUsage</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// 3. 触发异步更新</span></span>
+<span class="line"><span style="color:#E1E4E8">player.</span><span style="color:#B392F0">RequestStorageUsageUpdate</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// 4. 事件回调</span></span>
+<span class="line"><span style="color:#F97583">public</span><span style="color:#F97583"> override</span><span style="color:#F97583"> void</span><span style="color:#B392F0"> OnPersistenceUsageUpdated</span><span style="color:#E1E4E8">(</span><span style="color:#B392F0">VRCPlayerApi</span><span style="color:#B392F0"> player</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#F97583">    if</span><span style="color:#E1E4E8"> (player </span><span style="color:#F97583">==</span><span style="color:#E1E4E8"> Networking.LocalPlayer) {</span></span>
+<span class="line"><span style="color:#E1E4E8">        Debug.</span><span style="color:#B392F0">Log</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">$"PlayerData: </span><span style="color:#9ECBFF">{</span><span style="color:#E1E4E8">player</span><span style="color:#9ECBFF">.</span><span style="color:#B392F0">GetPlayerDataStorageUsage</span><span style="color:#9ECBFF">()}</span><span style="color:#9ECBFF">/</span><span style="color:#9ECBFF">{</span><span style="color:#E1E4E8">player</span><span style="color:#9ECBFF">.</span><span style="color:#B392F0">GetPlayerDataStorageLimit</span><span style="color:#9ECBFF">()}</span><span style="color:#9ECBFF">"</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<p>⚠️ <strong>警告</strong>:不要频繁调用 <code>RequestStorageUsageUpdate</code>,存储信息可能随时间过期。</p>
+<hr>
+<h2 id="与其他子目录的关系">与其他子目录的关系</h2>
+<table>
+<thead>
+<tr>
+<th>知识库文件</th>
+<th>关系</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="/STELLASTOPVRC/posts/kb-api-persistence/">persistence</a></td>
+<td><strong>API 速查表</strong>(本文是实战教程)</td>
+</tr>
+<tr>
+<td>index</td>
+<td>9 个 Example Central 官方示例笔记</td>
+</tr>
+<tr>
+<td>index</td>
+<td>Udon 总览(VM 关系 + 3 种创建方式)</td>
+</tr>
+<tr>
+<td>index</td>
+<td>网络同步(与 PlayerObject 强相关)</td>
+</tr>
+<tr>
+<td><a href="/STELLASTOPVRC/posts/kb-concepts-rules-networking-rules/">networking-rules</a></td>
+<td>网络同步规则</td>
+</tr>
+<tr>
+<td><a href="/STELLASTOPVRC/posts/kb-concepts-patterns-manual-sync-state/">manual-sync-state</a></td>
+<td>Manual Sync 模式</td>
+</tr>
+<tr>
+<td><a href="/STELLASTOPVRC/posts/kb-concepts-patterns-late-joiner-state-restore/">late-joiner-state-restore</a></td>
+<td>Late Joiner 状态恢复</td>
+</tr>
+<tr>
+<td><a href="https://creators.vrchat.com/worlds/clientsim/">ClientSim（VRChat 官方）</a></td>
+<td>ClientSim 编辑器模拟(含 PlayerData 调试窗口)</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="验收标准">验收标准</h2>
+<p>✅ 8 个 .md 文件全部创建(1 索引 + 4 基础 + 3 实战)
+✅ 所有 API 经官方文档验证(2025-08-01 / 2025-09-17 / 2025-11-25)
+✅ PlayerData vs PlayerObject 完整对比
+✅ 100KB 限制 + 压缩策略完整覆盖
+✅ Key 命名空间前缀建议
+✅ 时序约束(OnPlayerRestored 等待)强调
+✅ 3 个实战 Pattern 完整实现(含代码)
+✅ 不与 <code>api/persistence.md</code> 重复</p> </div> <p class="kb-source-note" data-astro-cid-lvjzyg5v>
+本文由 VRChat 开发知识库自动整理（官方来源  · 可信度 High  · 最后校对 2026-06-21），
+          遇到与手写教程冲突的地方，以官方文档为最高优先级。
+</p> <section class="comments" id="comments" data-astro-cid-lvjzyg5v> <h2 class="comments__title" data-astro-cid-lvjzyg5v>✦ 旅人留言（0）</h2> <p class="comments__empty" id="commentsEmpty" data-astro-cid-lvjzyg5v>
+还没有旅人留言 —— 有疑问就写在下面，站长都会回复。
+</p> <form class="comment-form" id="commentForm" data-target="kb-world-udon-persistence-index" data-astro-cid-lvjzyg5v> <p class="comment-form__title" data-astro-cid-lvjzyg5v>写下你的留言</p> <input id="cAuthor" maxlength="20" placeholder="昵称（留空则为「旅人」）" data-astro-cid-lvjzyg5v> <textarea id="cBody" maxlength="1000" required placeholder="想问的问题、想说的感谢都可以（最多 1000 字）" data-astro-cid-lvjzyg5v></textarea> <div class="comment-form__actions" data-astro-cid-lvjzyg5v> <button class="btn btn--primary" type="submit" data-astro-cid-lvjzyg5v>发布留言</button> <span class="form-hint" data-astro-cid-lvjzyg5v>留言保存在本站，站长在写作台里能看到</span> <span class="form-msg" id="cMsg" data-astro-cid-lvjzyg5v></span> </div> </form> </section> <nav class="station-nav" aria-label="站间导航" data-astro-cid-lvjzyg5v> <a href="/STELLASTOPVRC/posts/kb-world-udon-data-containers-index/" data-astro-cid-lvjzyg5v> <span class="dir" data-astro-cid-lvjzyg5v>← 上一站 · 更新的星光</span> <span class="to" data-astro-cid-lvjzyg5v>Data Containers &amp; VRCJson</span> </a> <a href="/STELLASTOPVRC/posts/kb-api-events-reference/" data-astro-cid-lvjzyg5v> <span class="dir" data-astro-cid-lvjzyg5v>下一站 · 更早的星光 →</span> <span class="to" data-astro-cid-lvjzyg5v>API: Complete Udon Event Reference</span> </a> </nav> </div> <aside class="toc" id="toc" hidden> <p class="toc__title">✦ 本页星图</p> <nav id="tocNav" aria-label="文章目录"></nav> </aside> <script type="module">const i=document.querySelector(".prose"),d=document.getElementById("toc"),u=document.getElementById("tocNav"),l=[];if(i&&d&&u){const c=[...i.querySelectorAll("h1, h2, h3")];if(c.length>=3){d.hidden=!1,c.forEach((o,e)=>{o.id||(o.id=`sec-${e}`);const n=document.createElement("a");n.href=`#${o.id}`;const s=(o.textContent??"").replace(/\s+/g," ").trim(),r=s.search(/[：:]/),a=r>=4?s.slice(0,r):s;n.textContent=a.length>40?`${a.slice(0,40)}…`:a,n.title=s,u.appendChild(n),l.push({a:n,h:o})});const t=()=>{let o=l[0];for(const e of l)e.h.getBoundingClientRect().top<=130&&(o=e);for(const e of l)e.a.classList.toggle("is-active",e===o)};addEventListener("scroll",t,{passive:!0}),t()}}document.querySelectorAll(".prose pre").forEach(c=>{const t=document.createElement("button");t.className="code-copy",t.type="button",t.textContent="复制",t.addEventListener("click",async()=>{const o=c.querySelector("code")?.innerText??c.innerText;try{await navigator.clipboard.writeText(o)}catch{const e=document.createElement("textarea");e.value=o,document.body.appendChild(e),e.select(),document.execCommand("copy"),e.remove()}t.textContent="已复制 ✓",t.classList.add("is-ok"),setTimeout(()=>{t.textContent="复制",t.classList.remove("is-ok")},1500)}),c.appendChild(t)});</script> </article>  </main> <footer class="site-footer"> <div class="wrap"> <p class="star-line" aria-hidden="true"> <svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> <svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> </p> <p>星之驿站 StellaStop —— 在虚拟宇宙中，为你保留一座驿站</p> <p class="site-footer__disclaimer">
+该网页目前是测试阶段，仅用于测试，所有内容仅供参考；内容全部为引用互联网当中的信息。
+</p> <p>© 2026 星之驿站 · 由 <a href="https://astro.build">Astro</a> 与星光驱动</p> <p> <a data-desk-login hidden title="写作台：登录 / 注册">登录 / 注册</a> ·
+<a href="/STELLASTOPVRC/announcements/">官方公告</a> ·
+<a href="/STELLASTOPVRC/ai/">问星 AI</a> ·
+<a href="/STELLASTOPVRC/feedback/">旅人留言板</a> </p> </div> </footer> <button class="to-top" id="toTop" aria-label="回到顶部"> <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"> <path d="M12 20V5"></path> <path d="M5.5 11.5 12 5l6.5 6.5"></path> </svg> </button> <script type="module">const e=document.getElementById("toTop");if(e){const t=()=>e.classList.toggle("is-visible",scrollY>480);addEventListener("scroll",t,{passive:!0}),t(),e.addEventListener("click",()=>{const o=matchMedia("(prefers-reduced-motion: reduce)").matches;scrollTo({top:0,behavior:o?"auto":"smooth"})})}</script> <script>(function(){const deskConfigured = "";
+
+      /* 写作台探测（页面尾部执行，DOM 已就绪）：
+         1. 计算写作台地址：站点配置 deskUrl（公网部署时填）> 本机默认 localhost:4322 > 同主机 4322
+         2. 探测 /api/gate/status —— 在线才点亮「登录 / 注册」入口，并复用给验证门横幅
+         3. 不在线则保持隐藏，绝不会把访客拽进内网地址；同时给出一次性「镜像模式」提示 */
+      (function () {
+        var host = location.hostname;
+        var isLocal = host === 'localhost' || host === '127.0.0.1' || host === '[::1]';
+        var desk = deskConfigured ||
+          (isLocal ? 'http://localhost:4322' : location.protocol + '//' + host + ':4322');
+        window.STELLA_DESK = desk;
+
+        function revealLogin() {
+          document.querySelectorAll('[data-desk-login]').forEach(function (a) {
+            a.href = desk + '/admin';
+            a.removeAttribute('hidden');
+          });
+        }
+        function showBanner(css, html, shiftHeader) {
+          var bar = document.createElement('div');
+          bar.style.cssText = css;
+          bar.innerHTML = html;
+          document.body.prepend(bar);
+          if (shiftHeader) {
+            var header = document.querySelector('.site-header');
+            if (header) header.style.marginTop = '42px';
+          }
+        }
+        function hintMirrorMode() {
+          try {
+            if (sessionStorage.getItem('stella-desk-hint')) return;
+            sessionStorage.setItem('stella-desk-hint', '1');
+          } catch (e) { /* 无痕模式等：忽略 */ }
+          var tip = document.createElement('div');
+          tip.style.cssText = 'position:fixed;left:14px;bottom:14px;z-index:9998;max-width:min(92vw,430px);padding:.65rem .9rem;border-radius:12px;background:rgba(18,20,44,.92);border:1px solid rgba(150,142,255,.35);color:#e8e6ff;font-size:.82rem;line-height:1.6;font-family:system-ui,sans-serif;box-shadow:0 8px 30px rgba(0,0,0,.35)';
+          tip.innerHTML = 'ℹ️ 静态镜像模式：登录 / 评论 / AI 等互动功能需要站长写作台在线，当前不可用。' +
+            '<span id="stellaDeskHintClose" style="float:right;cursor:pointer;opacity:.75;font-weight:700;margin-left:.6rem" title="关闭">×</span>';
+          document.body.appendChild(tip);
+          var close = function () { tip.remove(); };
+          tip.querySelector('#stellaDeskHintClose').addEventListener('click', close);
+          setTimeout(close, 9000);
+        }
+
+        try {
+          var ctrl = new AbortController();
+          var timer = setTimeout(function () { ctrl.abort(); }, 2500);
+          fetch(desk + '/api/gate/status', { credentials: 'include', signal: ctrl.signal })
+            .then(function (r) { return r.ok ? r.json() : null; })
+            .then(function (d) {
+              clearTimeout(timer);
+              if (!d) throw new Error('desk-offline');
+              window.STELLA_DESK_OK = true;
+              revealLogin();
+              if (d.regionBlocked) {
+                showBanner(
+                  'position:fixed;top:0;left:0;right:0;z-index:9999;padding:1.2rem;text-align:center;background:#1a0a0a;color:#ff9ed2;font-size:.95rem;border-bottom:2px solid #ff4d6d;font-family:system-ui,sans-serif',
+                  '⛔ 你所在的地区（' + (d.regionCountry || '未知') + '）暂不开放访问。',
+                  false
+                );
+                return;
+              }
+              if (d.enabled && !d.passed) {
+                showBanner(
+                  'position:fixed;top:0;left:0;right:0;z-index:9999;padding:0.7rem;text-align:center;background:linear-gradient(94deg,rgba(143,127,247,.25),rgba(98,200,245,.18));border-bottom:1px solid rgba(150,142,255,.3);color:#f0efff;font-size:.88rem;font-family:system-ui,sans-serif',
+                  '🔒 本站启用了安全验证 —— <a href="' + desk + '/gate?next=' + encodeURIComponent(location.href) + '" style="color:#ffd98e;font-weight:700;text-decoration:underline">点击完成验证</a>，通过后即可使用全部功能（30 天免验）。',
+                  true
+                );
+              }
+            })
+            .catch(function () {
+              clearTimeout(timer);
+              window.STELLA_DESK_OK = false;
+              hintMirrorMode();
+            });
+        } catch (e) { /* 忽略 */ }
+      })();
+    })();</script> </body> </html> <script type="module">const m=document.getElementById("commentForm"),s=document.getElementById("cMsg"),u=`${location.protocol}//${location.hostname}:4322/api/message`;function r(e,t=!1){s&&(s.textContent=e,s.classList.toggle("is-err",t),s.classList.toggle("is-ok",!t))}function y(){const e=new Date,t=n=>String(n).padStart(2,"0");return`${e.getFullYear()}-${t(e.getMonth()+1)}-${t(e.getDate())}`}function f(e){let t=7;for(const n of e)t=(t*31+n.charCodeAt(0))%360;return t}function g(e,t){const n=document.createElement("li");n.className="comment",n.innerHTML=`
+      <span class="comment__avatar"></span>
+      <div class="comment__bubble">
+        <div class="comment__head">
+          <span class="comment__name"></span>
+          <time class="comment__date">${y()}</time>
+        </div>
+        <p class="comment__body"></p>
+      </div>`;const o=n.querySelector(".comment__avatar");return o.style.setProperty("--h",String(f(e))),o.textContent=e.slice(0,1),n.querySelector(".comment__name").textContent=e,n.querySelector(".comment__body").textContent=t,n}m?.addEventListener("submit",async e=>{e.preventDefault();const t=document.getElementById("cBody").value.trim();if(!t)return r("留言内容不能为空哦",!0);const n=document.getElementById("cAuthor").value.trim()||"旅人",o=m.querySelector("button");o&&(o.disabled=!0);try{const c=await fetch(u,{credentials:"include",method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({target:m.dataset.target,kind:"comment",author:n,body:t})}),d=await c.json().catch(()=>({}));if(!c.ok)throw new Error(d.error||`发送失败（${c.status}）`);const l=document.querySelector(".comment-list");l&&l.appendChild(g(n,t)),document.getElementById("commentsEmpty")?.remove(),document.getElementById("cBody").value="",r("留言已发布，感谢支持 ✦");const a=document.querySelector(".comments__title"),i=a?.textContent?.match(/（(\d+)）/);a&&i&&(a.textContent=a.textContent.replace(/（\d+）/,`（${Number(i[1])+1}）`))}catch(c){r(c instanceof TypeError?"写作台没在运行，暂时收不到留言 —— 双击「启动博客.bat」就好":c.message,!0)}finally{o&&(o.disabled=!1)}});</script> 

@@ -1,0 +1,889 @@
+<!DOCTYPE html><html lang="zh-CN"> <head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="generator" content="Astro v5.18.2"><meta name="description" content="默认受限的视图:"><meta name="theme-color" content="#070a1c"><meta property="og:title" content="World Debug Views - VRChat Debug 视图 · 星之驿站 StellaStop"><meta property="og:description" content="默认受限的视图:"><meta property="og:type" content="website"><meta name="twitter:card" content="summary"><link rel="icon" type="image/svg+xml" href="/STELLASTOPVRC/favicon.svg"><script>
+      // 在渲染前恢复主题与特效档位，避免闪一下默认状态
+      try {
+        document.documentElement.dataset.theme =
+          localStorage.getItem('stella-theme') || 'nebula';
+        document.documentElement.dataset.fx =
+          localStorage.getItem('stella-fx') || 'standard';
+      } catch {
+        /* 隐私模式读不到就算了 */
+      }
+    </script><link rel="stylesheet" href="/STELLASTOPVRC/custom-vars.css"><title>World Debug Views - VRChat Debug 视图 · 星之驿站 StellaStop</title><link rel="stylesheet" href="/STELLASTOPVRC/_astro/about.Bgh6wcGl.css">
+<style>.post-head__meta[data-astro-cid-lvjzyg5v]{color:var(--ink-faint);font-family:var(--font-mono);font-size:.82rem}.post-head[data-astro-cid-lvjzyg5v] .chip-row[data-astro-cid-lvjzyg5v]{margin-top:1rem}.kb-source-note[data-astro-cid-lvjzyg5v]{max-width:760px;margin:2.2rem auto 0;font-size:.82rem;color:var(--ink-faint);border-top:1px dashed var(--line);padding-top:1rem}
+</style></head> <body> <div class="site-notice" id="siteNotice"> <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> <span class="site-notice__text">欢迎来到星之驿站！</span> <button class="site-notice__close" id="noticeClose" type="button" aria-label="关闭公告">
+×
+</button> </div> <a class="skip-link" href="#main">跳到主要内容</a> <canvas id="starfield" aria-hidden="true" data-astro-cid-ra7sfcwn></canvas> <div class="fx-aurora fx-aurora--a" aria-hidden="true" data-astro-cid-ra7sfcwn></div> <div class="fx-aurora fx-aurora--b" aria-hidden="true" data-astro-cid-ra7sfcwn></div>  <script type="module">const u=document.getElementById("starfield");if(u){let F=function(){const n=Math.random();return n<.1?"gold":n<.42?"blue":"white"},v=function(){const n=Math.min(window.devicePixelRatio||1,2);s=window.innerWidth,d=window.innerHeight,u.width=s*n,u.height=d*n,u.style.width=`${s}px`,u.style.height=`${d}px`,t.setTransform(n,0,0,n,0,0);const e=Math.min(190,Math.round(s*d/8500));l=Array.from({length:e},()=>({x:Math.random()*s,y:Math.random()*d,r:r(.4,1.7),base:r(.25,.8),amp:r(.12,.4),speed:r(6e-4,.0022),phase:r(0,Math.PI*2),c:F()})),C=Array.from({length:26},()=>({x:Math.random()*s,y:Math.random()*d,r:r(.9,2.4),vx:r(-.006,.006),vy:r(-.02,-.006),base:r(.2,.5),speed:r(8e-4,.002),phase:r(0,Math.PI*2),c:Math.random()<.5?"gold":"violet"})),c==="off"&&m(0,!0)},D=function(n){const e=Math.random()<.5?1:-1,o=r(Math.PI/7,Math.PI/5),a=r(.45,.75);y.push({x:r(s*.15,s*.85),y:r(-20,d*.3),vx:Math.cos(o)*a*e,vy:Math.sin(o)*a,born:n,life:r(750,1050),len:r(100,170)})},S=function(n){y=y.filter(e=>n-e.born<e.life);for(const e of y){const o=(n-e.born)/e.life,a=e.x+e.vx*(n-e.born),i=e.y+e.vy*(n-e.born),f=o<.15?o/.15:o>.7?(1-o)/.3:1,h=Math.hypot(e.vx,e.vy),x=e.vx/h,g=e.vy/h,b=t.createLinearGradient(a,i,a-x*e.len,i-g*e.len);b.addColorStop(0,`rgba(236,242,255,${(.85*f).toFixed(3)})`),b.addColorStop(1,"rgba(236,242,255,0)"),t.strokeStyle=b,t.lineWidth=1.6,t.lineCap="round",t.beginPath(),t.moveTo(a,i),t.lineTo(a-x*e.len,i-g*e.len),t.stroke()}},B=function(){let o=0;t.lineWidth=.7;for(let a=0;a<l.length&&o<26;a++)for(let i=a+1;i<l.length&&o<26;i++){const f=l[a].x-l[i].x,h=l[a].y-l[i].y,x=f*f+h*h;if(x<16900){const g=(1-Math.sqrt(x)/130)*.17;t.strokeStyle=`rgba(178,170,255,${g.toFixed(3)})`,t.beginPath(),t.moveTo(l[a].x,l[a].y),t.lineTo(l[i].x,l[i].y),t.stroke(),o++}}},X=function(n){for(const e of C){e.x+=e.vx*16,e.y+=e.vy*16,e.y<-12&&(e.y=d+10),e.x<-12&&(e.x=s+10),e.x>s+12&&(e.x=-10);const o=Math.max(.05,e.base+.25*Math.sin(n*e.speed+e.phase)),[a,i,f]=A[e.c];t.beginPath(),t.arc(e.x,e.y,e.r,0,7),t.shadowBlur=9,t.shadowColor=`rgba(${a},${i},${f},0.9)`,t.fillStyle=`rgba(${a},${i},${f},${o.toFixed(3)})`,t.fill()}t.shadowBlur=0},m=function(n,e=!1){t.clearRect(0,0,s,d);for(const o of l){const a=c==="off"?o.base:Math.max(.05,o.base+o.amp*Math.sin(n*o.speed+o.phase)),[i,f,h]=A[o.c];t.beginPath(),t.arc(o.x,o.y,o.r,0,7),o.r>1.25?(t.shadowBlur=7,t.shadowColor=`rgba(${i},${f},${h},0.85)`):t.shadowBlur=0,t.fillStyle=`rgba(${i},${f},${h},${a.toFixed(3)})`,t.fill()}if(t.shadowBlur=0,c!=="off"&&!e){c==="fancy"&&(B(),X(n));const o=c==="fancy"?r(2600,6e3):r(4200,9500);n>P&&(D(n),P=n+o),S(n)}},$=function(n){m(n),M=requestAnimationFrame($)},p=function(){if(c==="off"){m(0,!0);return}cancelAnimationFrame(M),M=requestAnimationFrame($)},w=function(){cancelAnimationFrame(M),t.clearRect(0,0,s,d),m(0,!0)};const t=u.getContext("2d"),k=matchMedia("(prefers-reduced-motion: reduce)").matches,A={white:[240,240,255],blue:[150,215,250],gold:[255,218,150],violet:[178,170,255]};let s=0,d=0,l=[],C=[],y=[],P=2500,M=0,c=document.documentElement.dataset.fx||"standard";k&&(c="off");const r=(n,e)=>n+Math.random()*(e-n);v(),addEventListener("resize",v),document.addEventListener("stella-fx-change",n=>{c=n.detail,c==="off"?w():p()}),c==="off"?m(0,!0):(p(),document.addEventListener("visibilitychange",()=>{document.hidden?w():p()}))}</script> <header class="site-header"> <div class="wrap site-header__inner"> <a class="logo" href="/STELLASTOPVRC/"> <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> <span>星之驿站</span> <span class="logo__romaji">StellaStop</span> </a> <div class="header-right"> <nav class="site-nav" aria-label="站内导航"> <a href="/STELLASTOPVRC/"> 首页 </a><a href="/STELLASTOPVRC/start/"> 新手 </a><a href="/STELLASTOPVRC/posts/"> 教程 </a><a href="/STELLASTOPVRC/videos/"> 视频 </a><a href="/STELLASTOPVRC/resources/"> 资源 </a><a href="/STELLASTOPVRC/booth/"> Booth </a><a href="/STELLASTOPVRC/announcements/"> 公告 </a><a href="/STELLASTOPVRC/ai/"> 问星 </a><a href="/STELLASTOPVRC/changelog/"> 更新日志 </a><a href="/STELLASTOPVRC/about/"> 关于 </a> </nav> <a class="login-link" data-desk-login hidden title="写作台：登录 / 注册后可发教程、传资源">
+登录 / 注册
+</a> <div class="theme-switch"> <button class="theme-switch__btn" id="themeBtn" type="button" aria-haspopup="listbox" aria-expanded="false" aria-label="切换主题配色" title="切换主题配色"> <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"> <path d="M12 3a9 9 0 1 0 9 9c0-1.2-1-2-2.2-2H17a2 2 0 0 1-2-2V6.2C15 5 14.2 4 13 4.4A9 9 0 0 0 12 3Z"></path> <circle cx="7.5" cy="11.5" r="1" fill="currentColor" stroke="none"></circle> <circle cx="10" cy="7.5" r="1" fill="currentColor" stroke="none"></circle> <circle cx="15" cy="7" r="1" fill="currentColor" stroke="none"></circle> </svg> </button> <div class="theme-pop" id="themePop" role="listbox" aria-label="选择主题" hidden> <button class="theme-opt" type="button" role="option" data-theme-value="nebula" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#8f7ff7"></span><span class="dot" style="background:#62c8f5"></span><span class="dot" style="background:#ffd98e"></span> </span> <span class="theme-opt__name">星云 · 蓝紫</span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt" type="button" role="option" data-theme-value="sakura" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#ff8fc7"></span><span class="dot" style="background:#c79bff"></span><span class="dot" style="background:#ffd08e"></span> </span> <span class="theme-opt__name">樱语 · 粉紫</span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt" type="button" role="option" data-theme-value="miku" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#2ed3c2"></span><span class="dot" style="background:#6ea8ff"></span><span class="dot" style="background:#ffe08e"></span> </span> <span class="theme-opt__name">葱色 · 青绿</span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt" type="button" role="option" data-theme-value="ember" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#ffb35c"></span><span class="dot" style="background:#ff7e6b"></span><span class="dot" style="background:#ffd98e"></span> </span> <span class="theme-opt__name">暮金 · 暖橙</span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt" type="button" role="option" data-theme-value="dawn" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#6a5ce8"></span><span class="dot" style="background:#e0568f"></span><span class="dot" style="background:#b8821e"></span> </span> <span class="theme-opt__name">晨星 · 浅色</span> <span class="theme-opt__mark">✦</span> </button> </div> </div> <script type="module">const a=document.getElementById("themeBtn"),n=document.getElementById("themePop");function s(c){document.documentElement.dataset.theme=c;try{localStorage.setItem("stella-theme",c)}catch{}const e=getComputedStyle(document.documentElement).getPropertyValue("--bg-deep").trim();document.querySelector('meta[name="theme-color"]')?.setAttribute("content",e||"#070a1c"),document.querySelectorAll(".theme-opt").forEach(t=>{const d=t.dataset.themeValue===c;t.classList.toggle("is-active",d),t.setAttribute("aria-selected",String(d))})}if(a&&n){const c=document.documentElement.dataset.theme||"nebula";document.querySelectorAll(".theme-opt").forEach(e=>{const t=e.dataset.themeValue===c;e.classList.toggle("is-active",t),e.setAttribute("aria-selected",String(t))}),a.addEventListener("click",e=>{e.stopPropagation();const t=n.hidden;n.hidden=!t,a.setAttribute("aria-expanded",String(t))}),document.addEventListener("click",e=>{!n.hidden&&!e.target.closest(".theme-switch")&&(n.hidden=!0,a.setAttribute("aria-expanded","false"))}),document.addEventListener("keydown",e=>{e.key==="Escape"&&!n.hidden&&(n.hidden=!0,a.setAttribute("aria-expanded","false"),a.focus())}),n.addEventListener("click",e=>{const t=e.target.closest(".theme-opt");t&&(s(t.dataset.themeValue??"nebula"),n.hidden=!0,a.setAttribute("aria-expanded","false"))})}</script> <div class="theme-switch fx-switch"> <button class="theme-switch__btn" id="fxBtn" type="button" aria-haspopup="listbox" aria-expanded="false" aria-label="背景特效设置" title="背景特效设置"> <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"> <path d="M5 3v4M3 5h4M6.5 17.5v3M5 19h3"></path> <path d="M14.5 4.5 16 9l4.5 1.5L16 12l-1.5 4.5L13 12l-4.5-1.5L13 9l1.5-4.5Z"></path> </svg> </button> <div class="theme-pop" id="fxPop" role="listbox" aria-label="背景特效" hidden> <button class="theme-opt fx-opt" type="button" role="option" data-fx-value="off" aria-selected="false"> <span class="fx-opt__body"> <span class="fx-opt__name">关闭特效</span> <span class="fx-opt__hint">最省电</span> </span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt fx-opt" type="button" role="option" data-fx-value="standard" aria-selected="false"> <span class="fx-opt__body"> <span class="fx-opt__name">标准</span> <span class="fx-opt__hint">闪烁星空 + 流星</span> </span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt fx-opt" type="button" role="option" data-fx-value="fancy" aria-selected="false"> <span class="fx-opt__body"> <span class="fx-opt__name">华丽</span> <span class="fx-opt__hint">追加极光 / 星座 / 光尘</span> </span> <span class="theme-opt__mark">✦</span> </button> </div> </div> <script type="module">const n=document.getElementById("fxBtn"),a=document.getElementById("fxPop");function s(d){document.documentElement.dataset.fx=d;try{localStorage.setItem("stella-fx",d)}catch{}document.querySelectorAll("#fxPop .fx-opt").forEach(t=>{const e=t.dataset.fxValue===d;t.classList.toggle("is-active",e),t.setAttribute("aria-selected",String(e))}),document.dispatchEvent(new CustomEvent("stella-fx-change",{detail:d}))}if(n&&a){const d=document.documentElement.dataset.fx||"standard";document.querySelectorAll("#fxPop .fx-opt").forEach(t=>{const e=t.dataset.fxValue===d;t.classList.toggle("is-active",e),t.setAttribute("aria-selected",String(e))}),n.addEventListener("click",t=>{t.stopPropagation();const e=a.hidden;a.hidden=!e,n.setAttribute("aria-expanded",String(e))}),document.addEventListener("click",t=>{!a.hidden&&!t.target.closest(".fx-switch")&&(a.hidden=!0,n.setAttribute("aria-expanded","false"))}),document.addEventListener("keydown",t=>{t.key==="Escape"&&!a.hidden&&(a.hidden=!0,n.setAttribute("aria-expanded","false"),n.focus())}),a.addEventListener("click",t=>{const e=t.target.closest(".fx-opt");e&&(s(e.dataset.fxValue??"standard"),a.hidden=!0,n.setAttribute("aria-expanded","false"))})}</script> </div> </div> </header> <main id="main">  <article class="wrap post-layout" data-astro-cid-lvjzyg5v> <div class="post-main page-fade" data-astro-cid-lvjzyg5v> <header class="post-head" data-astro-cid-lvjzyg5v> <a class="crumb" href="/STELLASTOPVRC/posts/" data-astro-cid-lvjzyg5v>← 返回教程档案</a> <div class="post-head__meta" style="--accent:var(--ink-dim)" data-astro-cid-lvjzyg5v> <span class="badge" data-cat="Udon 世界编程" data-astro-cid-lvjzyg5v>Udon 世界编程</span> <time datetime="2026-11-09" data-astro-cid-lvjzyg5v>2026-11-09</time> <span class="post-head__reading" data-astro-cid-lvjzyg5v>⏱ 约 26 分钟</span>  </div> <h1 class="post-head__title" data-astro-cid-lvjzyg5v>World Debug Views - VRChat Debug 视图</h1> <p class="post-head__lead" data-astro-cid-lvjzyg5v>默认受限的视图:</p> <div class="chip-row" data-astro-cid-lvjzyg5v> <a class="chip" href="/STELLASTOPVRC/posts/?tag=%E7%9F%A5%E8%AF%86%E5%BA%93" data-astro-cid-lvjzyg5v> 知识库 </a><a class="chip" href="/STELLASTOPVRC/posts/?tag=world" data-astro-cid-lvjzyg5v> world </a> </div> </header> <div class="prose" data-astro-cid-lvjzyg5v> <hr>
+<h1 id="world-debug-views---vrchat-debug-视图">World Debug Views - VRChat Debug 视图</h1>
+<h3 id="11-入口">1.1 入口</h3>
+<blockquote>
+<p><strong>FACT</strong>:Debug 菜单按钮在 <strong>Quick Menu → Settings</strong> 页面底部。</p>
+</blockquote>
+<h3 id="12-键盘快捷键">1.2 键盘快捷键</h3>
+<blockquote>
+<p><strong>FACT</strong>:<code>Right Shift</code> + <code>~</code> + <code>&#x3C; Number ></code> 直接打开对应 Debug 页。</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>数字</th>
+<th>视图</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>AssetBundle and Memory View</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Version &#x26; Info</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Log Viewer</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Players</td>
+</tr>
+<tr>
+<td>6</td>
+<td>Net Objects</td>
+</tr>
+<tr>
+<td>7</td>
+<td>PhysBone &#x26; Contact Overlay</td>
+</tr>
+<tr>
+<td>8</td>
+<td>Network Object Info Overlay</td>
+</tr>
+<tr>
+<td>9</td>
+<td>Player Info Overlay</td>
+</tr>
+<tr>
+<td>0</td>
+<td>VRC_UiShape Debug Overlay</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>非美式键盘注意</strong>:<code>~</code> 键<strong>位于 1 键左侧的物理位置</strong>。若键盘布局 <code>~</code> 不在该位置,使用<strong>1 键左侧第一个键</strong>(物理位置优先,字符其次)。</p>
+</blockquote>
+<h3 id="13-受限视图">1.3 受限视图</h3>
+<blockquote>
+<p><strong>FACT</strong>:部分 Debug 视图<strong>仅世界创建者</strong>默认可见。</p>
+</blockquote>
+<p><strong>默认受限的视图</strong>:</p>
+<ul>
+<li>Debug View 6(Net Objects)</li>
+<li>Audio Sources 页面</li>
+<li>所有 Debug World Overlays</li>
+</ul>
+<p><strong>开放给他人</strong>:</p>
+<ol>
+<li>在 VRChat 网站<strong>世界设置</strong>中启用 <strong>World Debugging</strong></li>
+<li>点击 <strong>Save Changes</strong></li>
+<li>其他用户<strong>需重新加入世界</strong>才能访问</li>
+</ol>
+<h3 id="14-分享注意">1.4 分享注意</h3>
+<blockquote>
+<p><strong>FACT</strong>:VRChat 工作人员可能在 Canny(用户支持)要求<strong>Debug 视图截图</strong>。<strong>但不应</strong>主动分享给其他用户,可能泄露内部信息。</p>
+</blockquote>
+<h3 id="15-safe-mode-快捷键安全相关">1.5 Safe Mode 快捷键（安全相关）⭐</h3>
+<blockquote>
+<p><strong>FACT</strong> <strong>Safe Mode</strong> 是<strong>安全相关</strong>的快捷键，与 Debug 视图<strong>不同</strong>。</p>
+<p>触发后立即<strong>禁用所有用户的所有功能</strong>（Avatar 显示、语音、动画等）。</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>平台</th>
+<th>快捷键</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>桌面</strong></td>
+<td><code>Shift + Esc</code></td>
+</tr>
+<tr>
+<td><strong>VR 控制器</strong></td>
+<td>同时拉<strong>两个 Trigger</strong> + 按<strong>两个系统菜单按钮</strong></td>
+</tr>
+<tr>
+<td><strong>Quest 控制器</strong></td>
+<td>同 VR 控制器（Both Triggers + Both Menu；源文档未单独说明 Quest，**【推断】**按 VR 控制器处理）</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>FACT</strong> <strong>Safe Mode 启用时</strong>:</p>
+<ul>
+<li>Safety System <strong>切换到 Custom 模式</strong>，<strong>关闭所有 ranks 的所有设置</strong></li>
+<li>所有 Avatar <strong>隐藏</strong>，其他用户语音 <strong>禁用</strong></li>
+<li>屏幕中间出现<strong>文字</strong>说明发生了什么</li>
+<li><strong>覆盖</strong>你之前的 Custom 设置（<strong>会清空</strong>你自定义的安全配置）</li>
+</ul>
+</blockquote>
+<blockquote>
+<p><strong>FACT</strong> <strong>关闭 Safe Mode</strong>:</p>
+<ul>
+<li><strong>手动</strong>设置 Safety System <strong>回原模式</strong></li>
+<li>如果之前用 <strong>Custom 模式</strong>，需<strong>手动</strong>重置之前设置（<strong>不会自动恢复</strong>）</li>
+</ul>
+</blockquote>
+<blockquote>
+<p><strong>FACT</strong> <strong>创作者应告知玩家</strong>:</p>
+<ul>
+<li>Safe Mode 是<strong>紧急工具</strong>（遇到恶意用户立即使用）</li>
+<li><strong>不要</strong>作为常规使用</li>
+<li>VRChat 计划<strong>未来</strong>添加专用 “Safe” Shield Level（避免覆盖 Custom 设置）</li>
+</ul>
+</blockquote>
+<blockquote>
+<p>详见 <code>avatar/safety-system.md</code> §5 (Safe Mode)</p>
+</blockquote>
+<hr>
+<hr>
+<h1 id="world-debug-views---vrchat-debug-视图二debug-菜单页面debug-menu-pages">World Debug Views - VRChat Debug 视图：二、Debug 菜单页面(Debug Menu Pages)</h1>
+<h3 id="21-assetbundle-and-memory-view1">2.1 AssetBundle and Memory View(1)</h3>
+<p><strong>显示内容</strong>:</p>
+<ul>
+<li>VRChat 当前加载到内存的 Avatars</li>
+<li>Worlds</li>
+<li>Items</li>
+<li>其他资源</li>
+</ul>
+<p><strong>用途</strong>:<strong>主要用于 VRChat 故障排查</strong>,世界开发中较少使用。</p>
+<blockquote>
+<p><strong>⚠️ 警告</strong>:“Force GC” 和 “Force GC (full)” 按钮触发<strong>内部 GC 通道</strong>。</p>
+<ul>
+<li>看似减少内存使用</li>
+<li><strong>不推荐</strong>无完整理解时使用</li>
+<li><strong>不会</strong>真正改善性能或 RAM 使用</li>
+<li>反复使用<strong>可能导致性能问题或不稳定</strong></li>
+</ul>
+</blockquote>
+<h3 id="22-version--info2">2.2 Version &#x26; Info(2)</h3>
+<p><strong>显示内容</strong>:</p>
+<ul>
+<li>Debug 视图系统帮助信息</li>
+<li>当前 VRChat 构建版本</li>
+<li>热键说明(红色)</li>
+</ul>
+<p><strong>特殊功能</strong>:</p>
+<ul>
+<li>按钮可切换不同 <strong>Debug World Overlays</strong></li>
+<li>快捷键 <code>Right Shift</code>+<code>~</code>+<code>2</code> 首次按下<strong>仅显示最小化 HUD</strong>(基本信息)</li>
+<li>再次按下打开<strong>完整 Debug 视图</strong></li>
+</ul>
+<h3 id="23-log-viewer3">2.3 Log Viewer(3)</h3>
+<p><strong>显示内容</strong>:</p>
+<ul>
+<li>输出日志</li>
+<li><strong>Udon Behaviour 崩溃信息</strong> ⭐</li>
+<li><code>Debug.Log</code> 输出</li>
+<li>Unity / VRChat 错误</li>
+</ul>
+<p><strong>顶部按钮</strong>:</p>
+<ul>
+<li>启用/禁用特定日志类型</li>
+<li>用作过滤器</li>
+</ul>
+<p><strong>Background 选项</strong>:</p>
+<ul>
+<li>即使 Debug 菜单关闭也<strong>收集日志</strong></li>
+<li><strong>重启后保留</strong></li>
+<li>启动时<strong>警告一次</strong>(若激活)</li>
+</ul>
+<blockquote>
+<p><strong>⚠️ 警告</strong>:后台收集日志<strong>对性能有显著影响</strong>。</p>
+</blockquote>
+<p><strong>Udon 开发关键用途</strong>:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="csharp"><code><span class="line"><span style="color:#E1E4E8">Debug.</span><span style="color:#B392F0">Log</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"Variable value: "</span><span style="color:#F97583"> +</span><span style="color:#E1E4E8"> value);</span></span>
+<span class="line"><span style="color:#E1E4E8">Debug.</span><span style="color:#B392F0">LogError</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"Something went wrong"</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#E1E4E8">Debug.</span><span style="color:#B392F0">LogWarning</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"Performance concern"</span><span style="color:#E1E4E8">);</span></span></code></pre>
+<h3 id="24-players4">2.4 Players(4)</h3>
+<blockquote>
+<p><strong>FACT</strong>:Debug View 4 显示<strong>其他玩家的各种统计</strong>。</p>
+</blockquote>
+<p><strong>每玩家列</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>列</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>M</strong></td>
+<td>是否为 Instance Master</td>
+</tr>
+<tr>
+<td><strong>L</strong></td>
+<td>是否为本地玩家</td>
+</tr>
+<tr>
+<td><strong>VR</strong></td>
+<td>是否在 VR 中</td>
+</tr>
+<tr>
+<td><strong>Group</strong></td>
+<td>当前所属组(内部网络系统,按距离组合对象)</td>
+</tr>
+<tr>
+<td><strong>Intrvl</strong></td>
+<td>玩家发送自身同步数据的间隔时间</td>
+</tr>
+<tr>
+<td><strong>Fnl D</strong></td>
+<td>内部系统目标延迟(实际延迟频繁调整以平衡延迟与平滑)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>顶部信息</strong>:</p>
+<ul>
+<li>当前实时网络状态</li>
+<li><strong>“Suffering”</strong> 字段:世界 Udon Behaviour 是否发送<strong>过多数据</strong> ⭐</li>
+</ul>
+<p><strong>底部按钮</strong>:导出统计到 JSON 文件(同日志目录),主要用于<strong>内部测试</strong>。</p>
+<blockquote>
+<p><strong>FACT</strong>:Udon 可通过 <strong>Network Stats API</strong> 检查大部分这些值。</p>
+</blockquote>
+<h3 id="25-net-objects6">2.5 Net Objects(6)</h3>
+<blockquote>
+<p><strong>FACT</strong>:Net Objects 页面显示<strong>世界中所有网络对象</strong>及其统计。</p>
+</blockquote>
+<p><strong>每对象列</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>列</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Owner</strong></td>
+<td>对象所有者的 playerId</td>
+</tr>
+<tr>
+<td><strong>Group</strong></td>
+<td>当前所属组(同 Players 页定义)</td>
+</tr>
+<tr>
+<td><strong>Sleeping</strong></td>
+<td>对象是否休眠(仅 <code>VRCObjectSync</code> 可休眠,休眠后停止传输数据)</td>
+</tr>
+<tr>
+<td><strong>Delay</strong></td>
+<td>Owner 与查看者之间的当前延迟</td>
+</tr>
+<tr>
+<td><strong>Size</strong></td>
+<td>每次同步的字节数</td>
+</tr>
+<tr>
+<td><strong>Bps</strong></td>
+<td>该对象每秒约使用的字节数</td>
+</tr>
+<tr>
+<td><strong>Since Last</strong></td>
+<td>距上次发送数据的运行计数</td>
+</tr>
+<tr>
+<td><strong>Interval</strong></td>
+<td>该对象每秒约尝试同步的次数</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>⚠️ 警告</strong>:对象多时,打开此页<strong>可能导致性能下降</strong>。</p>
+</blockquote>
+<p><strong>性能优化关键</strong>:</p>
+<ul>
+<li><strong>Size 大</strong> = 单次同步负载大(检查 UdonSynced 变量数量/大小)</li>
+<li><strong>Bps 高</strong> = 带宽消耗大(检查是否过度同步)</li>
+<li><strong>Since Last 持续增长</strong> = 对象休眠良好(可接受)</li>
+<li><strong>Interval 过高</strong> = 同步频率过高(可能需 Manual 模式 + 阈值触发)</li>
+</ul>
+<h3 id="26-audio-sources">2.6 Audio Sources</h3>
+<blockquote>
+<p><strong>FACT</strong>:显示世界所有活跃 <code>AudioSource</code> 组件的信息。</p>
+</blockquote>
+<p><strong>每声源列</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>列</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Name</strong></td>
+<td>GameObject 名称</td>
+</tr>
+<tr>
+<td><strong>Clip</strong></td>
+<td>分配的 <code>AudioClip</code> 名(不包含 <code>PlayOneShot</code>;未设置时为 <code> </code>)</td>
+</tr>
+<tr>
+<td><strong>Type</strong></td>
+<td>声源类型(World / Avatar / Internal;普通用户仅见 World)</td>
+</tr>
+<tr>
+<td><strong>Vol</strong></td>
+<td>Unity 设置的音量(<strong>不</strong>含 <code>VRC_SpatialAudioSource</code> 的 <code>Gain</code>)</td>
+</tr>
+<tr>
+<td><strong>3D</strong></td>
+<td><code>spatialBlend</code> 值</td>
+</tr>
+<tr>
+<td><strong>Act/Prog</strong></td>
+<td>是否正在播放,及相对 <code>Clip</code> 的进度(无 Clip 时为 <code>-1.0%</code>)</td>
+</tr>
+<tr>
+<td><strong>VRC/SAS</strong></td>
+<td>是否有 <code>VRC_SpatialAudioSource</code>,是否转换为 Steam Audio</td>
+</tr>
+<tr>
+<td><strong>Dist</strong></td>
+<td>到声源的距离(物理单位),及<strong>虚拟距离</strong>(受 Avatar 缩放影响,用于近场计算)</td>
+</tr>
+<tr>
+<td><strong>lG/rG dB</strong></td>
+<td>近场模拟的左右耳音量偏移(分贝)</td>
+</tr>
+<tr>
+<td><strong>d</strong></td>
+<td>计算 lG/rG 的方向性因子</td>
+</tr>
+<tr>
+<td><strong>PPC°</strong></td>
+<td>透视校正偏移(度,物理位置与透视校正后位置的夹角)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>排序方式</strong>:</p>
+<ul>
+<li><strong>Scene</strong>(加载顺序)</li>
+<li><strong>距离</strong>(从声源到听者)</li>
+</ul>
+<p><strong>额外功能</strong>:</p>
+<ul>
+<li>切换显示附近 <code>AudioSource</code> 的<strong>基本射线和位置信息</strong>(主要供内部使用)</li>
+<li><strong>需 World Debugging 权限</strong></li>
+</ul>
+<hr>
+<hr>
+<h1 id="world-debug-views---vrchat-debug-视图三debug-world-overlays世界内叠加层">World Debug Views - VRChat Debug 视图：三、Debug World Overlays(世界内叠加层)</h1>
+<blockquote>
+<p><strong>FACT</strong>:Overlays <strong>不是 Debug 菜单页面</strong>,而是<strong>直接在世界内显示数据</strong>。</p>
+</blockquote>
+<p><strong>启用方式</strong>:</p>
+<ol>
+<li>快捷键(<code>Right Shift</code>+<code>~</code>+<code>&#x3C; Number ></code>)</li>
+<li>从 <strong>Version &#x26; Info (2)</strong> 页面切换</li>
+</ol>
+<p><strong>通用要求</strong>:</p>
+<ul>
+<li><strong>World Debugging 启用</strong> 或 <strong>当前世界由你上传</strong></li>
+<li>World Debugging 状态在 Debug 菜单<strong>左下角</strong>显示</li>
+</ul>
+<h3 id="31-physbone--contact-overlay7">3.1 PhysBone &#x26; Contact Overlay(7)</h3>
+<blockquote>
+<p><strong>FACT</strong>:Debug View 7 高亮世界中<strong>附近的 PhysBones 和 Contacts</strong>。</p>
+</blockquote>
+<p><strong>用途</strong>:调试 PhysBone / Contact 组件行为不符合预期时。</p>
+<h3 id="32-network-object-info-overlay8">3.2 Network Object Info Overlay(8)</h3>
+<blockquote>
+<p><strong>FACT</strong>:在<strong>每个同步对象上</strong>显示<strong>信息面板</strong>。</p>
+</blockquote>
+<p><strong>每对象面板</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>字段</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>P</strong></td>
+<td>所有者的 Ping</td>
+</tr>
+<tr>
+<td><strong>Q</strong></td>
+<td>数据质量(100% = 无丢包)</td>
+</tr>
+<tr>
+<td><strong>O</strong></td>
+<td>对象所有者的 PlayerID</td>
+</tr>
+<tr>
+<td><strong>G</strong></td>
+<td>当前所属组(同前定义)</td>
+</tr>
+<tr>
+<td><strong>Held</strong></td>
+<td>是否被持有(若是 Pickup)</td>
+</tr>
+<tr>
+<td><strong>Status</strong></td>
+<td>对象正在做什么(如 <code>Should Sleep</code> / <code>Player</code> / <code>Held</code> / <code>Discontinuity</code>)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="33-player-info-overlay9">3.3 Player Info Overlay(9)</h3>
+<blockquote>
+<p><strong>FACT</strong>:与 Net Object Info Overlay 类似,但在<strong>每个玩家脚下</strong>显示<strong>信息面板</strong>。</p>
+</blockquote>
+<p><strong>用途</strong>:实时观察玩家网络状态、Owner 关系等。</p>
+<h3 id="34-vrc_uishape-debug-overlay0">3.4 VRC_UiShape Debug Overlay(0)</h3>
+<blockquote>
+<p><strong>FACT</strong>:<code>VRC_UiShape</code> Debug Overlay 显示世界中<strong>每个 VRC_UiShape 的轮廓</strong>。</p>
+</blockquote>
+<p><strong>额外功能</strong>:</p>
+<ul>
+<li><strong>屏幕</strong>(桌面模式)或<strong>手部</strong>(VR 模式)显示<strong>当前指向对象</strong>的文本叠加</li>
+<li>用于<strong>诊断 UI 交互问题</strong></li>
+</ul>
+<p><strong>典型调试场景</strong>:</p>
+<ul>
+<li>UI 点击不响应 → 确认 VRC_UiShape 覆盖范围</li>
+<li>桌面模式手部射线与 UI 区域对齐问题</li>
+<li>多人 UI 焦点切换异常</li>
+</ul>
+<hr>
+<hr>
+<h1 id="world-debug-views---vrchat-debug-视图四network-stats-apiudon-可读">World Debug Views - VRChat Debug 视图：四、Network Stats API(Udon 可读)</h1>
+<blockquote>
+<p><strong>FACT</strong>:Udon 可通过 <strong>Network Stats API</strong> 检查 Players (4) 视图显示的大部分值。</p>
+</blockquote>
+<h3 id="41-关键-api">4.1 关键 API</h3>
+<p>参考 entities/api/networking 完整列表,核心 API:</p>
+<table>
+<thead>
+<tr>
+<th>API</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Networking.GetServerTimeInMilliseconds()</code></td>
+<td>服务器时间</td>
+</tr>
+<tr>
+<td><code>Networking.CalculateServerDeltaTime()</code></td>
+<td>时间差计算</td>
+</tr>
+<tr>
+<td><code>Networking.IsMaster</code></td>
+<td>是否 Master</td>
+</tr>
+<tr>
+<td><code>Networking.LocalPlayer</code></td>
+<td>本地玩家</td>
+</tr>
+<tr>
+<td><code>Networking.GetOwner(gameObject)</code></td>
+<td>对象所有者</td>
+</tr>
+<tr>
+<td><code>Networking.IsOwner(gameObject)</code></td>
+<td>本地是否 Owner</td>
+</tr>
+</tbody>
+</table>
+<h3 id="42-suffering-字段的自检模式">4.2 “Suffering” 字段的自检模式</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="csharp"><code><span class="line"><span style="color:#F97583">public</span><span style="color:#F97583"> class</span><span style="color:#B392F0"> NetworkHealthMonitor</span><span style="color:#E1E4E8"> : </span><span style="color:#B392F0">UdonSharpBehaviour</span></span>
+<span class="line"><span style="color:#E1E4E8">{</span></span>
+<span class="line"><span style="color:#F97583">    void</span><span style="color:#B392F0"> Update</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"><span style="color:#E1E4E8">    {</span></span>
+<span class="line"><span style="color:#6A737D">        // 检查是否在 Master 上</span></span>
+<span class="line"><span style="color:#F97583">        if</span><span style="color:#E1E4E8"> (</span><span style="color:#F97583">!</span><span style="color:#E1E4E8">Networking.IsMaster) </span><span style="color:#F97583">return</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">        </span></span>
+<span class="line"><span style="color:#6A737D">        // 计算"健康度"(示例)</span></span>
+<span class="line"><span style="color:#F97583">        float</span><span style="color:#B392F0"> totalBps</span><span style="color:#F97583"> =</span><span style="color:#B392F0"> CalculateTotalBytesPerSecond</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#F97583">        if</span><span style="color:#E1E4E8"> (totalBps </span><span style="color:#F97583">></span><span style="color:#79B8FF"> 9000</span><span style="color:#E1E4E8">)  </span><span style="color:#6A737D">// 接近 ~11KB/s 限制</span></span>
+<span class="line"><span style="color:#E1E4E8">        {</span></span>
+<span class="line"><span style="color:#E1E4E8">            Debug.</span><span style="color:#B392F0">LogWarning</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"Network usage high: "</span><span style="color:#F97583"> +</span><span style="color:#E1E4E8"> totalBps </span><span style="color:#F97583">+</span><span style="color:#9ECBFF"> " B/s"</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#E1E4E8">        }</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span></span>
+<span class="line"><span style="color:#F97583">    float</span><span style="color:#B392F0"> CalculateTotalBytesPerSecond</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"><span style="color:#E1E4E8">    {</span></span>
+<span class="line"><span style="color:#6A737D">        // 遍历所有网络对象并累计</span></span>
+<span class="line"><span style="color:#6A737D">        // (实际实现需枚举游戏对象)</span></span>
+<span class="line"><span style="color:#F97583">        return</span><span style="color:#79B8FF"> 0f</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<hr>
+<hr>
+<h1 id="world-debug-views---vrchat-debug-视图五典型调试工作流">World Debug Views - VRChat Debug 视图：五、典型调试工作流</h1>
+<h3 id="51-网络同步问题排查">5.1 网络同步问题排查</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>1. Build &#x26; Test 多客户端(2-4)</span></span>
+<span class="line"><span>   ↓</span></span>
+<span class="line"><span>2. 一名玩家操作 UI 触发同步</span></span>
+<span class="line"><span>   ↓</span></span>
+<span class="line"><span>3. 另一名玩家看不到同步?</span></span>
+<span class="line"><span>   ↓</span></span>
+<span class="line"><span>4. 打开 Debug View 6(Net Objects)</span></span>
+<span class="line"><span>   ↓</span></span>
+<span class="line"><span>5. 检查目标对象的:</span></span>
+<span class="line"><span>   - Owner 是否正确</span></span>
+<span class="line"><span>   - Size(每次同步字节数)</span></span>
+<span class="line"><span>   - Bps(带宽)</span></span>
+<span class="line"><span>   - Interval(同步频率)</span></span>
+<span class="line"><span>   ↓</span></span>
+<span class="line"><span>6. 打开 Debug View 4(Players)</span></span>
+<span class="line"><span>   ↓</span></span>
+<span class="line"><span>7. 检查双方玩家:</span></span>
+<span class="line"><span>   - Group(应在同一组)</span></span>
+<span class="line"><span>   - Delay(延迟是否过高)</span></span>
+<span class="line"><span>   - Suffering(整体网络是否过载)</span></span></code></pre>
+<h3 id="52-ui-交互问题排查">5.2 UI 交互问题排查</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>1. UI 点击不响应</span></span>
+<span class="line"><span>   ↓</span></span>
+<span class="line"><span>2. 打开 Debug View 0(VRC_UiShape Debug Overlay)</span></span>
+<span class="line"><span>   ↓</span></span>
+<span class="line"><span>3. 确认 VRC_UiShape 覆盖 UI 区域</span></span>
+<span class="line"><span>   ↓</span></span>
+<span class="line"><span>4. 桌面/VR 模式下查看指向提示</span></span>
+<span class="line"><span>   ↓</span></span>
+<span class="line"><span>5. 检查 UI Events 白名单(`ui-events.md`)</span></span>
+<span class="line"><span>   ↓</span></span>
+<span class="line"><span>6. 确认 OnClick 配置正确</span></span></code></pre>
+<h3 id="53-physbone-行为异常">5.3 PhysBone 行为异常</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>1. PhysBone 不按预期摆动/抓取</span></span>
+<span class="line"><span>   ↓</span></span>
+<span class="line"><span>2. 打开 Debug View 7(PhysBone &#x26; Contact Overlay)</span></span>
+<span class="line"><span>   ↓</span></span>
+<span class="line"><span>3. 确认 PhysBone 范围</span></span>
+<span class="line"><span>   ↓</span></span>
+<span class="line"><span>4. 检查碰撞体设置</span></span>
+<span class="line"><span>   ↓</span></span>
+<span class="line"><span>5. 检查 Avatar 是否在 PhysBone 影响范围内</span></span></code></pre>
+<h3 id="54-udon-性能问题">5.4 Udon 性能问题</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>1. 世界运行卡顿</span></span>
+<span class="line"><span>   ↓</span></span>
+<span class="line"><span>2. 打开 Debug View 3(Log Viewer)</span></span>
+<span class="line"><span>   ↓</span></span>
+<span class="line"><span>3. 查找 Udon Behaviour 崩溃或警告</span></span>
+<span class="line"><span>   ↓</span></span>
+<span class="line"><span>4. 检查 Debug.LogError / Debug.LogWarning 输出</span></span>
+<span class="line"><span>   ↓</span></span>
+<span class="line"><span>5. 打开 Debug View 6(Net Objects)</span></span>
+<span class="line"><span>   ↓</span></span>
+<span class="line"><span>6. 检查网络对象是否过多或 Size 过大</span></span>
+<span class="line"><span>   ↓</span></span>
+<span class="line"><span>7. 使用 Network Stats API 自检</span></span></code></pre>
+<hr>
+<hr>
+<h1 id="world-debug-views---vrchat-debug-视图六性能开销">World Debug Views - VRChat Debug 视图：六、性能开销</h1>
+<blockquote>
+<p><strong>FACT</strong>:打开 Debug 视图本身<strong>有性能开销</strong>。</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>视图</th>
+<th>性能影响</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>AssetBundle and Memory View (1)</td>
+<td>低</td>
+</tr>
+<tr>
+<td>Version &#x26; Info (2)</td>
+<td>极低</td>
+</tr>
+<tr>
+<td>Log Viewer (3)</td>
+<td>低(Background 模式高)</td>
+</tr>
+<tr>
+<td>Players (4)</td>
+<td>低</td>
+</tr>
+<tr>
+<td>Net Objects (6)</td>
+<td><strong>🟡 对象多时高</strong></td>
+</tr>
+<tr>
+<td>Audio Sources</td>
+<td>低</td>
+</tr>
+<tr>
+<td>PhysBone &#x26; Contact Overlay (7)</td>
+<td>中</td>
+</tr>
+<tr>
+<td>Network Object Info Overlay (8)</td>
+<td><strong>🟡 同步对象多时高</strong></td>
+</tr>
+<tr>
+<td>Player Info Overlay (9)</td>
+<td>低</td>
+</tr>
+<tr>
+<td>VRC_UiShape Debug Overlay (0)</td>
+<td><strong>🟡 VRC_UiShape 多时高</strong></td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>【推断】</strong> 调试时建议<strong>仅开启需要的视图</strong>。</p>
+</blockquote>
+<hr>
+<hr>
+<h1 id="world-debug-views---vrchat-debug-视图七与其他文档的关系">World Debug Views - VRChat Debug 视图：七、与其他文档的关系</h1>
+<table>
+<thead>
+<tr>
+<th>相关文档</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>entities/api/networking</td>
+<td>Network Stats API 完整参考</td>
+</tr>
+<tr>
+<td>entities/world/udon/using-build-test</td>
+<td>Build &#x26; Test 多客户端</td>
+</tr>
+<tr>
+<td>entities/world/udon/vm-and-assembly</td>
+<td>字节码级调试</td>
+</tr>
+<tr>
+<td>entities/avatar/physbones</td>
+<td>PhysBone 组件参考（含 World 端 Udon 调试）</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<hr>
+<h1 id="world-debug-views---vrchat-debug-视图八检查清单调试前">World Debug Views - VRChat Debug 视图：八、检查清单(调试前)</h1>
+<ul class="contains-task-list">
+<li class="task-list-item"><input type="checkbox" disabled> 已启用 <strong>World Debugging</strong>(如需受限视图)</li>
+<li class="task-list-item"><input type="checkbox" disabled> 已记忆<strong>快捷键</strong>或知道<strong>菜单路径</strong></li>
+<li class="task-list-item"><input type="checkbox" disabled> 已准备好<strong>Log Viewer 截图工具</strong></li>
+<li class="task-list-item"><input type="checkbox" disabled> 已规划<strong>多客户端测试场景</strong></li>
+<li class="task-list-item"><input type="checkbox" disabled> 已记录<strong>问题前后的关键数据</strong>(Size, Bps, Delay)</li>
+<li class="task-list-item"><input type="checkbox" disabled> 已<strong>关闭不相关的 Debug 视图</strong>以减少开销</li>
+</ul>
+<hr>
+<hr>
+<h1 id="world-debug-views---vrchat-debug-视图九missing-information">World Debug Views - VRChat Debug 视图：九、Missing Information</h1>
+<blockquote>
+<p><strong>【未确认】</strong> 以下信息需要查询 VRChat 官方补充文档:</p>
+<ul>
+<li>Network Stats API 完整列表(文档未提供)</li>
+<li>“Suffering” 字段的具体阈值</li>
+<li>Net Objects 视图的”Sleeping” 触发条件</li>
+<li>VRC_UiShape Debug Overlay 的具体渲染细节</li>
+<li>各 Debug 视图在 Quest 平台的可用性</li>
+</ul>
+</blockquote>
+<hr>
+<hr>
+<h1 id="world-debug-views---vrchat-debug-视图十performance-debug-dashboard-202611-new">World Debug Views - VRChat Debug 视图：十、Performance Debug Dashboard (2026.1.1+) ⭐NEW</h1>
+<blockquote>
+<p><strong>FACT</strong> (2026.1.1 Build 1781 起,2026.1.1 Open Beta 已包含):Debug 菜单新增 <strong>Performance</strong> 标签,允许创建和自定义性能仪表盘。</p>
+</blockquote>
+<h3 id="访问方式">访问方式</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>Right shift + ~ + 1</span></span></code></pre>
+<p>或:Quick Menu → Settings 标签 → 底部 <strong>“Toggle Debug UI”</strong> 按钮 → 进入 Debug 菜单 → <strong>Performance</strong> 标签</p>
+<h3 id="功能">功能</h3>
+<ul>
+<li><strong>创建自定义仪表盘</strong></li>
+<li><strong>图表展示</strong>多种性能指标</li>
+<li>实时采样</li>
+</ul>
+<h3 id="202611p1-变更open-beta-build-1783">2026.1.1p1 变更(Open Beta Build 1783)</h3>
+<table>
+<thead>
+<tr>
+<th>变更</th>
+<th>详情</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Performance sampling 默认关闭</strong></td>
+<td>减少开销</td>
+</tr>
+<tr>
+<td><strong>可手动切换</strong></td>
+<td>在 Performance Debugging UI 中直接启用</td>
+</tr>
+<tr>
+<td><strong>数据字段显示当前值</strong></td>
+<td>调试菜单的 Performance 标签数据字段显示<strong>最新采样值 (Cur)</strong></td>
+</tr>
+<tr>
+<td><strong>Min/Max 字段语义</strong></td>
+<td>显示<strong>显示数据的限制</strong>(非图边缘)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="已知问题">已知问题</h3>
+<table>
+<thead>
+<tr>
+<th>版本</th>
+<th>问题</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2026.1.1 Open Beta</td>
+<td>调试时偶发卡顿(framerate hitches,逐渐加重)</td>
+</tr>
+<tr>
+<td>2026.1.1p1</td>
+<td>修复卡顿(尤其 Quest),sampling 默认关闭</td>
+</tr>
+</tbody>
+</table>
+<h3 id="创作者用例">创作者用例</h3>
+<table>
+<thead>
+<tr>
+<th>场景</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>性能调优</strong></td>
+<td>监控特定 World/Avatar 帧率趋势</td>
+</tr>
+<tr>
+<td><strong>带宽诊断</strong></td>
+<td>观察网络流量峰值</td>
+</tr>
+<tr>
+<td><strong>帧时间分析</strong></td>
+<td>定位 GC spike 或物理负载</td>
+</tr>
+<tr>
+<td><strong>玩家体验模拟</strong></td>
+<td>用同一指标对比不同 Avatar/World 性能</td>
+</tr>
+</tbody>
+</table>
+<p>详见 entities/world/audio-steam §4(Steam Audio Debug 字段)与本章节配合使用。</p>
+<hr>
+<hr>
+<h1 id="world-debug-views---vrchat-debug-视图相关页面">World Debug Views - VRChat Debug 视图：相关页面</h1>
+<p>avatar-events.md · udon-moderation-tool-guidelines.md · ui-events.md · ai-navigation.md · animation-events.md</p>
+<hr> </div> <p class="kb-source-note" data-astro-cid-lvjzyg5v>
+本文由 VRChat 开发知识库自动整理（社区整理  · 可信度 medium ），
+          遇到与手写教程冲突的地方，以官方文档为最高优先级。
+</p> <section class="comments" id="comments" data-astro-cid-lvjzyg5v> <h2 class="comments__title" data-astro-cid-lvjzyg5v>✦ 旅人留言（0）</h2> <p class="comments__empty" id="commentsEmpty" data-astro-cid-lvjzyg5v>
+还没有旅人留言 —— 有疑问就写在下面，站长都会回复。
+</p> <form class="comment-form" id="commentForm" data-target="kb-world-udon-world-debug-views" data-astro-cid-lvjzyg5v> <p class="comment-form__title" data-astro-cid-lvjzyg5v>写下你的留言</p> <input id="cAuthor" maxlength="20" placeholder="昵称（留空则为「旅人」）" data-astro-cid-lvjzyg5v> <textarea id="cBody" maxlength="1000" required placeholder="想问的问题、想说的感谢都可以（最多 1000 字）" data-astro-cid-lvjzyg5v></textarea> <div class="comment-form__actions" data-astro-cid-lvjzyg5v> <button class="btn btn--primary" type="submit" data-astro-cid-lvjzyg5v>发布留言</button> <span class="form-hint" data-astro-cid-lvjzyg5v>留言保存在本站，站长在写作台里能看到</span> <span class="form-msg" id="cMsg" data-astro-cid-lvjzyg5v></span> </div> </form> </section> <nav class="station-nav" aria-label="站间导航" data-astro-cid-lvjzyg5v> <a href="/STELLASTOPVRC/posts/kb-world-udon-vrctween-tween-types/" data-astro-cid-lvjzyg5v> <span class="dir" data-astro-cid-lvjzyg5v>← 上一站 · 更新的星光</span> <span class="to" data-astro-cid-lvjzyg5v>VRCTween 补间类型全表</span> </a> <a href="/STELLASTOPVRC/posts/kb-world-vrc-camera-settings/" data-astro-cid-lvjzyg5v> <span class="dir" data-astro-cid-lvjzyg5v>下一站 · 更早的星光 →</span> <span class="to" data-astro-cid-lvjzyg5v>VRCCameraSettings</span> </a> </nav> </div> <aside class="toc" id="toc" hidden> <p class="toc__title">✦ 本页星图</p> <nav id="tocNav" aria-label="文章目录"></nav> </aside> <script type="module">const i=document.querySelector(".prose"),d=document.getElementById("toc"),u=document.getElementById("tocNav"),l=[];if(i&&d&&u){const c=[...i.querySelectorAll("h1, h2, h3")];if(c.length>=3){d.hidden=!1,c.forEach((o,e)=>{o.id||(o.id=`sec-${e}`);const n=document.createElement("a");n.href=`#${o.id}`;const s=(o.textContent??"").replace(/\s+/g," ").trim(),r=s.search(/[：:]/),a=r>=4?s.slice(0,r):s;n.textContent=a.length>40?`${a.slice(0,40)}…`:a,n.title=s,u.appendChild(n),l.push({a:n,h:o})});const t=()=>{let o=l[0];for(const e of l)e.h.getBoundingClientRect().top<=130&&(o=e);for(const e of l)e.a.classList.toggle("is-active",e===o)};addEventListener("scroll",t,{passive:!0}),t()}}document.querySelectorAll(".prose pre").forEach(c=>{const t=document.createElement("button");t.className="code-copy",t.type="button",t.textContent="复制",t.addEventListener("click",async()=>{const o=c.querySelector("code")?.innerText??c.innerText;try{await navigator.clipboard.writeText(o)}catch{const e=document.createElement("textarea");e.value=o,document.body.appendChild(e),e.select(),document.execCommand("copy"),e.remove()}t.textContent="已复制 ✓",t.classList.add("is-ok"),setTimeout(()=>{t.textContent="复制",t.classList.remove("is-ok")},1500)}),c.appendChild(t)});</script> </article>  </main> <footer class="site-footer"> <div class="wrap"> <p class="star-line" aria-hidden="true"> <svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> <svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> </p> <p>星之驿站 StellaStop —— 在虚拟宇宙中，为你保留一座驿站</p> <p class="site-footer__disclaimer">
+该网页目前是测试阶段，仅用于测试，所有内容仅供参考；内容全部为引用互联网当中的信息。
+</p> <p>© 2026 星之驿站 · 由 <a href="https://astro.build">Astro</a> 与星光驱动</p> <p> <a data-desk-login hidden title="写作台：登录 / 注册">登录 / 注册</a> ·
+<a href="/STELLASTOPVRC/announcements/">官方公告</a> ·
+<a href="/STELLASTOPVRC/ai/">问星 AI</a> ·
+<a href="/STELLASTOPVRC/feedback/">旅人留言板</a> </p> </div> </footer> <button class="to-top" id="toTop" aria-label="回到顶部"> <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"> <path d="M12 20V5"></path> <path d="M5.5 11.5 12 5l6.5 6.5"></path> </svg> </button> <script type="module">const e=document.getElementById("toTop");if(e){const t=()=>e.classList.toggle("is-visible",scrollY>480);addEventListener("scroll",t,{passive:!0}),t(),e.addEventListener("click",()=>{const o=matchMedia("(prefers-reduced-motion: reduce)").matches;scrollTo({top:0,behavior:o?"auto":"smooth"})})}</script> <script>(function(){const deskConfigured = "";
+
+      /* 写作台探测（页面尾部执行，DOM 已就绪）：
+         1. 计算写作台地址：站点配置 deskUrl（公网部署时填）> 本机默认 localhost:4322 > 同主机 4322
+         2. 探测 /api/gate/status —— 在线才点亮「登录 / 注册」入口，并复用给验证门横幅
+         3. 不在线则保持隐藏，绝不会把访客拽进内网地址；同时给出一次性「镜像模式」提示 */
+      (function () {
+        var host = location.hostname;
+        var isLocal = host === 'localhost' || host === '127.0.0.1' || host === '[::1]';
+        var desk = deskConfigured ||
+          (isLocal ? 'http://localhost:4322' : location.protocol + '//' + host + ':4322');
+        window.STELLA_DESK = desk;
+
+        function revealLogin() {
+          document.querySelectorAll('[data-desk-login]').forEach(function (a) {
+            a.href = desk + '/admin';
+            a.removeAttribute('hidden');
+          });
+        }
+        function showBanner(css, html, shiftHeader) {
+          var bar = document.createElement('div');
+          bar.style.cssText = css;
+          bar.innerHTML = html;
+          document.body.prepend(bar);
+          if (shiftHeader) {
+            var header = document.querySelector('.site-header');
+            if (header) header.style.marginTop = '42px';
+          }
+        }
+        function hintMirrorMode() {
+          try {
+            if (sessionStorage.getItem('stella-desk-hint')) return;
+            sessionStorage.setItem('stella-desk-hint', '1');
+          } catch (e) { /* 无痕模式等：忽略 */ }
+          var tip = document.createElement('div');
+          tip.style.cssText = 'position:fixed;left:14px;bottom:14px;z-index:9998;max-width:min(92vw,430px);padding:.65rem .9rem;border-radius:12px;background:rgba(18,20,44,.92);border:1px solid rgba(150,142,255,.35);color:#e8e6ff;font-size:.82rem;line-height:1.6;font-family:system-ui,sans-serif;box-shadow:0 8px 30px rgba(0,0,0,.35)';
+          tip.innerHTML = 'ℹ️ 静态镜像模式：登录 / 评论 / AI 等互动功能需要站长写作台在线，当前不可用。' +
+            '<span id="stellaDeskHintClose" style="float:right;cursor:pointer;opacity:.75;font-weight:700;margin-left:.6rem" title="关闭">×</span>';
+          document.body.appendChild(tip);
+          var close = function () { tip.remove(); };
+          tip.querySelector('#stellaDeskHintClose').addEventListener('click', close);
+          setTimeout(close, 9000);
+        }
+
+        try {
+          var ctrl = new AbortController();
+          var timer = setTimeout(function () { ctrl.abort(); }, 2500);
+          fetch(desk + '/api/gate/status', { credentials: 'include', signal: ctrl.signal })
+            .then(function (r) { return r.ok ? r.json() : null; })
+            .then(function (d) {
+              clearTimeout(timer);
+              if (!d) throw new Error('desk-offline');
+              window.STELLA_DESK_OK = true;
+              revealLogin();
+              if (d.regionBlocked) {
+                showBanner(
+                  'position:fixed;top:0;left:0;right:0;z-index:9999;padding:1.2rem;text-align:center;background:#1a0a0a;color:#ff9ed2;font-size:.95rem;border-bottom:2px solid #ff4d6d;font-family:system-ui,sans-serif',
+                  '⛔ 你所在的地区（' + (d.regionCountry || '未知') + '）暂不开放访问。',
+                  false
+                );
+                return;
+              }
+              if (d.enabled && !d.passed) {
+                showBanner(
+                  'position:fixed;top:0;left:0;right:0;z-index:9999;padding:0.7rem;text-align:center;background:linear-gradient(94deg,rgba(143,127,247,.25),rgba(98,200,245,.18));border-bottom:1px solid rgba(150,142,255,.3);color:#f0efff;font-size:.88rem;font-family:system-ui,sans-serif',
+                  '🔒 本站启用了安全验证 —— <a href="' + desk + '/gate?next=' + encodeURIComponent(location.href) + '" style="color:#ffd98e;font-weight:700;text-decoration:underline">点击完成验证</a>，通过后即可使用全部功能（30 天免验）。',
+                  true
+                );
+              }
+            })
+            .catch(function () {
+              clearTimeout(timer);
+              window.STELLA_DESK_OK = false;
+              hintMirrorMode();
+            });
+        } catch (e) { /* 忽略 */ }
+      })();
+    })();</script> </body> </html> <script type="module">const m=document.getElementById("commentForm"),s=document.getElementById("cMsg"),u=`${location.protocol}//${location.hostname}:4322/api/message`;function r(e,t=!1){s&&(s.textContent=e,s.classList.toggle("is-err",t),s.classList.toggle("is-ok",!t))}function y(){const e=new Date,t=n=>String(n).padStart(2,"0");return`${e.getFullYear()}-${t(e.getMonth()+1)}-${t(e.getDate())}`}function f(e){let t=7;for(const n of e)t=(t*31+n.charCodeAt(0))%360;return t}function g(e,t){const n=document.createElement("li");n.className="comment",n.innerHTML=`
+      <span class="comment__avatar"></span>
+      <div class="comment__bubble">
+        <div class="comment__head">
+          <span class="comment__name"></span>
+          <time class="comment__date">${y()}</time>
+        </div>
+        <p class="comment__body"></p>
+      </div>`;const o=n.querySelector(".comment__avatar");return o.style.setProperty("--h",String(f(e))),o.textContent=e.slice(0,1),n.querySelector(".comment__name").textContent=e,n.querySelector(".comment__body").textContent=t,n}m?.addEventListener("submit",async e=>{e.preventDefault();const t=document.getElementById("cBody").value.trim();if(!t)return r("留言内容不能为空哦",!0);const n=document.getElementById("cAuthor").value.trim()||"旅人",o=m.querySelector("button");o&&(o.disabled=!0);try{const c=await fetch(u,{credentials:"include",method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({target:m.dataset.target,kind:"comment",author:n,body:t})}),d=await c.json().catch(()=>({}));if(!c.ok)throw new Error(d.error||`发送失败（${c.status}）`);const l=document.querySelector(".comment-list");l&&l.appendChild(g(n,t)),document.getElementById("commentsEmpty")?.remove(),document.getElementById("cBody").value="",r("留言已发布，感谢支持 ✦");const a=document.querySelector(".comments__title"),i=a?.textContent?.match(/（(\d+)）/);a&&i&&(a.textContent=a.textContent.replace(/（\d+）/,`（${Number(i[1])+1}）`))}catch(c){r(c instanceof TypeError?"写作台没在运行，暂时收不到留言 —— 双击「启动博客.bat」就好":c.message,!0)}finally{o&&(o.disabled=!1)}});</script> 

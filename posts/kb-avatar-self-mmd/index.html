@@ -1,0 +1,445 @@
+<!DOCTYPE html><html lang="zh-CN"> <head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="generator" content="Astro v5.18.2"><meta name="description" content="结论：自身跳 MMD（Self MMD）指在 Avatar 自己身上播放 MMD 舞蹈动画，通常配合音乐一起播放；此方案来自 yexcadocs 的社区实操经验，不是 VRChat 官方文档定义的功能（来源：yexcad"><meta name="theme-color" content="#070a1c"><meta property="og:title" content="自身跳 MMD 舞蹈（Self MMD）— Avatar 身上播放 MMD 舞蹈与音乐 · 星之驿站 StellaStop"><meta property="og:description" content="结论：自身跳 MMD（Self MMD）指在 Avatar 自己身上播放 MMD 舞蹈动画，通常配合音乐一起播放；此方案来自 yexcadocs 的社区实操经验，不是 VRChat 官方文档定义的功能（来源：yexcad"><meta property="og:type" content="website"><meta name="twitter:card" content="summary"><link rel="icon" type="image/svg+xml" href="/STELLASTOPVRC/favicon.svg"><script>
+      // 在渲染前恢复主题与特效档位，避免闪一下默认状态
+      try {
+        document.documentElement.dataset.theme =
+          localStorage.getItem('stella-theme') || 'nebula';
+        document.documentElement.dataset.fx =
+          localStorage.getItem('stella-fx') || 'standard';
+      } catch {
+        /* 隐私模式读不到就算了 */
+      }
+    </script><link rel="stylesheet" href="/STELLASTOPVRC/custom-vars.css"><title>自身跳 MMD 舞蹈（Self MMD）— Avatar 身上播放 MMD 舞蹈与音乐 · 星之驿站 StellaStop</title><link rel="stylesheet" href="/STELLASTOPVRC/_astro/about.Bgh6wcGl.css">
+<style>.post-head__meta[data-astro-cid-lvjzyg5v]{color:var(--ink-faint);font-family:var(--font-mono);font-size:.82rem}.post-head[data-astro-cid-lvjzyg5v] .chip-row[data-astro-cid-lvjzyg5v]{margin-top:1rem}.kb-source-note[data-astro-cid-lvjzyg5v]{max-width:760px;margin:2.2rem auto 0;font-size:.82rem;color:var(--ink-faint);border-top:1px dashed var(--line);padding-top:1rem}
+</style></head> <body> <div class="site-notice" id="siteNotice"> <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> <span class="site-notice__text">欢迎来到星之驿站！</span> <button class="site-notice__close" id="noticeClose" type="button" aria-label="关闭公告">
+×
+</button> </div> <a class="skip-link" href="#main">跳到主要内容</a> <canvas id="starfield" aria-hidden="true" data-astro-cid-ra7sfcwn></canvas> <div class="fx-aurora fx-aurora--a" aria-hidden="true" data-astro-cid-ra7sfcwn></div> <div class="fx-aurora fx-aurora--b" aria-hidden="true" data-astro-cid-ra7sfcwn></div>  <script type="module">const u=document.getElementById("starfield");if(u){let F=function(){const n=Math.random();return n<.1?"gold":n<.42?"blue":"white"},v=function(){const n=Math.min(window.devicePixelRatio||1,2);s=window.innerWidth,d=window.innerHeight,u.width=s*n,u.height=d*n,u.style.width=`${s}px`,u.style.height=`${d}px`,t.setTransform(n,0,0,n,0,0);const e=Math.min(190,Math.round(s*d/8500));l=Array.from({length:e},()=>({x:Math.random()*s,y:Math.random()*d,r:r(.4,1.7),base:r(.25,.8),amp:r(.12,.4),speed:r(6e-4,.0022),phase:r(0,Math.PI*2),c:F()})),C=Array.from({length:26},()=>({x:Math.random()*s,y:Math.random()*d,r:r(.9,2.4),vx:r(-.006,.006),vy:r(-.02,-.006),base:r(.2,.5),speed:r(8e-4,.002),phase:r(0,Math.PI*2),c:Math.random()<.5?"gold":"violet"})),c==="off"&&m(0,!0)},D=function(n){const e=Math.random()<.5?1:-1,o=r(Math.PI/7,Math.PI/5),a=r(.45,.75);y.push({x:r(s*.15,s*.85),y:r(-20,d*.3),vx:Math.cos(o)*a*e,vy:Math.sin(o)*a,born:n,life:r(750,1050),len:r(100,170)})},S=function(n){y=y.filter(e=>n-e.born<e.life);for(const e of y){const o=(n-e.born)/e.life,a=e.x+e.vx*(n-e.born),i=e.y+e.vy*(n-e.born),f=o<.15?o/.15:o>.7?(1-o)/.3:1,h=Math.hypot(e.vx,e.vy),x=e.vx/h,g=e.vy/h,b=t.createLinearGradient(a,i,a-x*e.len,i-g*e.len);b.addColorStop(0,`rgba(236,242,255,${(.85*f).toFixed(3)})`),b.addColorStop(1,"rgba(236,242,255,0)"),t.strokeStyle=b,t.lineWidth=1.6,t.lineCap="round",t.beginPath(),t.moveTo(a,i),t.lineTo(a-x*e.len,i-g*e.len),t.stroke()}},B=function(){let o=0;t.lineWidth=.7;for(let a=0;a<l.length&&o<26;a++)for(let i=a+1;i<l.length&&o<26;i++){const f=l[a].x-l[i].x,h=l[a].y-l[i].y,x=f*f+h*h;if(x<16900){const g=(1-Math.sqrt(x)/130)*.17;t.strokeStyle=`rgba(178,170,255,${g.toFixed(3)})`,t.beginPath(),t.moveTo(l[a].x,l[a].y),t.lineTo(l[i].x,l[i].y),t.stroke(),o++}}},X=function(n){for(const e of C){e.x+=e.vx*16,e.y+=e.vy*16,e.y<-12&&(e.y=d+10),e.x<-12&&(e.x=s+10),e.x>s+12&&(e.x=-10);const o=Math.max(.05,e.base+.25*Math.sin(n*e.speed+e.phase)),[a,i,f]=A[e.c];t.beginPath(),t.arc(e.x,e.y,e.r,0,7),t.shadowBlur=9,t.shadowColor=`rgba(${a},${i},${f},0.9)`,t.fillStyle=`rgba(${a},${i},${f},${o.toFixed(3)})`,t.fill()}t.shadowBlur=0},m=function(n,e=!1){t.clearRect(0,0,s,d);for(const o of l){const a=c==="off"?o.base:Math.max(.05,o.base+o.amp*Math.sin(n*o.speed+o.phase)),[i,f,h]=A[o.c];t.beginPath(),t.arc(o.x,o.y,o.r,0,7),o.r>1.25?(t.shadowBlur=7,t.shadowColor=`rgba(${i},${f},${h},0.85)`):t.shadowBlur=0,t.fillStyle=`rgba(${i},${f},${h},${a.toFixed(3)})`,t.fill()}if(t.shadowBlur=0,c!=="off"&&!e){c==="fancy"&&(B(),X(n));const o=c==="fancy"?r(2600,6e3):r(4200,9500);n>P&&(D(n),P=n+o),S(n)}},$=function(n){m(n),M=requestAnimationFrame($)},p=function(){if(c==="off"){m(0,!0);return}cancelAnimationFrame(M),M=requestAnimationFrame($)},w=function(){cancelAnimationFrame(M),t.clearRect(0,0,s,d),m(0,!0)};const t=u.getContext("2d"),k=matchMedia("(prefers-reduced-motion: reduce)").matches,A={white:[240,240,255],blue:[150,215,250],gold:[255,218,150],violet:[178,170,255]};let s=0,d=0,l=[],C=[],y=[],P=2500,M=0,c=document.documentElement.dataset.fx||"standard";k&&(c="off");const r=(n,e)=>n+Math.random()*(e-n);v(),addEventListener("resize",v),document.addEventListener("stella-fx-change",n=>{c=n.detail,c==="off"?w():p()}),c==="off"?m(0,!0):(p(),document.addEventListener("visibilitychange",()=>{document.hidden?w():p()}))}</script> <header class="site-header"> <div class="wrap site-header__inner"> <a class="logo" href="/STELLASTOPVRC/"> <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> <span>星之驿站</span> <span class="logo__romaji">StellaStop</span> </a> <div class="header-right"> <nav class="site-nav" aria-label="站内导航"> <a href="/STELLASTOPVRC/"> 首页 </a><a href="/STELLASTOPVRC/start/"> 新手 </a><a href="/STELLASTOPVRC/posts/"> 教程 </a><a href="/STELLASTOPVRC/videos/"> 视频 </a><a href="/STELLASTOPVRC/resources/"> 资源 </a><a href="/STELLASTOPVRC/booth/"> Booth </a><a href="/STELLASTOPVRC/announcements/"> 公告 </a><a href="/STELLASTOPVRC/ai/"> 问星 </a><a href="/STELLASTOPVRC/changelog/"> 更新日志 </a><a href="/STELLASTOPVRC/about/"> 关于 </a> </nav> <a class="login-link" data-desk-login hidden title="写作台：登录 / 注册后可发教程、传资源">
+登录 / 注册
+</a> <div class="theme-switch"> <button class="theme-switch__btn" id="themeBtn" type="button" aria-haspopup="listbox" aria-expanded="false" aria-label="切换主题配色" title="切换主题配色"> <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"> <path d="M12 3a9 9 0 1 0 9 9c0-1.2-1-2-2.2-2H17a2 2 0 0 1-2-2V6.2C15 5 14.2 4 13 4.4A9 9 0 0 0 12 3Z"></path> <circle cx="7.5" cy="11.5" r="1" fill="currentColor" stroke="none"></circle> <circle cx="10" cy="7.5" r="1" fill="currentColor" stroke="none"></circle> <circle cx="15" cy="7" r="1" fill="currentColor" stroke="none"></circle> </svg> </button> <div class="theme-pop" id="themePop" role="listbox" aria-label="选择主题" hidden> <button class="theme-opt" type="button" role="option" data-theme-value="nebula" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#8f7ff7"></span><span class="dot" style="background:#62c8f5"></span><span class="dot" style="background:#ffd98e"></span> </span> <span class="theme-opt__name">星云 · 蓝紫</span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt" type="button" role="option" data-theme-value="sakura" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#ff8fc7"></span><span class="dot" style="background:#c79bff"></span><span class="dot" style="background:#ffd08e"></span> </span> <span class="theme-opt__name">樱语 · 粉紫</span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt" type="button" role="option" data-theme-value="miku" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#2ed3c2"></span><span class="dot" style="background:#6ea8ff"></span><span class="dot" style="background:#ffe08e"></span> </span> <span class="theme-opt__name">葱色 · 青绿</span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt" type="button" role="option" data-theme-value="ember" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#ffb35c"></span><span class="dot" style="background:#ff7e6b"></span><span class="dot" style="background:#ffd98e"></span> </span> <span class="theme-opt__name">暮金 · 暖橙</span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt" type="button" role="option" data-theme-value="dawn" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#6a5ce8"></span><span class="dot" style="background:#e0568f"></span><span class="dot" style="background:#b8821e"></span> </span> <span class="theme-opt__name">晨星 · 浅色</span> <span class="theme-opt__mark">✦</span> </button> </div> </div> <script type="module">const a=document.getElementById("themeBtn"),n=document.getElementById("themePop");function s(c){document.documentElement.dataset.theme=c;try{localStorage.setItem("stella-theme",c)}catch{}const e=getComputedStyle(document.documentElement).getPropertyValue("--bg-deep").trim();document.querySelector('meta[name="theme-color"]')?.setAttribute("content",e||"#070a1c"),document.querySelectorAll(".theme-opt").forEach(t=>{const d=t.dataset.themeValue===c;t.classList.toggle("is-active",d),t.setAttribute("aria-selected",String(d))})}if(a&&n){const c=document.documentElement.dataset.theme||"nebula";document.querySelectorAll(".theme-opt").forEach(e=>{const t=e.dataset.themeValue===c;e.classList.toggle("is-active",t),e.setAttribute("aria-selected",String(t))}),a.addEventListener("click",e=>{e.stopPropagation();const t=n.hidden;n.hidden=!t,a.setAttribute("aria-expanded",String(t))}),document.addEventListener("click",e=>{!n.hidden&&!e.target.closest(".theme-switch")&&(n.hidden=!0,a.setAttribute("aria-expanded","false"))}),document.addEventListener("keydown",e=>{e.key==="Escape"&&!n.hidden&&(n.hidden=!0,a.setAttribute("aria-expanded","false"),a.focus())}),n.addEventListener("click",e=>{const t=e.target.closest(".theme-opt");t&&(s(t.dataset.themeValue??"nebula"),n.hidden=!0,a.setAttribute("aria-expanded","false"))})}</script> <div class="theme-switch fx-switch"> <button class="theme-switch__btn" id="fxBtn" type="button" aria-haspopup="listbox" aria-expanded="false" aria-label="背景特效设置" title="背景特效设置"> <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"> <path d="M5 3v4M3 5h4M6.5 17.5v3M5 19h3"></path> <path d="M14.5 4.5 16 9l4.5 1.5L16 12l-1.5 4.5L13 12l-4.5-1.5L13 9l1.5-4.5Z"></path> </svg> </button> <div class="theme-pop" id="fxPop" role="listbox" aria-label="背景特效" hidden> <button class="theme-opt fx-opt" type="button" role="option" data-fx-value="off" aria-selected="false"> <span class="fx-opt__body"> <span class="fx-opt__name">关闭特效</span> <span class="fx-opt__hint">最省电</span> </span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt fx-opt" type="button" role="option" data-fx-value="standard" aria-selected="false"> <span class="fx-opt__body"> <span class="fx-opt__name">标准</span> <span class="fx-opt__hint">闪烁星空 + 流星</span> </span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt fx-opt" type="button" role="option" data-fx-value="fancy" aria-selected="false"> <span class="fx-opt__body"> <span class="fx-opt__name">华丽</span> <span class="fx-opt__hint">追加极光 / 星座 / 光尘</span> </span> <span class="theme-opt__mark">✦</span> </button> </div> </div> <script type="module">const n=document.getElementById("fxBtn"),a=document.getElementById("fxPop");function s(d){document.documentElement.dataset.fx=d;try{localStorage.setItem("stella-fx",d)}catch{}document.querySelectorAll("#fxPop .fx-opt").forEach(t=>{const e=t.dataset.fxValue===d;t.classList.toggle("is-active",e),t.setAttribute("aria-selected",String(e))}),document.dispatchEvent(new CustomEvent("stella-fx-change",{detail:d}))}if(n&&a){const d=document.documentElement.dataset.fx||"standard";document.querySelectorAll("#fxPop .fx-opt").forEach(t=>{const e=t.dataset.fxValue===d;t.classList.toggle("is-active",e),t.setAttribute("aria-selected",String(e))}),n.addEventListener("click",t=>{t.stopPropagation();const e=a.hidden;a.hidden=!e,n.setAttribute("aria-expanded",String(e))}),document.addEventListener("click",t=>{!a.hidden&&!t.target.closest(".fx-switch")&&(a.hidden=!0,n.setAttribute("aria-expanded","false"))}),document.addEventListener("keydown",t=>{t.key==="Escape"&&!a.hidden&&(a.hidden=!0,n.setAttribute("aria-expanded","false"),n.focus())}),a.addEventListener("click",t=>{const e=t.target.closest(".fx-opt");e&&(s(e.dataset.fxValue??"standard"),a.hidden=!0,n.setAttribute("aria-expanded","false"))})}</script> </div> </div> </header> <main id="main">  <article class="wrap post-layout" data-astro-cid-lvjzyg5v> <div class="post-main page-fade" data-astro-cid-lvjzyg5v> <header class="post-head" data-astro-cid-lvjzyg5v> <a class="crumb" href="/STELLASTOPVRC/posts/" data-astro-cid-lvjzyg5v>← 返回教程档案</a> <div class="post-head__meta" style="--accent:var(--ink-dim)" data-astro-cid-lvjzyg5v> <span class="badge" data-cat="Avatar 虚拟形象" data-astro-cid-lvjzyg5v>Avatar 虚拟形象</span> <time datetime="2026-11-09" data-astro-cid-lvjzyg5v>2026-11-09</time> <span class="post-head__reading" data-astro-cid-lvjzyg5v>⏱ 约 24 分钟</span>  </div> <h1 class="post-head__title" data-astro-cid-lvjzyg5v>自身跳 MMD 舞蹈（Self MMD）— Avatar 身上播放 MMD 舞蹈与音乐</h1> <p class="post-head__lead" data-astro-cid-lvjzyg5v>结论：自身跳 MMD（Self MMD）指在 Avatar 自己身上播放 MMD 舞蹈动画，通常配合音乐一起播放；此方案来自 yexcadocs 的社区实操经验，不是 VRChat 官方文档定义的功能（来源：yexcad</p> <div class="chip-row" data-astro-cid-lvjzyg5v> <a class="chip" href="/STELLASTOPVRC/posts/?tag=%E7%9F%A5%E8%AF%86%E5%BA%93" data-astro-cid-lvjzyg5v> 知识库 </a><a class="chip" href="/STELLASTOPVRC/posts/?tag=avatar" data-astro-cid-lvjzyg5v> avatar </a> </div> </header> <div class="prose" data-astro-cid-lvjzyg5v> <hr>
+<h1 id="自身跳-mmd-概念在-avatar-自己身上播放-mmd-舞蹈动画并配合音乐社区实操方案非官方功能">自身跳 MMD 概念：在 Avatar 自己身上播放 MMD 舞蹈动画并配合音乐，社区实操方案非官方功能</h1>
+<p>结论：自身跳 MMD（Self MMD）指在 Avatar 自己身上播放 MMD 舞蹈动画，通常配合音乐一起播放；此方案来自 yexcadocs 的社区实操经验，不是 VRChat 官方文档定义的功能（来源：yexcadocs §自身跳 MMD，community-tested，2026-07-04）。</p>
+<p>基本特征：</p>
+<ul>
+<li>位置跟随 Avatar 移动。</li>
+<li>应用场景是玩家自己或好友的 Avatar。</li>
+<li>音频源跟随 Avatar，可选邦骨（挂接）到嘴部骨骼。</li>
+<li>复杂度中等——需要 Action 加 FX 双层 Animator 配置。</li>
+</ul>
+<p>对照概念：固定世界 MMD 是另一种结构——位置固定在世界、用于场景装饰、音频源固定在世界、复杂度更高（5 空物体结构），两者的转换步骤见 world-fixed-objects 文档。</p>
+<hr>
+<hr>
+<h1 id="自身跳-mmd-与固定世界-mmd-四维度对比位置应用场景音频源复杂度">自身跳 MMD 与固定世界 MMD 四维度对比：位置、应用场景、音频源、复杂度</h1>
+<p>结论：自身跳 MMD 与固定世界 MMD 是两种不同的实现结构，在位置、应用场景、音频源、复杂度四个维度上都不同（来源：yexcadocs §自身跳 MMD 概述对比表，community-tested，2026-07-04）。</p>
+<table>
+<thead>
+<tr>
+<th>维度</th>
+<th>自身跳 MMD</th>
+<th>固定世界 MMD</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>位置</td>
+<td>跟随 Avatar</td>
+<td>世界固定</td>
+</tr>
+<tr>
+<td>应用场景</td>
+<td>玩家自己/好友 Avatar</td>
+<td>场景装饰</td>
+</tr>
+<tr>
+<td>音频源</td>
+<td>跟随 Avatar（可邦骨到嘴部）</td>
+<td>固定在世界</td>
+</tr>
+<tr>
+<td>复杂度</td>
+<td>中等：Action + FX 双层</td>
+<td>高：5 空物体结构</td>
+</tr>
+</tbody>
+</table>
+<p>选型提示：给玩家角色本身加舞蹈选自身跳 MMD；做世界内的演出装饰选固定世界 MMD。固定世界 MMD 的转换与搭建步骤参见 world-fixed-objects 文档的相关章节。</p>
+<hr>
+<hr>
+<h1 id="舞蹈动画文件准备用如梦-vrc-工具箱转换-mmd跟变换旋转-依据必须设为原始">舞蹈动画文件准备：用如梦 VRC 工具箱转换 MMD，「跟变换旋转-依据」必须设为「原始」</h1>
+<p>结论：自身跳 MMD 的舞蹈动画文件来自 VRC 工具箱（如梦 VRC 工具箱 v1.2.5）对 MMD 舞蹈的转换；转换后必须点击动画文件，把「跟变换旋转-依据」设置为「原始」，否则会出现动画方向错误（来源：yexcadocs §2.1 舞蹈动画文件 + §9.4 动画方向调整，community-tested，工具版本 v1.2.5）。</p>
+<p>动画方向调整要点：</p>
+<ul>
+<li>操作路径：选中动画文件 → 「跟变换旋转-依据」→ 选择「原始」。</li>
+<li>适用边界：自身跳 MMD 必须调整；固定世界模型可选。</li>
+<li>不调整的后果：游戏中舞蹈动画方向错误。</li>
+</ul>
+<p>扩展信息：完整转换流程见「如梦 VRC 工具箱 MMD 动作转换流程」块；更早的转换细节依赖 world-fixed-objects 文档相关章节展开。</p>
+<p>[UNKNOWN] 转换的详细分步说明未在本页重复展开，依赖 world-fixed-objects 文档。</p>
+<hr>
+<hr>
+<h1 id="音乐文件两条要求已压缩-vorbis-格式大小计入-avatar-200mb-总限制">音乐文件两条要求：已压缩 Vorbis 格式、大小计入 Avatar 200MB 总限制</h1>
+<p>结论：自身跳 MMD 的音乐文件有两条硬要求：使用已压缩格式（Vorbis）；文件大小计入 Avatar 的 200MB 上传总限制（来源：yexcadocs §2.2 音乐，community-tested，限额口径为 Avatar 200MB 总限制）。</p>
+<p>执行要点：</p>
+<ul>
+<li>导入 Unity 后把音乐的压缩格式设置为 Vorbis 再使用。</li>
+<li>选曲时预留体积余量——音乐越大，留给模型、贴图、其他音频的空间越小。</li>
+</ul>
+<p>风险提示：超出 200MB 总限制会导致 Avatar 无法上传；大体积音乐优先考虑裁剪时长或降低码率。</p>
+<hr>
+<hr>
+<h1 id="音频源配置三步空物体挂-audio-sourcespatial-blend1可选邦骨-head-骨骼fx-层动画控制开关">音频源配置三步：空物体挂 Audio Source（Spatial Blend=1）、可选邦骨 Head 骨骼、FX 层动画控制开关</h1>
+<p>结论：自身跳 MMD 的音频源按三步配置——创建空物体并添加 Audio Source 组件、可选把音频邦骨到嘴部骨骼、用 FX 层动画控制 AudioSource.enabled 实现开关（来源：yexcadocs §3 音频源配置，community-tested，2026-07-04）。</p>
+<p>第一步·创建空物体与参数：</p>
+<ol>
+<li>在模型上创建空物体（命名如 Audio_Music）。</li>
+<li>添加 Audio Source 组件。</li>
+<li>推荐参数：AudioClip=音乐文件；空间混合 Spatial Blend=1；多普勒级别 Doppler Level=0；音量衰减 Volume Rolloff=线性衰减；最大距离 Max Distance=20（可调）。</li>
+</ol>
+<p>第二步·音频邦骨（可选）：作者习惯把音频邦骨到嘴部——将 AudioSource 拖到 Head 骨骼下作为子物体，音频即跟随头部。</p>
+<p>第三步·音频开关：通过 Animator 动画控制 AudioSource.enabled；录制开关动画参考 FX 层物品开关流程。</p>
+<hr>
+<hr>
+<h1 id="action-层配置dance_state-接入-prepare-standing-后状态链并加-animator-locomotion-controldisable">Action 层配置：Dance_State 接入 Prepare Standing 后状态链并加 Animator Locomotion Control=Disable</h1>
+<p>结论：自身跳 MMD 在 Action 层接入舞蹈：沿 Entry → WaitForActionOrAFK → Prepare Standing 状态链，任选一个过渡后的状态作为 Dance_State 放入舞蹈动画，并给它添加 Animator Locomotion Control 组件且设 Locomotion Control=Disable（来源：yexcadocs §4.1 Action 层配置，community-tested，2026-07-04）。</p>
+<p>分步操作：</p>
+<ol>
+<li>进入 Action 层，定位 Entry → WaitForActionOrAFK → Prepare Standing 链路。</li>
+<li>Prepare Standing 后连接 8 个过渡，任选其一后的状态（命名如 Dance_State）。</li>
+<li>将该状态的 Motion 替换为舞蹈动画。</li>
+<li>添加组件 Animator Locomotion Control，设置 Locomotion Control = Disable。⚠️ 不设置会导致游戏中转动或移动时模型也跟着动。</li>
+<li>检查过渡条件：进入条件如 VRCEmote == 1，退出条件如 VRCEmote != 1，关闭退出时间。</li>
+<li>下一状态 BlendOut Stand 也添加 Animator Locomotion Control 并设为 Enable。⚠️ 不设置会导致跳舞结束后再也无法移动或转动视角。</li>
+</ol>
+<p>完整状态链：Entry → WaitForActionOrAFK → Prepare Standing → Dance_State（Locomotion=Disable）→ BlendOut Stand（Locomotion=Enable）。</p>
+<hr>
+<hr>
+<h1 id="fx-层配置五步vrcemote-int-参数权重-1-图层音乐开关状态对关退出时间录音频启停动画">FX 层配置五步：VRCEmote Int 参数、权重 1 图层、音乐开关状态对、关退出时间、录音频启停动画</h1>
+<p>结论：自身跳 MMD 的音乐开关放在 FX 层实现：添加 Int 参数 VRCEmote，新建权重为 1 的图层，用「VRCEmote == 1 打开 / VRCEmote != 1 关闭」的状态对驱动音频启用与禁用动画（来源：yexcadocs §4.2 FX 层配置 + §5.1 数值配置，community-tested，2026-07-04）。</p>
+<p>分步操作：</p>
+<ol>
+<li>添加 Int 型参数命名为 VRCEmote——它是 VRChat 默认参数，通常已存在；若未添加则以 Int 类型新建。</li>
+<li>新建图层，权重设为 1。</li>
+<li>创建音乐开关状态对：打开状态条件 VRCEmote == 1；关闭状态条件 VRCEmote != 1。</li>
+<li>关闭两个过渡的退出时间。</li>
+<li>录制音频启用/禁用动画（控制 AudioSource.enabled）并填入对应状态。</li>
+</ol>
+<p>配套关系：菜单侧用 Toggle 把 VRCEmote 置 1 即触发 Action 层舞蹈与 FX 层音乐同时启动。</p>
+<hr>
+<hr>
+<h1 id="菜单配置vrcemote-用-toggle-控件-value1-绑定舞蹈开关">菜单配置：VRCEmote 用 Toggle 控件 Value=1 绑定舞蹈开关</h1>
+<p>结论：自身跳 MMD 的表情菜单入口是一个 Toggle 菜单项——Type 为 Toggle、Parameter 为 VRCEmote、Value 为 1，与 Action 层进入条件 VRCEmote == 1 对应（来源：yexcadocs §5 参数与菜单，community-tested，2026-07-04）。</p>
+<p>配置项对照：</p>
+<ul>
+<li>Type：Toggle。</li>
+<li>Parameter：VRCEmote。</li>
+<li>Value：1（勾选时写入的数值）。</li>
+</ul>
+<p>参数背景：VRCEmote 是 VRChat 默认参数，通常已存在于 Avatar 参数表中；如缺失则以 Int 类型添加后再绑定菜单。勾选菜单后 Action 层切入舞蹈状态、FX 层同步开启音乐；取消勾选走 VRCEmote != 1 退出链返回待机。</p>
+<hr>
+<hr>
+<h1 id="animator-locomotion-control-配对铁律dance_state-进-disableblendout-stand-出-enable缺一后果严重">Animator Locomotion Control 配对铁律：Dance_State 进 Disable、BlendOut Stand 出 Enable，缺一后果严重</h1>
+<p>结论：自身跳 MMD 中 Animator Locomotion Control 必须「进 Disable、出 Enable」成对出现——跳舞状态 Dance_State 设 Disable，退出状态 BlendOut Stand 设 Enable；缺失任何一侧都会导致移动失控（来源：yexcadocs §6.1 关键技术点 + §4.1，community-tested，2026-07-04）。</p>
+<table>
+<thead>
+<tr>
+<th>状态</th>
+<th>Locomotion Control 设置</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>准备跳舞（Dance_State）</td>
+<td>Disable</td>
+</tr>
+<tr>
+<td>退出跳舞（BlendOut Stand）</td>
+<td>Enable</td>
+</tr>
+</tbody>
+</table>
+<p>错误后果对照：</p>
+<ul>
+<li>缺失 Enable → 跳舞结束后「再也无法移动或转动视角」。</li>
+<li>缺失 Disable → 游戏中转动或移动时模型也会跟着动。</li>
+</ul>
+<p>证据边界：此配对规则为 yexcadocs 记录的社区共识，仍需结合 VRChat 官方 Animator 文档验证；同主题警告另见 playable-layers 文档 §10.1。</p>
+<hr>
+<hr>
+<h1 id="vrchat-上传规则出场动画特效不得包含-script-组件平台不允许上传脚本文件">VRChat 上传规则：出场动画特效不得包含 Script 组件——平台不允许上传脚本文件</h1>
+<p>结论：出场动画中使用的特效必须不包含 Script 组件，原因是 VRChat 平台不允许上传脚本文件；删除脚本后若特效表现异常，只能更换特效（来源：yexcadocs §6.2 + §8.1 特效处理，community-tested，2026-07-04）。</p>
+<p>处理方式：</p>
+<ol>
+<li>检查特效预设内是否含 Script 类组件。</li>
+<li>删除 Script 组件后再用于出场动画。</li>
+<li>删除后特效异常（如粒子逻辑依赖脚本）则直接换一个无脚本特效。</li>
+</ol>
+<p>适用范围提醒：这条规则针对上传内容中的特效组件；与「动作出场动画失效改用特效/物品出场」的替代策略配合使用。</p>
+<hr>
+<hr>
+<h1 id="unity-默认-60-帧秒换算动画秒数--帧数--60240-帧等于-4-秒animation-窗口查帧数">Unity 默认 60 帧/秒换算：动画秒数 = 帧数 ÷ 60，240 帧等于 4 秒，Animation 窗口查帧数</h1>
+<p>结论：Unity 默认动画帧率为 60 帧/秒，动画时长按「帧数 ÷ 60 = 秒数」换算，例如 240 帧 = 4 秒；帧数可在 Animation 窗口查看（来源：yexcadocs §6.3 Unity 默认 60 帧/秒，community-tested，口径基于 Unity 默认工程设置）。</p>
+<p>常用换算示例：</p>
+<ul>
+<li>60 帧 = 1 秒。</li>
+<li>120 帧 = 2 秒。</li>
+<li>240 帧 = 4 秒。</li>
+</ul>
+<p>实践用途：录制出场动画、估算舞蹈片段长度时用此换算预估秒数。</p>
+<p>[UNKNOWN] 不同 Unity 工程可修改帧率设置，非默认 60 帧/秒的工程此换算不成立；本页假定默认值。</p>
+<hr>
+<hr>
+<h1 id="unknown-动作动画不能做进场动画切换模型时执行追踪器重置社区个人理解标记-待证">[UNKNOWN] 动作动画不能做进场动画（切换模型时执行追踪器重置）——社区个人理解，标记 [待证]</h1>
+<p>[UNKNOWN] 社区观点（yexcadocs 作者个人理解）：动作动画不能用作进场动画，作者原话为「因切换到该模型时会执行追踪器重置」；此说法在源文档中即被标记为 [待证]，尚无 VRChat 官方资料证实（来源：yexcadocs §6.4 动作不能做进场动画，unknown，2026-07-04）。</p>
+<p>替代方案（同为社区经验）：若出场动作失效（疑似追踪器重置问题），改用特效或物品出场动画，不动用动作动画。</p>
+<p>使用边界：「追踪器重置」的具体机制细节未在源文档说明，需以 VRChat 官方资料查证为准；引用本块结论前应注明其为存疑观点。</p>
+<hr>
+<hr>
+<h1 id="顺序播放音乐参数组合music_startbool-开关-musicint-选曲-nextbool-下一首与三层菜单设计">顺序播放音乐参数组合：Music_Start（Bool 开关）+ Music（Int 选曲）+ Next（Bool 下一首）与三层菜单设计</h1>
+<p>结论：自身跳 MMD 的顺序播放音乐用三个参数组合实现——Music_Start（Bool，播放开关）、Music（Int，选择歌曲）、Next（Bool 可选，下一首按钮），菜单按简单开关、显示当前歌曲子菜单、下一首按钮三层设计（来源：yexcadocs §7.1 顺序播放 + §7.3 通用要点，community-tested，2026-07-04）。</p>
+<p>参数组合：</p>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>类型</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Music_Start</td>
+<td>Bool</td>
+<td>播放开关</td>
+</tr>
+<tr>
+<td>Music</td>
+<td>Int</td>
+<td>选择歌曲</td>
+</tr>
+<tr>
+<td>Next</td>
+<td>Bool（可选）</td>
+<td>下一首按钮</td>
+</tr>
+</tbody>
+</table>
+<p>菜单设计：</p>
+<ul>
+<li>简单开关：Toggle，Parameter = Music_Start。</li>
+<li>游戏中显示当前歌曲（子菜单）：Toggle，Parameter = Music_Start，再加多个 Toggle，Parameter = Music（值 1-N 对应各歌曲）。</li>
+<li>下一首：Button，Parameter = Next。</li>
+</ul>
+<p>通用要点：顺序/倒序/随机都通过不同 Music 值组合实现，同一思路可扩展到动画/招式的随机播放。</p>
+<hr>
+<hr>
+<h1 id="随机播放音乐实现music-多值选曲加-music0-特殊值触发随机切歌">随机播放音乐实现：Music 多值选曲加 Music=0 特殊值触发随机切歌</h1>
+<p>结论：自身跳 MMD 的随机播放音乐在顺序播放基础上简化实现——保留 Music_Start（Bool，播放开关）与 Music（Int，选择歌曲）两个参数，把顺序播放改为多个 Music 值，并约定一个特殊值（如 Music = 0）用于随机切歌（来源：yexcadocs §7.2 随机播放，community-tested，2026-07-04）。</p>
+<p>实现要点：</p>
+<ol>
+<li>参数只留 Music_Start 加 Music 两项，无需 Next 按钮。</li>
+<li>各歌曲映射到不同 Music 数值。</li>
+<li>约定特殊值（Music = 0 或其他未被歌曲占用的值）代表「随机切歌」。</li>
+<li>游戏中点击任意歌曲条目即完成切换。</li>
+</ol>
+<p>扩展性：同一套 Music 多值机制同样支撑顺序与倒序播放，区别只在菜单排列与切换逻辑的组合方式。</p>
+<hr>
+<hr>
+<h1 id="出场动画实装两型特效去脚本关循环直放模型上物品出场走-fx-层隐藏显现动画对">出场动画实装两型：特效去脚本关循环直放模型上、物品出场走 FX 层隐藏/显现动画对</h1>
+<p>结论：出场动画有两种实装路径——特效出场（关闭 Looping、剔除 Script 组件后挂在模型上直接上传）与物品出场（隐藏物体录「打开」动画，FX 层建隐藏/显现状态对）（来源：yexcadocs §8.1 特效处理 + §8.2 物品出场动画，community-tested，2026-07-04）。</p>
+<p>特效出场动画步骤：</p>
+<ol>
+<li>关闭特效循环（Looping = false）。</li>
+<li>删除 Script 组件（特效不能包含 Script 组件；删除后异常则换特效）。</li>
+<li>放在模型上。</li>
+<li>上传。</li>
+</ol>
+<p>物品出场动画步骤：</p>
+<ol>
+<li>动画准备：将物体隐藏，录制「打开」动画（物体显现）。</li>
+<li>FX 层配置：新建图层，权重 = 1。</li>
+<li>默认状态（物体隐藏）拖入隐藏动画。</li>
+<li>创建空状态（物体出现）拖入打开动画。</li>
+<li>过渡关闭退出时间，时间长度自定。</li>
+</ol>
+<hr>
+<hr>
+<h1 id="动作出场动画双层驱动action-层-start-参数链加-fx-层-defaulthidestart-结构0102-过渡时间各有含义">动作出场动画双层驱动：Action 层 Start 参数链加 FX 层 Default→Hide→Start 结构，0.1/0.2 过渡时间各有含义</h1>
+<p>结论：基于动作的出场动画由 Action 层与 FX 层双层驱动，共用 Bool 参数 Start：Action 层负责从待机切入动作动画并在结束时用 Parameter Driver 复位 Start；FX 层按 Default → Hide → Start 结构先隐藏模型再放行动作，其中 0.1 秒过渡等待追踪器重置、0.2 秒过渡衔接站立起手（来源：yexcadocs §8.3 动作出场动画，community-tested，2026-07-04）。</p>
+<p>前提：创建 Bool 参数（如 Start）。</p>
+<p>Action 层配置：</p>
+<ol>
+<li>过渡 WaitForActionOrAFK → Prepare Standing：条件 Start = true，取消勾选退出时间。</li>
+<li>动作动画状态：Motion = 动作动画；Prepare Standing → 动作动画条件 Start = true 无退出时间；动作动画 → BlendOut Stand 有退出时间 = 1 无条件。</li>
+<li>BlendOut Stand 添加组件 VRC Avatar Parameter Driver，Parameter Start = false。</li>
+</ol>
+<p>FX 层配置：</p>
+<ol>
+<li>参数 Bool Start 与 Action 层同名；新建图层权重 = 1。</li>
+<li>图层结构 Entry → Default → Hide → Start（Default 模型可见；Hide 隐藏动画；Start 空状态）。</li>
+<li>过渡 Default → Hide：无条件，退出时间 0.1（等待追踪器重置）。</li>
+<li>过渡 Hide → Start：无条件，退出时间 0.2（站立到动作过渡）。</li>
+<li>Hide 状态添加 VRC Avatar Parameter Driver，Parameter Start = true。</li>
+</ol>
+<p>时间解释：0.1 秒等待模型重设追踪器完成；0.2 秒为站立到动作动画的起始时间；两者均可自行调整。</p>
+<hr>
+<hr>
+<h1 id="如梦-vrc-工具箱-v125-的-mmd-动作转换六步选-mmd-动作转换页拖入-vmdpmx生成配置文件">如梦 VRC 工具箱 v1.2.5 的 MMD 动作转换六步：选 MMD 动作转换页、拖入 vmd/pmx、生成配置文件</h1>
+<p>结论：如梦 VRC 工具箱 v1.2.5（gitee.com/cmoyuer/vrchat-avatar-toolkit 发布，作者 B 站账号如梦Nya）把 MMD 动作转为 VRChat 可用动画的流程共六步：打开工具箱 → 选择「VRC工具箱 - MMD动作转换」→ 拖入 vmd 动作文件 → 拖入 pmx 模型（可省略但建议带上）→ 点击「生成配置文件」→ 等待生成（来源：yexcadocs §9.1 + §9.2，community-tested，工具版本 v1.2.5）。</p>
+<p>分步操作：</p>
+<ol>
+<li>打开 VRC 工具箱。</li>
+<li>顶部选择「VRC工具箱 - MMD动作转换」。</li>
+<li>拖入 MMD 动作文件（vmd）。</li>
+<li>拖入 MMD 模型（pmx）——可不拖入，建议带上以提高还原度。</li>
+<li>点击「生成配置文件」。</li>
+<li>等待生成完成。</li>
+</ol>
+<p>来源信息：工具发布页 <a href="https://gitee.com/cmoyuer/vrchat-avatar-toolkit/releases%EF%BC%9B%E4%BD%9C%E8%80%85">https://gitee.com/cmoyuer/vrchat-avatar-toolkit/releases；作者</a> B 站账号为如梦Nya。</p>
+<p>[UNKNOWN] 生成配置文件之后的后续步骤（动画导入 Avatar、参数处理等）未在本页详述。</p>
+<hr>
+<hr>
+<h1 id="mmd-转换工作流三条技巧建议带上-pmx-模型ctrld-复制原模型测试跟变换旋转-原始防方向错">MMD 转换工作流三条技巧：建议带上 pmx 模型、CTRL+D 复制原模型测试、「跟变换旋转-原始」防方向错</h1>
+<p>结论：如梦 VRC 工具箱转换 MMD 动作有三条实操技巧：尽量带上 MMD 模型参与转换、复制原模型再试动画以防污染原资产、转换后把动画文件的「跟变换旋转-依据」设为「原始」（来源：yexcadocs §9.3 工作流技巧 + §9.4 动画方向调整，community-tested，2026-07-04）。</p>
+<p>技巧一·建议带模型：可不带 MMD 模型直接转换动作，但部分动作会变怪，建议带上 pmx 模型。</p>
+<p>技巧二·复制原模型测试：在层级中 CTRL+D 复制原模型 → 隐藏原模型 → 将动画拖到新模型 → 点击播放测试，避免错误操作破坏原模型。</p>
+<p>技巧三·动画方向调整：点击动画文件，「跟变换旋转-依据」选择「原始」；固定世界模型可选此项，自身跳 MMD 必须设置，否则动画方向错误。</p>
+<hr>
+<hr>
+<h1 id="自身跳-mmd-故障排除速查表乱动无法移动音乐不播方向错误特效失效出场失效六症对照">自身跳 MMD 故障排除速查表：乱动/无法移动/音乐不播/方向错误/特效失效/出场失效六症对照</h1>
+<p>结论：自身跳 MMD 六类常见故障各有明确原因与修法，核心高频项是 Animator Locomotion Control 的 Disable/Enable 缺失（来源：yexcadocs §10 故障排除，community-tested，2026-07-04）：</p>
+<table>
+<thead>
+<tr>
+<th>问题</th>
+<th>原因</th>
+<th>解决方案</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>跳舞时角色乱动</td>
+<td>缺 Locomotion Disable</td>
+<td>在动作状态添加 Locomotion Control = Disable</td>
+</tr>
+<tr>
+<td>跳舞后无法移动</td>
+<td>缺 Locomotion Enable</td>
+<td>在 BlendOut Stand 添加 Locomotion Control = Enable</td>
+</tr>
+<tr>
+<td>音乐不播放</td>
+<td>音频源未启用</td>
+<td>FX 层动画检查 AudioSource.enabled</td>
+</tr>
+<tr>
+<td>动画方向错误</td>
+<td>跟变换旋转未设为「原始」</td>
+<td>修改动画文件设置</td>
+</tr>
+<tr>
+<td>特效失效</td>
+<td>包含 Script 组件</td>
+<td>删除 Script 组件</td>
+</tr>
+<tr>
+<td>出场动作失效</td>
+<td>追踪器重置问题</td>
+<td>改用特效/物品出场，不动动作</td>
+</tr>
+</tbody>
+</table>
+<p>排查入口：先确认症状属于「动或不该动」类（查 Locomotion 配对），再查音乐链路（FX 层开关动画），最后查资产层（方向设置、脚本组件、进场方式）。</p>
+<hr> </div> <p class="kb-source-note" data-astro-cid-lvjzyg5v>
+本文由 VRChat 开发知识库自动整理（社区整理  · 可信度 high ），
+          遇到与手写教程冲突的地方，以官方文档为最高优先级。
+</p> <section class="comments" id="comments" data-astro-cid-lvjzyg5v> <h2 class="comments__title" data-astro-cid-lvjzyg5v>✦ 旅人留言（0）</h2> <p class="comments__empty" id="commentsEmpty" data-astro-cid-lvjzyg5v>
+还没有旅人留言 —— 有疑问就写在下面，站长都会回复。
+</p> <form class="comment-form" id="commentForm" data-target="kb-avatar-self-mmd" data-astro-cid-lvjzyg5v> <p class="comment-form__title" data-astro-cid-lvjzyg5v>写下你的留言</p> <input id="cAuthor" maxlength="20" placeholder="昵称（留空则为「旅人」）" data-astro-cid-lvjzyg5v> <textarea id="cBody" maxlength="1000" required placeholder="想问的问题、想说的感谢都可以（最多 1000 字）" data-astro-cid-lvjzyg5v></textarea> <div class="comment-form__actions" data-astro-cid-lvjzyg5v> <button class="btn btn--primary" type="submit" data-astro-cid-lvjzyg5v>发布留言</button> <span class="form-hint" data-astro-cid-lvjzyg5v>留言保存在本站，站长在写作台里能看到</span> <span class="form-msg" id="cMsg" data-astro-cid-lvjzyg5v></span> </div> </form> </section> <nav class="station-nav" aria-label="站间导航" data-astro-cid-lvjzyg5v> <a href="/STELLASTOPVRC/posts/kb-avatar-safety-system/" data-astro-cid-lvjzyg5v> <span class="dir" data-astro-cid-lvjzyg5v>← 上一站 · 更新的星光</span> <span class="to" data-astro-cid-lvjzyg5v>VRChat Safety System — 玩家安全系统（Shield Level、8 大屏蔽元素与创作者适配）</span> </a> <a href="/STELLASTOPVRC/posts/kb-avatar-shader-filamented-overview/" data-astro-cid-lvjzyg5v> <span class="dir" data-astro-cid-lvjzyg5v>下一站 · 更早的星光 →</span> <span class="to" data-astro-cid-lvjzyg5v>Filamented Overview - 项目概览</span> </a> </nav> </div> <aside class="toc" id="toc" hidden> <p class="toc__title">✦ 本页星图</p> <nav id="tocNav" aria-label="文章目录"></nav> </aside> <script type="module">const i=document.querySelector(".prose"),d=document.getElementById("toc"),u=document.getElementById("tocNav"),l=[];if(i&&d&&u){const c=[...i.querySelectorAll("h1, h2, h3")];if(c.length>=3){d.hidden=!1,c.forEach((o,e)=>{o.id||(o.id=`sec-${e}`);const n=document.createElement("a");n.href=`#${o.id}`;const s=(o.textContent??"").replace(/\s+/g," ").trim(),r=s.search(/[：:]/),a=r>=4?s.slice(0,r):s;n.textContent=a.length>40?`${a.slice(0,40)}…`:a,n.title=s,u.appendChild(n),l.push({a:n,h:o})});const t=()=>{let o=l[0];for(const e of l)e.h.getBoundingClientRect().top<=130&&(o=e);for(const e of l)e.a.classList.toggle("is-active",e===o)};addEventListener("scroll",t,{passive:!0}),t()}}document.querySelectorAll(".prose pre").forEach(c=>{const t=document.createElement("button");t.className="code-copy",t.type="button",t.textContent="复制",t.addEventListener("click",async()=>{const o=c.querySelector("code")?.innerText??c.innerText;try{await navigator.clipboard.writeText(o)}catch{const e=document.createElement("textarea");e.value=o,document.body.appendChild(e),e.select(),document.execCommand("copy"),e.remove()}t.textContent="已复制 ✓",t.classList.add("is-ok"),setTimeout(()=>{t.textContent="复制",t.classList.remove("is-ok")},1500)}),c.appendChild(t)});</script> </article>  </main> <footer class="site-footer"> <div class="wrap"> <p class="star-line" aria-hidden="true"> <svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> <svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> </p> <p>星之驿站 StellaStop —— 在虚拟宇宙中，为你保留一座驿站</p> <p class="site-footer__disclaimer">
+该网页目前是测试阶段，仅用于测试，所有内容仅供参考；内容全部为引用互联网当中的信息。
+</p> <p>© 2026 星之驿站 · 由 <a href="https://astro.build">Astro</a> 与星光驱动</p> <p> <a data-desk-login hidden title="写作台：登录 / 注册">登录 / 注册</a> ·
+<a href="/STELLASTOPVRC/announcements/">官方公告</a> ·
+<a href="/STELLASTOPVRC/ai/">问星 AI</a> ·
+<a href="/STELLASTOPVRC/feedback/">旅人留言板</a> </p> </div> </footer> <button class="to-top" id="toTop" aria-label="回到顶部"> <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"> <path d="M12 20V5"></path> <path d="M5.5 11.5 12 5l6.5 6.5"></path> </svg> </button> <script type="module">const e=document.getElementById("toTop");if(e){const t=()=>e.classList.toggle("is-visible",scrollY>480);addEventListener("scroll",t,{passive:!0}),t(),e.addEventListener("click",()=>{const o=matchMedia("(prefers-reduced-motion: reduce)").matches;scrollTo({top:0,behavior:o?"auto":"smooth"})})}</script> <script>(function(){const deskConfigured = "";
+
+      /* 写作台探测（页面尾部执行，DOM 已就绪）：
+         1. 计算写作台地址：站点配置 deskUrl（公网部署时填）> 本机默认 localhost:4322 > 同主机 4322
+         2. 探测 /api/gate/status —— 在线才点亮「登录 / 注册」入口，并复用给验证门横幅
+         3. 不在线则保持隐藏，绝不会把访客拽进内网地址；同时给出一次性「镜像模式」提示 */
+      (function () {
+        var host = location.hostname;
+        var isLocal = host === 'localhost' || host === '127.0.0.1' || host === '[::1]';
+        var desk = deskConfigured ||
+          (isLocal ? 'http://localhost:4322' : location.protocol + '//' + host + ':4322');
+        window.STELLA_DESK = desk;
+
+        function revealLogin() {
+          document.querySelectorAll('[data-desk-login]').forEach(function (a) {
+            a.href = desk + '/admin';
+            a.removeAttribute('hidden');
+          });
+        }
+        function showBanner(css, html, shiftHeader) {
+          var bar = document.createElement('div');
+          bar.style.cssText = css;
+          bar.innerHTML = html;
+          document.body.prepend(bar);
+          if (shiftHeader) {
+            var header = document.querySelector('.site-header');
+            if (header) header.style.marginTop = '42px';
+          }
+        }
+        function hintMirrorMode() {
+          try {
+            if (sessionStorage.getItem('stella-desk-hint')) return;
+            sessionStorage.setItem('stella-desk-hint', '1');
+          } catch (e) { /* 无痕模式等：忽略 */ }
+          var tip = document.createElement('div');
+          tip.style.cssText = 'position:fixed;left:14px;bottom:14px;z-index:9998;max-width:min(92vw,430px);padding:.65rem .9rem;border-radius:12px;background:rgba(18,20,44,.92);border:1px solid rgba(150,142,255,.35);color:#e8e6ff;font-size:.82rem;line-height:1.6;font-family:system-ui,sans-serif;box-shadow:0 8px 30px rgba(0,0,0,.35)';
+          tip.innerHTML = 'ℹ️ 静态镜像模式：登录 / 评论 / AI 等互动功能需要站长写作台在线，当前不可用。' +
+            '<span id="stellaDeskHintClose" style="float:right;cursor:pointer;opacity:.75;font-weight:700;margin-left:.6rem" title="关闭">×</span>';
+          document.body.appendChild(tip);
+          var close = function () { tip.remove(); };
+          tip.querySelector('#stellaDeskHintClose').addEventListener('click', close);
+          setTimeout(close, 9000);
+        }
+
+        try {
+          var ctrl = new AbortController();
+          var timer = setTimeout(function () { ctrl.abort(); }, 2500);
+          fetch(desk + '/api/gate/status', { credentials: 'include', signal: ctrl.signal })
+            .then(function (r) { return r.ok ? r.json() : null; })
+            .then(function (d) {
+              clearTimeout(timer);
+              if (!d) throw new Error('desk-offline');
+              window.STELLA_DESK_OK = true;
+              revealLogin();
+              if (d.regionBlocked) {
+                showBanner(
+                  'position:fixed;top:0;left:0;right:0;z-index:9999;padding:1.2rem;text-align:center;background:#1a0a0a;color:#ff9ed2;font-size:.95rem;border-bottom:2px solid #ff4d6d;font-family:system-ui,sans-serif',
+                  '⛔ 你所在的地区（' + (d.regionCountry || '未知') + '）暂不开放访问。',
+                  false
+                );
+                return;
+              }
+              if (d.enabled && !d.passed) {
+                showBanner(
+                  'position:fixed;top:0;left:0;right:0;z-index:9999;padding:0.7rem;text-align:center;background:linear-gradient(94deg,rgba(143,127,247,.25),rgba(98,200,245,.18));border-bottom:1px solid rgba(150,142,255,.3);color:#f0efff;font-size:.88rem;font-family:system-ui,sans-serif',
+                  '🔒 本站启用了安全验证 —— <a href="' + desk + '/gate?next=' + encodeURIComponent(location.href) + '" style="color:#ffd98e;font-weight:700;text-decoration:underline">点击完成验证</a>，通过后即可使用全部功能（30 天免验）。',
+                  true
+                );
+              }
+            })
+            .catch(function () {
+              clearTimeout(timer);
+              window.STELLA_DESK_OK = false;
+              hintMirrorMode();
+            });
+        } catch (e) { /* 忽略 */ }
+      })();
+    })();</script> </body> </html> <script type="module">const m=document.getElementById("commentForm"),s=document.getElementById("cMsg"),u=`${location.protocol}//${location.hostname}:4322/api/message`;function r(e,t=!1){s&&(s.textContent=e,s.classList.toggle("is-err",t),s.classList.toggle("is-ok",!t))}function y(){const e=new Date,t=n=>String(n).padStart(2,"0");return`${e.getFullYear()}-${t(e.getMonth()+1)}-${t(e.getDate())}`}function f(e){let t=7;for(const n of e)t=(t*31+n.charCodeAt(0))%360;return t}function g(e,t){const n=document.createElement("li");n.className="comment",n.innerHTML=`
+      <span class="comment__avatar"></span>
+      <div class="comment__bubble">
+        <div class="comment__head">
+          <span class="comment__name"></span>
+          <time class="comment__date">${y()}</time>
+        </div>
+        <p class="comment__body"></p>
+      </div>`;const o=n.querySelector(".comment__avatar");return o.style.setProperty("--h",String(f(e))),o.textContent=e.slice(0,1),n.querySelector(".comment__name").textContent=e,n.querySelector(".comment__body").textContent=t,n}m?.addEventListener("submit",async e=>{e.preventDefault();const t=document.getElementById("cBody").value.trim();if(!t)return r("留言内容不能为空哦",!0);const n=document.getElementById("cAuthor").value.trim()||"旅人",o=m.querySelector("button");o&&(o.disabled=!0);try{const c=await fetch(u,{credentials:"include",method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({target:m.dataset.target,kind:"comment",author:n,body:t})}),d=await c.json().catch(()=>({}));if(!c.ok)throw new Error(d.error||`发送失败（${c.status}）`);const l=document.querySelector(".comment-list");l&&l.appendChild(g(n,t)),document.getElementById("commentsEmpty")?.remove(),document.getElementById("cBody").value="",r("留言已发布，感谢支持 ✦");const a=document.querySelector(".comments__title"),i=a?.textContent?.match(/（(\d+)）/);a&&i&&(a.textContent=a.textContent.replace(/（\d+）/,`（${Number(i[1])+1}）`))}catch(c){r(c instanceof TypeError?"写作台没在运行，暂时收不到留言 —— 双击「启动博客.bat」就好":c.message,!0)}finally{o&&(o.disabled=!1)}});</script> 

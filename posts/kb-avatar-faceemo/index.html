@@ -1,0 +1,462 @@
+<!DOCTYPE html><html lang="zh-CN"> <head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="generator" content="Astro v5.18.2"><meta name="description" content="FaceEmo 官方一句定位：「Face emote configuration tool for VRChat Avatars 3.0」，即面向 VRChat Avatars 3.0 的面部表情创建与配置工具。它通过「"><meta name="theme-color" content="#070a1c"><meta property="og:title" content="FaceEmo — VRChat 面部表情创建与配置工具 · 星之驿站 StellaStop"><meta property="og:description" content="FaceEmo 官方一句定位：「Face emote configuration tool for VRChat Avatars 3.0」，即面向 VRChat Avatars 3.0 的面部表情创建与配置工具。它通过「"><meta property="og:type" content="website"><meta name="twitter:card" content="summary"><link rel="icon" type="image/svg+xml" href="/STELLASTOPVRC/favicon.svg"><script>
+      // 在渲染前恢复主题与特效档位，避免闪一下默认状态
+      try {
+        document.documentElement.dataset.theme =
+          localStorage.getItem('stella-theme') || 'nebula';
+        document.documentElement.dataset.fx =
+          localStorage.getItem('stella-fx') || 'standard';
+      } catch {
+        /* 隐私模式读不到就算了 */
+      }
+    </script><link rel="stylesheet" href="/STELLASTOPVRC/custom-vars.css"><title>FaceEmo — VRChat 面部表情创建与配置工具 · 星之驿站 StellaStop</title><link rel="stylesheet" href="/STELLASTOPVRC/_astro/about.Bgh6wcGl.css">
+<style>.post-head__meta[data-astro-cid-lvjzyg5v]{color:var(--ink-faint);font-family:var(--font-mono);font-size:.82rem}.post-head[data-astro-cid-lvjzyg5v] .chip-row[data-astro-cid-lvjzyg5v]{margin-top:1rem}.kb-source-note[data-astro-cid-lvjzyg5v]{max-width:760px;margin:2.2rem auto 0;font-size:.82rem;color:var(--ink-faint);border-top:1px dashed var(--line);padding-top:1rem}
+</style></head> <body> <div class="site-notice" id="siteNotice"> <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> <span class="site-notice__text">欢迎来到星之驿站！</span> <button class="site-notice__close" id="noticeClose" type="button" aria-label="关闭公告">
+×
+</button> </div> <a class="skip-link" href="#main">跳到主要内容</a> <canvas id="starfield" aria-hidden="true" data-astro-cid-ra7sfcwn></canvas> <div class="fx-aurora fx-aurora--a" aria-hidden="true" data-astro-cid-ra7sfcwn></div> <div class="fx-aurora fx-aurora--b" aria-hidden="true" data-astro-cid-ra7sfcwn></div>  <script type="module">const u=document.getElementById("starfield");if(u){let F=function(){const n=Math.random();return n<.1?"gold":n<.42?"blue":"white"},v=function(){const n=Math.min(window.devicePixelRatio||1,2);s=window.innerWidth,d=window.innerHeight,u.width=s*n,u.height=d*n,u.style.width=`${s}px`,u.style.height=`${d}px`,t.setTransform(n,0,0,n,0,0);const e=Math.min(190,Math.round(s*d/8500));l=Array.from({length:e},()=>({x:Math.random()*s,y:Math.random()*d,r:r(.4,1.7),base:r(.25,.8),amp:r(.12,.4),speed:r(6e-4,.0022),phase:r(0,Math.PI*2),c:F()})),C=Array.from({length:26},()=>({x:Math.random()*s,y:Math.random()*d,r:r(.9,2.4),vx:r(-.006,.006),vy:r(-.02,-.006),base:r(.2,.5),speed:r(8e-4,.002),phase:r(0,Math.PI*2),c:Math.random()<.5?"gold":"violet"})),c==="off"&&m(0,!0)},D=function(n){const e=Math.random()<.5?1:-1,o=r(Math.PI/7,Math.PI/5),a=r(.45,.75);y.push({x:r(s*.15,s*.85),y:r(-20,d*.3),vx:Math.cos(o)*a*e,vy:Math.sin(o)*a,born:n,life:r(750,1050),len:r(100,170)})},S=function(n){y=y.filter(e=>n-e.born<e.life);for(const e of y){const o=(n-e.born)/e.life,a=e.x+e.vx*(n-e.born),i=e.y+e.vy*(n-e.born),f=o<.15?o/.15:o>.7?(1-o)/.3:1,h=Math.hypot(e.vx,e.vy),x=e.vx/h,g=e.vy/h,b=t.createLinearGradient(a,i,a-x*e.len,i-g*e.len);b.addColorStop(0,`rgba(236,242,255,${(.85*f).toFixed(3)})`),b.addColorStop(1,"rgba(236,242,255,0)"),t.strokeStyle=b,t.lineWidth=1.6,t.lineCap="round",t.beginPath(),t.moveTo(a,i),t.lineTo(a-x*e.len,i-g*e.len),t.stroke()}},B=function(){let o=0;t.lineWidth=.7;for(let a=0;a<l.length&&o<26;a++)for(let i=a+1;i<l.length&&o<26;i++){const f=l[a].x-l[i].x,h=l[a].y-l[i].y,x=f*f+h*h;if(x<16900){const g=(1-Math.sqrt(x)/130)*.17;t.strokeStyle=`rgba(178,170,255,${g.toFixed(3)})`,t.beginPath(),t.moveTo(l[a].x,l[a].y),t.lineTo(l[i].x,l[i].y),t.stroke(),o++}}},X=function(n){for(const e of C){e.x+=e.vx*16,e.y+=e.vy*16,e.y<-12&&(e.y=d+10),e.x<-12&&(e.x=s+10),e.x>s+12&&(e.x=-10);const o=Math.max(.05,e.base+.25*Math.sin(n*e.speed+e.phase)),[a,i,f]=A[e.c];t.beginPath(),t.arc(e.x,e.y,e.r,0,7),t.shadowBlur=9,t.shadowColor=`rgba(${a},${i},${f},0.9)`,t.fillStyle=`rgba(${a},${i},${f},${o.toFixed(3)})`,t.fill()}t.shadowBlur=0},m=function(n,e=!1){t.clearRect(0,0,s,d);for(const o of l){const a=c==="off"?o.base:Math.max(.05,o.base+o.amp*Math.sin(n*o.speed+o.phase)),[i,f,h]=A[o.c];t.beginPath(),t.arc(o.x,o.y,o.r,0,7),o.r>1.25?(t.shadowBlur=7,t.shadowColor=`rgba(${i},${f},${h},0.85)`):t.shadowBlur=0,t.fillStyle=`rgba(${i},${f},${h},${a.toFixed(3)})`,t.fill()}if(t.shadowBlur=0,c!=="off"&&!e){c==="fancy"&&(B(),X(n));const o=c==="fancy"?r(2600,6e3):r(4200,9500);n>P&&(D(n),P=n+o),S(n)}},$=function(n){m(n),M=requestAnimationFrame($)},p=function(){if(c==="off"){m(0,!0);return}cancelAnimationFrame(M),M=requestAnimationFrame($)},w=function(){cancelAnimationFrame(M),t.clearRect(0,0,s,d),m(0,!0)};const t=u.getContext("2d"),k=matchMedia("(prefers-reduced-motion: reduce)").matches,A={white:[240,240,255],blue:[150,215,250],gold:[255,218,150],violet:[178,170,255]};let s=0,d=0,l=[],C=[],y=[],P=2500,M=0,c=document.documentElement.dataset.fx||"standard";k&&(c="off");const r=(n,e)=>n+Math.random()*(e-n);v(),addEventListener("resize",v),document.addEventListener("stella-fx-change",n=>{c=n.detail,c==="off"?w():p()}),c==="off"?m(0,!0):(p(),document.addEventListener("visibilitychange",()=>{document.hidden?w():p()}))}</script> <header class="site-header"> <div class="wrap site-header__inner"> <a class="logo" href="/STELLASTOPVRC/"> <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> <span>星之驿站</span> <span class="logo__romaji">StellaStop</span> </a> <div class="header-right"> <nav class="site-nav" aria-label="站内导航"> <a href="/STELLASTOPVRC/"> 首页 </a><a href="/STELLASTOPVRC/start/"> 新手 </a><a href="/STELLASTOPVRC/posts/"> 教程 </a><a href="/STELLASTOPVRC/videos/"> 视频 </a><a href="/STELLASTOPVRC/resources/"> 资源 </a><a href="/STELLASTOPVRC/booth/"> Booth </a><a href="/STELLASTOPVRC/announcements/"> 公告 </a><a href="/STELLASTOPVRC/ai/"> 问星 </a><a href="/STELLASTOPVRC/changelog/"> 更新日志 </a><a href="/STELLASTOPVRC/about/"> 关于 </a> </nav> <a class="login-link" data-desk-login hidden title="写作台：登录 / 注册后可发教程、传资源">
+登录 / 注册
+</a> <div class="theme-switch"> <button class="theme-switch__btn" id="themeBtn" type="button" aria-haspopup="listbox" aria-expanded="false" aria-label="切换主题配色" title="切换主题配色"> <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"> <path d="M12 3a9 9 0 1 0 9 9c0-1.2-1-2-2.2-2H17a2 2 0 0 1-2-2V6.2C15 5 14.2 4 13 4.4A9 9 0 0 0 12 3Z"></path> <circle cx="7.5" cy="11.5" r="1" fill="currentColor" stroke="none"></circle> <circle cx="10" cy="7.5" r="1" fill="currentColor" stroke="none"></circle> <circle cx="15" cy="7" r="1" fill="currentColor" stroke="none"></circle> </svg> </button> <div class="theme-pop" id="themePop" role="listbox" aria-label="选择主题" hidden> <button class="theme-opt" type="button" role="option" data-theme-value="nebula" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#8f7ff7"></span><span class="dot" style="background:#62c8f5"></span><span class="dot" style="background:#ffd98e"></span> </span> <span class="theme-opt__name">星云 · 蓝紫</span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt" type="button" role="option" data-theme-value="sakura" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#ff8fc7"></span><span class="dot" style="background:#c79bff"></span><span class="dot" style="background:#ffd08e"></span> </span> <span class="theme-opt__name">樱语 · 粉紫</span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt" type="button" role="option" data-theme-value="miku" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#2ed3c2"></span><span class="dot" style="background:#6ea8ff"></span><span class="dot" style="background:#ffe08e"></span> </span> <span class="theme-opt__name">葱色 · 青绿</span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt" type="button" role="option" data-theme-value="ember" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#ffb35c"></span><span class="dot" style="background:#ff7e6b"></span><span class="dot" style="background:#ffd98e"></span> </span> <span class="theme-opt__name">暮金 · 暖橙</span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt" type="button" role="option" data-theme-value="dawn" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#6a5ce8"></span><span class="dot" style="background:#e0568f"></span><span class="dot" style="background:#b8821e"></span> </span> <span class="theme-opt__name">晨星 · 浅色</span> <span class="theme-opt__mark">✦</span> </button> </div> </div> <script type="module">const a=document.getElementById("themeBtn"),n=document.getElementById("themePop");function s(c){document.documentElement.dataset.theme=c;try{localStorage.setItem("stella-theme",c)}catch{}const e=getComputedStyle(document.documentElement).getPropertyValue("--bg-deep").trim();document.querySelector('meta[name="theme-color"]')?.setAttribute("content",e||"#070a1c"),document.querySelectorAll(".theme-opt").forEach(t=>{const d=t.dataset.themeValue===c;t.classList.toggle("is-active",d),t.setAttribute("aria-selected",String(d))})}if(a&&n){const c=document.documentElement.dataset.theme||"nebula";document.querySelectorAll(".theme-opt").forEach(e=>{const t=e.dataset.themeValue===c;e.classList.toggle("is-active",t),e.setAttribute("aria-selected",String(t))}),a.addEventListener("click",e=>{e.stopPropagation();const t=n.hidden;n.hidden=!t,a.setAttribute("aria-expanded",String(t))}),document.addEventListener("click",e=>{!n.hidden&&!e.target.closest(".theme-switch")&&(n.hidden=!0,a.setAttribute("aria-expanded","false"))}),document.addEventListener("keydown",e=>{e.key==="Escape"&&!n.hidden&&(n.hidden=!0,a.setAttribute("aria-expanded","false"),a.focus())}),n.addEventListener("click",e=>{const t=e.target.closest(".theme-opt");t&&(s(t.dataset.themeValue??"nebula"),n.hidden=!0,a.setAttribute("aria-expanded","false"))})}</script> <div class="theme-switch fx-switch"> <button class="theme-switch__btn" id="fxBtn" type="button" aria-haspopup="listbox" aria-expanded="false" aria-label="背景特效设置" title="背景特效设置"> <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"> <path d="M5 3v4M3 5h4M6.5 17.5v3M5 19h3"></path> <path d="M14.5 4.5 16 9l4.5 1.5L16 12l-1.5 4.5L13 12l-4.5-1.5L13 9l1.5-4.5Z"></path> </svg> </button> <div class="theme-pop" id="fxPop" role="listbox" aria-label="背景特效" hidden> <button class="theme-opt fx-opt" type="button" role="option" data-fx-value="off" aria-selected="false"> <span class="fx-opt__body"> <span class="fx-opt__name">关闭特效</span> <span class="fx-opt__hint">最省电</span> </span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt fx-opt" type="button" role="option" data-fx-value="standard" aria-selected="false"> <span class="fx-opt__body"> <span class="fx-opt__name">标准</span> <span class="fx-opt__hint">闪烁星空 + 流星</span> </span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt fx-opt" type="button" role="option" data-fx-value="fancy" aria-selected="false"> <span class="fx-opt__body"> <span class="fx-opt__name">华丽</span> <span class="fx-opt__hint">追加极光 / 星座 / 光尘</span> </span> <span class="theme-opt__mark">✦</span> </button> </div> </div> <script type="module">const n=document.getElementById("fxBtn"),a=document.getElementById("fxPop");function s(d){document.documentElement.dataset.fx=d;try{localStorage.setItem("stella-fx",d)}catch{}document.querySelectorAll("#fxPop .fx-opt").forEach(t=>{const e=t.dataset.fxValue===d;t.classList.toggle("is-active",e),t.setAttribute("aria-selected",String(e))}),document.dispatchEvent(new CustomEvent("stella-fx-change",{detail:d}))}if(n&&a){const d=document.documentElement.dataset.fx||"standard";document.querySelectorAll("#fxPop .fx-opt").forEach(t=>{const e=t.dataset.fxValue===d;t.classList.toggle("is-active",e),t.setAttribute("aria-selected",String(e))}),n.addEventListener("click",t=>{t.stopPropagation();const e=a.hidden;a.hidden=!e,n.setAttribute("aria-expanded",String(e))}),document.addEventListener("click",t=>{!a.hidden&&!t.target.closest(".fx-switch")&&(a.hidden=!0,n.setAttribute("aria-expanded","false"))}),document.addEventListener("keydown",t=>{t.key==="Escape"&&!a.hidden&&(a.hidden=!0,n.setAttribute("aria-expanded","false"),n.focus())}),a.addEventListener("click",t=>{const e=t.target.closest(".fx-opt");e&&(s(e.dataset.fxValue??"standard"),a.hidden=!0,n.setAttribute("aria-expanded","false"))})}</script> </div> </div> </header> <main id="main">  <article class="wrap post-layout" data-astro-cid-lvjzyg5v> <div class="post-main page-fade" data-astro-cid-lvjzyg5v> <header class="post-head" data-astro-cid-lvjzyg5v> <a class="crumb" href="/STELLASTOPVRC/posts/" data-astro-cid-lvjzyg5v>← 返回教程档案</a> <div class="post-head__meta" style="--accent:var(--ink-dim)" data-astro-cid-lvjzyg5v> <span class="badge" data-cat="Avatar 虚拟形象" data-astro-cid-lvjzyg5v>Avatar 虚拟形象</span> <time datetime="2026-08-19" data-astro-cid-lvjzyg5v>2026-08-19</time> <span class="post-head__reading" data-astro-cid-lvjzyg5v>⏱ 约 17 分钟</span>  </div> <h1 class="post-head__title" data-astro-cid-lvjzyg5v>FaceEmo — VRChat 面部表情创建与配置工具</h1> <p class="post-head__lead" data-astro-cid-lvjzyg5v>FaceEmo 官方一句定位：「Face emote configuration tool for VRChat Avatars 3.0」，即面向 VRChat Avatars 3.0 的面部表情创建与配置工具。它通过「</p> <div class="chip-row" data-astro-cid-lvjzyg5v> <a class="chip" href="/STELLASTOPVRC/posts/?tag=%E7%9F%A5%E8%AF%86%E5%BA%93" data-astro-cid-lvjzyg5v> 知识库 </a><a class="chip" href="/STELLASTOPVRC/posts/?tag=avatar" data-astro-cid-lvjzyg5v> avatar </a> </div> </header> <div class="prose" data-astro-cid-lvjzyg5v> <h1 id="faceemo--vrchat-面部表情创建与配置工具">FaceEmo — VRChat 面部表情创建与配置工具</h1>
+<blockquote>
+<p>来源: suzuryg（sai）出品的 FaceEmo 官方文档与研究简报（经官方 web_fetch 核实）
+置信度: High（官方站点）；个别项标 [UNKNOWN]/[INFERENCE]
+官方站: <a href="https://suzuryg.github.io/face-emo/%EF%BC%88%E5%90%AB">https://suzuryg.github.io/face-emo/（含</a> /ja、/zh）
+GitHub: <a href="https://github.com/suzuryg/face-emo">https://github.com/suzuryg/face-emo</a> | VPM 包: <code>jp.suzuryg.face-emo</code>
+检索日期: 2026-08-19</p>
+</blockquote>
+<hr>
+<h2 id="1-工具定位">1. 工具定位</h2>
+<p><strong>FaceEmo</strong> 官方一句定位：「<em>Face emote configuration tool for VRChat Avatars 3.0</em>」，即面向 <strong>VRChat Avatars 3.0</strong> 的<strong>面部表情创建与配置工具</strong>。它通过「手势（Gesture）× 表情（Expression Menu）」组合来切换表情，并提供眨眼 / 口型同步 / 眼动 / 表情模式等面部行为。[FACT]</p>
+<table>
+<thead>
+<tr>
+<th>维度</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>设计目标</strong></td>
+<td>用 Gesture Table + Expression Menu 快速批量创建/配置化身面部表情</td>
+</tr>
+<tr>
+<td><strong>核心能力</strong></td>
+<td>表情切换、Blink（眨眼）、LipSync（口型同步）、EyeTracking（眼动）、Mouth Morph Canceler</td>
+</tr>
+<tr>
+<td><strong>生成范式</strong></td>
+<td>编辑器内的**构建期生成式（非破坏性）**工具——产出标准 FX 层/Expression Menu/参数</td>
+</tr>
+<tr>
+<td><strong>运行时期权</strong></td>
+<td>上传/构建后的化身<strong>不残留任何 FaceEmo 组件</strong>，运行期是标准 VRChat Avatars 3.0 资产</td>
+</tr>
+<tr>
+<td><strong>非目标</strong></td>
+<td>不是运行时组件提供商，不注入 FaceEmo 运行时代码</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>💡 <strong>关键认知</strong>：FaceEmo 是「源（source）→ 生成物」的构建期流程。你在编辑器里配置的 FaceEmo 场景对象/Pattern/Expression 是<strong>源</strong>；Apply to Avatar 之后生成的面部控制器、菜单、参数是<strong>生成物</strong>。<strong>不得手工修改生成控制器</strong>——再次生成会被抹掉。详见第 3 章所有权链。</p>
+</blockquote>
+<h3 id="11-官方站点勘误">1.1 官方站点勘误</h3>
+<p>权威官方站为 <a href="https://suzuryg.github.io/face-emo/%EF%BC%88%E5%90%AB">https://suzuryg.github.io/face-emo/（含</a> <code>/ja</code> 日文、<code>/zh</code> 中文分支）。曾见 <code>face-vtuber-book</code>、<code>face-emu</code> 等名与之关联，<strong>该关系未被证实</strong>【UNKNOWN】【未确认】【coverage: low】。引用归属时一律以官方 <code>.github.io/face-emo</code> 站点为准，不把未证实名称写入特性。</p>
+<hr>
+<h2 id="2-核心组件与机制">2. 核心组件与机制</h2>
+<p>FaceEmo 的核心组件（官方 Reference 篇）层次如下：[FACT]</p>
+<h3 id="21-facial-expression-menu表情菜单对象--源">2.1 Facial Expression Menu（表情菜单对象 = 「源」）</h3>
+<ul>
+<li>场景对象，由 <strong>FaceEmo → New Menu</strong> 创建；是整套配置的<strong>入口与持有者（源）</strong>。</li>
+<li><strong>可复制</strong>：复制出的新菜单对象<strong>不影响原版</strong>——两者各自独立。</li>
+<li>⚠️ <strong>例外</strong>：引用的「动画剪辑（Animation Clip）」是<strong>共享</strong>的；复制菜单复用同一 Clip 时编辑共享内容会影响所有引用者。</li>
+</ul>
+<h3 id="22-expression-pattern菜单模式">2.2 Expression Pattern（菜单「模式」）</h3>
+<ul>
+<li>一个 Pattern = 一组「<strong>手势 × 表情</strong>」组合的开关方案。</li>
+<li><strong>Change Default Face / Use ClipName as PatternName</strong>：设定默认表情 / 以 Clip 名为 Pattern 名。</li>
+<li>可配置 <strong>Blink / LipSync / EyeTracking / Mouth Morph Canceler</strong> 子系统行为。</li>
+</ul>
+<h3 id="23-expression单条条件--表情动画">2.3 Expression（单条「条件 → 表情动画」）</h3>
+<ul>
+<li>单条定义为「<strong>条件 → 表情动画</strong>」，是 Pattern 下最小触发单元。</li>
+</ul>
+<h3 id="24-expression-editorblendshape--参数编辑器">2.4 Expression Editor（BlendShape / 参数编辑器）</h3>
+<ul>
+<li>用于编辑 <strong>BlendShape</strong> 与参数，可把结果<strong>保存到用户自定义路径</strong>（用户拥有的稳定 Clip），实现「自建稳定来源」。</li>
+</ul>
+<h3 id="25-gesture-table手势--表情组合与优先级">2.5 Gesture Table（手势 × 表情组合与优先级）</h3>
+<ul>
+<li>定义「手势 × 表情」组合的映射与<strong>优先级</strong>，决定手部手势触发表情。</li>
+</ul>
+<h3 id="26-工具栏--组件">2.6 工具栏 / 组件</h3>
+<table>
+<thead>
+<tr>
+<th>元素</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>工具栏 <strong>Apply to Avatar</strong></td>
+<td>触发生成（构建期），告知生成完成</td>
+</tr>
+<tr>
+<td>工具栏 <strong>New Menu</strong></td>
+<td>新建表情菜单对象</td>
+</tr>
+<tr>
+<td><strong>Launcher 组件</strong></td>
+<td>管理生成目标/运行配置（face-emo 的入口组件）</td>
+</tr>
+<tr>
+<td><strong>AV3Setting</strong></td>
+<td>VRChat Avatars 3.0 平台/参数相关设置</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="3-条件与证据边界">3. 条件与证据边界</h2>
+<h3 id="31-条件系统重要更正以官方-170-为准">3.1 条件系统（★重要更正，以官方 1.7.0 为准）</h3>
+<p><strong>1.7.0 实际条件</strong>由两层构成：[FACT]</p>
+<p><strong>手部类型 × 手势类型 × 等于/不等于</strong>：</p>
+<ul>
+<li>手部类型：<code>LeftHand</code> / <code>RightHand</code> / <code>BothHands</code> / <code>OneHand</code>（任一非双手）/ <code>AnyHand(s)</code>（任一含双手）</li>
+<li>手势类型：<code>Fist</code> / <code>Open</code> / <code>Point</code> / <code>Victory</code> / <code>Rock</code> / <code>Gun</code> 等</li>
+<li>比较：等于 / 不等于</li>
+</ul>
+<p><strong>附加条件</strong>：</p>
+<ul>
+<li><strong>Trigger 挤压</strong>（Use Left/Right Trigger）：仅在对应手为 <code>Fist</code> 时有效</li>
+<li><strong>菜单触发</strong>：切换 Pattern（Emote Select / Emote Lock ON 属于<strong>菜单/选项层</strong>）</li>
+</ul>
+<blockquote>
+<p>⚠️ <strong>反模式警示</strong>：<code>Viseme</code> / 音频 / 视频 / 情绪 / Contact / AFK <strong>在 FaceEmo 官方文档中不存在</strong>。【UNKNOWN】通用模板中的”情绪/音频/视频触发话术”<strong>不得当作 FaceEmo 特性写入</strong>——FaceEmo 是手势 + 菜单驱动，不是情绪/音频驱动。</p>
+</blockquote>
+<h3 id="32-每个表情的行为开关">3.2 每个表情的行为开关</h3>
+<p>每个表情（Expression）可由以下开关注入/关闭动画：[FACT]</p>
+<table>
+<thead>
+<tr>
+<th>开关</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Enable Eye Tracking</strong></td>
+<td>启用眼动</td>
+</tr>
+<tr>
+<td><strong>Enable Blink</strong></td>
+<td>启用眨眼</td>
+</tr>
+<tr>
+<td><strong>Enable Lip Sync</strong></td>
+<td>启用口型同步</td>
+</tr>
+<tr>
+<td><strong>Mouth Morph Canceler</strong></td>
+<td>说话时把 Mouth Morph 相关 BlendShape 退回默认（防止说话/表情冲突）</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>💡 闭眼表情排障常与 Blink 相关：详见第 5 章 BlendShape 警告。</p>
+</blockquote>
+<hr>
+<h2 id="4-所有权ownership与证据边界">4. 所有权（Ownership）与证据边界</h2>
+<p>沿用 playbook 的「源 / 生成物」责任链，FaceEmo 的归属如下：[INFERENCE]（基于官方文档 + playbook 归纳）</p>
+<table>
+<thead>
+<tr>
+<th>角色</th>
+<th>对象</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>源（可编辑入口）</strong></td>
+<td>表情菜单对象 / Expression Pattern / Expression 定义 / 用户自建稳定 Clip（Expression Editor 保存到用户路径）/ 场景配置 / Launcher 目标</td>
+</tr>
+<tr>
+<td><strong>生成物（不可手改）</strong></td>
+<td><code>FaceEmoFX</code>（生成的 FX 层）、生成的 Expression Menu + 参数、备份 / 预览 / 缩略图、<strong><code>FaceEmoPrefab</code></strong>、示例资产</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>⚠️ <strong>删 FaceEmoPrefab = 移除表情菜单</strong>——它是生成物，但删除它会连带移除整个表情菜单接线。
+⚠️ <strong>不要手工改写生成控制器</strong>：再次 Apply/重建会抹掉手改内容。任何变更都应回到「源」层做。</p>
+</blockquote>
+<h3 id="41-排障归属纪律">4.1 排障归属纪律</h3>
+<ul>
+<li>手势/菜单不触发 → 先查「源」的条件/Clip，<strong>不要直接 patch 生成控制器</strong>（regeneration 会销毁该改动）。[INFERENCE]</li>
+<li>生成资产缺失/过期/重复 → 标记旧生成路径 <code>STALE</code>，确认所有消费者后再处置；不要臆测删除。[INFERENCE]</li>
+</ul>
+<hr>
+<h2 id="5-常见故障">5. 常见故障</h2>
+<h3 id="51-手势不变表情五查官方-faqfact">5.1 手势不变表情五查（官方 FAQ）[FACT]</h3>
+<p>按顺序检查：</p>
+<ol>
+<li><strong>未加入菜单</strong>（该表达式没被加进 Expression Menu）</li>
+<li><strong>Pattern 未选中</strong>（当前菜单栏未选中对应 Pattern）</li>
+<li><strong>Emote Select 打开</strong>（处于手动选择 Emote 模式）</li>
+<li><strong>Emote Lock ON</strong>（表情被锁定）</li>
+<li><strong>Settings → Emote Lock</strong>（全局表情锁定开启）</li>
+</ol>
+<h3 id="52-其他官方故障点-fact">5.2 其他官方故障点 [FACT]</h3>
+<table>
+<thead>
+<tr>
+<th>现象</th>
+<th>处置</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>原有表情被禁用</strong></td>
+<td>FaceEmo 接管后需<strong>重建进 FaceEmo</strong>；原表情不会自动保留</td>
+</tr>
+<tr>
+<td><strong>移除 FaceEmo</strong></td>
+<td>删除 <strong><code>FaceEmoPrefab</code></strong>（连带移除表情菜单）</td>
+</tr>
+<tr>
+<td><strong>UI 错乱</strong></td>
+<td>进入 <strong>Play 模式一次</strong> 恢复</td>
+</tr>
+<tr>
+<td><strong>「Don’t show again」对话框误关</strong></td>
+<td>到 <strong>Editor Settings</strong> 复位</td>
+</tr>
+<tr>
+<td><strong>BlendShape 警告</strong></td>
+<td>含 blink/lip-sync 的需处理：闭眼表情把 <strong>Enable Blink</strong> 关闭</td>
+</tr>
+<tr>
+<td><strong>GM 预览注意</strong></td>
+<td>Play 模式时<strong>别选 GestureManager 对象</strong>（与 Gesture Manager 联动，见 <a href="/STELLASTOPVRC/posts/kb-avatar-gesture-manager/">gesture-manager.md</a>）</td>
+</tr>
+</tbody>
+</table>
+<h3 id="53-playbook-方法论非官方故障表归因纪律inference">5.3 playbook 方法论（非官方故障表，归因纪律）[INFERENCE]</h3>
+<ul>
+<li><strong>手势/菜单不触发排查顺序</strong>：入口/Pattern 与参数值 → 手势权重/过渡条件与左右手语义 → 生成参数类型/默认值/FX 最终消费者 → 状态过渡/打断/层权重/掩码/Write Defaults/更高优先级状态 → 绑定路径对照构建后层级 → 检查是否被其他表情所有者或自定义 FX 层写了同一 BlendShape[INFERENCE]</li>
+<li><strong>Blink / LipSync / 眼动六失败类</strong>：表情 Clip 显式写眼/嘴曲线；取消/保护设置缺失或过宽；过渡或 Write Defaults 状态重置曲线；其他 provider 或自定义 FX 层后有所有权；复制的全脸 Clip 含意外零值曲线；构建后绑定路径失效（层级重映射）[INFERENCE]——逐一验证，<strong>一个通过不代表另两个通过</strong>。</li>
+<li><strong>跨化身污染</strong>：多化身共享同一源 prefab 时，明确共享/隔离决策；优先化身专属源 [INFERENCE]。</li>
+</ul>
+<hr>
+<h2 id="6-安装与版本">6. 安装与版本</h2>
+<h3 id="61-版本基线-fact">6.1 版本基线 [FACT]</h3>
+<table>
+<thead>
+<tr>
+<th>项目</th>
+<th>值</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>当前版本</strong></td>
+<td><strong>1.7.0</strong>（releases 2026-03-01；VPM Catalog 列 31 个版本）</td>
+</tr>
+<tr>
+<td><strong>Unity</strong></td>
+<td><strong>2022.3+</strong></td>
+</tr>
+<tr>
+<td><strong>VPM 依赖</strong></td>
+<td><strong>无</strong>（pure 包）</td>
+</tr>
+</tbody>
+</table>
+<h3 id="62-安装方式-fact">6.2 安装方式 [FACT]</h3>
+<ul>
+<li><strong>VCC / ALCOM</strong>：添加仓库 <code>https://suzuryg.github.io/vpm-repos/vpm.json</code> 后安装</li>
+<li><strong>BOOTH</strong>：BOOTH 发行版<strong>内置 Modular Avatar</strong>（见 6.3 依赖）</li>
+</ul>
+<h3 id="63-依赖表about-bundled-softwarefact">6.3 依赖表（About Bundled Software）[FACT]</h3>
+<table>
+<thead>
+<tr>
+<th>打包依赖</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Animator As Code</td>
+<td>生成器使用</td>
+</tr>
+<tr>
+<td>ComboGestureExpressions Integrator</td>
+<td>集成</td>
+</tr>
+<tr>
+<td>Custom Animator Controllers（Pocho）</td>
+<td>集成</td>
+</tr>
+<tr>
+<td><strong>Modular Avatar</strong></td>
+<td><strong>仅 BOOTH 发行版内置</strong>（VPM/GitHub 版不打包）</td>
+</tr>
+<tr>
+<td>VPMPackageAutoInstaller</td>
+<td>仅 BOOTH</td>
+</tr>
+<tr>
+<td>UniRx</td>
+<td>生成器使用</td>
+</tr>
+<tr>
+<td>Extenject</td>
+<td>生成器使用</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>NDMF 未列入直接依赖</strong>。FaceEmo 产出物是<strong>经 MA/NDMF 管线在构建期合并</strong>进入最终化身——「NDMF 生成式」成立角度是「产物经管线合并」，而非 FaceEmo 自带 NDMF Pass【未直接证实】【UNKNOWN】【coverage: low】。见 <a href="/STELLASTOPVRC/posts/kb-avatar-modular-avatar/">modular-avatar.md</a> 与 <a href="/STELLASTOPVRC/posts/kb-avatar-ndmf-tools/">ndmf-tools.md</a>。</p>
+</blockquote>
+<h3 id="64-170-变更亮点-fact">6.4 1.7.0 变更亮点 [FACT]</h3>
+<ul>
+<li>降低参数开销</li>
+<li>UI 菜单项可选</li>
+<li>zh-CN 翻译</li>
+<li>FX 关闭开关检测</li>
+<li>检测到眨眼动画时关闭分支眨眼</li>
+</ul>
+<blockquote>
+<p>⚠️ <strong>post-1.7.0 PR#259</strong>（float 参数由表情动画控制并写入 MA Parameters）= <strong>未发布路线图，勿当事实</strong>【UNKNOWN】。</p>
+</blockquote>
+<hr>
+<h2 id="7-来源与证据">7. 来源与证据</h2>
+<table>
+<thead>
+<tr>
+<th>事实层级</th>
+<th>定义</th>
+<th>本文用法</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>[FACT]</strong></td>
+<td>官方可核实（URL + 检索日期 2026-08-19）</td>
+<td>第 2/3/5/6 章主体</td>
+</tr>
+<tr>
+<td><strong>[INFERENCE]</strong></td>
+<td>推断（必须标）</td>
+<td>第 4 章所有权归纳、第 5.3 排查顺序</td>
+</tr>
+<tr>
+<td><strong>[UNKNOWN]</strong></td>
+<td>未确认</td>
+<td><code>face-emu</code> 关系、NDMF 直接依赖、PR#259</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>官方站: <a href="https://suzuryg.github.io/face-emo/%EF%BC%88/ja%E3%80%81/zh%EF%BC%89%5BFACT">https://suzuryg.github.io/face-emo/（/ja、/zh）[FACT</a>]</li>
+<li>GitHub: <a href="https://github.com/suzuryg/face-emo">https://github.com/suzuryg/face-emo</a> [FACT]</li>
+<li>VPM 仓库: <a href="https://suzuryg.github.io/vpm-repos/vpm.json">https://suzuryg.github.io/vpm-repos/vpm.json</a> [FACT]</li>
+<li>检索日期: 2026-08-19 [FACT]</li>
+</ul>
+<hr>
+<h2 id="相关文档">相关文档</h2>
+<p><a href="/STELLASTOPVRC/posts/kb-avatar-gesture-manager/">gesture-manager.md</a> · <a href="/STELLASTOPVRC/posts/kb-avatar-expression-menu/">expression-menu.md</a> · <a href="/STELLASTOPVRC/posts/kb-avatar-playable-layers/">playable-layers.md</a> · <a href="/STELLASTOPVRC/posts/kb-avatar-blend-shape-troubleshooting/">blend-shape-troubleshooting.md</a> · <a href="/STELLASTOPVRC/posts/kb-avatar-modular-avatar/">modular-avatar.md</a> · <a href="/STELLASTOPVRC/posts/kb-avatar-ndmf-tools/">ndmf-tools.md</a></p> </div> <p class="kb-source-note" data-astro-cid-lvjzyg5v>
+本文由 VRChat 开发知识库自动整理（社区整理  · 可信度 High  · 最后校对 2026-08-19），
+          遇到与手写教程冲突的地方，以官方文档为最高优先级。
+</p> <section class="comments" id="comments" data-astro-cid-lvjzyg5v> <h2 class="comments__title" data-astro-cid-lvjzyg5v>✦ 旅人留言（0）</h2> <p class="comments__empty" id="commentsEmpty" data-astro-cid-lvjzyg5v>
+还没有旅人留言 —— 有疑问就写在下面，站长都会回复。
+</p> <form class="comment-form" id="commentForm" data-target="kb-avatar-faceemo" data-astro-cid-lvjzyg5v> <p class="comment-form__title" data-astro-cid-lvjzyg5v>写下你的留言</p> <input id="cAuthor" maxlength="20" placeholder="昵称（留空则为「旅人」）" data-astro-cid-lvjzyg5v> <textarea id="cBody" maxlength="1000" required placeholder="想问的问题、想说的感谢都可以（最多 1000 字）" data-astro-cid-lvjzyg5v></textarea> <div class="comment-form__actions" data-astro-cid-lvjzyg5v> <button class="btn btn--primary" type="submit" data-astro-cid-lvjzyg5v>发布留言</button> <span class="form-hint" data-astro-cid-lvjzyg5v>留言保存在本站，站长在写作台里能看到</span> <span class="form-msg" id="cMsg" data-astro-cid-lvjzyg5v></span> </div> </form> </section> <nav class="station-nav" aria-label="站间导航" data-astro-cid-lvjzyg5v> <a href="/STELLASTOPVRC/posts/kb-avatar-dressing-tools/" data-astro-cid-lvjzyg5v> <span class="dir" data-astro-cid-lvjzyg5v>← 上一站 · 更新的星光</span> <span class="to" data-astro-cid-lvjzyg5v>DressingTools (DT) — 非破坏性 cabinet 衣橱/装配系统</span> </a> <a href="/STELLASTOPVRC/posts/kb-avatar-gesture-manager/" data-astro-cid-lvjzyg5v> <span class="dir" data-astro-cid-lvjzyg5v>下一站 · 更早的星光 →</span> <span class="to" data-astro-cid-lvjzyg5v>Gesture Manager — VRChat 化身动画预览与调试工具</span> </a> </nav> </div> <aside class="toc" id="toc" hidden> <p class="toc__title">✦ 本页星图</p> <nav id="tocNav" aria-label="文章目录"></nav> </aside> <script type="module">const i=document.querySelector(".prose"),d=document.getElementById("toc"),u=document.getElementById("tocNav"),l=[];if(i&&d&&u){const c=[...i.querySelectorAll("h1, h2, h3")];if(c.length>=3){d.hidden=!1,c.forEach((o,e)=>{o.id||(o.id=`sec-${e}`);const n=document.createElement("a");n.href=`#${o.id}`;const s=(o.textContent??"").replace(/\s+/g," ").trim(),r=s.search(/[：:]/),a=r>=4?s.slice(0,r):s;n.textContent=a.length>40?`${a.slice(0,40)}…`:a,n.title=s,u.appendChild(n),l.push({a:n,h:o})});const t=()=>{let o=l[0];for(const e of l)e.h.getBoundingClientRect().top<=130&&(o=e);for(const e of l)e.a.classList.toggle("is-active",e===o)};addEventListener("scroll",t,{passive:!0}),t()}}document.querySelectorAll(".prose pre").forEach(c=>{const t=document.createElement("button");t.className="code-copy",t.type="button",t.textContent="复制",t.addEventListener("click",async()=>{const o=c.querySelector("code")?.innerText??c.innerText;try{await navigator.clipboard.writeText(o)}catch{const e=document.createElement("textarea");e.value=o,document.body.appendChild(e),e.select(),document.execCommand("copy"),e.remove()}t.textContent="已复制 ✓",t.classList.add("is-ok"),setTimeout(()=>{t.textContent="复制",t.classList.remove("is-ok")},1500)}),c.appendChild(t)});</script> </article>  </main> <footer class="site-footer"> <div class="wrap"> <p class="star-line" aria-hidden="true"> <svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> <svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> </p> <p>星之驿站 StellaStop —— 在虚拟宇宙中，为你保留一座驿站</p> <p class="site-footer__disclaimer">
+该网页目前是测试阶段，仅用于测试，所有内容仅供参考；内容全部为引用互联网当中的信息。
+</p> <p>© 2026 星之驿站 · 由 <a href="https://astro.build">Astro</a> 与星光驱动</p> <p> <a data-desk-login hidden title="写作台：登录 / 注册">登录 / 注册</a> ·
+<a href="/STELLASTOPVRC/announcements/">官方公告</a> ·
+<a href="/STELLASTOPVRC/ai/">问星 AI</a> ·
+<a href="/STELLASTOPVRC/feedback/">旅人留言板</a> </p> </div> </footer> <button class="to-top" id="toTop" aria-label="回到顶部"> <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"> <path d="M12 20V5"></path> <path d="M5.5 11.5 12 5l6.5 6.5"></path> </svg> </button> <script type="module">const e=document.getElementById("toTop");if(e){const t=()=>e.classList.toggle("is-visible",scrollY>480);addEventListener("scroll",t,{passive:!0}),t(),e.addEventListener("click",()=>{const o=matchMedia("(prefers-reduced-motion: reduce)").matches;scrollTo({top:0,behavior:o?"auto":"smooth"})})}</script> <script>(function(){const deskConfigured = "";
+
+      /* 写作台探测（页面尾部执行，DOM 已就绪）：
+         1. 计算写作台地址：站点配置 deskUrl（公网部署时填）> 本机默认 localhost:4322 > 同主机 4322
+         2. 探测 /api/gate/status —— 在线才点亮「登录 / 注册」入口，并复用给验证门横幅
+         3. 不在线则保持隐藏，绝不会把访客拽进内网地址；同时给出一次性「镜像模式」提示 */
+      (function () {
+        var host = location.hostname;
+        var isLocal = host === 'localhost' || host === '127.0.0.1' || host === '[::1]';
+        var desk = deskConfigured ||
+          (isLocal ? 'http://localhost:4322' : location.protocol + '//' + host + ':4322');
+        window.STELLA_DESK = desk;
+
+        function revealLogin() {
+          document.querySelectorAll('[data-desk-login]').forEach(function (a) {
+            a.href = desk + '/admin';
+            a.removeAttribute('hidden');
+          });
+        }
+        function showBanner(css, html, shiftHeader) {
+          var bar = document.createElement('div');
+          bar.style.cssText = css;
+          bar.innerHTML = html;
+          document.body.prepend(bar);
+          if (shiftHeader) {
+            var header = document.querySelector('.site-header');
+            if (header) header.style.marginTop = '42px';
+          }
+        }
+        function hintMirrorMode() {
+          try {
+            if (sessionStorage.getItem('stella-desk-hint')) return;
+            sessionStorage.setItem('stella-desk-hint', '1');
+          } catch (e) { /* 无痕模式等：忽略 */ }
+          var tip = document.createElement('div');
+          tip.style.cssText = 'position:fixed;left:14px;bottom:14px;z-index:9998;max-width:min(92vw,430px);padding:.65rem .9rem;border-radius:12px;background:rgba(18,20,44,.92);border:1px solid rgba(150,142,255,.35);color:#e8e6ff;font-size:.82rem;line-height:1.6;font-family:system-ui,sans-serif;box-shadow:0 8px 30px rgba(0,0,0,.35)';
+          tip.innerHTML = 'ℹ️ 静态镜像模式：登录 / 评论 / AI 等互动功能需要站长写作台在线，当前不可用。' +
+            '<span id="stellaDeskHintClose" style="float:right;cursor:pointer;opacity:.75;font-weight:700;margin-left:.6rem" title="关闭">×</span>';
+          document.body.appendChild(tip);
+          var close = function () { tip.remove(); };
+          tip.querySelector('#stellaDeskHintClose').addEventListener('click', close);
+          setTimeout(close, 9000);
+        }
+
+        try {
+          var ctrl = new AbortController();
+          var timer = setTimeout(function () { ctrl.abort(); }, 2500);
+          fetch(desk + '/api/gate/status', { credentials: 'include', signal: ctrl.signal })
+            .then(function (r) { return r.ok ? r.json() : null; })
+            .then(function (d) {
+              clearTimeout(timer);
+              if (!d) throw new Error('desk-offline');
+              window.STELLA_DESK_OK = true;
+              revealLogin();
+              if (d.regionBlocked) {
+                showBanner(
+                  'position:fixed;top:0;left:0;right:0;z-index:9999;padding:1.2rem;text-align:center;background:#1a0a0a;color:#ff9ed2;font-size:.95rem;border-bottom:2px solid #ff4d6d;font-family:system-ui,sans-serif',
+                  '⛔ 你所在的地区（' + (d.regionCountry || '未知') + '）暂不开放访问。',
+                  false
+                );
+                return;
+              }
+              if (d.enabled && !d.passed) {
+                showBanner(
+                  'position:fixed;top:0;left:0;right:0;z-index:9999;padding:0.7rem;text-align:center;background:linear-gradient(94deg,rgba(143,127,247,.25),rgba(98,200,245,.18));border-bottom:1px solid rgba(150,142,255,.3);color:#f0efff;font-size:.88rem;font-family:system-ui,sans-serif',
+                  '🔒 本站启用了安全验证 —— <a href="' + desk + '/gate?next=' + encodeURIComponent(location.href) + '" style="color:#ffd98e;font-weight:700;text-decoration:underline">点击完成验证</a>，通过后即可使用全部功能（30 天免验）。',
+                  true
+                );
+              }
+            })
+            .catch(function () {
+              clearTimeout(timer);
+              window.STELLA_DESK_OK = false;
+              hintMirrorMode();
+            });
+        } catch (e) { /* 忽略 */ }
+      })();
+    })();</script> </body> </html> <script type="module">const m=document.getElementById("commentForm"),s=document.getElementById("cMsg"),u=`${location.protocol}//${location.hostname}:4322/api/message`;function r(e,t=!1){s&&(s.textContent=e,s.classList.toggle("is-err",t),s.classList.toggle("is-ok",!t))}function y(){const e=new Date,t=n=>String(n).padStart(2,"0");return`${e.getFullYear()}-${t(e.getMonth()+1)}-${t(e.getDate())}`}function f(e){let t=7;for(const n of e)t=(t*31+n.charCodeAt(0))%360;return t}function g(e,t){const n=document.createElement("li");n.className="comment",n.innerHTML=`
+      <span class="comment__avatar"></span>
+      <div class="comment__bubble">
+        <div class="comment__head">
+          <span class="comment__name"></span>
+          <time class="comment__date">${y()}</time>
+        </div>
+        <p class="comment__body"></p>
+      </div>`;const o=n.querySelector(".comment__avatar");return o.style.setProperty("--h",String(f(e))),o.textContent=e.slice(0,1),n.querySelector(".comment__name").textContent=e,n.querySelector(".comment__body").textContent=t,n}m?.addEventListener("submit",async e=>{e.preventDefault();const t=document.getElementById("cBody").value.trim();if(!t)return r("留言内容不能为空哦",!0);const n=document.getElementById("cAuthor").value.trim()||"旅人",o=m.querySelector("button");o&&(o.disabled=!0);try{const c=await fetch(u,{credentials:"include",method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({target:m.dataset.target,kind:"comment",author:n,body:t})}),d=await c.json().catch(()=>({}));if(!c.ok)throw new Error(d.error||`发送失败（${c.status}）`);const l=document.querySelector(".comment-list");l&&l.appendChild(g(n,t)),document.getElementById("commentsEmpty")?.remove(),document.getElementById("cBody").value="",r("留言已发布，感谢支持 ✦");const a=document.querySelector(".comments__title"),i=a?.textContent?.match(/（(\d+)）/);a&&i&&(a.textContent=a.textContent.replace(/（\d+）/,`（${Number(i[1])+1}）`))}catch(c){r(c instanceof TypeError?"写作台没在运行，暂时收不到留言 —— 双击「启动博客.bat」就好":c.message,!0)}finally{o&&(o.disabled=!1)}});</script> 

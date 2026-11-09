@@ -1,0 +1,500 @@
+<!DOCTYPE html><html lang="zh-CN"> <head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="generator" content="Astro v5.18.2"><meta name="description" content="需要玩家拥有交互权限。"><meta name="theme-color" content="#070a1c"><meta property="og:title" content="API: Complete Udon Event Reference · 星之驿站 StellaStop"><meta property="og:description" content="需要玩家拥有交互权限。"><meta property="og:type" content="website"><meta name="twitter:card" content="summary"><link rel="icon" type="image/svg+xml" href="/STELLASTOPVRC/favicon.svg"><script>
+      // 在渲染前恢复主题与特效档位，避免闪一下默认状态
+      try {
+        document.documentElement.dataset.theme =
+          localStorage.getItem('stella-theme') || 'nebula';
+        document.documentElement.dataset.fx =
+          localStorage.getItem('stella-fx') || 'standard';
+      } catch {
+        /* 隐私模式读不到就算了 */
+      }
+    </script><link rel="stylesheet" href="/STELLASTOPVRC/custom-vars.css"><title>API: Complete Udon Event Reference · 星之驿站 StellaStop</title><link rel="stylesheet" href="/STELLASTOPVRC/_astro/about.Bgh6wcGl.css">
+<style>.post-head__meta[data-astro-cid-lvjzyg5v]{color:var(--ink-faint);font-family:var(--font-mono);font-size:.82rem}.post-head[data-astro-cid-lvjzyg5v] .chip-row[data-astro-cid-lvjzyg5v]{margin-top:1rem}.kb-source-note[data-astro-cid-lvjzyg5v]{max-width:760px;margin:2.2rem auto 0;font-size:.82rem;color:var(--ink-faint);border-top:1px dashed var(--line);padding-top:1rem}
+</style></head> <body> <div class="site-notice" id="siteNotice"> <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> <span class="site-notice__text">欢迎来到星之驿站！</span> <button class="site-notice__close" id="noticeClose" type="button" aria-label="关闭公告">
+×
+</button> </div> <a class="skip-link" href="#main">跳到主要内容</a> <canvas id="starfield" aria-hidden="true" data-astro-cid-ra7sfcwn></canvas> <div class="fx-aurora fx-aurora--a" aria-hidden="true" data-astro-cid-ra7sfcwn></div> <div class="fx-aurora fx-aurora--b" aria-hidden="true" data-astro-cid-ra7sfcwn></div>  <script type="module">const u=document.getElementById("starfield");if(u){let F=function(){const n=Math.random();return n<.1?"gold":n<.42?"blue":"white"},v=function(){const n=Math.min(window.devicePixelRatio||1,2);s=window.innerWidth,d=window.innerHeight,u.width=s*n,u.height=d*n,u.style.width=`${s}px`,u.style.height=`${d}px`,t.setTransform(n,0,0,n,0,0);const e=Math.min(190,Math.round(s*d/8500));l=Array.from({length:e},()=>({x:Math.random()*s,y:Math.random()*d,r:r(.4,1.7),base:r(.25,.8),amp:r(.12,.4),speed:r(6e-4,.0022),phase:r(0,Math.PI*2),c:F()})),C=Array.from({length:26},()=>({x:Math.random()*s,y:Math.random()*d,r:r(.9,2.4),vx:r(-.006,.006),vy:r(-.02,-.006),base:r(.2,.5),speed:r(8e-4,.002),phase:r(0,Math.PI*2),c:Math.random()<.5?"gold":"violet"})),c==="off"&&m(0,!0)},D=function(n){const e=Math.random()<.5?1:-1,o=r(Math.PI/7,Math.PI/5),a=r(.45,.75);y.push({x:r(s*.15,s*.85),y:r(-20,d*.3),vx:Math.cos(o)*a*e,vy:Math.sin(o)*a,born:n,life:r(750,1050),len:r(100,170)})},S=function(n){y=y.filter(e=>n-e.born<e.life);for(const e of y){const o=(n-e.born)/e.life,a=e.x+e.vx*(n-e.born),i=e.y+e.vy*(n-e.born),f=o<.15?o/.15:o>.7?(1-o)/.3:1,h=Math.hypot(e.vx,e.vy),x=e.vx/h,g=e.vy/h,b=t.createLinearGradient(a,i,a-x*e.len,i-g*e.len);b.addColorStop(0,`rgba(236,242,255,${(.85*f).toFixed(3)})`),b.addColorStop(1,"rgba(236,242,255,0)"),t.strokeStyle=b,t.lineWidth=1.6,t.lineCap="round",t.beginPath(),t.moveTo(a,i),t.lineTo(a-x*e.len,i-g*e.len),t.stroke()}},B=function(){let o=0;t.lineWidth=.7;for(let a=0;a<l.length&&o<26;a++)for(let i=a+1;i<l.length&&o<26;i++){const f=l[a].x-l[i].x,h=l[a].y-l[i].y,x=f*f+h*h;if(x<16900){const g=(1-Math.sqrt(x)/130)*.17;t.strokeStyle=`rgba(178,170,255,${g.toFixed(3)})`,t.beginPath(),t.moveTo(l[a].x,l[a].y),t.lineTo(l[i].x,l[i].y),t.stroke(),o++}}},X=function(n){for(const e of C){e.x+=e.vx*16,e.y+=e.vy*16,e.y<-12&&(e.y=d+10),e.x<-12&&(e.x=s+10),e.x>s+12&&(e.x=-10);const o=Math.max(.05,e.base+.25*Math.sin(n*e.speed+e.phase)),[a,i,f]=A[e.c];t.beginPath(),t.arc(e.x,e.y,e.r,0,7),t.shadowBlur=9,t.shadowColor=`rgba(${a},${i},${f},0.9)`,t.fillStyle=`rgba(${a},${i},${f},${o.toFixed(3)})`,t.fill()}t.shadowBlur=0},m=function(n,e=!1){t.clearRect(0,0,s,d);for(const o of l){const a=c==="off"?o.base:Math.max(.05,o.base+o.amp*Math.sin(n*o.speed+o.phase)),[i,f,h]=A[o.c];t.beginPath(),t.arc(o.x,o.y,o.r,0,7),o.r>1.25?(t.shadowBlur=7,t.shadowColor=`rgba(${i},${f},${h},0.85)`):t.shadowBlur=0,t.fillStyle=`rgba(${i},${f},${h},${a.toFixed(3)})`,t.fill()}if(t.shadowBlur=0,c!=="off"&&!e){c==="fancy"&&(B(),X(n));const o=c==="fancy"?r(2600,6e3):r(4200,9500);n>P&&(D(n),P=n+o),S(n)}},$=function(n){m(n),M=requestAnimationFrame($)},p=function(){if(c==="off"){m(0,!0);return}cancelAnimationFrame(M),M=requestAnimationFrame($)},w=function(){cancelAnimationFrame(M),t.clearRect(0,0,s,d),m(0,!0)};const t=u.getContext("2d"),k=matchMedia("(prefers-reduced-motion: reduce)").matches,A={white:[240,240,255],blue:[150,215,250],gold:[255,218,150],violet:[178,170,255]};let s=0,d=0,l=[],C=[],y=[],P=2500,M=0,c=document.documentElement.dataset.fx||"standard";k&&(c="off");const r=(n,e)=>n+Math.random()*(e-n);v(),addEventListener("resize",v),document.addEventListener("stella-fx-change",n=>{c=n.detail,c==="off"?w():p()}),c==="off"?m(0,!0):(p(),document.addEventListener("visibilitychange",()=>{document.hidden?w():p()}))}</script> <header class="site-header"> <div class="wrap site-header__inner"> <a class="logo" href="/STELLASTOPVRC/"> <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> <span>星之驿站</span> <span class="logo__romaji">StellaStop</span> </a> <div class="header-right"> <nav class="site-nav" aria-label="站内导航"> <a href="/STELLASTOPVRC/"> 首页 </a><a href="/STELLASTOPVRC/start/"> 新手 </a><a href="/STELLASTOPVRC/posts/"> 教程 </a><a href="/STELLASTOPVRC/videos/"> 视频 </a><a href="/STELLASTOPVRC/resources/"> 资源 </a><a href="/STELLASTOPVRC/booth/"> Booth </a><a href="/STELLASTOPVRC/announcements/"> 公告 </a><a href="/STELLASTOPVRC/ai/"> 问星 </a><a href="/STELLASTOPVRC/changelog/"> 更新日志 </a><a href="/STELLASTOPVRC/about/"> 关于 </a> </nav> <a class="login-link" data-desk-login hidden title="写作台：登录 / 注册后可发教程、传资源">
+登录 / 注册
+</a> <div class="theme-switch"> <button class="theme-switch__btn" id="themeBtn" type="button" aria-haspopup="listbox" aria-expanded="false" aria-label="切换主题配色" title="切换主题配色"> <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"> <path d="M12 3a9 9 0 1 0 9 9c0-1.2-1-2-2.2-2H17a2 2 0 0 1-2-2V6.2C15 5 14.2 4 13 4.4A9 9 0 0 0 12 3Z"></path> <circle cx="7.5" cy="11.5" r="1" fill="currentColor" stroke="none"></circle> <circle cx="10" cy="7.5" r="1" fill="currentColor" stroke="none"></circle> <circle cx="15" cy="7" r="1" fill="currentColor" stroke="none"></circle> </svg> </button> <div class="theme-pop" id="themePop" role="listbox" aria-label="选择主题" hidden> <button class="theme-opt" type="button" role="option" data-theme-value="nebula" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#8f7ff7"></span><span class="dot" style="background:#62c8f5"></span><span class="dot" style="background:#ffd98e"></span> </span> <span class="theme-opt__name">星云 · 蓝紫</span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt" type="button" role="option" data-theme-value="sakura" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#ff8fc7"></span><span class="dot" style="background:#c79bff"></span><span class="dot" style="background:#ffd08e"></span> </span> <span class="theme-opt__name">樱语 · 粉紫</span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt" type="button" role="option" data-theme-value="miku" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#2ed3c2"></span><span class="dot" style="background:#6ea8ff"></span><span class="dot" style="background:#ffe08e"></span> </span> <span class="theme-opt__name">葱色 · 青绿</span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt" type="button" role="option" data-theme-value="ember" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#ffb35c"></span><span class="dot" style="background:#ff7e6b"></span><span class="dot" style="background:#ffd98e"></span> </span> <span class="theme-opt__name">暮金 · 暖橙</span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt" type="button" role="option" data-theme-value="dawn" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#6a5ce8"></span><span class="dot" style="background:#e0568f"></span><span class="dot" style="background:#b8821e"></span> </span> <span class="theme-opt__name">晨星 · 浅色</span> <span class="theme-opt__mark">✦</span> </button> </div> </div> <script type="module">const a=document.getElementById("themeBtn"),n=document.getElementById("themePop");function s(c){document.documentElement.dataset.theme=c;try{localStorage.setItem("stella-theme",c)}catch{}const e=getComputedStyle(document.documentElement).getPropertyValue("--bg-deep").trim();document.querySelector('meta[name="theme-color"]')?.setAttribute("content",e||"#070a1c"),document.querySelectorAll(".theme-opt").forEach(t=>{const d=t.dataset.themeValue===c;t.classList.toggle("is-active",d),t.setAttribute("aria-selected",String(d))})}if(a&&n){const c=document.documentElement.dataset.theme||"nebula";document.querySelectorAll(".theme-opt").forEach(e=>{const t=e.dataset.themeValue===c;e.classList.toggle("is-active",t),e.setAttribute("aria-selected",String(t))}),a.addEventListener("click",e=>{e.stopPropagation();const t=n.hidden;n.hidden=!t,a.setAttribute("aria-expanded",String(t))}),document.addEventListener("click",e=>{!n.hidden&&!e.target.closest(".theme-switch")&&(n.hidden=!0,a.setAttribute("aria-expanded","false"))}),document.addEventListener("keydown",e=>{e.key==="Escape"&&!n.hidden&&(n.hidden=!0,a.setAttribute("aria-expanded","false"),a.focus())}),n.addEventListener("click",e=>{const t=e.target.closest(".theme-opt");t&&(s(t.dataset.themeValue??"nebula"),n.hidden=!0,a.setAttribute("aria-expanded","false"))})}</script> <div class="theme-switch fx-switch"> <button class="theme-switch__btn" id="fxBtn" type="button" aria-haspopup="listbox" aria-expanded="false" aria-label="背景特效设置" title="背景特效设置"> <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"> <path d="M5 3v4M3 5h4M6.5 17.5v3M5 19h3"></path> <path d="M14.5 4.5 16 9l4.5 1.5L16 12l-1.5 4.5L13 12l-4.5-1.5L13 9l1.5-4.5Z"></path> </svg> </button> <div class="theme-pop" id="fxPop" role="listbox" aria-label="背景特效" hidden> <button class="theme-opt fx-opt" type="button" role="option" data-fx-value="off" aria-selected="false"> <span class="fx-opt__body"> <span class="fx-opt__name">关闭特效</span> <span class="fx-opt__hint">最省电</span> </span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt fx-opt" type="button" role="option" data-fx-value="standard" aria-selected="false"> <span class="fx-opt__body"> <span class="fx-opt__name">标准</span> <span class="fx-opt__hint">闪烁星空 + 流星</span> </span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt fx-opt" type="button" role="option" data-fx-value="fancy" aria-selected="false"> <span class="fx-opt__body"> <span class="fx-opt__name">华丽</span> <span class="fx-opt__hint">追加极光 / 星座 / 光尘</span> </span> <span class="theme-opt__mark">✦</span> </button> </div> </div> <script type="module">const n=document.getElementById("fxBtn"),a=document.getElementById("fxPop");function s(d){document.documentElement.dataset.fx=d;try{localStorage.setItem("stella-fx",d)}catch{}document.querySelectorAll("#fxPop .fx-opt").forEach(t=>{const e=t.dataset.fxValue===d;t.classList.toggle("is-active",e),t.setAttribute("aria-selected",String(e))}),document.dispatchEvent(new CustomEvent("stella-fx-change",{detail:d}))}if(n&&a){const d=document.documentElement.dataset.fx||"standard";document.querySelectorAll("#fxPop .fx-opt").forEach(t=>{const e=t.dataset.fxValue===d;t.classList.toggle("is-active",e),t.setAttribute("aria-selected",String(e))}),n.addEventListener("click",t=>{t.stopPropagation();const e=a.hidden;a.hidden=!e,n.setAttribute("aria-expanded",String(e))}),document.addEventListener("click",t=>{!a.hidden&&!t.target.closest(".fx-switch")&&(a.hidden=!0,n.setAttribute("aria-expanded","false"))}),document.addEventListener("keydown",t=>{t.key==="Escape"&&!a.hidden&&(a.hidden=!0,n.setAttribute("aria-expanded","false"),n.focus())}),a.addEventListener("click",t=>{const e=t.target.closest(".fx-opt");e&&(s(e.dataset.fxValue??"standard"),a.hidden=!0,n.setAttribute("aria-expanded","false"))})}</script> </div> </div> </header> <main id="main">  <article class="wrap post-layout" data-astro-cid-lvjzyg5v> <div class="post-main page-fade" data-astro-cid-lvjzyg5v> <header class="post-head" data-astro-cid-lvjzyg5v> <a class="crumb" href="/STELLASTOPVRC/posts/" data-astro-cid-lvjzyg5v>← 返回教程档案</a> <div class="post-head__meta" style="--accent:var(--ink-dim)" data-astro-cid-lvjzyg5v> <span class="badge" data-cat="API 参考" data-astro-cid-lvjzyg5v>API 参考</span> <time datetime="2026-06-20" data-astro-cid-lvjzyg5v>2026-06-20</time> <span class="post-head__reading" data-astro-cid-lvjzyg5v>⏱ 约 17 分钟</span>  </div> <h1 class="post-head__title" data-astro-cid-lvjzyg5v>API: Complete Udon Event Reference</h1> <p class="post-head__lead" data-astro-cid-lvjzyg5v>需要玩家拥有交互权限。</p> <div class="chip-row" data-astro-cid-lvjzyg5v> <a class="chip" href="/STELLASTOPVRC/posts/?tag=%E7%9F%A5%E8%AF%86%E5%BA%93" data-astro-cid-lvjzyg5v> 知识库 </a><a class="chip" href="/STELLASTOPVRC/posts/?tag=api" data-astro-cid-lvjzyg5v> api </a> </div> </header> <div class="prose" data-astro-cid-lvjzyg5v> <h1 id="api-complete-udon-event-reference">API: Complete Udon Event Reference</h1>
+<blockquote>
+<p>SDK Version: VRChat SDK 3.x
+Last Verified: 2026-06-04</p>
+</blockquote>
+<hr>
+<h2 id="核心规则">核心规则</h2>
+<ul>
+<li><strong>所有 Udon 事件方法必须是 <code>public override</code></strong></li>
+<li><strong><code>_</code> 前缀方法不会被网络事件调用</strong>（VRChat 2020.4.4+）</li>
+<li><strong>Udon 比标准 C# 慢 200x ~ 1000x</strong></li>
+<li><strong>40+ 迭代的逻辑建议用 Animation 替代</strong></li>
+</ul>
+<hr>
+<h2 id="1-udon-input-events之前未完整记录">1. Udon Input Events（之前未完整记录）</h2>
+<p><strong>需要玩家拥有交互权限。</strong></p>
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>参数</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Interact()</code></td>
+<td>—</td>
+<td>玩家与物体交互</td>
+</tr>
+<tr>
+<td><code>InputJump(bool, UdonInputEventArgs)</code></td>
+<td>value, args</td>
+<td>跳跃输入</td>
+</tr>
+<tr>
+<td><code>InputUse(bool, UdonInputEventArgs)</code></td>
+<td>value, args</td>
+<td>使用输入</td>
+</tr>
+<tr>
+<td><code>InputGrab(bool, UdonInputEventArgs)</code></td>
+<td>value, args</td>
+<td>抓取输入</td>
+</tr>
+<tr>
+<td><code>InputDrop(bool, UdonInputEventArgs)</code></td>
+<td>value, args</td>
+<td>放下输入</td>
+</tr>
+<tr>
+<td><code>InputMoveHorizontal(float, UdonInputEventArgs)</code></td>
+<td>value, args</td>
+<td>水平移动</td>
+</tr>
+<tr>
+<td><code>InputMoveVertical(float, UdonInputEventArgs)</code></td>
+<td>value, args</td>
+<td>垂直移动</td>
+</tr>
+<tr>
+<td><code>InputLookHorizontal(float, UdonInputEventArgs)</code></td>
+<td>value, args</td>
+<td>视角水平旋转</td>
+</tr>
+<tr>
+<td><code>InputLookVertical(float, UdonInputEventArgs)</code></td>
+<td>value, args</td>
+<td>视角垂直旋转</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="2-udon-networking-events精确签名">2. Udon Networking Events（精确签名）</h2>
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>返回</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>OnOwnershipRequest(VRCPlayerApi requester, VRCPlayerApi newOwner)</code></td>
+<td><code>bool</code></td>
+<td>所有权即将转移。<code>true</code>=接受，<code>false</code>=拒绝</td>
+</tr>
+<tr>
+<td><code>OnOwnershipTransferred(VRCPlayerApi player)</code></td>
+<td><code>void</code></td>
+<td>所有权变更后触发</td>
+</tr>
+<tr>
+<td><code>OnPreSerialization()</code></td>
+<td><code>void</code></td>
+<td>序列化前（仅 Owner）</td>
+</tr>
+<tr>
+<td><code>OnPostSerialization(SerializationResult result)</code></td>
+<td><code>void</code></td>
+<td>序列化后。<code>result.success</code> + <code>result.byteCount</code></td>
+</tr>
+<tr>
+<td><code>OnDeserialization()</code></td>
+<td><code>void</code></td>
+<td>收到网络数据（非 Owner）</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>⚠️ 旧文档警告: 设置所有权后不能立即设置同步变量，旧 Owner 需要先确认，可能需要数秒。
+⚠️ <strong>Collision Ownership Transfer 存在历史 bug</strong>，会导致所有权转移风暴并卡顿所有玩家。VRC_Object Sync 应自动处理，无需手动。</p>
+</blockquote>
+<hr>
+<h2 id="3-udon-station-events精确签名">3. Udon Station Events（精确签名）</h2>
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>参数</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>OnStationEntered(VRCPlayerApi player)</code></td>
+<td>player</td>
+</tr>
+<tr>
+<td><code>OnStationExited(VRCPlayerApi player)</code></td>
+<td>player</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="4-udon-stringimage-loading-events">4. Udon String/Image Loading Events</h2>
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>参数</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>OnImageLoadSuccess(IVRCImageDownload result)</code></td>
+<td>result</td>
+</tr>
+<tr>
+<td><code>OnImageLoadError(IVRCImageDownload result)</code></td>
+<td>result</td>
+</tr>
+<tr>
+<td><code>OnStringLoadSuccess(IVRCStringDownload result)</code></td>
+<td>result</td>
+</tr>
+<tr>
+<td><code>OnStringLoadError(IVRCStringDownload result)</code></td>
+<td>result</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="5-udon-midi-events2026-06-15-新增">5. Udon MIDI Events(2026-06-15 新增)</h2>
+<blockquote>
+<p><strong>来源</strong>: VRChat 官方 MIDI 文档 (<code>memory/world/udon/midi/</code>)
+<strong>平台限制</strong>: <strong>桌面端独占</strong>,Quest 完全不支持
+<strong>必须组件</strong>: 场景中需有 <code>VRC Midi Listener</code> 组件 + 勾选对应 <code>Active Events</code>
+<strong>实时性</strong>: Realtime(设备输入) + Playback(文件回放) 共用相同事件签名</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>参数</th>
+<th>触发条件</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>MidiNoteOn(int channel, int number, int velocity)</code></td>
+<td>channel(0-15) / number(0-127) / velocity(0-127)</td>
+<td>MIDI 设备按下琴键 / MIDI 文件播放到 Note On</td>
+</tr>
+<tr>
+<td><code>MidiNoteOff(int channel, int number, int velocity)</code></td>
+<td>channel(0-15) / number(0-127) / velocity(0-127 通常为 0)</td>
+<td>MIDI 设备松开琴键 / MIDI 文件播放到 Note Off</td>
+</tr>
+<tr>
+<td><code>MidiControlChange(int channel, int number, int value)</code></td>
+<td>channel(0-15) / number(0-127) / value(0-127)</td>
+<td>MIDI 控制器变化(旋钮/推子)</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>⚠️ <strong>【FACT 修正】</strong> 一些早期文档/社区资料中可能见到 <code>OnMidiNoteOn(VRCPlayerApi player, ...)</code> 的错误签名。<strong>官方签名无 <code>On</code> 前缀,无 <code>VRCPlayerApi player</code> 参数</strong>——MIDI 事件是<strong>设备级全局事件</strong>,不绑定到具体玩家。</p>
+<p>⚠️ <strong>数据类差异</strong>: <code>MidiBlock.Channel</code> 是 <strong>1-16</strong>,事件 <code>channel</code> 参数是 <strong>0-15</strong>(0-indexed)。查询 <code>MidiBlock[]</code> 时需 <code>block.Channel - 1 == event.channel</code> 转换。</p>
+</blockquote>
+<h3 id="事件注册方式">事件注册方式</h3>
+<ol>
+<li>场景中任意 GameObject 添加 <strong><code>VRC Midi Listener</code></strong> 组件</li>
+<li>勾选 <code>Active Events</code>(默认全不勾选)</li>
+<li>将目标 <code>UdonBehaviour</code> 拖到 <code>Behaviour</code> 字段</li>
+<li>在 UdonBehaviour 中 <code>public override</code> 实现上述方法</li>
+</ol>
+<p>详细文档:</p>
+<ul>
+<li>总览与事件: <code>memory/world/udon/midi/index.md</code></li>
+<li>文件回放(<code>VRCMidiPlayer</code> 组件): <code>memory/world/udon/midi/midi-playback.md</code></li>
+<li>实时输入(<code>VRC Midi Listener</code> 组件): <code>memory/world/udon/midi/realtime-midi.md</code></li>
+</ul>
+<hr>
+<h2 id="6-受支持的-unity-monobehaviour-事件全集">6. 受支持的 Unity MonoBehaviour 事件全集</h2>
+<h3 id="生命周期">生命周期</h3>
+<p><code>Start()</code>, <code>Update()</code>, <code>FixedUpdate()</code>, <code>LateUpdate()</code>, <code>PostLateUpdate()</code></p>
+<h3 id="启用禁用">启用/禁用</h3>
+<p><code>OnEnable()</code>, <code>OnDisable()</code>, <code>OnDestroy()</code></p>
+<h3 id="碰撞3d--2d">碰撞（3D + 2D）</h3>
+<p><code>OnCollisionEnter/Exit/Stay</code>, <code>OnCollisionEnter2D/Exit2D/Stay2D</code></p>
+<h3 id="触发器3d--2d">触发器（3D + 2D）</h3>
+<p><code>OnTriggerEnter/Exit/Stay</code>, <code>OnTriggerEnter2D/Exit2D/Stay2D</code></p>
+<h3 id="控制器">控制器</h3>
+<p><code>OnControllerColliderHit()</code>, <code>OnControllerColliderHitPlayer()</code></p>
+<h3 id="渲染">渲染</h3>
+<p><code>OnWillRenderObject()</code>, <code>OnPreRender()</code>, <code>OnPostRender()</code>, <code>OnPreCull()</code>, <code>OnRenderImage()</code>, <code>OnRenderObject()</code>, <code>OnDrawGizmos()</code>, <code>OnDrawGizmosSelected()</code></p>
+<h3 id="粒子">粒子</h3>
+<p><code>OnParticleCollision()</code>, <code>OnParticleTrigger()</code></p>
+<h3 id="鼠标">鼠标</h3>
+<p><code>OnMouseDown/Up/UpAsButton/Drag/Enter/Exit/Over</code></p>
+<h3 id="可见性">可见性</h3>
+<p><code>OnBecameVisible()</code>, <code>OnBecameInvisible()</code></p>
+<h3 id="animator">Animator</h3>
+<p><code>OnAnimatorIK()</code>, <code>OnAnimatorMove()</code></p>
+<h3 id="音频">音频</h3>
+<p><code>OnAudioFilterRead()</code></p>
+<h3 id="其他">其他</h3>
+<p><code>OnJointBreak()</code>, <code>OnJointBreak2D()</code>, <code>OnValidate()</code>, <code>Reset()</code>, <code>OnTransformChildrenChanged()</code>, <code>OnTransformParentChanged()</code></p>
+<hr>
+<h2 id="7-方法可见性与调用方式">7. 方法可见性与调用方式</h2>
+<table>
+<thead>
+<tr>
+<th>调用场景</th>
+<th>可见性</th>
+<th>API</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>本地直接调用</td>
+<td><code>private</code> 可</td>
+<td><code>Behaviour.Method()</code></td>
+</tr>
+<tr>
+<td><code>SendCustomEvent</code></td>
+<td>必须 <code>public</code></td>
+<td><code>SendCustomEvent("Method")</code></td>
+</tr>
+<tr>
+<td><code>SendCustomNetworkEvent</code></td>
+<td>必须 <code>public</code>，不能 <code>_</code> 开头</td>
+<td><code>SendCustomNetworkEvent(All, "Method")</code></td>
+</tr>
+<tr>
+<td>纯本地 public（防网络调用）</td>
+<td><code>public void _Method()</code></td>
+<td><code>_</code> 前缀阻止网络事件调用（2020.4.4+）</td>
+</tr>
+<tr>
+<td>Udon 事件回调</td>
+<td><code>public override</code></td>
+<td>自动触发</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="8-相关知识库udon-官方文档本地化">8. 相关知识库(Udon 官方文档本地化)</h2>
+<blockquote>
+<p>10 个 Udon 核心单页已本地化到 <code>memory/world/udon/</code>,涵盖事件、输入、动画、外部资源、调试等基础系统。</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>主题</th>
+<th>本地化文档</th>
+<th>关联内容</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Udon 总览</td>
+<td><code>memory/world/udon/index.md</code></td>
+<td>概念、3 种创建方式、VM 细节、9 条指令</td>
+</tr>
+<tr>
+<td><strong>事件执行顺序</strong> ⭐关键</td>
+<td><code>memory/world/udon/event-execution-order.md</code></td>
+<td><code>_onEnable → _start</code> 无间隔执行</td>
+</tr>
+<tr>
+<td>Animation Events</td>
+<td><code>memory/world/udon/animation-events.md</code></td>
+<td>Animator 事件白名单 (12 方法)</td>
+</tr>
+<tr>
+<td>Avatar Events</td>
+<td><code>memory/world/udon/avatar-events.md</code></td>
+<td>OnAvatarChanged / OnAvatarEyeHeightChanged</td>
+</tr>
+<tr>
+<td>Input Events</td>
+<td><code>memory/world/udon/input-events.md</code></td>
+<td>Interact/InputUse/InputJump/InputGrab + UdonInputEventArgs</td>
+</tr>
+<tr>
+<td>UI Events</td>
+<td><code>memory/world/udon/ui-events.md</code></td>
+<td>Unity UI 事件白名单 (28 组件)</td>
+</tr>
+<tr>
+<td>Debugging</td>
+<td><code>memory/world/udon/debugging-udon-projects.md</code></td>
+<td>Debug 模式 + 错误日志 + UdonSharp 异常监听</td>
+</tr>
+<tr>
+<td>External URLs</td>
+<td><code>memory/world/udon/external-urls.md</code></td>
+<td>VRCUrl + 域白名单 + 5s 限流</td>
+</tr>
+<tr>
+<td>Image Loading</td>
+<td><code>memory/world/udon/image-loading.md</code></td>
+<td>VRCImageDownloader + 2048x2048 + 32MB</td>
+</tr>
+<tr>
+<td>String Loading</td>
+<td><code>memory/world/udon/string-loading.md</code></td>
+<td>VRCStringDownloader + 100MB</td>
+</tr>
+<tr>
+<td>AI Navigation</td>
+<td><code>memory/world/udon/ai-navigation.md</code></td>
+<td>NavMeshAgent + 运行时 NavMesh + Owner 计算</td>
+</tr>
+<tr>
+<td>VM and Assembly</td>
+<td><code>memory/world/udon/vm-and-assembly.md</code></td>
+<td>字节码逆向、9 Opcode、类型命名规则</td>
+</tr>
+<tr>
+<td>Using Build &#x26; Test</td>
+<td><code>memory/world/udon/using-build-test.md</code></td>
+<td>本地测试流程</td>
+</tr>
+<tr>
+<td>World Debug Views</td>
+<td><code>memory/world/udon/world-debug-views.md</code></td>
+<td>调试视图</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="8-关键工程约束来自官方文档">8. 关键工程约束（来自官方文档）</h2>
+<h3 id="性能">性能</h3>
+<ul>
+<li>Udon 比标准 C# 慢 <strong>200x ~ 1000x</strong></li>
+<li>Update 中避免复杂循环</li>
+<li>40+ 迭代的逻辑建议用 <strong>Animation 替代</strong>（不是 Animator）</li>
+<li>热路径避免 <code>GetComponent&#x3C;T>()</code></li>
+<li>优先使用 Unity/VRC 内置组件而非 Udon 实现</li>
+</ul>
+<h3 id="网络">网络</h3>
+<ul>
+<li>事件过多 → “Death Runs”（数据丢失）</li>
+<li>同步变量更新比网络事件慢 → <strong>设置同步变量后立即发事件可能乱序</strong></li>
+<li>Instantiation <strong>不支持网络同步</strong>，必须使用对象池</li>
+</ul>
+<h3 id="struct">Struct</h3>
+<ul>
+<li><code>Vector3.Normalize()</code> 不修改变量本身 → 必须 <code>v = v.normalized</code></li>
+</ul>
+<h3 id="编辑器脚本">编辑器脚本</h3>
+<ul>
+<li>编辑器代码放在 <code>Editor</code> 文件夹或用 <code>#if UNITY_EDITOR</code></li>
+<li>同文件内编辑器代码: <code>#if !COMPILER_UDONSHARP &#x26;&#x26; UNITY_EDITOR</code></li>
+<li>U# 编辑器采用 Proxy 机制: <code>UpdateProxy()</code> / <code>ApplyProxyModifications()</code></li>
+</ul> </div> <p class="kb-source-note" data-astro-cid-lvjzyg5v>
+本文由 VRChat 开发知识库自动整理（官方来源  · 可信度 High  · 最后校对 2026-06-20），
+          遇到与手写教程冲突的地方，以官方文档为最高优先级。
+</p> <section class="comments" id="comments" data-astro-cid-lvjzyg5v> <h2 class="comments__title" data-astro-cid-lvjzyg5v>✦ 旅人留言（0）</h2> <p class="comments__empty" id="commentsEmpty" data-astro-cid-lvjzyg5v>
+还没有旅人留言 —— 有疑问就写在下面，站长都会回复。
+</p> <form class="comment-form" id="commentForm" data-target="kb-api-events-reference" data-astro-cid-lvjzyg5v> <p class="comment-form__title" data-astro-cid-lvjzyg5v>写下你的留言</p> <input id="cAuthor" maxlength="20" placeholder="昵称（留空则为「旅人」）" data-astro-cid-lvjzyg5v> <textarea id="cBody" maxlength="1000" required placeholder="想问的问题、想说的感谢都可以（最多 1000 字）" data-astro-cid-lvjzyg5v></textarea> <div class="comment-form__actions" data-astro-cid-lvjzyg5v> <button class="btn btn--primary" type="submit" data-astro-cid-lvjzyg5v>发布留言</button> <span class="form-hint" data-astro-cid-lvjzyg5v>留言保存在本站，站长在写作台里能看到</span> <span class="form-msg" id="cMsg" data-astro-cid-lvjzyg5v></span> </div> </form> </section> <nav class="station-nav" aria-label="站间导航" data-astro-cid-lvjzyg5v> <a href="/STELLASTOPVRC/posts/kb-world-udon-persistence-index/" data-astro-cid-lvjzyg5v> <span class="dir" data-astro-cid-lvjzyg5v>← 上一站 · 更新的星光</span> <span class="to" data-astro-cid-lvjzyg5v>Persistence 实战教程 - 索引</span> </a> <a href="/STELLASTOPVRC/posts/kb-api-official-doc-clarifications/" data-astro-cid-lvjzyg5v> <span class="dir" data-astro-cid-lvjzyg5v>下一站 · 更早的星光 →</span> <span class="to" data-astro-cid-lvjzyg5v>Official Documentation Clarifications</span> </a> </nav> </div> <aside class="toc" id="toc" hidden> <p class="toc__title">✦ 本页星图</p> <nav id="tocNav" aria-label="文章目录"></nav> </aside> <script type="module">const i=document.querySelector(".prose"),d=document.getElementById("toc"),u=document.getElementById("tocNav"),l=[];if(i&&d&&u){const c=[...i.querySelectorAll("h1, h2, h3")];if(c.length>=3){d.hidden=!1,c.forEach((o,e)=>{o.id||(o.id=`sec-${e}`);const n=document.createElement("a");n.href=`#${o.id}`;const s=(o.textContent??"").replace(/\s+/g," ").trim(),r=s.search(/[：:]/),a=r>=4?s.slice(0,r):s;n.textContent=a.length>40?`${a.slice(0,40)}…`:a,n.title=s,u.appendChild(n),l.push({a:n,h:o})});const t=()=>{let o=l[0];for(const e of l)e.h.getBoundingClientRect().top<=130&&(o=e);for(const e of l)e.a.classList.toggle("is-active",e===o)};addEventListener("scroll",t,{passive:!0}),t()}}document.querySelectorAll(".prose pre").forEach(c=>{const t=document.createElement("button");t.className="code-copy",t.type="button",t.textContent="复制",t.addEventListener("click",async()=>{const o=c.querySelector("code")?.innerText??c.innerText;try{await navigator.clipboard.writeText(o)}catch{const e=document.createElement("textarea");e.value=o,document.body.appendChild(e),e.select(),document.execCommand("copy"),e.remove()}t.textContent="已复制 ✓",t.classList.add("is-ok"),setTimeout(()=>{t.textContent="复制",t.classList.remove("is-ok")},1500)}),c.appendChild(t)});</script> </article>  </main> <footer class="site-footer"> <div class="wrap"> <p class="star-line" aria-hidden="true"> <svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> <svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> </p> <p>星之驿站 StellaStop —— 在虚拟宇宙中，为你保留一座驿站</p> <p class="site-footer__disclaimer">
+该网页目前是测试阶段，仅用于测试，所有内容仅供参考；内容全部为引用互联网当中的信息。
+</p> <p>© 2026 星之驿站 · 由 <a href="https://astro.build">Astro</a> 与星光驱动</p> <p> <a data-desk-login hidden title="写作台：登录 / 注册">登录 / 注册</a> ·
+<a href="/STELLASTOPVRC/announcements/">官方公告</a> ·
+<a href="/STELLASTOPVRC/ai/">问星 AI</a> ·
+<a href="/STELLASTOPVRC/feedback/">旅人留言板</a> </p> </div> </footer> <button class="to-top" id="toTop" aria-label="回到顶部"> <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"> <path d="M12 20V5"></path> <path d="M5.5 11.5 12 5l6.5 6.5"></path> </svg> </button> <script type="module">const e=document.getElementById("toTop");if(e){const t=()=>e.classList.toggle("is-visible",scrollY>480);addEventListener("scroll",t,{passive:!0}),t(),e.addEventListener("click",()=>{const o=matchMedia("(prefers-reduced-motion: reduce)").matches;scrollTo({top:0,behavior:o?"auto":"smooth"})})}</script> <script>(function(){const deskConfigured = "";
+
+      /* 写作台探测（页面尾部执行，DOM 已就绪）：
+         1. 计算写作台地址：站点配置 deskUrl（公网部署时填）> 本机默认 localhost:4322 > 同主机 4322
+         2. 探测 /api/gate/status —— 在线才点亮「登录 / 注册」入口，并复用给验证门横幅
+         3. 不在线则保持隐藏，绝不会把访客拽进内网地址；同时给出一次性「镜像模式」提示 */
+      (function () {
+        var host = location.hostname;
+        var isLocal = host === 'localhost' || host === '127.0.0.1' || host === '[::1]';
+        var desk = deskConfigured ||
+          (isLocal ? 'http://localhost:4322' : location.protocol + '//' + host + ':4322');
+        window.STELLA_DESK = desk;
+
+        function revealLogin() {
+          document.querySelectorAll('[data-desk-login]').forEach(function (a) {
+            a.href = desk + '/admin';
+            a.removeAttribute('hidden');
+          });
+        }
+        function showBanner(css, html, shiftHeader) {
+          var bar = document.createElement('div');
+          bar.style.cssText = css;
+          bar.innerHTML = html;
+          document.body.prepend(bar);
+          if (shiftHeader) {
+            var header = document.querySelector('.site-header');
+            if (header) header.style.marginTop = '42px';
+          }
+        }
+        function hintMirrorMode() {
+          try {
+            if (sessionStorage.getItem('stella-desk-hint')) return;
+            sessionStorage.setItem('stella-desk-hint', '1');
+          } catch (e) { /* 无痕模式等：忽略 */ }
+          var tip = document.createElement('div');
+          tip.style.cssText = 'position:fixed;left:14px;bottom:14px;z-index:9998;max-width:min(92vw,430px);padding:.65rem .9rem;border-radius:12px;background:rgba(18,20,44,.92);border:1px solid rgba(150,142,255,.35);color:#e8e6ff;font-size:.82rem;line-height:1.6;font-family:system-ui,sans-serif;box-shadow:0 8px 30px rgba(0,0,0,.35)';
+          tip.innerHTML = 'ℹ️ 静态镜像模式：登录 / 评论 / AI 等互动功能需要站长写作台在线，当前不可用。' +
+            '<span id="stellaDeskHintClose" style="float:right;cursor:pointer;opacity:.75;font-weight:700;margin-left:.6rem" title="关闭">×</span>';
+          document.body.appendChild(tip);
+          var close = function () { tip.remove(); };
+          tip.querySelector('#stellaDeskHintClose').addEventListener('click', close);
+          setTimeout(close, 9000);
+        }
+
+        try {
+          var ctrl = new AbortController();
+          var timer = setTimeout(function () { ctrl.abort(); }, 2500);
+          fetch(desk + '/api/gate/status', { credentials: 'include', signal: ctrl.signal })
+            .then(function (r) { return r.ok ? r.json() : null; })
+            .then(function (d) {
+              clearTimeout(timer);
+              if (!d) throw new Error('desk-offline');
+              window.STELLA_DESK_OK = true;
+              revealLogin();
+              if (d.regionBlocked) {
+                showBanner(
+                  'position:fixed;top:0;left:0;right:0;z-index:9999;padding:1.2rem;text-align:center;background:#1a0a0a;color:#ff9ed2;font-size:.95rem;border-bottom:2px solid #ff4d6d;font-family:system-ui,sans-serif',
+                  '⛔ 你所在的地区（' + (d.regionCountry || '未知') + '）暂不开放访问。',
+                  false
+                );
+                return;
+              }
+              if (d.enabled && !d.passed) {
+                showBanner(
+                  'position:fixed;top:0;left:0;right:0;z-index:9999;padding:0.7rem;text-align:center;background:linear-gradient(94deg,rgba(143,127,247,.25),rgba(98,200,245,.18));border-bottom:1px solid rgba(150,142,255,.3);color:#f0efff;font-size:.88rem;font-family:system-ui,sans-serif',
+                  '🔒 本站启用了安全验证 —— <a href="' + desk + '/gate?next=' + encodeURIComponent(location.href) + '" style="color:#ffd98e;font-weight:700;text-decoration:underline">点击完成验证</a>，通过后即可使用全部功能（30 天免验）。',
+                  true
+                );
+              }
+            })
+            .catch(function () {
+              clearTimeout(timer);
+              window.STELLA_DESK_OK = false;
+              hintMirrorMode();
+            });
+        } catch (e) { /* 忽略 */ }
+      })();
+    })();</script> </body> </html> <script type="module">const m=document.getElementById("commentForm"),s=document.getElementById("cMsg"),u=`${location.protocol}//${location.hostname}:4322/api/message`;function r(e,t=!1){s&&(s.textContent=e,s.classList.toggle("is-err",t),s.classList.toggle("is-ok",!t))}function y(){const e=new Date,t=n=>String(n).padStart(2,"0");return`${e.getFullYear()}-${t(e.getMonth()+1)}-${t(e.getDate())}`}function f(e){let t=7;for(const n of e)t=(t*31+n.charCodeAt(0))%360;return t}function g(e,t){const n=document.createElement("li");n.className="comment",n.innerHTML=`
+      <span class="comment__avatar"></span>
+      <div class="comment__bubble">
+        <div class="comment__head">
+          <span class="comment__name"></span>
+          <time class="comment__date">${y()}</time>
+        </div>
+        <p class="comment__body"></p>
+      </div>`;const o=n.querySelector(".comment__avatar");return o.style.setProperty("--h",String(f(e))),o.textContent=e.slice(0,1),n.querySelector(".comment__name").textContent=e,n.querySelector(".comment__body").textContent=t,n}m?.addEventListener("submit",async e=>{e.preventDefault();const t=document.getElementById("cBody").value.trim();if(!t)return r("留言内容不能为空哦",!0);const n=document.getElementById("cAuthor").value.trim()||"旅人",o=m.querySelector("button");o&&(o.disabled=!0);try{const c=await fetch(u,{credentials:"include",method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({target:m.dataset.target,kind:"comment",author:n,body:t})}),d=await c.json().catch(()=>({}));if(!c.ok)throw new Error(d.error||`发送失败（${c.status}）`);const l=document.querySelector(".comment-list");l&&l.appendChild(g(n,t)),document.getElementById("commentsEmpty")?.remove(),document.getElementById("cBody").value="",r("留言已发布，感谢支持 ✦");const a=document.querySelector(".comments__title"),i=a?.textContent?.match(/（(\d+)）/);a&&i&&(a.textContent=a.textContent.replace(/（\d+）/,`（${Number(i[1])+1}）`))}catch(c){r(c instanceof TypeError?"写作台没在运行，暂时收不到留言 —— 双击「启动博客.bat」就好":c.message,!0)}finally{o&&(o.disabled=!1)}});</script> 

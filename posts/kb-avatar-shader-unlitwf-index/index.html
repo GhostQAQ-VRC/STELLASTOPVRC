@@ -1,0 +1,1117 @@
+<!DOCTYPE html><html lang="zh-CN"> <head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="generator" content="Astro v5.18.2"><meta name="description" content="2. Shader 家族分类"><meta name="theme-color" content="#070a1c"><meta property="og:title" content="UnlitWF Shader Suite 知识库 · 星之驿站 StellaStop"><meta property="og:description" content="2. Shader 家族分类"><meta property="og:type" content="website"><meta name="twitter:card" content="summary"><link rel="icon" type="image/svg+xml" href="/STELLASTOPVRC/favicon.svg"><script>
+      // 在渲染前恢复主题与特效档位，避免闪一下默认状态
+      try {
+        document.documentElement.dataset.theme =
+          localStorage.getItem('stella-theme') || 'nebula';
+        document.documentElement.dataset.fx =
+          localStorage.getItem('stella-fx') || 'standard';
+      } catch {
+        /* 隐私模式读不到就算了 */
+      }
+    </script><link rel="stylesheet" href="/STELLASTOPVRC/custom-vars.css"><title>UnlitWF Shader Suite 知识库 · 星之驿站 StellaStop</title><link rel="stylesheet" href="/STELLASTOPVRC/_astro/about.Bgh6wcGl.css">
+<style>.post-head__meta[data-astro-cid-lvjzyg5v]{color:var(--ink-faint);font-family:var(--font-mono);font-size:.82rem}.post-head[data-astro-cid-lvjzyg5v] .chip-row[data-astro-cid-lvjzyg5v]{margin-top:1rem}.kb-source-note[data-astro-cid-lvjzyg5v]{max-width:760px;margin:2.2rem auto 0;font-size:.82rem;color:var(--ink-faint);border-top:1px dashed var(--line);padding-top:1rem}
+</style></head> <body> <div class="site-notice" id="siteNotice"> <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> <span class="site-notice__text">欢迎来到星之驿站！</span> <button class="site-notice__close" id="noticeClose" type="button" aria-label="关闭公告">
+×
+</button> </div> <a class="skip-link" href="#main">跳到主要内容</a> <canvas id="starfield" aria-hidden="true" data-astro-cid-ra7sfcwn></canvas> <div class="fx-aurora fx-aurora--a" aria-hidden="true" data-astro-cid-ra7sfcwn></div> <div class="fx-aurora fx-aurora--b" aria-hidden="true" data-astro-cid-ra7sfcwn></div>  <script type="module">const u=document.getElementById("starfield");if(u){let F=function(){const n=Math.random();return n<.1?"gold":n<.42?"blue":"white"},v=function(){const n=Math.min(window.devicePixelRatio||1,2);s=window.innerWidth,d=window.innerHeight,u.width=s*n,u.height=d*n,u.style.width=`${s}px`,u.style.height=`${d}px`,t.setTransform(n,0,0,n,0,0);const e=Math.min(190,Math.round(s*d/8500));l=Array.from({length:e},()=>({x:Math.random()*s,y:Math.random()*d,r:r(.4,1.7),base:r(.25,.8),amp:r(.12,.4),speed:r(6e-4,.0022),phase:r(0,Math.PI*2),c:F()})),C=Array.from({length:26},()=>({x:Math.random()*s,y:Math.random()*d,r:r(.9,2.4),vx:r(-.006,.006),vy:r(-.02,-.006),base:r(.2,.5),speed:r(8e-4,.002),phase:r(0,Math.PI*2),c:Math.random()<.5?"gold":"violet"})),c==="off"&&m(0,!0)},D=function(n){const e=Math.random()<.5?1:-1,o=r(Math.PI/7,Math.PI/5),a=r(.45,.75);y.push({x:r(s*.15,s*.85),y:r(-20,d*.3),vx:Math.cos(o)*a*e,vy:Math.sin(o)*a,born:n,life:r(750,1050),len:r(100,170)})},S=function(n){y=y.filter(e=>n-e.born<e.life);for(const e of y){const o=(n-e.born)/e.life,a=e.x+e.vx*(n-e.born),i=e.y+e.vy*(n-e.born),f=o<.15?o/.15:o>.7?(1-o)/.3:1,h=Math.hypot(e.vx,e.vy),x=e.vx/h,g=e.vy/h,b=t.createLinearGradient(a,i,a-x*e.len,i-g*e.len);b.addColorStop(0,`rgba(236,242,255,${(.85*f).toFixed(3)})`),b.addColorStop(1,"rgba(236,242,255,0)"),t.strokeStyle=b,t.lineWidth=1.6,t.lineCap="round",t.beginPath(),t.moveTo(a,i),t.lineTo(a-x*e.len,i-g*e.len),t.stroke()}},B=function(){let o=0;t.lineWidth=.7;for(let a=0;a<l.length&&o<26;a++)for(let i=a+1;i<l.length&&o<26;i++){const f=l[a].x-l[i].x,h=l[a].y-l[i].y,x=f*f+h*h;if(x<16900){const g=(1-Math.sqrt(x)/130)*.17;t.strokeStyle=`rgba(178,170,255,${g.toFixed(3)})`,t.beginPath(),t.moveTo(l[a].x,l[a].y),t.lineTo(l[i].x,l[i].y),t.stroke(),o++}}},X=function(n){for(const e of C){e.x+=e.vx*16,e.y+=e.vy*16,e.y<-12&&(e.y=d+10),e.x<-12&&(e.x=s+10),e.x>s+12&&(e.x=-10);const o=Math.max(.05,e.base+.25*Math.sin(n*e.speed+e.phase)),[a,i,f]=A[e.c];t.beginPath(),t.arc(e.x,e.y,e.r,0,7),t.shadowBlur=9,t.shadowColor=`rgba(${a},${i},${f},0.9)`,t.fillStyle=`rgba(${a},${i},${f},${o.toFixed(3)})`,t.fill()}t.shadowBlur=0},m=function(n,e=!1){t.clearRect(0,0,s,d);for(const o of l){const a=c==="off"?o.base:Math.max(.05,o.base+o.amp*Math.sin(n*o.speed+o.phase)),[i,f,h]=A[o.c];t.beginPath(),t.arc(o.x,o.y,o.r,0,7),o.r>1.25?(t.shadowBlur=7,t.shadowColor=`rgba(${i},${f},${h},0.85)`):t.shadowBlur=0,t.fillStyle=`rgba(${i},${f},${h},${a.toFixed(3)})`,t.fill()}if(t.shadowBlur=0,c!=="off"&&!e){c==="fancy"&&(B(),X(n));const o=c==="fancy"?r(2600,6e3):r(4200,9500);n>P&&(D(n),P=n+o),S(n)}},$=function(n){m(n),M=requestAnimationFrame($)},p=function(){if(c==="off"){m(0,!0);return}cancelAnimationFrame(M),M=requestAnimationFrame($)},w=function(){cancelAnimationFrame(M),t.clearRect(0,0,s,d),m(0,!0)};const t=u.getContext("2d"),k=matchMedia("(prefers-reduced-motion: reduce)").matches,A={white:[240,240,255],blue:[150,215,250],gold:[255,218,150],violet:[178,170,255]};let s=0,d=0,l=[],C=[],y=[],P=2500,M=0,c=document.documentElement.dataset.fx||"standard";k&&(c="off");const r=(n,e)=>n+Math.random()*(e-n);v(),addEventListener("resize",v),document.addEventListener("stella-fx-change",n=>{c=n.detail,c==="off"?w():p()}),c==="off"?m(0,!0):(p(),document.addEventListener("visibilitychange",()=>{document.hidden?w():p()}))}</script> <header class="site-header"> <div class="wrap site-header__inner"> <a class="logo" href="/STELLASTOPVRC/"> <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> <span>星之驿站</span> <span class="logo__romaji">StellaStop</span> </a> <div class="header-right"> <nav class="site-nav" aria-label="站内导航"> <a href="/STELLASTOPVRC/"> 首页 </a><a href="/STELLASTOPVRC/start/"> 新手 </a><a href="/STELLASTOPVRC/posts/"> 教程 </a><a href="/STELLASTOPVRC/videos/"> 视频 </a><a href="/STELLASTOPVRC/resources/"> 资源 </a><a href="/STELLASTOPVRC/booth/"> Booth </a><a href="/STELLASTOPVRC/announcements/"> 公告 </a><a href="/STELLASTOPVRC/ai/"> 问星 </a><a href="/STELLASTOPVRC/changelog/"> 更新日志 </a><a href="/STELLASTOPVRC/about/"> 关于 </a> </nav> <a class="login-link" data-desk-login hidden title="写作台：登录 / 注册后可发教程、传资源">
+登录 / 注册
+</a> <div class="theme-switch"> <button class="theme-switch__btn" id="themeBtn" type="button" aria-haspopup="listbox" aria-expanded="false" aria-label="切换主题配色" title="切换主题配色"> <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"> <path d="M12 3a9 9 0 1 0 9 9c0-1.2-1-2-2.2-2H17a2 2 0 0 1-2-2V6.2C15 5 14.2 4 13 4.4A9 9 0 0 0 12 3Z"></path> <circle cx="7.5" cy="11.5" r="1" fill="currentColor" stroke="none"></circle> <circle cx="10" cy="7.5" r="1" fill="currentColor" stroke="none"></circle> <circle cx="15" cy="7" r="1" fill="currentColor" stroke="none"></circle> </svg> </button> <div class="theme-pop" id="themePop" role="listbox" aria-label="选择主题" hidden> <button class="theme-opt" type="button" role="option" data-theme-value="nebula" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#8f7ff7"></span><span class="dot" style="background:#62c8f5"></span><span class="dot" style="background:#ffd98e"></span> </span> <span class="theme-opt__name">星云 · 蓝紫</span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt" type="button" role="option" data-theme-value="sakura" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#ff8fc7"></span><span class="dot" style="background:#c79bff"></span><span class="dot" style="background:#ffd08e"></span> </span> <span class="theme-opt__name">樱语 · 粉紫</span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt" type="button" role="option" data-theme-value="miku" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#2ed3c2"></span><span class="dot" style="background:#6ea8ff"></span><span class="dot" style="background:#ffe08e"></span> </span> <span class="theme-opt__name">葱色 · 青绿</span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt" type="button" role="option" data-theme-value="ember" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#ffb35c"></span><span class="dot" style="background:#ff7e6b"></span><span class="dot" style="background:#ffd98e"></span> </span> <span class="theme-opt__name">暮金 · 暖橙</span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt" type="button" role="option" data-theme-value="dawn" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#6a5ce8"></span><span class="dot" style="background:#e0568f"></span><span class="dot" style="background:#b8821e"></span> </span> <span class="theme-opt__name">晨星 · 浅色</span> <span class="theme-opt__mark">✦</span> </button> </div> </div> <script type="module">const a=document.getElementById("themeBtn"),n=document.getElementById("themePop");function s(c){document.documentElement.dataset.theme=c;try{localStorage.setItem("stella-theme",c)}catch{}const e=getComputedStyle(document.documentElement).getPropertyValue("--bg-deep").trim();document.querySelector('meta[name="theme-color"]')?.setAttribute("content",e||"#070a1c"),document.querySelectorAll(".theme-opt").forEach(t=>{const d=t.dataset.themeValue===c;t.classList.toggle("is-active",d),t.setAttribute("aria-selected",String(d))})}if(a&&n){const c=document.documentElement.dataset.theme||"nebula";document.querySelectorAll(".theme-opt").forEach(e=>{const t=e.dataset.themeValue===c;e.classList.toggle("is-active",t),e.setAttribute("aria-selected",String(t))}),a.addEventListener("click",e=>{e.stopPropagation();const t=n.hidden;n.hidden=!t,a.setAttribute("aria-expanded",String(t))}),document.addEventListener("click",e=>{!n.hidden&&!e.target.closest(".theme-switch")&&(n.hidden=!0,a.setAttribute("aria-expanded","false"))}),document.addEventListener("keydown",e=>{e.key==="Escape"&&!n.hidden&&(n.hidden=!0,a.setAttribute("aria-expanded","false"),a.focus())}),n.addEventListener("click",e=>{const t=e.target.closest(".theme-opt");t&&(s(t.dataset.themeValue??"nebula"),n.hidden=!0,a.setAttribute("aria-expanded","false"))})}</script> <div class="theme-switch fx-switch"> <button class="theme-switch__btn" id="fxBtn" type="button" aria-haspopup="listbox" aria-expanded="false" aria-label="背景特效设置" title="背景特效设置"> <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"> <path d="M5 3v4M3 5h4M6.5 17.5v3M5 19h3"></path> <path d="M14.5 4.5 16 9l4.5 1.5L16 12l-1.5 4.5L13 12l-4.5-1.5L13 9l1.5-4.5Z"></path> </svg> </button> <div class="theme-pop" id="fxPop" role="listbox" aria-label="背景特效" hidden> <button class="theme-opt fx-opt" type="button" role="option" data-fx-value="off" aria-selected="false"> <span class="fx-opt__body"> <span class="fx-opt__name">关闭特效</span> <span class="fx-opt__hint">最省电</span> </span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt fx-opt" type="button" role="option" data-fx-value="standard" aria-selected="false"> <span class="fx-opt__body"> <span class="fx-opt__name">标准</span> <span class="fx-opt__hint">闪烁星空 + 流星</span> </span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt fx-opt" type="button" role="option" data-fx-value="fancy" aria-selected="false"> <span class="fx-opt__body"> <span class="fx-opt__name">华丽</span> <span class="fx-opt__hint">追加极光 / 星座 / 光尘</span> </span> <span class="theme-opt__mark">✦</span> </button> </div> </div> <script type="module">const n=document.getElementById("fxBtn"),a=document.getElementById("fxPop");function s(d){document.documentElement.dataset.fx=d;try{localStorage.setItem("stella-fx",d)}catch{}document.querySelectorAll("#fxPop .fx-opt").forEach(t=>{const e=t.dataset.fxValue===d;t.classList.toggle("is-active",e),t.setAttribute("aria-selected",String(e))}),document.dispatchEvent(new CustomEvent("stella-fx-change",{detail:d}))}if(n&&a){const d=document.documentElement.dataset.fx||"standard";document.querySelectorAll("#fxPop .fx-opt").forEach(t=>{const e=t.dataset.fxValue===d;t.classList.toggle("is-active",e),t.setAttribute("aria-selected",String(e))}),n.addEventListener("click",t=>{t.stopPropagation();const e=a.hidden;a.hidden=!e,n.setAttribute("aria-expanded",String(e))}),document.addEventListener("click",t=>{!a.hidden&&!t.target.closest(".fx-switch")&&(a.hidden=!0,n.setAttribute("aria-expanded","false"))}),document.addEventListener("keydown",t=>{t.key==="Escape"&&!a.hidden&&(a.hidden=!0,n.setAttribute("aria-expanded","false"),n.focus())}),a.addEventListener("click",t=>{const e=t.target.closest(".fx-opt");e&&(s(e.dataset.fxValue??"standard"),a.hidden=!0,n.setAttribute("aria-expanded","false"))})}</script> </div> </div> </header> <main id="main">  <article class="wrap post-layout" data-astro-cid-lvjzyg5v> <div class="post-main page-fade" data-astro-cid-lvjzyg5v> <header class="post-head" data-astro-cid-lvjzyg5v> <a class="crumb" href="/STELLASTOPVRC/posts/" data-astro-cid-lvjzyg5v>← 返回教程档案</a> <div class="post-head__meta" style="--accent:var(--ink-dim)" data-astro-cid-lvjzyg5v> <span class="badge" data-cat="Shader 着色器" data-astro-cid-lvjzyg5v>Shader 着色器</span> <time datetime="2026-06-21" data-astro-cid-lvjzyg5v>2026-06-21</time> <span class="post-head__reading" data-astro-cid-lvjzyg5v>⏱ 约 25 分钟</span>  </div> <h1 class="post-head__title" data-astro-cid-lvjzyg5v>UnlitWF Shader Suite 知识库</h1> <p class="post-head__lead" data-astro-cid-lvjzyg5v>2. Shader 家族分类</p> <div class="chip-row" data-astro-cid-lvjzyg5v> <a class="chip" href="/STELLASTOPVRC/posts/?tag=%E7%9F%A5%E8%AF%86%E5%BA%93" data-astro-cid-lvjzyg5v> 知识库 </a><a class="chip" href="/STELLASTOPVRC/posts/?tag=avatar" data-astro-cid-lvjzyg5v> avatar </a> </div> </header> <div class="prose" data-astro-cid-lvjzyg5v> <h1 id="unlitwf-shader-suite-知识库">UnlitWF Shader Suite 知识库</h1>
+<blockquote>
+<p>UnlitWF（UnToon）— 基于 Unlit 的专业效果 Shader 套件</p>
+<p>来源：<a href="https://github.com/whiteflare/Unlit_WF_ShaderSuite">https://github.com/whiteflare/Unlit_WF_ShaderSuite</a></p>
+</blockquote>
+<hr>
+<h2 id="目录">目录</h2>
+<ol>
+<li><a href="#1-%E9%A1%B9%E7%9B%AE%E6%A6%82%E8%BF%B0">项目概述</a></li>
+<li><a href="#2-shader-%E5%AE%B6%E6%97%8F%E5%88%86%E7%B1%BB">Shader 家族分类</a></li>
+<li><a href="#3-%E6%A0%B8%E5%BF%83%E6%9E%B6%E6%9E%84">核心架构</a></li>
+<li><a href="#4-%E6%95%88%E6%9E%9C%E7%B3%BB%E7%BB%9F">效果系统</a></li>
+<li><a href="#5-%E4%B8%93%E4%B8%9A%E6%95%88%E6%9E%9C%E7%B3%BB%E7%BB%9F">专业效果系统</a></li>
+<li><a href="#6-%E5%B9%B3%E5%8F%B0%E6%94%AF%E6%8C%81">平台支持</a></li>
+<li><a href="#7-%E4%BC%98%E7%BC%BA%E7%82%B9%E5%88%86%E6%9E%90">优缺点分析</a></li>
+<li><a href="#8-%E4%B8%8E-liltoonscss-%E5%AF%B9%E6%AF%94">与 lilToon/SCSS 对比</a></li>
+<li><a href="#9-vrchat-%E9%80%82%E7%94%A8%E6%80%A7">VRChat 适用性</a></li>
+</ol>
+<hr>
+<h2 id="1-项目概述">1. 项目概述</h2>
+<h3 id="11-设计理念">1.1 设计理念</h3>
+<p>UnlitWF 的核心理念：</p>
+<blockquote>
+<p><em>“将纹理 그대로描画하는 Unlit シェーダ에 다양한 효과를 추가"</em><br>
+<em>"在直接渲染纹理的 Unlit Shader 基础上添加各种效果”</em></p>
+</blockquote>
+<p><strong>定位</strong>：基于 Unlit 的 Toon Shader 扩展包，而非从头编写的 PBR 替代方案。</p>
+<h3 id="12-核心特点">1.2 核心特点</h3>
+<table>
+<thead>
+<tr>
+<th>特性</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>渲染管线</strong></td>
+<td>Built-in RP + URP 双支持</td>
+</tr>
+<tr>
+<td><strong>Shader 语言</strong></td>
+<td>ShaderLab (65.7%) + HLSL (11.0%) + C# (23.3%)</td>
+</tr>
+<tr>
+<td><strong>模块化设计</strong></td>
+<td>共享 <code>cginc</code> 包含文件 + 变体组合</td>
+</tr>
+<tr>
+<td><strong>平台支持</strong></td>
+<td>Desktop / Mobile / VRChat / Quest</td>
+</tr>
+<tr>
+<td><strong>Editor 工具</strong></td>
+<td>自定义 Inspector、材质转换、构建优化</td>
+</tr>
+</tbody>
+</table>
+<h3 id="13-安装方式">1.3 安装方式</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="text"><code><span class="line"><span>VPM 安装：https://whiteflare.github.io/vpm-repos/docs/unlitwf</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>unitypackage（VRChat 直接导入）：</span></span>
+<span class="line"><span>  - _01_Core.unitypackage      ← 核心 Shader</span></span>
+<span class="line"><span>  - _02_Texture.unitypackage   ← Matcap/CubeMap 素材</span></span>
+<span class="line"><span>  - _03_Examples.unitypackage  ← 示例场景</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>URP 其他版本：</span></span>
+<span class="line"><span>  - Unity2019.4: head_unity2019URP 分支</span></span>
+<span class="line"><span>  - Unity2021.3+: head_unity2021URP 分支</span></span></code></pre>
+<hr>
+<h2 id="2-shader-家族分类">2. Shader 家族分类</h2>
+<h3 id="21-主-shader-树">2.1 主 Shader 树</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>UnlitWF/</span></span>
+<span class="line"><span>├── WF_UnToon_                    ← Base UnToon 基础系列</span></span>
+<span class="line"><span>│   ├── Opaque                    ← 不透明</span></span>
+<span class="line"><span>│   ├── TransCutout               ← Alpha Cutout（叶子/头发）</span></span>
+<span class="line"><span>│   ├── Transparent               ← Alpha Blend 标准透明</span></span>
+<span class="line"><span>│   ├── Transparent3Pass          ← 3-Pass 高质量透明</span></span>
+<span class="line"><span>│   ├── Transparent_Mask          ← Stencil Mask 输入</span></span>
+<span class="line"><span>│   └── Transparent_MaskOut       ← Stencil Mask 输出</span></span>
+<span class="line"><span>│</span></span>
+<span class="line"><span>├── UnToon_PowerCap/              ← PowerCap 增强系列</span></span>
+<span class="line"><span>│   └── (相同的透明度变体)</span></span>
+<span class="line"><span>│</span></span>
+<span class="line"><span>├── UnToon_TriShade/              ← TriShade 三层阴影系列</span></span>
+<span class="line"><span>│   └── (相同的透明度变体)</span></span>
+<span class="line"><span>│</span></span>
+<span class="line"><span>├── UnToon_Tessellation/          ← Tessellation 细分系列</span></span>
+<span class="line"><span>│   └── (相同的透明度变体)</span></span>
+<span class="line"><span>│</span></span>
+<span class="line"><span>├── UnToon_Outline/               ← Outline 轮廓系列</span></span>
+<span class="line"><span>│   └── (相同的透明度变体)</span></span>
+<span class="line"><span>│</span></span>
+<span class="line"><span>└── Custom_*                      ← 自定义组合变体</span></span>
+<span class="line"><span>    ├── Custom_PowerCap_Outline_Opaque</span></span>
+<span class="line"><span>    ├── Custom_Tess_PowerCap_Opaque</span></span>
+<span class="line"><span>    └── ...</span></span></code></pre>
+<h3 id="22-透明度模式矩阵">2.2 透明度模式矩阵</h3>
+<table>
+<thead>
+<tr>
+<th>模式</th>
+<th>Queue</th>
+<th>Alpha 处理</th>
+<th>适用场景</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Opaque</strong></td>
+<td>Geometry</td>
+<td>无</td>
+<td>实体对象</td>
+</tr>
+<tr>
+<td><strong>TransCutout</strong></td>
+<td>AlphaTest</td>
+<td>二值 Cutoff</td>
+<td>硬边透明（叶子、头发）</td>
+</tr>
+<tr>
+<td><strong>Transparent</strong></td>
+<td>Transparent</td>
+<td>Alpha Blending</td>
+<td>标准透明</td>
+</tr>
+<tr>
+<td><strong>Transparent3Pass</strong></td>
+<td>Transparent</td>
+<td>多 Pass 渲染</td>
+<td>高质量透明（玻璃、水）</td>
+</tr>
+</tbody>
+</table>
+<h3 id="23-shader-家族说明">2.3 Shader 家族说明</h3>
+<table>
+<thead>
+<tr>
+<th>家族</th>
+<th>特点</th>
+<th>使用场景</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Base UnToon</strong></td>
+<td>基础 Toon 着色，完整效果链</td>
+<td>通用 Avatar</td>
+</tr>
+<tr>
+<td><strong>PowerCap</strong></td>
+<td>增强 Matcap，多个 Matcap 槽位</td>
+<td>高级视觉效果</td>
+</tr>
+<tr>
+<td><strong>TriShade</strong></td>
+<td>三层阴影渐变</td>
+<td>细腻阴影控制</td>
+</tr>
+<tr>
+<td><strong>Tessellation</strong></td>
+<td>硬件细分，平滑模型</td>
+<td>高精度模型</td>
+</tr>
+<tr>
+<td><strong>Outline</strong></td>
+<td>内置轮廓线渲染</td>
+<td>需要描边的模型</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="3-核心架构">3. 核心架构</h2>
+<h3 id="31-central-data-structure-模式">3.1 Central Data Structure 模式</h3>
+<p>UnlitWF 的核心架构围绕 <strong>三个数据结构</strong> 展开：</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="hlsl"><code><span class="line"><span style="color:#6A737D">// appdata - Vertex 输入</span></span>
+<span class="line"><span style="color:#F97583">struct</span><span style="color:#E1E4E8"> appdata {</span></span>
+<span class="line"><span style="color:#F97583">    float4</span><span style="color:#E1E4E8"> vertex;    </span><span style="color:#6A737D">// 顶点位置</span></span>
+<span class="line"><span style="color:#F97583">    float2</span><span style="color:#E1E4E8"> uv;        </span><span style="color:#6A737D">// UV 坐标</span></span>
+<span class="line"><span style="color:#F97583">    float3</span><span style="color:#E1E4E8"> normal;    </span><span style="color:#6A737D">// 法线</span></span>
+<span class="line"><span style="color:#F97583">    float4</span><span style="color:#E1E4E8"> tangent;   </span><span style="color:#6A737D">// 切线</span></span>
+<span class="line"><span style="color:#E1E4E8">};</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// v2f - Vertex to Fragment 插值</span></span>
+<span class="line"><span style="color:#F97583">struct</span><span style="color:#E1E4E8"> v2f {</span></span>
+<span class="line"><span style="color:#F97583">    float4</span><span style="color:#E1E4E8"> vs_vertex;     </span><span style="color:#6A737D">// 屏幕空间顶点</span></span>
+<span class="line"><span style="color:#F97583">    float3</span><span style="color:#E1E4E8"> ws_vertex;     </span><span style="color:#6A737D">// 世界空间顶点</span></span>
+<span class="line"><span style="color:#F97583">    float3</span><span style="color:#E1E4E8"> ws_normal;     </span><span style="color:#6A737D">// 世界空间法线</span></span>
+<span class="line"><span style="color:#F97583">    float3</span><span style="color:#E1E4E8"> light_color;   </span><span style="color:#6A737D">// 光源颜色</span></span>
+<span class="line"><span style="color:#E1E4E8">};</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// drawing - Central Effect Processing Data ⭐核心</span></span>
+<span class="line"><span style="color:#F97583">struct</span><span style="color:#E1E4E8"> drawing {</span></span>
+<span class="line"><span style="color:#F97583">    float4</span><span style="color:#E1E4E8"> color;         </span><span style="color:#6A737D">// 主颜色</span></span>
+<span class="line"><span style="color:#F97583">    float3</span><span style="color:#E1E4E8"> ws_vertex;     </span><span style="color:#6A737D">// 世界空间位置</span></span>
+<span class="line"><span style="color:#F97583">    float3</span><span style="color:#E1E4E8"> ws_normal;     </span><span style="color:#6A737D">// 世界空间法线</span></span>
+<span class="line"><span style="color:#F97583">    float3</span><span style="color:#E1E4E8"> light_color;   </span><span style="color:#6A737D">// 光照颜色</span></span>
+<span class="line"><span style="color:#E1E4E8">};</span></span></code></pre>
+<p><strong>设计模式</strong>：效果函数接收 <code>drawing</code> struct，修改后返回，实现效果链式调用。</p>
+<h3 id="32-顺序效果管线">3.2 顺序效果管线</h3>
+<p>Fragment shader 按顺序应用效果，每个 <code>draw*()</code> 函数修改 <code>drawing</code> struct：</p>
+<table>
+<thead>
+<tr>
+<th>阶段</th>
+<th>函数</th>
+<th>功能</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>纹理采样</strong></td>
+<td><code>drawMainTex()</code>, <code>drawMainTex2nd()</code></td>
+<td>基础纹理 + 第二纹理</td>
+</tr>
+<tr>
+<td><strong>颜色处理</strong></td>
+<td><code>drawGradientMap()</code>, <code>drawColorChange()</code></td>
+<td>渐变映射、HSV 调整</td>
+</tr>
+<tr>
+<td><strong>表面效果</strong></td>
+<td><code>drawMetallic()</code>, <code>drawMatcapColor()</code></td>
+<td>金属感、Matcap</td>
+</tr>
+<tr>
+<td><strong>光照效果</strong></td>
+<td><code>drawToonShade()</code>, <code>drawRimLight()</code></td>
+<td>卡通阴影、边缘光</td>
+</tr>
+<tr>
+<td><strong>后处理</strong></td>
+<td><code>drawEmissiveScroll()</code>, <code>drawDissolve()</code></td>
+<td>自发光滚动、溶解</td>
+</tr>
+</tbody>
+</table>
+<h3 id="33-属性命名规范">3.3 属性命名规范</h3>
+<p>统一的属性前缀系统：</p>
+<table>
+<thead>
+<tr>
+<th>前缀</th>
+<th>效果类别</th>
+<th>示例属性</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>\_TX2_</code></td>
+<td>第二纹理</td>
+<td><code>\_TX2_Enable</code>, <code>\_TX2_MainTex</code>, <code>\_TX2_Color</code></td>
+</tr>
+<tr>
+<td><code>\_MT_</code></td>
+<td>金属效果</td>
+<td><code>\_MT_Enable</code>, <code>\_MT_Metallic</code>, <code>\_MT_ReflSmooth</code></td>
+</tr>
+<tr>
+<td><code>\_TS_</code></td>
+<td>Toon 阴影</td>
+<td><code>\_TS_Enable</code>, <code>\_TS_BaseColor</code>, <code>\_TS_Steps</code></td>
+</tr>
+<tr>
+<td><code>\_TR_</code></td>
+<td>Rim Light</td>
+<td><code>\_TR_Enable</code>, <code>\_TR_Color</code>, <code>\_TR_Width</code></td>
+</tr>
+<tr>
+<td><code>\_NM_</code></td>
+<td>Normal Map</td>
+<td><code>\_NM_Enable</code>, <code>\_BumpScale</code>, <code>\_NM_Power</code></td>
+</tr>
+<tr>
+<td><code>\_HL_</code></td>
+<td>Matcap</td>
+<td><code>\_HL_Enable</code>, <code>\_HL_MatcapTex</code>, <code>\_HL_Power</code></td>
+</tr>
+<tr>
+<td><code>\_ES_</code></td>
+<td>Emission Scroll</td>
+<td><code>\_ES_ScrollEnable</code>, <code>\_ES_SC_Speed</code></td>
+</tr>
+<tr>
+<td><code>\_DFD_</code></td>
+<td>Distance Fade</td>
+<td>距离渐变</td>
+</tr>
+<tr>
+<td><code>\_DSV_</code></td>
+<td>Dissolve</td>
+<td>溶解效果</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="4-效果系统">4. 效果系统</h2>
+<h3 id="41-toon-shading卡通阴影">4.1 Toon Shading（卡通阴影）</h3>
+<table>
+<thead>
+<tr>
+<th>属性</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>\_TS_Enable</code></td>
+<td>启用开关</td>
+</tr>
+<tr>
+<td><code>\_TS_Steps</code></td>
+<td>阴影步数</td>
+</tr>
+<tr>
+<td><code>\_TS_BaseColor</code></td>
+<td>基础色</td>
+</tr>
+<tr>
+<td><code>\_TS_1st_ShadeColor</code></td>
+<td>第一阴影色</td>
+</tr>
+<tr>
+<td><code>\_TS_2nd_ShadeColor</code></td>
+<td>第二阴影色</td>
+</tr>
+</tbody>
+</table>
+<h3 id="42-rim-light边缘光">4.2 Rim Light（边缘光）</h3>
+<table>
+<thead>
+<tr>
+<th>属性</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>\_TR_Enable</code></td>
+<td>启用开关</td>
+</tr>
+<tr>
+<td><code>\_TR_Color</code></td>
+<td>边缘光颜色</td>
+</tr>
+<tr>
+<td><code>\_TR_Width</code></td>
+<td>边缘宽度</td>
+</tr>
+<tr>
+<td><code>\_TR_Feather</code></td>
+<td>边缘柔化</td>
+</tr>
+</tbody>
+</table>
+<h3 id="43-matcap材质捕获">4.3 Matcap（材质捕获）</h3>
+<p>支持多个 Matcap 槽位（PowerCap 变体）：</p>
+<table>
+<thead>
+<tr>
+<th>属性</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>\_HL_Enable</code></td>
+<td>启用开关</td>
+</tr>
+<tr>
+<td><code>\_HL_MatcapTex</code></td>
+<td>Matcap 纹理</td>
+</tr>
+<tr>
+<td><code>\_HL_Power</code></td>
+<td>强度</td>
+</tr>
+<tr>
+<td><code>\_HL_Blend</code></td>
+<td>混合模式</td>
+</tr>
+</tbody>
+</table>
+<h3 id="44-metallic金属效果">4.4 Metallic（金属效果）</h3>
+<p>自定义金属系统（非标准 PBR）：</p>
+<table>
+<thead>
+<tr>
+<th>属性</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>\_MT_Enable</code></td>
+<td>启用开关</td>
+</tr>
+<tr>
+<td><code>\_MT_Metallic</code></td>
+<td>金属度</td>
+</tr>
+<tr>
+<td><code>\_MT_ReflSmooth</code></td>
+<td>反射平滑度</td>
+</tr>
+</tbody>
+</table>
+<h3 id="45-dissolve溶解效果">4.5 Dissolve（溶解效果）</h3>
+<table>
+<thead>
+<tr>
+<th>属性</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>\_DSV_Enable</code></td>
+<td>启用开关</td>
+</tr>
+<tr>
+<td><code>\_DSV_MaskTex</code></td>
+<td>溶解遮罩</td>
+</tr>
+<tr>
+<td><code>\_DSV_BaseOffset</code></td>
+<td>基础偏移</td>
+</tr>
+<tr>
+<td><code>\_DSV_Color</code></td>
+<td>溶解边缘色</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="5-专业效果系统">5. 专业效果系统</h2>
+<h3 id="51-fakefur-system毛发系统">5.1 FakeFur System（毛发系统）</h3>
+<table>
+<thead>
+<tr>
+<th>特性</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>实现方式</strong></td>
+<td>Geometry Shader 生成多层毛发</td>
+</tr>
+<tr>
+<td><strong>毛发层数</strong></td>
+<td>1-6 层可配置</td>
+</tr>
+<tr>
+<td><strong>染色方式</strong></td>
+<td>Base→Tip 渐变染色</td>
+</tr>
+<tr>
+<td><strong>遮罩支持</strong></td>
+<td>长度遮罩 + Alpha 遮罩</td>
+</tr>
+<tr>
+<td><strong>平台限制</strong></td>
+<td>❌ 不支持移动端（需要 SM5.0）</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Shader 变体</strong>：</p>
+<ul>
+<li><code>WF_FakeFur_TransCutout</code> — 标准毛发</li>
+<li><code>WF_FakeFur_Transparent</code> — 透明毛发</li>
+<li><code>WF_FakeFur_Mix</code> — 双层毛发</li>
+<li><code>WF_FakeFur_FurOnly_*</code> — 仅毛发（无基础表面）</li>
+</ul>
+<p><strong>核心属性</strong>：</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>_FUR_Height     — 毛发长度 (0-0.2)</span></span>
+<span class="line"><span>_FUR_Repeat     — 毛发层数 (1-6)</span></span>
+<span class="line"><span>_FUR_Vector     — 生长方向</span></span>
+<span class="line"><span>_FUR_TintColorBase/Tip — 基部/尖端颜色</span></span></code></pre>
+<h3 id="52-water-system水面系统">5.2 Water System（水面系统）</h3>
+<table>
+<thead>
+<tr>
+<th>特性</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>波浪层数</strong></td>
+<td>支持 3 层独立波浪</td>
+</tr>
+<tr>
+<td><strong>法线贴图</strong></td>
+<td>多层法线混合</td>
+</tr>
+<tr>
+<td><strong>焦散效果</strong></td>
+<td>焦散纹理投影</td>
+</tr>
+<tr>
+<td><strong>反射</strong></td>
+<td>Cubemap 反射</td>
+</tr>
+<tr>
+<td><strong>折射</strong></td>
+<td>TransparentRefracted 变体</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Shader 变体</strong>：</p>
+<ul>
+<li><code>WF_Water_Surface_Transparent</code> — 标准水面</li>
+<li><code>WF_Water_Surface_TransparentRefracted</code> — 带折射</li>
+<li><code>WF_Water_Surface_Opaque</code> — 不透明水面</li>
+<li><code>WF_Water_Caustics_Addition</code> — 焦散投影</li>
+</ul>
+<h3 id="53-grass-system草地系统">5.3 Grass System（草地系统）</h3>
+<table>
+<thead>
+<tr>
+<th>特性</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>高度计算</strong></td>
+<td>World Y / UV / Vertex Color / Mask</td>
+</tr>
+<tr>
+<td><strong>波动动画</strong></td>
+<td>风力模拟</td>
+</tr>
+<tr>
+<td><strong>高度染色</strong></td>
+<td>基于高度的着色</td>
+</tr>
+</tbody>
+</table>
+<p><strong>高度类型</strong>：</p>
+<table>
+<thead>
+<tr>
+<th>类型</th>
+<th>来源</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>WORLD_Y</code></td>
+<td>世界 Y 坐标</td>
+</tr>
+<tr>
+<td><code>UV</code></td>
+<td>UV 坐标</td>
+</tr>
+<tr>
+<td><code>VERTEX_COLOR</code></td>
+<td>顶点颜色通道</td>
+</tr>
+<tr>
+<td><code>MASK_TEX</code></td>
+<td>纹理遮罩</td>
+</tr>
+</tbody>
+</table>
+<h3 id="54-gem-system宝石系统">5.4 Gem System（宝石系统）</h3>
+<table>
+<thead>
+<tr>
+<th>特性</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Flake 效果</strong></td>
+<td>内部闪光模拟</td>
+</tr>
+<tr>
+<td><strong>双面渲染</strong></td>
+<td>Front + Back 独立渲染</td>
+</tr>
+<tr>
+<td><strong>反射控制</strong></td>
+<td>Cubemap 反射 + 单色模式</td>
+</tr>
+<tr>
+<td><strong>透明变体</strong></td>
+<td>Transparent / Opaque</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Shader 变体</strong>：</p>
+<ul>
+<li><code>WF_Gem_Transparent</code> — 双 Pass 透明宝石</li>
+<li><code>WF_Gem_Opaque</code> — 单 Pass 不透明宝石</li>
+</ul>
+<h3 id="55-particle-system粒子系统">5.5 Particle System（粒子系统）</h3>
+<table>
+<thead>
+<tr>
+<th>特性</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>混合模式</strong></td>
+<td>Multiple blend modes</td>
+</tr>
+<tr>
+<td><strong>Flip-Book</strong></td>
+<td>帧动画支持</td>
+</tr>
+<tr>
+<td><strong>Vertex Color</strong></td>
+<td>MUL/ADD/SUB 混合</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="6-平台支持">6. 平台支持</h2>
+<h3 id="61-渲染管线抽象">6.1 渲染管线抽象</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="hlsl"><code><span class="line"><span style="color:#6A737D">// 纹理采样抽象</span></span>
+<span class="line"><span style="color:#F97583">#if</span><span style="color:#79B8FF"> defined</span><span style="color:#E1E4E8">(URP)</span></span>
+<span class="line"><span style="color:#79B8FF">    TEXTURE2D</span><span style="color:#E1E4E8">(_MainTex);</span></span>
+<span class="line"><span style="color:#79B8FF">    SAMPLER</span><span style="color:#E1E4E8">(sampler_MainTex);</span></span>
+<span class="line"><span style="color:#F97583">    #define</span><span style="color:#79B8FF"> PICK_MAIN_TEX2D</span><span style="color:#E1E4E8">(tex, uv) </span><span style="color:#79B8FF">SAMPLE_TEXTURE2D</span><span style="color:#E1E4E8">(tex, </span><span style="color:#79B8FF">sampler</span><span style="color:#E1E4E8">##tex, uv)</span></span>
+<span class="line"><span style="color:#F97583">#else</span></span>
+<span class="line"><span style="color:#79B8FF">    UNITY_DECLARE_TEX2D</span><span style="color:#E1E4E8">(_MainTex);</span></span>
+<span class="line"><span style="color:#F97583">    #define</span><span style="color:#79B8FF"> PICK_MAIN_TEX2D</span><span style="color:#E1E4E8">(tex, uv) </span><span style="color:#79B8FF">UNITY_SAMPLE_TEX2D</span><span style="color:#E1E4E8">(tex, uv)</span></span>
+<span class="line"><span style="color:#F97583">#endif</span></span></code></pre>
+<h3 id="62-mobile-优化策略">6.2 Mobile 优化策略</h3>
+<table>
+<thead>
+<tr>
+<th>功能</th>
+<th>Desktop</th>
+<th>Mobile</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Shadow Variants</td>
+<td>完整支持</td>
+<td>跳过</td>
+</tr>
+<tr>
+<td>Lighting Model</td>
+<td>完整 Toon</td>
+<td>简化光照</td>
+</tr>
+<tr>
+<td>Effect Chains</td>
+<td>完整效果</td>
+<td>减少效果</td>
+</tr>
+<tr>
+<td>变体数量</td>
+<td>大量</td>
+<td>精简</td>
+</tr>
+</tbody>
+</table>
+<h3 id="63-vrchat-集成">6.3 VRChat 集成</h3>
+<table>
+<thead>
+<tr>
+<th>集成点</th>
+<th>支持情况</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>VRC LightVolumes</td>
+<td>✅ v2.0.1+ 支持</td>
+</tr>
+<tr>
+<td>Quest 兼容</td>
+<td>✅ Mobile 变体</td>
+</tr>
+<tr>
+<td>阴影投射/接受</td>
+<td>✅ Shadow Caster/Meta Pass</td>
+</tr>
+<tr>
+<td>Stencil Mask</td>
+<td>✅ VRChat 常用技术</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="7-优缺点分析">7. 优缺点分析</h2>
+<h3 id="71-优点">7.1 优点</h3>
+<table>
+<thead>
+<tr>
+<th>优点</th>
+<th>分析</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>模块化效果系统</strong></td>
+<td><code>drawing</code> struct 模式使效果可组合、可复用</td>
+</tr>
+<tr>
+<td><strong>统一命名规范</strong></td>
+<td>前缀系统使属性组织清晰，易于维护</td>
+</tr>
+<tr>
+<td><strong>多透明度模式</strong></td>
+<td>4 种透明度模式覆盖所有使用场景</td>
+</tr>
+<tr>
+<td><strong>跨平台抽象</strong></td>
+<td>内置 URP/BRP 兼容层，减少重复代码</td>
+</tr>
+<tr>
+<td><strong>丰富的专业效果</strong></td>
+<td>Fur/Water/Grass/Gem/Particle 五大专业系统</td>
+</tr>
+<tr>
+<td><strong>Editor 工具完善</strong></td>
+<td>自定义 Inspector、材质转换、构建优化</td>
+</tr>
+<tr>
+<td><strong>持续维护</strong></td>
+<td>持续更新</td>
+</tr>
+</tbody>
+</table>
+<h3 id="72-缺点">7.2 缺点</h3>
+<table>
+<thead>
+<tr>
+<th>缺点</th>
+<th>影响</th>
+<th>严重度</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>基于 Unlit</strong></td>
+<td>不是真正的 PBR，金属/粗糙度系统非标准</td>
+<td>⚠️ 中</td>
+</tr>
+<tr>
+<td><strong>Geometry Shader 依赖</strong></td>
+<td>FakeFur 不支持 Quest/移动端</td>
+<td>⚠️ 中</td>
+</tr>
+<tr>
+<td><strong>文档语言</strong></td>
+<td>主要为日语，英文文档有限</td>
+<td>⚠️ 低</td>
+</tr>
+<tr>
+<td><strong>社区规模</strong></td>
+<td>相对较小众</td>
+<td>⚠️ 低</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="8-与-liltoonscss-对比">8. 与 lilToon/SCSS 对比</h2>
+<h3 id="81-功能对比矩阵">8.1 功能对比矩阵</h3>
+<table>
+<thead>
+<tr>
+<th>特性</th>
+<th>UnlitWF</th>
+<th>lilToon</th>
+<th>SCSS</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>定位</strong></td>
+<td>Unlit 扩展</td>
+<td>全功能 PBR</td>
+<td>Cel Shader</td>
+</tr>
+<tr>
+<td><strong>Toon 阴影</strong></td>
+<td>✅ 阶梯阴影</td>
+<td>✅ 阶梯/平滑</td>
+<td>✅ 双阴影系统</td>
+</tr>
+<tr>
+<td><strong>Outline</strong></td>
+<td>✅ 多种模式</td>
+<td>✅ 内置</td>
+<td>✅ 多种</td>
+</tr>
+<tr>
+<td><strong>Fur 毛发</strong></td>
+<td>✅ Geometry</td>
+<td>✅ 噪声采样</td>
+<td>❌</td>
+</tr>
+<tr>
+<td><strong>Water 水面</strong></td>
+<td>✅ 波浪+焦散</td>
+<td>⚠️ 基础</td>
+<td>❌</td>
+</tr>
+<tr>
+<td><strong>Gem 宝石</strong></td>
+<td>✅ Flake 效果</td>
+<td>⚠️ 折射</td>
+<td>❌</td>
+</tr>
+<tr>
+<td><strong>PBR 支持</strong></td>
+<td>⚠️ 有限</td>
+<td>✅ 完整</td>
+<td>❌</td>
+</tr>
+<tr>
+<td><strong>Matcap</strong></td>
+<td>✅ 多种模式</td>
+<td>✅</td>
+<td>✅</td>
+</tr>
+<tr>
+<td><strong>Dissolve</strong></td>
+<td>✅</td>
+<td>✅</td>
+<td>✅</td>
+</tr>
+<tr>
+<td><strong>Quest 支持</strong></td>
+<td>✅ Mobile 变体</td>
+<td>✅</td>
+<td>✅</td>
+</tr>
+<tr>
+<td><strong>文档语言</strong></td>
+<td>日语为主</td>
+<td>中文/日文</td>
+<td>日语</td>
+</tr>
+</tbody>
+</table>
+<h3 id="82-适用场景分析">8.2 适用场景分析</h3>
+<table>
+<thead>
+<tr>
+<th>场景</th>
+<th>推荐 Shader</th>
+<th>原因</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Avatar 通用</strong></td>
+<td>lilToon</td>
+<td>全功能、文档完善、社区大</td>
+</tr>
+<tr>
+<td><strong>Cel Shader 优先</strong></td>
+<td>SCSS</td>
+<td>双阴影系统、UV 服装切换</td>
+</tr>
+<tr>
+<td><strong>独特效果需求</strong></td>
+<td>UnlitWF</td>
+<td>Fur/Water/Grass/Gem 专业系统</td>
+</tr>
+<tr>
+<td><strong>日系动漫风格</strong></td>
+<td>SCSS / lilToon</td>
+<td>专用 Cel Shader</td>
+</tr>
+<tr>
+<td><strong>水/宝石特效</strong></td>
+<td>UnlitWF</td>
+<td>专用效果系统</td>
+</tr>
+</tbody>
+</table>
+<h3 id="83-核心差异总结">8.3 核心差异总结</h3>
+<table>
+<thead>
+<tr>
+<th>维度</th>
+<th>UnlitWF</th>
+<th>lilToon</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>设计理念</strong></td>
+<td>Unlit 基础上添加效果</td>
+<td>完整 PBR + Toon 扩展</td>
+</tr>
+<tr>
+<td><strong>渲染基础</strong></td>
+<td>Unlit（无光照计算基础）</td>
+<td>Standard/PBR</td>
+</tr>
+<tr>
+<td><strong>效果深度</strong></td>
+<td>Fur/Water/Grass/Gem 深入</td>
+<td>通用功能全面</td>
+</tr>
+<tr>
+<td><strong>社区生态</strong></td>
+<td>较小众</td>
+<td>全球最大 VRChat Shader</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="9-vrchat-适用性">9. VRChat 适用性</h2>
+<h3 id="91-平台适用性">9.1 平台适用性</h3>
+<table>
+<thead>
+<tr>
+<th>平台</th>
+<th>适用性</th>
+<th>推荐变体</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>PC Avatar</strong></td>
+<td>✅ 非常适合</td>
+<td>Base UnToon / PowerCap / TriShade</td>
+</tr>
+<tr>
+<td><strong>PC World</strong></td>
+<td>✅ 适合</td>
+<td>Water / Grass / Gem 系统</td>
+</tr>
+<tr>
+<td><strong>Quest Avatar</strong></td>
+<td>⚠️ 有限支持</td>
+<td>Mobile 变体，功能减少</td>
+</tr>
+<tr>
+<td><strong>Quest World</strong></td>
+<td>⚠️ 有限支持</td>
+<td>避免 FakeFur / Tessellation</td>
+</tr>
+</tbody>
+</table>
+<h3 id="92-整体评价">9.2 整体评价</h3>
+<table>
+<thead>
+<tr>
+<th>维度</th>
+<th>评分</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>功能完整性</strong></td>
+<td>★★★★☆</td>
+<td>专业效果系统丰富</td>
+</tr>
+<tr>
+<td><strong>代码质量</strong></td>
+<td>★★★★☆</td>
+<td>模块化、命名规范</td>
+</tr>
+<tr>
+<td><strong>文档完整性</strong></td>
+<td>★★★☆☆</td>
+<td>日语为主，DeepWiki 完整</td>
+</tr>
+<tr>
+<td><strong>VRChat 集成</strong></td>
+<td>★★★★☆</td>
+<td>Quest 支持、LightVolumes</td>
+</tr>
+<tr>
+<td><strong>社区生态</strong></td>
+<td>★★★☆☆</td>
+<td>较小众，主要日本用户</td>
+</tr>
+<tr>
+<td><strong>维护活跃度</strong></td>
+<td>★★★★★</td>
+<td>持续更新</td>
+</tr>
+</tbody>
+</table>
+<h3 id="93-定位总结">9.3 定位总结</h3>
+<p><strong>UnlitWF 是一套专注于 Unlit 扩展的专业效果 Shader 套件</strong>，而非通用的 PBR 替代方案。</p>
+<ul>
+<li><strong>优势场景</strong>：需要 Fur/Water/Grass/Gem 等专业效果的 Avatar/World 创作</li>
+<li><strong>不适合</strong>：追求标准 PBR 工作流、金属/粗糙度精确控制的场景</li>
+<li><strong>定位差异</strong>：与 lilToon（全能型）形成互补，而非直接竞争</li>
+</ul>
+<hr>
+<h2 id="相关文档">相关文档</h2>
+<ul>
+<li>index — Shader 知识库索引</li>
+<li>index — lilToon 详细文档</li>
+<li>index — SCSS 详细文档</li>
+</ul> </div> <p class="kb-source-note" data-astro-cid-lvjzyg5v>
+本文由 VRChat 开发知识库自动整理（社区整理  · 可信度 Medium  · 最后校对 2026-06-21），
+          遇到与手写教程冲突的地方，以官方文档为最高优先级。
+</p> <section class="comments" id="comments" data-astro-cid-lvjzyg5v> <h2 class="comments__title" data-astro-cid-lvjzyg5v>✦ 旅人留言（0）</h2> <p class="comments__empty" id="commentsEmpty" data-astro-cid-lvjzyg5v>
+还没有旅人留言 —— 有疑问就写在下面，站长都会回复。
+</p> <form class="comment-form" id="commentForm" data-target="kb-avatar-shader-unlitwf-index" data-astro-cid-lvjzyg5v> <p class="comment-form__title" data-astro-cid-lvjzyg5v>写下你的留言</p> <input id="cAuthor" maxlength="20" placeholder="昵称（留空则为「旅人」）" data-astro-cid-lvjzyg5v> <textarea id="cBody" maxlength="1000" required placeholder="想问的问题、想说的感谢都可以（最多 1000 字）" data-astro-cid-lvjzyg5v></textarea> <div class="comment-form__actions" data-astro-cid-lvjzyg5v> <button class="btn btn--primary" type="submit" data-astro-cid-lvjzyg5v>发布留言</button> <span class="form-hint" data-astro-cid-lvjzyg5v>留言保存在本站，站长在写作台里能看到</span> <span class="form-msg" id="cMsg" data-astro-cid-lvjzyg5v></span> </div> </form> </section> <nav class="station-nav" aria-label="站间导航" data-astro-cid-lvjzyg5v> <a href="/STELLASTOPVRC/posts/kb-avatar-shader-orl-index/" data-astro-cid-lvjzyg5v> <span class="dir" data-astro-cid-lvjzyg5v>← 上一站 · 更新的星光</span> <span class="to" data-astro-cid-lvjzyg5v>ORL Shaders - 索引</span> </a> <a href="/STELLASTOPVRC/posts/kb-comparisons-filamented-comparison/" data-astro-cid-lvjzyg5v> <span class="dir" data-astro-cid-lvjzyg5v>下一站 · 更早的星光 →</span> <span class="to" data-astro-cid-lvjzyg5v>Filamented 与同类项目对比</span> </a> </nav> </div> <aside class="toc" id="toc" hidden> <p class="toc__title">✦ 本页星图</p> <nav id="tocNav" aria-label="文章目录"></nav> </aside> <script type="module">const i=document.querySelector(".prose"),d=document.getElementById("toc"),u=document.getElementById("tocNav"),l=[];if(i&&d&&u){const c=[...i.querySelectorAll("h1, h2, h3")];if(c.length>=3){d.hidden=!1,c.forEach((o,e)=>{o.id||(o.id=`sec-${e}`);const n=document.createElement("a");n.href=`#${o.id}`;const s=(o.textContent??"").replace(/\s+/g," ").trim(),r=s.search(/[：:]/),a=r>=4?s.slice(0,r):s;n.textContent=a.length>40?`${a.slice(0,40)}…`:a,n.title=s,u.appendChild(n),l.push({a:n,h:o})});const t=()=>{let o=l[0];for(const e of l)e.h.getBoundingClientRect().top<=130&&(o=e);for(const e of l)e.a.classList.toggle("is-active",e===o)};addEventListener("scroll",t,{passive:!0}),t()}}document.querySelectorAll(".prose pre").forEach(c=>{const t=document.createElement("button");t.className="code-copy",t.type="button",t.textContent="复制",t.addEventListener("click",async()=>{const o=c.querySelector("code")?.innerText??c.innerText;try{await navigator.clipboard.writeText(o)}catch{const e=document.createElement("textarea");e.value=o,document.body.appendChild(e),e.select(),document.execCommand("copy"),e.remove()}t.textContent="已复制 ✓",t.classList.add("is-ok"),setTimeout(()=>{t.textContent="复制",t.classList.remove("is-ok")},1500)}),c.appendChild(t)});</script> </article>  </main> <footer class="site-footer"> <div class="wrap"> <p class="star-line" aria-hidden="true"> <svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> <svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> </p> <p>星之驿站 StellaStop —— 在虚拟宇宙中，为你保留一座驿站</p> <p class="site-footer__disclaimer">
+该网页目前是测试阶段，仅用于测试，所有内容仅供参考；内容全部为引用互联网当中的信息。
+</p> <p>© 2026 星之驿站 · 由 <a href="https://astro.build">Astro</a> 与星光驱动</p> <p> <a data-desk-login hidden title="写作台：登录 / 注册">登录 / 注册</a> ·
+<a href="/STELLASTOPVRC/announcements/">官方公告</a> ·
+<a href="/STELLASTOPVRC/ai/">问星 AI</a> ·
+<a href="/STELLASTOPVRC/feedback/">旅人留言板</a> </p> </div> </footer> <button class="to-top" id="toTop" aria-label="回到顶部"> <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"> <path d="M12 20V5"></path> <path d="M5.5 11.5 12 5l6.5 6.5"></path> </svg> </button> <script type="module">const e=document.getElementById("toTop");if(e){const t=()=>e.classList.toggle("is-visible",scrollY>480);addEventListener("scroll",t,{passive:!0}),t(),e.addEventListener("click",()=>{const o=matchMedia("(prefers-reduced-motion: reduce)").matches;scrollTo({top:0,behavior:o?"auto":"smooth"})})}</script> <script>(function(){const deskConfigured = "";
+
+      /* 写作台探测（页面尾部执行，DOM 已就绪）：
+         1. 计算写作台地址：站点配置 deskUrl（公网部署时填）> 本机默认 localhost:4322 > 同主机 4322
+         2. 探测 /api/gate/status —— 在线才点亮「登录 / 注册」入口，并复用给验证门横幅
+         3. 不在线则保持隐藏，绝不会把访客拽进内网地址；同时给出一次性「镜像模式」提示 */
+      (function () {
+        var host = location.hostname;
+        var isLocal = host === 'localhost' || host === '127.0.0.1' || host === '[::1]';
+        var desk = deskConfigured ||
+          (isLocal ? 'http://localhost:4322' : location.protocol + '//' + host + ':4322');
+        window.STELLA_DESK = desk;
+
+        function revealLogin() {
+          document.querySelectorAll('[data-desk-login]').forEach(function (a) {
+            a.href = desk + '/admin';
+            a.removeAttribute('hidden');
+          });
+        }
+        function showBanner(css, html, shiftHeader) {
+          var bar = document.createElement('div');
+          bar.style.cssText = css;
+          bar.innerHTML = html;
+          document.body.prepend(bar);
+          if (shiftHeader) {
+            var header = document.querySelector('.site-header');
+            if (header) header.style.marginTop = '42px';
+          }
+        }
+        function hintMirrorMode() {
+          try {
+            if (sessionStorage.getItem('stella-desk-hint')) return;
+            sessionStorage.setItem('stella-desk-hint', '1');
+          } catch (e) { /* 无痕模式等：忽略 */ }
+          var tip = document.createElement('div');
+          tip.style.cssText = 'position:fixed;left:14px;bottom:14px;z-index:9998;max-width:min(92vw,430px);padding:.65rem .9rem;border-radius:12px;background:rgba(18,20,44,.92);border:1px solid rgba(150,142,255,.35);color:#e8e6ff;font-size:.82rem;line-height:1.6;font-family:system-ui,sans-serif;box-shadow:0 8px 30px rgba(0,0,0,.35)';
+          tip.innerHTML = 'ℹ️ 静态镜像模式：登录 / 评论 / AI 等互动功能需要站长写作台在线，当前不可用。' +
+            '<span id="stellaDeskHintClose" style="float:right;cursor:pointer;opacity:.75;font-weight:700;margin-left:.6rem" title="关闭">×</span>';
+          document.body.appendChild(tip);
+          var close = function () { tip.remove(); };
+          tip.querySelector('#stellaDeskHintClose').addEventListener('click', close);
+          setTimeout(close, 9000);
+        }
+
+        try {
+          var ctrl = new AbortController();
+          var timer = setTimeout(function () { ctrl.abort(); }, 2500);
+          fetch(desk + '/api/gate/status', { credentials: 'include', signal: ctrl.signal })
+            .then(function (r) { return r.ok ? r.json() : null; })
+            .then(function (d) {
+              clearTimeout(timer);
+              if (!d) throw new Error('desk-offline');
+              window.STELLA_DESK_OK = true;
+              revealLogin();
+              if (d.regionBlocked) {
+                showBanner(
+                  'position:fixed;top:0;left:0;right:0;z-index:9999;padding:1.2rem;text-align:center;background:#1a0a0a;color:#ff9ed2;font-size:.95rem;border-bottom:2px solid #ff4d6d;font-family:system-ui,sans-serif',
+                  '⛔ 你所在的地区（' + (d.regionCountry || '未知') + '）暂不开放访问。',
+                  false
+                );
+                return;
+              }
+              if (d.enabled && !d.passed) {
+                showBanner(
+                  'position:fixed;top:0;left:0;right:0;z-index:9999;padding:0.7rem;text-align:center;background:linear-gradient(94deg,rgba(143,127,247,.25),rgba(98,200,245,.18));border-bottom:1px solid rgba(150,142,255,.3);color:#f0efff;font-size:.88rem;font-family:system-ui,sans-serif',
+                  '🔒 本站启用了安全验证 —— <a href="' + desk + '/gate?next=' + encodeURIComponent(location.href) + '" style="color:#ffd98e;font-weight:700;text-decoration:underline">点击完成验证</a>，通过后即可使用全部功能（30 天免验）。',
+                  true
+                );
+              }
+            })
+            .catch(function () {
+              clearTimeout(timer);
+              window.STELLA_DESK_OK = false;
+              hintMirrorMode();
+            });
+        } catch (e) { /* 忽略 */ }
+      })();
+    })();</script> </body> </html> <script type="module">const m=document.getElementById("commentForm"),s=document.getElementById("cMsg"),u=`${location.protocol}//${location.hostname}:4322/api/message`;function r(e,t=!1){s&&(s.textContent=e,s.classList.toggle("is-err",t),s.classList.toggle("is-ok",!t))}function y(){const e=new Date,t=n=>String(n).padStart(2,"0");return`${e.getFullYear()}-${t(e.getMonth()+1)}-${t(e.getDate())}`}function f(e){let t=7;for(const n of e)t=(t*31+n.charCodeAt(0))%360;return t}function g(e,t){const n=document.createElement("li");n.className="comment",n.innerHTML=`
+      <span class="comment__avatar"></span>
+      <div class="comment__bubble">
+        <div class="comment__head">
+          <span class="comment__name"></span>
+          <time class="comment__date">${y()}</time>
+        </div>
+        <p class="comment__body"></p>
+      </div>`;const o=n.querySelector(".comment__avatar");return o.style.setProperty("--h",String(f(e))),o.textContent=e.slice(0,1),n.querySelector(".comment__name").textContent=e,n.querySelector(".comment__body").textContent=t,n}m?.addEventListener("submit",async e=>{e.preventDefault();const t=document.getElementById("cBody").value.trim();if(!t)return r("留言内容不能为空哦",!0);const n=document.getElementById("cAuthor").value.trim()||"旅人",o=m.querySelector("button");o&&(o.disabled=!0);try{const c=await fetch(u,{credentials:"include",method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({target:m.dataset.target,kind:"comment",author:n,body:t})}),d=await c.json().catch(()=>({}));if(!c.ok)throw new Error(d.error||`发送失败（${c.status}）`);const l=document.querySelector(".comment-list");l&&l.appendChild(g(n,t)),document.getElementById("commentsEmpty")?.remove(),document.getElementById("cBody").value="",r("留言已发布，感谢支持 ✦");const a=document.querySelector(".comments__title"),i=a?.textContent?.match(/（(\d+)）/);a&&i&&(a.textContent=a.textContent.replace(/（\d+）/,`（${Number(i[1])+1}）`))}catch(c){r(c instanceof TypeError?"写作台没在运行，暂时收不到留言 —— 双击「启动博客.bat」就好":c.message,!0)}finally{o&&(o.disabled=!1)}});</script> 

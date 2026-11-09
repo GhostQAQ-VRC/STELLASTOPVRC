@@ -1,0 +1,745 @@
+<!DOCTYPE html><html lang="zh-CN"> <head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="generator" content="Astro v5.18.2"><meta name="description" content="本目录存储可复用实现模式。每个模式针对特定 UdonSharp 场景，包含："><meta name="theme-color" content="#070a1c"><meta property="og:title" content="Patterns — 设计模式选择决策树 · 星之驿站 StellaStop"><meta property="og:description" content="本目录存储可复用实现模式。每个模式针对特定 UdonSharp 场景，包含："><meta property="og:type" content="website"><meta name="twitter:card" content="summary"><link rel="icon" type="image/svg+xml" href="/STELLASTOPVRC/favicon.svg"><script>
+      // 在渲染前恢复主题与特效档位，避免闪一下默认状态
+      try {
+        document.documentElement.dataset.theme =
+          localStorage.getItem('stella-theme') || 'nebula';
+        document.documentElement.dataset.fx =
+          localStorage.getItem('stella-fx') || 'standard';
+      } catch {
+        /* 隐私模式读不到就算了 */
+      }
+    </script><link rel="stylesheet" href="/STELLASTOPVRC/custom-vars.css"><title>Patterns — 设计模式选择决策树 · 星之驿站 StellaStop</title><link rel="stylesheet" href="/STELLASTOPVRC/_astro/about.Bgh6wcGl.css">
+<style>.post-head__meta[data-astro-cid-lvjzyg5v]{color:var(--ink-faint);font-family:var(--font-mono);font-size:.82rem}.post-head[data-astro-cid-lvjzyg5v] .chip-row[data-astro-cid-lvjzyg5v]{margin-top:1rem}.kb-source-note[data-astro-cid-lvjzyg5v]{max-width:760px;margin:2.2rem auto 0;font-size:.82rem;color:var(--ink-faint);border-top:1px dashed var(--line);padding-top:1rem}
+</style></head> <body> <div class="site-notice" id="siteNotice"> <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> <span class="site-notice__text">欢迎来到星之驿站！</span> <button class="site-notice__close" id="noticeClose" type="button" aria-label="关闭公告">
+×
+</button> </div> <a class="skip-link" href="#main">跳到主要内容</a> <canvas id="starfield" aria-hidden="true" data-astro-cid-ra7sfcwn></canvas> <div class="fx-aurora fx-aurora--a" aria-hidden="true" data-astro-cid-ra7sfcwn></div> <div class="fx-aurora fx-aurora--b" aria-hidden="true" data-astro-cid-ra7sfcwn></div>  <script type="module">const u=document.getElementById("starfield");if(u){let F=function(){const n=Math.random();return n<.1?"gold":n<.42?"blue":"white"},v=function(){const n=Math.min(window.devicePixelRatio||1,2);s=window.innerWidth,d=window.innerHeight,u.width=s*n,u.height=d*n,u.style.width=`${s}px`,u.style.height=`${d}px`,t.setTransform(n,0,0,n,0,0);const e=Math.min(190,Math.round(s*d/8500));l=Array.from({length:e},()=>({x:Math.random()*s,y:Math.random()*d,r:r(.4,1.7),base:r(.25,.8),amp:r(.12,.4),speed:r(6e-4,.0022),phase:r(0,Math.PI*2),c:F()})),C=Array.from({length:26},()=>({x:Math.random()*s,y:Math.random()*d,r:r(.9,2.4),vx:r(-.006,.006),vy:r(-.02,-.006),base:r(.2,.5),speed:r(8e-4,.002),phase:r(0,Math.PI*2),c:Math.random()<.5?"gold":"violet"})),c==="off"&&m(0,!0)},D=function(n){const e=Math.random()<.5?1:-1,o=r(Math.PI/7,Math.PI/5),a=r(.45,.75);y.push({x:r(s*.15,s*.85),y:r(-20,d*.3),vx:Math.cos(o)*a*e,vy:Math.sin(o)*a,born:n,life:r(750,1050),len:r(100,170)})},S=function(n){y=y.filter(e=>n-e.born<e.life);for(const e of y){const o=(n-e.born)/e.life,a=e.x+e.vx*(n-e.born),i=e.y+e.vy*(n-e.born),f=o<.15?o/.15:o>.7?(1-o)/.3:1,h=Math.hypot(e.vx,e.vy),x=e.vx/h,g=e.vy/h,b=t.createLinearGradient(a,i,a-x*e.len,i-g*e.len);b.addColorStop(0,`rgba(236,242,255,${(.85*f).toFixed(3)})`),b.addColorStop(1,"rgba(236,242,255,0)"),t.strokeStyle=b,t.lineWidth=1.6,t.lineCap="round",t.beginPath(),t.moveTo(a,i),t.lineTo(a-x*e.len,i-g*e.len),t.stroke()}},B=function(){let o=0;t.lineWidth=.7;for(let a=0;a<l.length&&o<26;a++)for(let i=a+1;i<l.length&&o<26;i++){const f=l[a].x-l[i].x,h=l[a].y-l[i].y,x=f*f+h*h;if(x<16900){const g=(1-Math.sqrt(x)/130)*.17;t.strokeStyle=`rgba(178,170,255,${g.toFixed(3)})`,t.beginPath(),t.moveTo(l[a].x,l[a].y),t.lineTo(l[i].x,l[i].y),t.stroke(),o++}}},X=function(n){for(const e of C){e.x+=e.vx*16,e.y+=e.vy*16,e.y<-12&&(e.y=d+10),e.x<-12&&(e.x=s+10),e.x>s+12&&(e.x=-10);const o=Math.max(.05,e.base+.25*Math.sin(n*e.speed+e.phase)),[a,i,f]=A[e.c];t.beginPath(),t.arc(e.x,e.y,e.r,0,7),t.shadowBlur=9,t.shadowColor=`rgba(${a},${i},${f},0.9)`,t.fillStyle=`rgba(${a},${i},${f},${o.toFixed(3)})`,t.fill()}t.shadowBlur=0},m=function(n,e=!1){t.clearRect(0,0,s,d);for(const o of l){const a=c==="off"?o.base:Math.max(.05,o.base+o.amp*Math.sin(n*o.speed+o.phase)),[i,f,h]=A[o.c];t.beginPath(),t.arc(o.x,o.y,o.r,0,7),o.r>1.25?(t.shadowBlur=7,t.shadowColor=`rgba(${i},${f},${h},0.85)`):t.shadowBlur=0,t.fillStyle=`rgba(${i},${f},${h},${a.toFixed(3)})`,t.fill()}if(t.shadowBlur=0,c!=="off"&&!e){c==="fancy"&&(B(),X(n));const o=c==="fancy"?r(2600,6e3):r(4200,9500);n>P&&(D(n),P=n+o),S(n)}},$=function(n){m(n),M=requestAnimationFrame($)},p=function(){if(c==="off"){m(0,!0);return}cancelAnimationFrame(M),M=requestAnimationFrame($)},w=function(){cancelAnimationFrame(M),t.clearRect(0,0,s,d),m(0,!0)};const t=u.getContext("2d"),k=matchMedia("(prefers-reduced-motion: reduce)").matches,A={white:[240,240,255],blue:[150,215,250],gold:[255,218,150],violet:[178,170,255]};let s=0,d=0,l=[],C=[],y=[],P=2500,M=0,c=document.documentElement.dataset.fx||"standard";k&&(c="off");const r=(n,e)=>n+Math.random()*(e-n);v(),addEventListener("resize",v),document.addEventListener("stella-fx-change",n=>{c=n.detail,c==="off"?w():p()}),c==="off"?m(0,!0):(p(),document.addEventListener("visibilitychange",()=>{document.hidden?w():p()}))}</script> <header class="site-header"> <div class="wrap site-header__inner"> <a class="logo" href="/STELLASTOPVRC/"> <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> <span>星之驿站</span> <span class="logo__romaji">StellaStop</span> </a> <div class="header-right"> <nav class="site-nav" aria-label="站内导航"> <a href="/STELLASTOPVRC/"> 首页 </a><a href="/STELLASTOPVRC/start/"> 新手 </a><a href="/STELLASTOPVRC/posts/"> 教程 </a><a href="/STELLASTOPVRC/videos/"> 视频 </a><a href="/STELLASTOPVRC/resources/"> 资源 </a><a href="/STELLASTOPVRC/booth/"> Booth </a><a href="/STELLASTOPVRC/announcements/"> 公告 </a><a href="/STELLASTOPVRC/ai/"> 问星 </a><a href="/STELLASTOPVRC/changelog/"> 更新日志 </a><a href="/STELLASTOPVRC/about/"> 关于 </a> </nav> <a class="login-link" data-desk-login hidden title="写作台：登录 / 注册后可发教程、传资源">
+登录 / 注册
+</a> <div class="theme-switch"> <button class="theme-switch__btn" id="themeBtn" type="button" aria-haspopup="listbox" aria-expanded="false" aria-label="切换主题配色" title="切换主题配色"> <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"> <path d="M12 3a9 9 0 1 0 9 9c0-1.2-1-2-2.2-2H17a2 2 0 0 1-2-2V6.2C15 5 14.2 4 13 4.4A9 9 0 0 0 12 3Z"></path> <circle cx="7.5" cy="11.5" r="1" fill="currentColor" stroke="none"></circle> <circle cx="10" cy="7.5" r="1" fill="currentColor" stroke="none"></circle> <circle cx="15" cy="7" r="1" fill="currentColor" stroke="none"></circle> </svg> </button> <div class="theme-pop" id="themePop" role="listbox" aria-label="选择主题" hidden> <button class="theme-opt" type="button" role="option" data-theme-value="nebula" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#8f7ff7"></span><span class="dot" style="background:#62c8f5"></span><span class="dot" style="background:#ffd98e"></span> </span> <span class="theme-opt__name">星云 · 蓝紫</span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt" type="button" role="option" data-theme-value="sakura" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#ff8fc7"></span><span class="dot" style="background:#c79bff"></span><span class="dot" style="background:#ffd08e"></span> </span> <span class="theme-opt__name">樱语 · 粉紫</span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt" type="button" role="option" data-theme-value="miku" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#2ed3c2"></span><span class="dot" style="background:#6ea8ff"></span><span class="dot" style="background:#ffe08e"></span> </span> <span class="theme-opt__name">葱色 · 青绿</span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt" type="button" role="option" data-theme-value="ember" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#ffb35c"></span><span class="dot" style="background:#ff7e6b"></span><span class="dot" style="background:#ffd98e"></span> </span> <span class="theme-opt__name">暮金 · 暖橙</span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt" type="button" role="option" data-theme-value="dawn" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#6a5ce8"></span><span class="dot" style="background:#e0568f"></span><span class="dot" style="background:#b8821e"></span> </span> <span class="theme-opt__name">晨星 · 浅色</span> <span class="theme-opt__mark">✦</span> </button> </div> </div> <script type="module">const a=document.getElementById("themeBtn"),n=document.getElementById("themePop");function s(c){document.documentElement.dataset.theme=c;try{localStorage.setItem("stella-theme",c)}catch{}const e=getComputedStyle(document.documentElement).getPropertyValue("--bg-deep").trim();document.querySelector('meta[name="theme-color"]')?.setAttribute("content",e||"#070a1c"),document.querySelectorAll(".theme-opt").forEach(t=>{const d=t.dataset.themeValue===c;t.classList.toggle("is-active",d),t.setAttribute("aria-selected",String(d))})}if(a&&n){const c=document.documentElement.dataset.theme||"nebula";document.querySelectorAll(".theme-opt").forEach(e=>{const t=e.dataset.themeValue===c;e.classList.toggle("is-active",t),e.setAttribute("aria-selected",String(t))}),a.addEventListener("click",e=>{e.stopPropagation();const t=n.hidden;n.hidden=!t,a.setAttribute("aria-expanded",String(t))}),document.addEventListener("click",e=>{!n.hidden&&!e.target.closest(".theme-switch")&&(n.hidden=!0,a.setAttribute("aria-expanded","false"))}),document.addEventListener("keydown",e=>{e.key==="Escape"&&!n.hidden&&(n.hidden=!0,a.setAttribute("aria-expanded","false"),a.focus())}),n.addEventListener("click",e=>{const t=e.target.closest(".theme-opt");t&&(s(t.dataset.themeValue??"nebula"),n.hidden=!0,a.setAttribute("aria-expanded","false"))})}</script> <div class="theme-switch fx-switch"> <button class="theme-switch__btn" id="fxBtn" type="button" aria-haspopup="listbox" aria-expanded="false" aria-label="背景特效设置" title="背景特效设置"> <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"> <path d="M5 3v4M3 5h4M6.5 17.5v3M5 19h3"></path> <path d="M14.5 4.5 16 9l4.5 1.5L16 12l-1.5 4.5L13 12l-4.5-1.5L13 9l1.5-4.5Z"></path> </svg> </button> <div class="theme-pop" id="fxPop" role="listbox" aria-label="背景特效" hidden> <button class="theme-opt fx-opt" type="button" role="option" data-fx-value="off" aria-selected="false"> <span class="fx-opt__body"> <span class="fx-opt__name">关闭特效</span> <span class="fx-opt__hint">最省电</span> </span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt fx-opt" type="button" role="option" data-fx-value="standard" aria-selected="false"> <span class="fx-opt__body"> <span class="fx-opt__name">标准</span> <span class="fx-opt__hint">闪烁星空 + 流星</span> </span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt fx-opt" type="button" role="option" data-fx-value="fancy" aria-selected="false"> <span class="fx-opt__body"> <span class="fx-opt__name">华丽</span> <span class="fx-opt__hint">追加极光 / 星座 / 光尘</span> </span> <span class="theme-opt__mark">✦</span> </button> </div> </div> <script type="module">const n=document.getElementById("fxBtn"),a=document.getElementById("fxPop");function s(d){document.documentElement.dataset.fx=d;try{localStorage.setItem("stella-fx",d)}catch{}document.querySelectorAll("#fxPop .fx-opt").forEach(t=>{const e=t.dataset.fxValue===d;t.classList.toggle("is-active",e),t.setAttribute("aria-selected",String(e))}),document.dispatchEvent(new CustomEvent("stella-fx-change",{detail:d}))}if(n&&a){const d=document.documentElement.dataset.fx||"standard";document.querySelectorAll("#fxPop .fx-opt").forEach(t=>{const e=t.dataset.fxValue===d;t.classList.toggle("is-active",e),t.setAttribute("aria-selected",String(e))}),n.addEventListener("click",t=>{t.stopPropagation();const e=a.hidden;a.hidden=!e,n.setAttribute("aria-expanded",String(e))}),document.addEventListener("click",t=>{!a.hidden&&!t.target.closest(".fx-switch")&&(a.hidden=!0,n.setAttribute("aria-expanded","false"))}),document.addEventListener("keydown",t=>{t.key==="Escape"&&!a.hidden&&(a.hidden=!0,n.setAttribute("aria-expanded","false"),n.focus())}),a.addEventListener("click",t=>{const e=t.target.closest(".fx-opt");e&&(s(e.dataset.fxValue??"standard"),a.hidden=!0,n.setAttribute("aria-expanded","false"))})}</script> </div> </div> </header> <main id="main">  <article class="wrap post-layout" data-astro-cid-lvjzyg5v> <div class="post-main page-fade" data-astro-cid-lvjzyg5v> <header class="post-head" data-astro-cid-lvjzyg5v> <a class="crumb" href="/STELLASTOPVRC/posts/" data-astro-cid-lvjzyg5v>← 返回教程档案</a> <div class="post-head__meta" style="--accent:var(--ink-dim)" data-astro-cid-lvjzyg5v> <span class="badge" data-cat="设计模式" data-astro-cid-lvjzyg5v>设计模式</span> <time datetime="2026-06-20" data-astro-cid-lvjzyg5v>2026-06-20</time> <span class="post-head__reading" data-astro-cid-lvjzyg5v>⏱ 约 39 分钟</span>  </div> <h1 class="post-head__title" data-astro-cid-lvjzyg5v>Patterns — 设计模式选择决策树</h1> <p class="post-head__lead" data-astro-cid-lvjzyg5v>本目录存储可复用实现模式。每个模式针对特定 UdonSharp 场景，包含：</p> <div class="chip-row" data-astro-cid-lvjzyg5v> <a class="chip" href="/STELLASTOPVRC/posts/?tag=%E7%9F%A5%E8%AF%86%E5%BA%93" data-astro-cid-lvjzyg5v> 知识库 </a><a class="chip" href="/STELLASTOPVRC/posts/?tag=concepts" data-astro-cid-lvjzyg5v> concepts </a> </div> </header> <div class="prose" data-astro-cid-lvjzyg5v> <h1 id="patterns--设计模式选择决策树">Patterns — 设计模式选择决策树</h1>
+<blockquote>
+<p>状态: ✅ 31 个核心模式(7 原有 + 6 LuraSwitch2 + 10 UdonVoiceUtils + 5 ULocalization 沙箱适配 + 3 Sardinal 独有) + 选择决策树</p>
+</blockquote>
+<hr>
+<h2 id="obsidian-moc--patterns-可点击入口">Obsidian MOC — Patterns 可点击入口</h2>
+<table>
+<thead>
+<tr>
+<th>分类</th>
+<th>入口</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>核心同步模式</td>
+<td><a href="/STELLASTOPVRC/posts/kb-concepts-patterns-manual-sync-state/">manual-sync-state.md</a> · <a href="/STELLASTOPVRC/posts/kb-concepts-patterns-owner-authoritative-interaction/">owner-authoritative-interaction.md</a> · <a href="/STELLASTOPVRC/posts/kb-concepts-patterns-late-joiner-state-restore/">late-joiner-state-restore.md</a> · <a href="/STELLASTOPVRC/posts/kb-concepts-patterns-bit-packed-flags/">bit-packed-flags.md</a> · <a href="/STELLASTOPVRC/posts/kb-concepts-patterns-event-driven-state-machine/">event-driven-state-machine.md</a> · <a href="/STELLASTOPVRC/posts/kb-concepts-patterns-advanced-sync-patterns/">advanced-sync-patterns.md</a> · <a href="/STELLASTOPVRC/posts/kb-concepts-patterns-unorthodox-patterns/">unorthodox-patterns.md</a></td>
+</tr>
+<tr>
+<td>LuraSwitch2 模式</td>
+<td><a href="/STELLASTOPVRC/posts/kb-concepts-patterns-master-follower-syncer/">master-follower-syncer.md</a> · <a href="/STELLASTOPVRC/posts/kb-concepts-patterns-exclusive-control-selector/">exclusive-control-selector.md</a> · <a href="/STELLASTOPVRC/posts/kb-concepts-patterns-soft-detent-interpolation/">soft-detent-interpolation.md</a> · <a href="/STELLASTOPVRC/posts/kb-concepts-patterns-fade-then-snap/">fade-then-snap.md</a> · <a href="/STELLASTOPVRC/posts/kb-concepts-patterns-editor-preview-component/">editor-preview-component.md</a> · <a href="/STELLASTOPVRC/posts/kb-concepts-patterns-material-propertyblock-safe-update/">material-propertyblock-safe-update.md</a></td>
+</tr>
+<tr>
+<td>Udon 沙箱适配</td>
+<td><a href="/STELLASTOPVRC/posts/kb-concepts-patterns-hash-based-dispatch/">hash-based-dispatch.md</a> · <a href="/STELLASTOPVRC/posts/kb-concepts-patterns-iid-object-identity/">iid-object-identity.md</a> · <a href="/STELLASTOPVRC/posts/kb-concepts-patterns-slot-parameter-passing/">slot-parameter-passing.md</a> · <a href="/STELLASTOPVRC/posts/kb-concepts-patterns-code-generation-type-erasure/">code-generation-type-erasure.md</a> · <a href="/STELLASTOPVRC/posts/kb-comparisons-build-time-vs-runtime/">../comparisons/build-time-vs-runtime.md</a></td>
+</tr>
+<tr>
+<td>Pub/Sub 消息总线</td>
+<td><a href="/STELLASTOPVRC/posts/kb-concepts-patterns-channel-routing/">channel-routing.md</a> · <a href="/STELLASTOPVRC/posts/kb-concepts-patterns-inherited-subscriber/">inherited-subscriber.md</a> · <a href="/STELLASTOPVRC/posts/kb-concepts-patterns-hybrid-subscription-modes/">hybrid-subscription-modes.md</a></td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="概述">概述</h2>
+<p>本目录存储<strong>可复用实现模式</strong>。每个模式针对特定 UdonSharp 场景，包含：</p>
+<ul>
+<li>Problem / Context</li>
+<li>Udon Constraints 影响</li>
+<li>Networking Model（12 维度）</li>
+<li>Implementation Sketch</li>
+<li>When To Use / Not Use</li>
+<li>交叉引用</li>
+</ul>
+<hr>
+<h2 id="模式选择决策树">模式选择决策树</h2>
+<h3 id="1-你需要同步什么">1. 你需要同步什么？</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>Q1: 同步的是状态还是动作？</span></span>
+<span class="line"><span>├── 状态（持续可见）→ Q2</span></span>
+<span class="line"><span>└── 动作（瞬时触发）→ Network Event（非模式）</span></span>
+<span class="line"><span>   例: 音效、粒子、一次性动画 → [events](./entities/world/udon/networking/events.md)</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>Q2: Late joiner 需要看到吗？</span></span>
+<span class="line"><span>├── 否 → Network Event（不需模式）</span></span>
+<span class="line"><span>└── 是 → Q3</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>Q3: 状态是连续变化还是离散？</span></span>
+<span class="line"><span>├── 连续（位置、旋转、进度条）→ Continuous Sync</span></span>
+<span class="line"><span>│   └── 物理对象 → VRCObjectSync（scene-components）</span></span>
+<span class="line"><span>└── 离散（开关、状态机、分数）→ Q4</span></span></code></pre>
+<h3 id="2-离散状态同步模式选择">2. 离散状态同步模式选择</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>Q4: 多个 bool/小值需要同步？</span></span>
+<span class="line"><span>├── 是（3+）→ bit-packed-flags.md</span></span>
+<span class="line"><span>└── 否（1-2）→ manual-sync-state.md</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>Q5: 需要 late joiner 正确恢复？</span></span>
+<span class="line"><span>├── 是 → late-joiner-state-restore.md（必加）</span></span>
+<span class="line"><span>└── 否（罕见）→ 仅 manual-sync-state.md</span></span></code></pre>
+<h3 id="3-多人交互所有权">3. 多人交互所有权</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>Q6: 多人可能同时交互同一对象？</span></span>
+<span class="line"><span>├── 是 → owner-authoritative-interaction.md</span></span>
+<span class="line"><span>│   └── 需要复杂状态合并 → advanced-sync-patterns.md</span></span>
+<span class="line"><span>└── 否（单人触发）→ manual-sync-state.md</span></span></code></pre>
+<h3 id="4-复杂状态机">4. 复杂状态机</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>Q7: 多个状态、明确转换条件？</span></span>
+<span class="line"><span>├── 是 → event-driven-state-machine.md</span></span>
+<span class="line"><span>└── 否 → manual-sync-state.md</span></span></code></pre>
+<h3 id="5-非常规需求">5. 非常规需求</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>Q8: 标准模式无法满足？</span></span>
+<span class="line"><span>└── 是 → unorthodox-patterns.md（⚠️ 谨慎评估）</span></span></code></pre>
+<h3 id="6-udon-沙箱适配绕过-vm-限制">6. Udon 沙箱适配（绕过 VM 限制）</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>Q9: 需要绕过 Udon VM 限制？</span></span>
+<span class="line"><span>├── 动态分派 100+ 方法 → hash-based-dispatch.md</span></span>
+<span class="line"><span>├── 对象跨 Editor-Runtime 引用 → iid-object-identity.md</span></span>
+<span class="line"><span>├── UnityEvent 需传参 → slot-parameter-passing.md</span></span>
+<span class="line"><span>├── 多种类型统一处理(泛型替代) → code-generation-type-erasure.md</span></span>
+<span class="line"><span>└── Editor 端预处理 + 运行时查表 → build-time-vs-runtime-separation.md</span></span></code></pre>
+<h3 id="7-udon-端消息总线-pubsub跨模块解耦通信">7. Udon 端消息总线 Pub/Sub（跨模块解耦通信）</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>Q10: 需要"跨模块解耦通信"吗?</span></span>
+<span class="line"><span>├── 是 → Sardinal 模式</span></span>
+<span class="line"><span>│   ├── 同主题多模块差异化响应 → channel-routing.md ⭐S</span></span>
+<span class="line"><span>│   ├── 抽象基类需统一事件被所有子类继承 → inherited-subscriber.md ⭐S</span></span>
+<span class="line"><span>│   └── 混合场景常驻+动态对象 → hybrid-subscription-modes.md ⭐S</span></span>
+<span class="line"><span>└── 否(单模块内部) → 直接 SendCustomEvent</span></span></code></pre>
+<hr>
+<h2 id="7-个核心模式">7 个核心模式</h2>
+<h3 id="1️⃣-manual-sync-statemd">1️⃣ manual-sync-state.md</h3>
+<p><strong>适用</strong>: 离散状态同步（门、灯、状态机）
+<strong>核心</strong>: <code>[UdonSynced]</code> int + <code>RequestSerialization()</code> + <code>FieldChangeCallback</code>
+<strong>变体</strong>: byte 代替 int、多个 synced 变量组合</p>
+<h3 id="2️⃣-owner-authoritative-interactionmd">2️⃣ owner-authoritative-interaction.md</h3>
+<p><strong>适用</strong>: 多人可交互对象
+<strong>核心</strong>: Owner 锁定写入 + 可选 ownership transfer
+<strong>变体</strong>: <code>OnOwnershipRequest</code> 拒绝转移</p>
+<h3 id="3️⃣-late-joiner-state-restoremd">3️⃣ late-joiner-state-restore.md</h3>
+<p><strong>适用</strong>: 任何需要 late joiner 看到状态的世界（<strong>几乎必需</strong>）
+<strong>核心</strong>: <code>[UdonSynced]</code> 变量 + <code>OnDeserialization()</code> 重建表现
+<strong>变体</strong>: 配合 Persistence 实现跨实例</p>
+<h3 id="4️⃣-bit-packed-flagsmd">4️⃣ bit-packed-flags.md</h3>
+<p><strong>适用</strong>: 3+ 关联 bool 状态
+<strong>核心</strong>: int/uint 存储 32 个 flag
+<strong>变体</strong>: byte 存 8 flag</p>
+<h3 id="5️⃣-event-driven-state-machinemd">5️⃣ event-driven-state-machine.md</h3>
+<p><strong>适用</strong>: 多阶段逻辑（回合制游戏、关卡流程）
+<strong>核心</strong>: int <code>_state</code> + <code>SendCustomEvent</code> 状态转换 + switch 调度
+<strong>变体</strong>: FSM、Hierarchical FSM</p>
+<h3 id="6️⃣-advanced-sync-patternsmd">6️⃣ advanced-sync-patterns.md</h3>
+<p><strong>适用</strong>: 高级需求（packed data、rate-limited serialization、threshold change detection）
+<strong>核心</strong>: 带宽优化技术
+<strong>变体</strong>: Vector3 packed int、发送频率控制</p>
+<h3 id="7️⃣-unorthodox-patternsmd">7️⃣ unorthodox-patterns.md</h3>
+<p><strong>适用</strong>: 标准模式无法满足时的”邪修”技法
+<strong>核心</strong>: Toggle 数组、BlendTree 卸载、OnAudioFilterRead 并行
+<strong>风险</strong>: 高（部分未验证、需谨慎评估）</p>
+<hr>
+<h2 id="6-个新增模式-quickbrown-luraswitch2-new-2026-06-20">6 个新增模式 (QuickBrown LuraSwitch2) ⭐NEW 2026-06-20</h2>
+<h3 id="8️⃣-master-follower-syncermd-new">8️⃣ master-follower-syncer.md ⭐NEW</h3>
+<p><strong>适用</strong>: 1 个 Master 集中控制 N 个同类型对象(音量推子组、关卡联动)
+<strong>核心</strong>: 节流窗口(0.1s) + <code>EnsureGlobalOwnership</code> 抢占 + 双标志排除回声
+<strong>变体</strong>: N=2 时简化,实时需求高时缩短窗口
+<strong>项目来源</strong>: <code>SwitchSyncer.cs</code> (736 行)</p>
+<h3 id="9️⃣-exclusive-control-selectormd-new">9️⃣ exclusive-control-selector.md ⭐NEW</h3>
+<p><strong>适用</strong>: “多选一”互斥场景(关卡选择、模式切换、楼层跳转)
+<strong>核心</strong>: 集中 <code>[UdonSynced]</code> + 强制子 syncMode 改为 None + 1 帧延迟初始化
+<strong>变体</strong>: <code>_allowAllOff</code> 支持取消选择
+<strong>项目来源</strong>: <code>SwitchSelector.cs</code> (849 行)</p>
+<h3 id="-soft-detent-interpolationmd-new">🔟 soft-detent-interpolation.md ⭐NEW</h3>
+<p><strong>适用</strong>: 滑块有”标准档位”(音量 0/25/50/75/100)
+<strong>核心</strong>: SmoothStep 软磁力公式 + 完全吸附阈值 + 拖动/松手路径分离
+<strong>变体</strong>: 4 段 OFF/LOW/MID/HIGH,5 段音量
+<strong>项目来源</strong>: <code>SliderSwitch.cs</code> SoftDetent 部分 (2218 行)</p>
+<h3 id="1️⃣1️⃣-fade-then-snapmd-new">1️⃣1️⃣ fade-then-snap.md ⭐NEW</h3>
+<p><strong>适用</strong>: 玩家可见的”瞬时”位置更新(重置点、关卡切换、传送)
+<strong>核心</strong>: 3 阶段(透明→移动→淡入) + FadeInStep 重入 token
+<strong>变体</strong>: VR 用户用更长 fade(0.4-0.5s)
+<strong>项目来源</strong>: <code>SwitchBoard.cs</code> (581 行)</p>
+<h3 id="1️⃣2️⃣-editor-preview-componentmd-new">1️⃣2️⃣ editor-preview-component.md ⭐NEW</h3>
+<p><strong>适用</strong>: 复杂参数需要 Creator 实时反馈(Mirror 范围、Collider 体积)
+<strong>核心</strong>: <code>[ExecuteAlways]</code> MonoBehaviour + TrackingState 变更检测 + <code>SceneView.RepaintAll</code>
+<strong>变体</strong>: <code>_showOnlyWhenSelected</code> 控制显示时机
+<strong>项目来源</strong>: <code>MirrorAreaPreview.cs</code>, <code>Collider_AreaPreview.cs</code>, <code>HeightOffsetterPreview.cs</code></p>
+<h3 id="1️⃣3️⃣-material-propertyblock-safe-updatemd-new">1️⃣3️⃣ material-propertyblock-safe-update.md ⭐NEW</h3>
+<p><strong>适用</strong>: 多个 GameObject 共享同一 Material Asset,运行时改颜色不污染
+<strong>核心</strong>: <code>MaterialPropertyBlock</code> + Get/Set 配对 + Editor <code>OnValidate</code> 预览
+<strong>变体</strong>: 与 sharedMaterial / material 性能对比
+<strong>项目来源</strong>: <code>SwitchBase.cs</code> HSV 部分 (1795 行)</p>
+<hr>
+<h2 id="10-个新增模式-tlp-udonvoiceutils-u-2026-06-20">10 个新增模式 (TLP UdonVoiceUtils) ⭐U 2026-06-20</h2>
+<blockquote>
+<p><strong>来源标注</strong>:<code>⭐U</code> = UdonVoiceUtils 模式,以区别于 LuraSwitch2 模式(无后缀)。所有 UVU 模式从 （来源：UdonVoiceUtils 分析，本地整理） 提炼。</p>
+</blockquote>
+<h3 id="1️⃣4️⃣-dual-copy-syncmd-u-new">1️⃣4️⃣ dual-copy-sync.md ⭐U NEW</h3>
+<p><strong>适用</strong>: 双源同步(本地热数据 + 网络冷数据)
+<strong>核心</strong>: <code>[UdonSynced] _xxx</code>(网络)+ 本地 <code>xxx</code>(缓存)配对,Get/Set 桥接
+<strong>变体</strong>: 13 字段对(PlayerAudioConfigurationModel)
+<strong>项目来源</strong>: <code>SyncedPlayerAudioConfigurationModel.cs</code> (TLP UdonVoiceUtils)</p>
+<h3 id="1️⃣5️⃣-execution-order-chainmd-u-new">1️⃣5️⃣ execution-order-chain.md ⭐U NEW</h3>
+<p><strong>适用</strong>: UdonBehaviour 协作时序(Controller → Model → View)
+<strong>核心</strong>: <code>const ExecutionOrder = X.ExecutionOrder + 1</code> 链式声明依赖
+<strong>变体</strong>: Override 链,Microphone 链
+<strong>项目来源</strong>: TLP UdonVoiceUtils 全局常量</p>
+<h3 id="1️⃣6️⃣-strategy-pattern-udonmd-u-new">1️⃣6️⃣ strategy-pattern-udon.md ⭐U NEW</h3>
+<p><strong>适用</strong>: 运行时切换算法(遮挡检测、降噪、回声消除)
+<strong>核心</strong>: 抽象基类 + 多个具体实现 + Get/Set 切换
+<strong>变体</strong>: <code>PlayerOcclusionStrategy</code> 抽象(Null/Default/自定义)
+<strong>项目来源</strong>: <code>PlayerOcclusionStrategy.cs</code> 系列 (TLP UdonVoiceUtils)</p>
+<h3 id="1️⃣7️⃣-object-pool-udonmd-u-new">1️⃣7️⃣ object-pool-udon.md ⭐U NEW</h3>
+<p><strong>适用</strong>: 大量对象复用(Override 列表、AudioSource、子弹)
+<strong>核心</strong>: 预创建 + 索引回收 + 空闲队列
+<strong>变体</strong>: <code>PlayerAudioOverrideList</code> 数组池(零分配 GetMaxPriority)
+<strong>项目来源</strong>: <code>PlayerAudioOverrideList.cs</code> (TLP UdonVoiceUtils)</p>
+<h3 id="1️⃣8️⃣-priority-arbitrationmd-u-new">1️⃣8️⃣ priority-arbitration.md ⭐U NEW</h3>
+<p><strong>适用</strong>: 多个 Override 冲突仲裁(房间静音 + 门关闭 + 区域)
+<strong>核心</strong>: <code>GetMaxPriority</code> + Override 数组排序 + PrivacyChannel 分组
+<strong>变体</strong>: <code>HasOverlappingChannels</code> 双向频道检查
+<strong>项目来源</strong>: <code>PlayerAudioOverrideList.cs</code> (TLP UdonVoiceUtils)</p>
+<h3 id="1️⃣9️⃣-master-ownership-defensemd-u-new">1️⃣9️⃣ master-ownership-defense.md ⭐U NEW</h3>
+<p><strong>适用</strong>: 关键配置需要 Master 权威(全局静音开关)
+<strong>核心</strong>: 三层防御(<code>OnPlayerJoined</code> + <code>OnOwnershipTransfer</code> + 周期检查)
+<strong>变体</strong>: <code>EnsureGlobalOwnership</code> 主动抢占
+<strong>项目来源</strong>: <code>SyncedPlayerAudioConfigurationModel.cs</code> (TLP UdonVoiceUtils)</p>
+<h3 id="2️⃣0️⃣-gizmos-relationshipmd-u-new">2️⃣0️⃣ gizmos-relationship.md ⭐U NEW</h3>
+<p><strong>适用</strong>: Editor 调试复杂依赖关系(Override ↔ Player ↔ Channel)
+<strong>核心</strong>: <code>[CustomEditor]</code> + <code>OnSceneGUI</code> + <code>Handles.DrawLine</code>
+<strong>变体</strong>: Gizmos 颜色编码(Privacy 红色 / Priority 蓝色)
+<strong>项目来源</strong>: <code>Editor/PlayerAudioControllerEditor.cs</code> (TLP UdonVoiceUtils)</p>
+<h3 id="2️⃣1️⃣-trigger-event-fallbackmd-u-new">2️⃣1️⃣ trigger-event-fallback.md ⭐U NEW</h3>
+<p><strong>适用</strong>: 玩家离开 Collider 时事件丢失兜底
+<strong>核心</strong>: <code>OnTriggerExit</code> + Update 距离检查 + <code>SendCustomEvent</code> 补发
+<strong>变体</strong>: <code>VoiceOverrideTriggerZone</code> 3 层保险(Trigger/距离/重连)
+<strong>项目来源</strong>: <code>VoiceOverrideTriggerZone.cs</code> (TLP UdonVoiceUtils)</p>
+<h3 id="2️⃣2️⃣-compile-time-debug-stripmd-u-new">2️⃣2️⃣ compile-time-debug-strip.md ⭐U NEW</h3>
+<p><strong>适用</strong>: 性能关键代码的调试钩子剥离
+<strong>核心</strong>: <code>#region TLP_DEBUG</code> + <code>TLP_DEBUG</code> 宏(asmdef versionDefines)
+<strong>变体</strong>: <code>VoiceRangeVisualizer</code> 仅 DEBUG 编译,Release 零成本
+<strong>项目来源</strong>: <code>Debug/VoiceRangeVisualizer.cs</code> (TLP UdonVoiceUtils)</p>
+<h3 id="2️⃣3️⃣-auto-scripting-symbolmd-u-new">2️⃣3️⃣ auto-scripting-symbol.md ⭐U NEW</h3>
+<p><strong>适用</strong>: VPM 包自动配置 Scripting Symbol
+<strong>核心</strong>: asmdef <code>versionDefines</code> 字段 + 链接 XML
+<strong>变体</strong>: <code>TLP_UDONVOICEUTILS_DEBUG</code> 自动启用(用户装包即生效)
+<strong>项目来源</strong>: TLP UdonVoiceUtils VPM 包配置</p>
+<hr>
+<h2 id="5-个新增模式-hoshinolabs-ulocalization-l-new-2026-06-20">5 个新增模式 (HoshinoLabs ULocalization) ⭐L NEW 2026-06-20</h2>
+<blockquote>
+<p><strong>来源标注</strong>:<code>⭐L</code> = ULocalization 模式(全称 Localization)以区别于其他来源。所有 UL 模式从 <a href="https://github.com/ikuko/ULocalization">ULocalization（GitHub）</a> 提炼,聚焦于”如何用 Editor 端代码生成绕过 Udon VM 限制”。</p>
+</blockquote>
+<h3 id="2️⃣4️⃣-hash-based-dispatchmd-l-new">2️⃣4️⃣ hash-based-dispatch.md ⭐L NEW</h3>
+<p><strong>适用</strong>: UnityEvent listener 需要 Udon 端动态分派(100+ Component 类型 + 任意方法)
+<strong>核心</strong>: MD5(<code>TypeName+MethodName+RetType</code>) 作为 hash ID + 预生成 500+ wrapper 方法 + <code>SendCustomEvent(hash)</code>
+<strong>变体</strong>: 白名单约束(只允许 100+ Component × 5-10 方法)
+<strong>项目来源</strong>: <code>LocalizationShim_Generated.cs</code> (535 行 / 500+ hash 方法)
+<strong>关键约束</strong>: 编译期静态可枚举;非白名单方法在 Build 阶段被过滤</p>
+<h3 id="2️⃣5️⃣-iid-object-identitymd-l-new">2️⃣5️⃣ iid-object-identity.md ⭐L NEW</h3>
+<p><strong>适用</strong>: 场景中需要索引访问大量同类对象(50+ LocalizeEvent / 100+ Variable)
+<strong>核心</strong>: Editor 端 <code>IID.GenerateId</code> 顺序分配 int + 运行时用 <code>int[]</code> 数组按索引访问
+<strong>变体</strong>: 按类型分组缓存(<code>Dictionary&#x3C;Type, List&#x3C;object>></code>),跨 Build 引用稳定
+<strong>项目来源</strong>: <code>IID.cs</code> / <code>LocalizeEventCache.cs</code> / <code>VariableCache.cs</code>
+<strong>关键约束</strong>: 运行时不能增删对象 → 数组长度 Build 期固定</p>
+<h3 id="2️⃣6️⃣-slot-parameter-passingmd-l-new">2️⃣6️⃣ slot-parameter-passing.md ⭐L NEW</h3>
+<p><strong>适用</strong>: <code>SendCustomEvent</code> 需要传 1-3 个参数(无返回值,无委托,无 Lambda)
+<strong>核心</strong>: Shim 预定义 3 个 <code>object</code> 槽位(<code>_l_t</code> target / <code>_l_p</code> prefab / <code>_l_a</code> active) + 调用前填槽 + 生成方法从槽读取
+<strong>变体</strong>: 1 槽(target only) / 2 槽(target + value) / 3 槽(target + prefab + active)
+<strong>项目来源</strong>: <code>LocalizationShim.cs</code> <code>_l_t</code> / <code>_l_p</code> / <code>_l_a</code> 三字段
+<strong>关键约束</strong>: 槽位数量 ≤ 3;类型 cast 在生成时已确定,运行时无 cast 风险</p>
+<h3 id="2️⃣7️⃣-code-generation-type-erasuremd-l-new">2️⃣7️⃣ code-generation-type-erasure.md ⭐L NEW</h3>
+<p><strong>适用</strong>: 多种具体类型(16+ IVariable / 5+ LocalizeEvent)需要统一处理
+<strong>核心</strong>: <code>Type.FullName</code> MD5 hash 作为 type ID + switch case 显式分派 + <code>object[2]</code> 元组模式(<code>[shim ref, int id]</code>)
+<strong>变体</strong>: 16 IVariable + 5 LocalizeEvent + 6 LocalizedReference(UL 三组)
+<strong>项目来源</strong>: <code>SmartLiteFormatter.cs</code> 16 case + <code>LocalizationShim.cs</code> 类型擦除扩展方法
+<strong>关键约束</strong>: 类型集合有限(&#x3C; 20)且编译期完全确定;运行时新增类型不可用</p>
+<h3 id="2️⃣8️⃣-build-time-vs-runtime-separationmd-l-new">2️⃣8️⃣ build-time-vs-runtime-separation.md ⭐L NEW</h3>
+<p><strong>适用</strong>: 配置/数据可在编译期完全确定 + 运行时仅需 O(1) 查表分派
+<strong>核心</strong>: Editor 端反射 + LINQ + 缓存预处理 → 注入 27 个 <code>object[]</code> 字段到 Udon Shim → 运行时 O(1) 数组访问
+<strong>变体</strong>: Editor 端 <code>[Inject]</code> (Sardinject) + <code>WithParameter("_0", ...)</code>;Runtime 端 <code>Shim._0[idx]</code>;Build 钩子清理被替代组件
+<strong>项目来源</strong>: <code>LocalizationResolver.cs</code> (600+ 行) + <code>LocalizationCleanup.cs</code> + <code>CloneDetector.cs</code>
+<strong>关键约束</strong>: 修改 Scene 后必须重新 Build;UnityEvent listener 必须在白名单内</p>
+<hr>
+<h2 id="模式速查表">模式速查表</h2>
+<table>
+<thead>
+<tr>
+<th>模式</th>
+<th>复杂度</th>
+<th>性能</th>
+<th>适用规模</th>
+<th>风险</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>manual-sync-state</strong></td>
+<td>低</td>
+<td>⭐⭐⭐⭐⭐</td>
+<td>小→中</td>
+<td>低</td>
+</tr>
+<tr>
+<td><strong>owner-authoritative</strong></td>
+<td>中</td>
+<td>⭐⭐⭐⭐</td>
+<td>小→中</td>
+<td>低</td>
+</tr>
+<tr>
+<td><strong>late-joiner-restore</strong></td>
+<td>低</td>
+<td>⭐⭐⭐⭐⭐</td>
+<td>必需</td>
+<td>低</td>
+</tr>
+<tr>
+<td><strong>bit-packed-flags</strong></td>
+<td>低</td>
+<td>⭐⭐⭐⭐⭐</td>
+<td>中→大</td>
+<td>低</td>
+</tr>
+<tr>
+<td><strong>event-driven-fsm</strong></td>
+<td>中</td>
+<td>⭐⭐⭐⭐</td>
+<td>中→大</td>
+<td>中</td>
+</tr>
+<tr>
+<td><strong>advanced-sync</strong></td>
+<td>中→高</td>
+<td>⭐⭐⭐⭐⭐</td>
+<td>中→大</td>
+<td>中</td>
+</tr>
+<tr>
+<td><strong>unorthodox</strong></td>
+<td>高</td>
+<td>⭐⭐</td>
+<td>特定</td>
+<td>🔴 高</td>
+</tr>
+<tr>
+<td><strong>master-follower-syncer</strong> ⭐NEW 📜Legacy</td>
+<td>中</td>
+<td>⭐⭐⭐⭐</td>
+<td>中→大</td>
+<td>低</td>
+</tr>
+<tr>
+<td><strong>exclusive-control-selector</strong> ⭐NEW 📜Legacy</td>
+<td>中</td>
+<td>⭐⭐⭐⭐⭐</td>
+<td>中→大</td>
+<td>低</td>
+</tr>
+<tr>
+<td><strong>soft-detent-interpolation</strong> ⭐NEW 📜Legacy</td>
+<td>中</td>
+<td>⭐⭐⭐⭐</td>
+<td>中</td>
+<td>低</td>
+</tr>
+<tr>
+<td><strong>fade-then-snap</strong> ⭐NEW 📜Legacy</td>
+<td>低</td>
+<td>⭐⭐⭐⭐</td>
+<td>小→中</td>
+<td>低</td>
+</tr>
+<tr>
+<td><strong>editor-preview-component</strong> ⭐NEW 📜Legacy</td>
+<td>低</td>
+<td>⭐⭐⭐⭐⭐</td>
+<td>工具</td>
+<td>低</td>
+</tr>
+<tr>
+<td><strong>material-propertyblock-safe-update</strong> ⭐NEW 📜Legacy</td>
+<td>低</td>
+<td>⭐⭐⭐⭐⭐</td>
+<td>通用</td>
+<td>低</td>
+</tr>
+<tr>
+<td><strong>dual-copy-sync</strong> ⭐U NEW</td>
+<td>中</td>
+<td>⭐⭐⭐⭐</td>
+<td>中→大</td>
+<td>低</td>
+</tr>
+<tr>
+<td><strong>execution-order-chain</strong> ⭐U NEW</td>
+<td>低</td>
+<td>⭐⭐⭐⭐⭐</td>
+<td>中→大</td>
+<td>低</td>
+</tr>
+<tr>
+<td><strong>strategy-pattern-udon</strong> ⭐U NEW</td>
+<td>中</td>
+<td>⭐⭐⭐⭐</td>
+<td>中</td>
+<td>中</td>
+</tr>
+<tr>
+<td><strong>object-pool-udon</strong> ⭐U NEW</td>
+<td>中</td>
+<td>⭐⭐⭐⭐⭐</td>
+<td>大</td>
+<td>中</td>
+</tr>
+<tr>
+<td><strong>priority-arbitration</strong> ⭐U NEW</td>
+<td>高</td>
+<td>⭐⭐⭐⭐</td>
+<td>中→大</td>
+<td>中</td>
+</tr>
+<tr>
+<td><strong>master-ownership-defense</strong> ⭐U NEW</td>
+<td>中</td>
+<td>⭐⭐⭐⭐</td>
+<td>中</td>
+<td>低</td>
+</tr>
+<tr>
+<td><strong>gizmos-relationship</strong> ⭐U NEW</td>
+<td>低</td>
+<td>⭐⭐⭐⭐⭐</td>
+<td>工具</td>
+<td>低</td>
+</tr>
+<tr>
+<td><strong>trigger-event-fallback</strong> ⭐U NEW</td>
+<td>中</td>
+<td>⭐⭐⭐⭐</td>
+<td>小→中</td>
+<td>低</td>
+</tr>
+<tr>
+<td><strong>compile-time-debug-strip</strong> ⭐U NEW</td>
+<td>低</td>
+<td>⭐⭐⭐⭐⭐</td>
+<td>通用</td>
+<td>低</td>
+</tr>
+<tr>
+<td><strong>auto-scripting-symbol</strong> ⭐U NEW</td>
+<td>低</td>
+<td>⭐⭐⭐⭐⭐</td>
+<td>VPM</td>
+<td>低</td>
+</tr>
+<tr>
+<td><strong>hash-based-dispatch</strong> ⭐L NEW</td>
+<td>中</td>
+<td>⭐⭐⭐⭐</td>
+<td>中→大</td>
+<td>中</td>
+</tr>
+<tr>
+<td><strong>iid-object-identity</strong> ⭐L NEW</td>
+<td>低</td>
+<td>⭐⭐⭐⭐⭐</td>
+<td>中→大</td>
+<td>低</td>
+</tr>
+<tr>
+<td><strong>slot-parameter-passing</strong> ⭐L NEW</td>
+<td>低</td>
+<td>⭐⭐⭐⭐⭐</td>
+<td>通用</td>
+<td>低</td>
+</tr>
+<tr>
+<td><strong>code-generation-type-erasure</strong> ⭐L NEW</td>
+<td>中</td>
+<td>⭐⭐⭐⭐</td>
+<td>中</td>
+<td>中</td>
+</tr>
+<tr>
+<td><strong>build-time-vs-runtime-separation</strong> ⭐L NEW</td>
+<td>高</td>
+<td>⭐⭐⭐⭐⭐</td>
+<td>大</td>
+<td>中</td>
+</tr>
+<tr>
+<td><strong>channel-routing</strong> ⭐S NEW</td>
+<td>中</td>
+<td>⭐⭐⭐⭐</td>
+<td>中→大</td>
+<td>中</td>
+</tr>
+<tr>
+<td><strong>inherited-subscriber</strong> ⭐S NEW</td>
+<td>低</td>
+<td>⭐⭐⭐⭐⭐</td>
+<td>中→大</td>
+<td>低</td>
+</tr>
+<tr>
+<td><strong>hybrid-subscription-modes</strong> ⭐S NEW</td>
+<td>中</td>
+<td>⭐⭐⭐⭐</td>
+<td>中→大</td>
+<td>中</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="模式组合建议">模式组合建议</h2>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>✅ 推荐组合:</span></span>
+<span class="line"><span>   manual-sync-state + late-joiner-restore    （基础 + 必需）</span></span>
+<span class="line"><span>   owner-authoritative + manual-sync-state    （多人交互）</span></span>
+<span class="line"><span>   bit-packed-flags + late-joiner-restore     （多状态压缩）</span></span>
+<span class="line"><span>   event-driven-fsm + owner-authoritative     （多人游戏）</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>⚠️ 谨慎组合:</span></span>
+<span class="line"><span>   unorthodox + 其他（先单独验证）</span></span>
+<span class="line"><span>   advanced-sync + bit-packed（先单独验证）</span></span></code></pre>
+<hr>
+<h2 id="模式实现骨架">模式实现骨架</h2>
+<p>所有模式都包含 <strong>Implementation Sketch</strong> 代码示例 + <strong>Networking Model</strong> 12 维度表：</p>
+<table>
+<thead>
+<tr>
+<th>维度</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>State Owner</td>
+<td>状态的所有者</td>
+</tr>
+<tr>
+<td>Source of Truth</td>
+<td>真实数据源</td>
+</tr>
+<tr>
+<td>Sync Type</td>
+<td>同步模式</td>
+</tr>
+<tr>
+<td>Synced Variables</td>
+<td>同步变量</td>
+</tr>
+<tr>
+<td>Mutation Path</td>
+<td>写入路径</td>
+</tr>
+<tr>
+<td>Ownership Path</td>
+<td>所有权路径</td>
+</tr>
+<tr>
+<td>Serialization Path</td>
+<td>序列化路径</td>
+</tr>
+<tr>
+<td>Receive Path</td>
+<td>远端接收路径</td>
+</tr>
+<tr>
+<td>Late Joiner</td>
+<td>迟到玩家处理</td>
+</tr>
+<tr>
+<td>Conflict Strategy</td>
+<td>冲突策略</td>
+</tr>
+<tr>
+<td>Bandwidth Budget</td>
+<td>带宽预算</td>
+</tr>
+<tr>
+<td>Failure Mode</td>
+<td>失败模式</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>使用此表格可对比不同模式的取舍</p>
+</blockquote>
+<hr>
+<h2 id="与其他目录的关系">与其他目录的关系</h2>
+<table>
+<thead>
+<tr>
+<th>关系</th>
+<th>目录</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>规则约束</strong></td>
+<td><a href="/STELLASTOPVRC/posts/kb-concepts-rules-networking-rules/">networking-rules</a>, <a href="/STELLASTOPVRC/posts/kb-concepts-rules-udonsharp-language-limits/">udonsharp-language-limits</a></td>
+</tr>
+<tr>
+<td><strong>失败案例</strong></td>
+<td>（来源：常见失败案例分析，本地整理）</td>
+</tr>
+<tr>
+<td><strong>API 速查</strong></td>
+<td><a href="/STELLASTOPVRC/posts/kb-api-networking/">networking</a></td>
+</tr>
+<tr>
+<td><strong>应用层详解</strong></td>
+<td>index</td>
+</tr>
+<tr>
+<td><strong>设计模式来源</strong></td>
+<td>3 个参考工程(多机位导演系统 / 视频播放器 / 音频同步系统) 已沉淀到 <a href="/STELLASTOPVRC/posts/kb-fact/">FACT</a>,具体项目信息见 源资料归档层（不随发布包分发）</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="案例研究参考工程">案例研究(参考工程)</h2>
+<p>知识库中已沉淀 4 个参考工程的设计模式(已沉淀到 FACT.md,具体项目名见 sources/ 目录):</p>
+<table>
+<thead>
+<tr>
+<th>设计模式类别</th>
+<th>主要模式</th>
+<th>文档</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>多机位导演系统(参考工程)</strong></td>
+<td>5 层同步 + NetworkCallable + 双缓冲 + 指数衰减 + Slerp + 所有权分层 + NoVariableSync UI</td>
+<td><a href="/STELLASTOPVRC/posts/kb-fact/">FACT</a> §多机位导演系统</td>
+</tr>
+<tr>
+<td><strong>视频播放器(参考工程)</strong></td>
+<td>Manual Sync + Owner Authority + 时间同步算法</td>
+<td><a href="/STELLASTOPVRC/posts/kb-fact/">FACT</a> §视频播放器</td>
+</tr>
+<tr>
+<td><strong>音频同步系统(参考工程)</strong></td>
+<td>Shader-Centric + Master 时间锚点 + 位域压缩 + 漂移校正</td>
+<td><a href="/STELLASTOPVRC/posts/kb-fact/">FACT</a> §音频同步系统</td>
+</tr>
+<tr>
+<td><strong>QuickBrown LuraSwitch2(参考工程)</strong> ⭐NEW</td>
+<td>Master-Follower Syncer + Exclusive Selector + SoftDetent + Fade-Snap + Editor Preview + MaterialPropertyBlock</td>
+<td><a href="https://lura.booth.pm/">LuraSwitch2（Lura Booth）</a> + 6 个新 pattern 文档</td>
+</tr>
+<tr>
+<td><strong>TLP UdonVoiceUtils(参考工程)</strong> ⭐NEW</td>
+<td>10 个核心模式: Dual-Copy Sync + ExecutionOrder Chain + Strategy + Object Pool + Priority Arbitration + Master Ownership Defense + Gizmos + Trigger Fallback + Compile DEBUG + Auto Symbol</td>
+<td>（来源：UdonVoiceUtils 分析，本地整理） + 10 个新 pattern 文档</td>
+</tr>
+<tr>
+<td><strong>HoshinoLabs ULocalization(参考工程)</strong> ⭐NEW</td>
+<td>5 个 Udon 沙箱适配核心模式: Hash-Based Method Dispatch + IID Object Identity + Slot Parameter Passing + Code Generation Type Erasure + Build-Runtime Separation</td>
+<td><a href="https://github.com/ikuko/ULocalization">ULocalization（GitHub）</a> + 5 个新 pattern 文档</td>
+</tr>
+<tr>
+<td><strong>HoshinoLabs Sardinal(参考工程)</strong> ⭐NEW</td>
+<td>5 大 ULocalization 模式精简版 + 3 个 Sardinal 独有模式: Channel Routing + Inherited Subscriber + Hybrid Static+Dynamic Subscription</td>
+<td><a href="https://github.com/ikuko/Sardinal">Sardinal（GitHub）</a> + 3 个新 pattern 文档</td>
+</tr>
+</tbody>
+</table>
+<p>| <strong>VRCLens(参考工程)</strong> ⭐NEW 2026-07-04 | 5 个 P1 模式: HDR+White Balance + Single-Pass DoF + Avatar 相机限制修复 + 第三方 Tonemapper 集成 + 第三方 PostProcess 覆盖 | （来源：Open Source Projects，本地整理） §A10 + <a href="/STELLASTOPVRC/posts/kb-avatar-camera-tools/">camera-tools</a> §3 |</p> </div> <p class="kb-source-note" data-astro-cid-lvjzyg5v>
+本文由 VRChat 开发知识库自动整理（社区整理  · 可信度 High  · 最后校对 2026-06-20），
+          遇到与手写教程冲突的地方，以官方文档为最高优先级。
+</p> <section class="comments" id="comments" data-astro-cid-lvjzyg5v> <h2 class="comments__title" data-astro-cid-lvjzyg5v>✦ 旅人留言（0）</h2> <p class="comments__empty" id="commentsEmpty" data-astro-cid-lvjzyg5v>
+还没有旅人留言 —— 有疑问就写在下面，站长都会回复。
+</p> <form class="comment-form" id="commentForm" data-target="kb-concepts-patterns-index" data-astro-cid-lvjzyg5v> <p class="comment-form__title" data-astro-cid-lvjzyg5v>写下你的留言</p> <input id="cAuthor" maxlength="20" placeholder="昵称（留空则为「旅人」）" data-astro-cid-lvjzyg5v> <textarea id="cBody" maxlength="1000" required placeholder="想问的问题、想说的感谢都可以（最多 1000 字）" data-astro-cid-lvjzyg5v></textarea> <div class="comment-form__actions" data-astro-cid-lvjzyg5v> <button class="btn btn--primary" type="submit" data-astro-cid-lvjzyg5v>发布留言</button> <span class="form-hint" data-astro-cid-lvjzyg5v>留言保存在本站，站长在写作台里能看到</span> <span class="form-msg" id="cMsg" data-astro-cid-lvjzyg5v></span> </div> </form> </section> <nav class="station-nav" aria-label="站间导航" data-astro-cid-lvjzyg5v> <a href="/STELLASTOPVRC/posts/kb-concepts-patterns-iid-object-identity/" data-astro-cid-lvjzyg5v> <span class="dir" data-astro-cid-lvjzyg5v>← 上一站 · 更新的星光</span> <span class="to" data-astro-cid-lvjzyg5v>IID Object Identity (整数身份映射)</span> </a> <a href="/STELLASTOPVRC/posts/kb-concepts-patterns-inherited-subscriber/" data-astro-cid-lvjzyg5v> <span class="dir" data-astro-cid-lvjzyg5v>下一站 · 更早的星光 →</span> <span class="to" data-astro-cid-lvjzyg5v>Inherited Subscriber (基类订阅者自动继承)</span> </a> </nav> </div> <aside class="toc" id="toc" hidden> <p class="toc__title">✦ 本页星图</p> <nav id="tocNav" aria-label="文章目录"></nav> </aside> <script type="module">const i=document.querySelector(".prose"),d=document.getElementById("toc"),u=document.getElementById("tocNav"),l=[];if(i&&d&&u){const c=[...i.querySelectorAll("h1, h2, h3")];if(c.length>=3){d.hidden=!1,c.forEach((o,e)=>{o.id||(o.id=`sec-${e}`);const n=document.createElement("a");n.href=`#${o.id}`;const s=(o.textContent??"").replace(/\s+/g," ").trim(),r=s.search(/[：:]/),a=r>=4?s.slice(0,r):s;n.textContent=a.length>40?`${a.slice(0,40)}…`:a,n.title=s,u.appendChild(n),l.push({a:n,h:o})});const t=()=>{let o=l[0];for(const e of l)e.h.getBoundingClientRect().top<=130&&(o=e);for(const e of l)e.a.classList.toggle("is-active",e===o)};addEventListener("scroll",t,{passive:!0}),t()}}document.querySelectorAll(".prose pre").forEach(c=>{const t=document.createElement("button");t.className="code-copy",t.type="button",t.textContent="复制",t.addEventListener("click",async()=>{const o=c.querySelector("code")?.innerText??c.innerText;try{await navigator.clipboard.writeText(o)}catch{const e=document.createElement("textarea");e.value=o,document.body.appendChild(e),e.select(),document.execCommand("copy"),e.remove()}t.textContent="已复制 ✓",t.classList.add("is-ok"),setTimeout(()=>{t.textContent="复制",t.classList.remove("is-ok")},1500)}),c.appendChild(t)});</script> </article>  </main> <footer class="site-footer"> <div class="wrap"> <p class="star-line" aria-hidden="true"> <svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> <svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> </p> <p>星之驿站 StellaStop —— 在虚拟宇宙中，为你保留一座驿站</p> <p class="site-footer__disclaimer">
+该网页目前是测试阶段，仅用于测试，所有内容仅供参考；内容全部为引用互联网当中的信息。
+</p> <p>© 2026 星之驿站 · 由 <a href="https://astro.build">Astro</a> 与星光驱动</p> <p> <a data-desk-login hidden title="写作台：登录 / 注册">登录 / 注册</a> ·
+<a href="/STELLASTOPVRC/announcements/">官方公告</a> ·
+<a href="/STELLASTOPVRC/ai/">问星 AI</a> ·
+<a href="/STELLASTOPVRC/feedback/">旅人留言板</a> </p> </div> </footer> <button class="to-top" id="toTop" aria-label="回到顶部"> <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"> <path d="M12 20V5"></path> <path d="M5.5 11.5 12 5l6.5 6.5"></path> </svg> </button> <script type="module">const e=document.getElementById("toTop");if(e){const t=()=>e.classList.toggle("is-visible",scrollY>480);addEventListener("scroll",t,{passive:!0}),t(),e.addEventListener("click",()=>{const o=matchMedia("(prefers-reduced-motion: reduce)").matches;scrollTo({top:0,behavior:o?"auto":"smooth"})})}</script> <script>(function(){const deskConfigured = "";
+
+      /* 写作台探测（页面尾部执行，DOM 已就绪）：
+         1. 计算写作台地址：站点配置 deskUrl（公网部署时填）> 本机默认 localhost:4322 > 同主机 4322
+         2. 探测 /api/gate/status —— 在线才点亮「登录 / 注册」入口，并复用给验证门横幅
+         3. 不在线则保持隐藏，绝不会把访客拽进内网地址；同时给出一次性「镜像模式」提示 */
+      (function () {
+        var host = location.hostname;
+        var isLocal = host === 'localhost' || host === '127.0.0.1' || host === '[::1]';
+        var desk = deskConfigured ||
+          (isLocal ? 'http://localhost:4322' : location.protocol + '//' + host + ':4322');
+        window.STELLA_DESK = desk;
+
+        function revealLogin() {
+          document.querySelectorAll('[data-desk-login]').forEach(function (a) {
+            a.href = desk + '/admin';
+            a.removeAttribute('hidden');
+          });
+        }
+        function showBanner(css, html, shiftHeader) {
+          var bar = document.createElement('div');
+          bar.style.cssText = css;
+          bar.innerHTML = html;
+          document.body.prepend(bar);
+          if (shiftHeader) {
+            var header = document.querySelector('.site-header');
+            if (header) header.style.marginTop = '42px';
+          }
+        }
+        function hintMirrorMode() {
+          try {
+            if (sessionStorage.getItem('stella-desk-hint')) return;
+            sessionStorage.setItem('stella-desk-hint', '1');
+          } catch (e) { /* 无痕模式等：忽略 */ }
+          var tip = document.createElement('div');
+          tip.style.cssText = 'position:fixed;left:14px;bottom:14px;z-index:9998;max-width:min(92vw,430px);padding:.65rem .9rem;border-radius:12px;background:rgba(18,20,44,.92);border:1px solid rgba(150,142,255,.35);color:#e8e6ff;font-size:.82rem;line-height:1.6;font-family:system-ui,sans-serif;box-shadow:0 8px 30px rgba(0,0,0,.35)';
+          tip.innerHTML = 'ℹ️ 静态镜像模式：登录 / 评论 / AI 等互动功能需要站长写作台在线，当前不可用。' +
+            '<span id="stellaDeskHintClose" style="float:right;cursor:pointer;opacity:.75;font-weight:700;margin-left:.6rem" title="关闭">×</span>';
+          document.body.appendChild(tip);
+          var close = function () { tip.remove(); };
+          tip.querySelector('#stellaDeskHintClose').addEventListener('click', close);
+          setTimeout(close, 9000);
+        }
+
+        try {
+          var ctrl = new AbortController();
+          var timer = setTimeout(function () { ctrl.abort(); }, 2500);
+          fetch(desk + '/api/gate/status', { credentials: 'include', signal: ctrl.signal })
+            .then(function (r) { return r.ok ? r.json() : null; })
+            .then(function (d) {
+              clearTimeout(timer);
+              if (!d) throw new Error('desk-offline');
+              window.STELLA_DESK_OK = true;
+              revealLogin();
+              if (d.regionBlocked) {
+                showBanner(
+                  'position:fixed;top:0;left:0;right:0;z-index:9999;padding:1.2rem;text-align:center;background:#1a0a0a;color:#ff9ed2;font-size:.95rem;border-bottom:2px solid #ff4d6d;font-family:system-ui,sans-serif',
+                  '⛔ 你所在的地区（' + (d.regionCountry || '未知') + '）暂不开放访问。',
+                  false
+                );
+                return;
+              }
+              if (d.enabled && !d.passed) {
+                showBanner(
+                  'position:fixed;top:0;left:0;right:0;z-index:9999;padding:0.7rem;text-align:center;background:linear-gradient(94deg,rgba(143,127,247,.25),rgba(98,200,245,.18));border-bottom:1px solid rgba(150,142,255,.3);color:#f0efff;font-size:.88rem;font-family:system-ui,sans-serif',
+                  '🔒 本站启用了安全验证 —— <a href="' + desk + '/gate?next=' + encodeURIComponent(location.href) + '" style="color:#ffd98e;font-weight:700;text-decoration:underline">点击完成验证</a>，通过后即可使用全部功能（30 天免验）。',
+                  true
+                );
+              }
+            })
+            .catch(function () {
+              clearTimeout(timer);
+              window.STELLA_DESK_OK = false;
+              hintMirrorMode();
+            });
+        } catch (e) { /* 忽略 */ }
+      })();
+    })();</script> </body> </html> <script type="module">const m=document.getElementById("commentForm"),s=document.getElementById("cMsg"),u=`${location.protocol}//${location.hostname}:4322/api/message`;function r(e,t=!1){s&&(s.textContent=e,s.classList.toggle("is-err",t),s.classList.toggle("is-ok",!t))}function y(){const e=new Date,t=n=>String(n).padStart(2,"0");return`${e.getFullYear()}-${t(e.getMonth()+1)}-${t(e.getDate())}`}function f(e){let t=7;for(const n of e)t=(t*31+n.charCodeAt(0))%360;return t}function g(e,t){const n=document.createElement("li");n.className="comment",n.innerHTML=`
+      <span class="comment__avatar"></span>
+      <div class="comment__bubble">
+        <div class="comment__head">
+          <span class="comment__name"></span>
+          <time class="comment__date">${y()}</time>
+        </div>
+        <p class="comment__body"></p>
+      </div>`;const o=n.querySelector(".comment__avatar");return o.style.setProperty("--h",String(f(e))),o.textContent=e.slice(0,1),n.querySelector(".comment__name").textContent=e,n.querySelector(".comment__body").textContent=t,n}m?.addEventListener("submit",async e=>{e.preventDefault();const t=document.getElementById("cBody").value.trim();if(!t)return r("留言内容不能为空哦",!0);const n=document.getElementById("cAuthor").value.trim()||"旅人",o=m.querySelector("button");o&&(o.disabled=!0);try{const c=await fetch(u,{credentials:"include",method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({target:m.dataset.target,kind:"comment",author:n,body:t})}),d=await c.json().catch(()=>({}));if(!c.ok)throw new Error(d.error||`发送失败（${c.status}）`);const l=document.querySelector(".comment-list");l&&l.appendChild(g(n,t)),document.getElementById("commentsEmpty")?.remove(),document.getElementById("cBody").value="",r("留言已发布，感谢支持 ✦");const a=document.querySelector(".comments__title"),i=a?.textContent?.match(/（(\d+)）/);a&&i&&(a.textContent=a.textContent.replace(/（\d+）/,`（${Number(i[1])+1}）`))}catch(c){r(c instanceof TypeError?"写作台没在运行，暂时收不到留言 —— 双击「启动博客.bat」就好":c.message,!0)}finally{o&&(o.disabled=!1)}});</script> 

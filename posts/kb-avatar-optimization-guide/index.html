@@ -1,0 +1,1341 @@
+<!DOCTYPE html><html lang="zh-CN"> <head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="generator" content="Astro v5.18.2"><meta name="description" content="Avatar 材质应按材质类型设置 Render Queue（渲染队列）数值，以获得正确的渲染顺序。推荐取值范围如下："><meta name="theme-color" content="#070a1c"><meta property="og:title" content="Avatar 最佳化实操指南 · 星之驿站 StellaStop"><meta property="og:description" content="Avatar 材质应按材质类型设置 Render Queue（渲染队列）数值，以获得正确的渲染顺序。推荐取值范围如下："><meta property="og:type" content="website"><meta name="twitter:card" content="summary"><link rel="icon" type="image/svg+xml" href="/STELLASTOPVRC/favicon.svg"><script>
+      // 在渲染前恢复主题与特效档位，避免闪一下默认状态
+      try {
+        document.documentElement.dataset.theme =
+          localStorage.getItem('stella-theme') || 'nebula';
+        document.documentElement.dataset.fx =
+          localStorage.getItem('stella-fx') || 'standard';
+      } catch {
+        /* 隐私模式读不到就算了 */
+      }
+    </script><link rel="stylesheet" href="/STELLASTOPVRC/custom-vars.css"><title>Avatar 最佳化实操指南 · 星之驿站 StellaStop</title><link rel="stylesheet" href="/STELLASTOPVRC/_astro/about.Bgh6wcGl.css">
+<style>.post-head__meta[data-astro-cid-lvjzyg5v]{color:var(--ink-faint);font-family:var(--font-mono);font-size:.82rem}.post-head[data-astro-cid-lvjzyg5v] .chip-row[data-astro-cid-lvjzyg5v]{margin-top:1rem}.kb-source-note[data-astro-cid-lvjzyg5v]{max-width:760px;margin:2.2rem auto 0;font-size:.82rem;color:var(--ink-faint);border-top:1px dashed var(--line);padding-top:1rem}
+</style></head> <body> <div class="site-notice" id="siteNotice"> <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> <span class="site-notice__text">欢迎来到星之驿站！</span> <button class="site-notice__close" id="noticeClose" type="button" aria-label="关闭公告">
+×
+</button> </div> <a class="skip-link" href="#main">跳到主要内容</a> <canvas id="starfield" aria-hidden="true" data-astro-cid-ra7sfcwn></canvas> <div class="fx-aurora fx-aurora--a" aria-hidden="true" data-astro-cid-ra7sfcwn></div> <div class="fx-aurora fx-aurora--b" aria-hidden="true" data-astro-cid-ra7sfcwn></div>  <script type="module">const u=document.getElementById("starfield");if(u){let F=function(){const n=Math.random();return n<.1?"gold":n<.42?"blue":"white"},v=function(){const n=Math.min(window.devicePixelRatio||1,2);s=window.innerWidth,d=window.innerHeight,u.width=s*n,u.height=d*n,u.style.width=`${s}px`,u.style.height=`${d}px`,t.setTransform(n,0,0,n,0,0);const e=Math.min(190,Math.round(s*d/8500));l=Array.from({length:e},()=>({x:Math.random()*s,y:Math.random()*d,r:r(.4,1.7),base:r(.25,.8),amp:r(.12,.4),speed:r(6e-4,.0022),phase:r(0,Math.PI*2),c:F()})),C=Array.from({length:26},()=>({x:Math.random()*s,y:Math.random()*d,r:r(.9,2.4),vx:r(-.006,.006),vy:r(-.02,-.006),base:r(.2,.5),speed:r(8e-4,.002),phase:r(0,Math.PI*2),c:Math.random()<.5?"gold":"violet"})),c==="off"&&m(0,!0)},D=function(n){const e=Math.random()<.5?1:-1,o=r(Math.PI/7,Math.PI/5),a=r(.45,.75);y.push({x:r(s*.15,s*.85),y:r(-20,d*.3),vx:Math.cos(o)*a*e,vy:Math.sin(o)*a,born:n,life:r(750,1050),len:r(100,170)})},S=function(n){y=y.filter(e=>n-e.born<e.life);for(const e of y){const o=(n-e.born)/e.life,a=e.x+e.vx*(n-e.born),i=e.y+e.vy*(n-e.born),f=o<.15?o/.15:o>.7?(1-o)/.3:1,h=Math.hypot(e.vx,e.vy),x=e.vx/h,g=e.vy/h,b=t.createLinearGradient(a,i,a-x*e.len,i-g*e.len);b.addColorStop(0,`rgba(236,242,255,${(.85*f).toFixed(3)})`),b.addColorStop(1,"rgba(236,242,255,0)"),t.strokeStyle=b,t.lineWidth=1.6,t.lineCap="round",t.beginPath(),t.moveTo(a,i),t.lineTo(a-x*e.len,i-g*e.len),t.stroke()}},B=function(){let o=0;t.lineWidth=.7;for(let a=0;a<l.length&&o<26;a++)for(let i=a+1;i<l.length&&o<26;i++){const f=l[a].x-l[i].x,h=l[a].y-l[i].y,x=f*f+h*h;if(x<16900){const g=(1-Math.sqrt(x)/130)*.17;t.strokeStyle=`rgba(178,170,255,${g.toFixed(3)})`,t.beginPath(),t.moveTo(l[a].x,l[a].y),t.lineTo(l[i].x,l[i].y),t.stroke(),o++}}},X=function(n){for(const e of C){e.x+=e.vx*16,e.y+=e.vy*16,e.y<-12&&(e.y=d+10),e.x<-12&&(e.x=s+10),e.x>s+12&&(e.x=-10);const o=Math.max(.05,e.base+.25*Math.sin(n*e.speed+e.phase)),[a,i,f]=A[e.c];t.beginPath(),t.arc(e.x,e.y,e.r,0,7),t.shadowBlur=9,t.shadowColor=`rgba(${a},${i},${f},0.9)`,t.fillStyle=`rgba(${a},${i},${f},${o.toFixed(3)})`,t.fill()}t.shadowBlur=0},m=function(n,e=!1){t.clearRect(0,0,s,d);for(const o of l){const a=c==="off"?o.base:Math.max(.05,o.base+o.amp*Math.sin(n*o.speed+o.phase)),[i,f,h]=A[o.c];t.beginPath(),t.arc(o.x,o.y,o.r,0,7),o.r>1.25?(t.shadowBlur=7,t.shadowColor=`rgba(${i},${f},${h},0.85)`):t.shadowBlur=0,t.fillStyle=`rgba(${i},${f},${h},${a.toFixed(3)})`,t.fill()}if(t.shadowBlur=0,c!=="off"&&!e){c==="fancy"&&(B(),X(n));const o=c==="fancy"?r(2600,6e3):r(4200,9500);n>P&&(D(n),P=n+o),S(n)}},$=function(n){m(n),M=requestAnimationFrame($)},p=function(){if(c==="off"){m(0,!0);return}cancelAnimationFrame(M),M=requestAnimationFrame($)},w=function(){cancelAnimationFrame(M),t.clearRect(0,0,s,d),m(0,!0)};const t=u.getContext("2d"),k=matchMedia("(prefers-reduced-motion: reduce)").matches,A={white:[240,240,255],blue:[150,215,250],gold:[255,218,150],violet:[178,170,255]};let s=0,d=0,l=[],C=[],y=[],P=2500,M=0,c=document.documentElement.dataset.fx||"standard";k&&(c="off");const r=(n,e)=>n+Math.random()*(e-n);v(),addEventListener("resize",v),document.addEventListener("stella-fx-change",n=>{c=n.detail,c==="off"?w():p()}),c==="off"?m(0,!0):(p(),document.addEventListener("visibilitychange",()=>{document.hidden?w():p()}))}</script> <header class="site-header"> <div class="wrap site-header__inner"> <a class="logo" href="/STELLASTOPVRC/"> <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> <span>星之驿站</span> <span class="logo__romaji">StellaStop</span> </a> <div class="header-right"> <nav class="site-nav" aria-label="站内导航"> <a href="/STELLASTOPVRC/"> 首页 </a><a href="/STELLASTOPVRC/start/"> 新手 </a><a href="/STELLASTOPVRC/posts/"> 教程 </a><a href="/STELLASTOPVRC/videos/"> 视频 </a><a href="/STELLASTOPVRC/resources/"> 资源 </a><a href="/STELLASTOPVRC/booth/"> Booth </a><a href="/STELLASTOPVRC/announcements/"> 公告 </a><a href="/STELLASTOPVRC/ai/"> 问星 </a><a href="/STELLASTOPVRC/changelog/"> 更新日志 </a><a href="/STELLASTOPVRC/about/"> 关于 </a> </nav> <a class="login-link" data-desk-login hidden title="写作台：登录 / 注册后可发教程、传资源">
+登录 / 注册
+</a> <div class="theme-switch"> <button class="theme-switch__btn" id="themeBtn" type="button" aria-haspopup="listbox" aria-expanded="false" aria-label="切换主题配色" title="切换主题配色"> <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"> <path d="M12 3a9 9 0 1 0 9 9c0-1.2-1-2-2.2-2H17a2 2 0 0 1-2-2V6.2C15 5 14.2 4 13 4.4A9 9 0 0 0 12 3Z"></path> <circle cx="7.5" cy="11.5" r="1" fill="currentColor" stroke="none"></circle> <circle cx="10" cy="7.5" r="1" fill="currentColor" stroke="none"></circle> <circle cx="15" cy="7" r="1" fill="currentColor" stroke="none"></circle> </svg> </button> <div class="theme-pop" id="themePop" role="listbox" aria-label="选择主题" hidden> <button class="theme-opt" type="button" role="option" data-theme-value="nebula" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#8f7ff7"></span><span class="dot" style="background:#62c8f5"></span><span class="dot" style="background:#ffd98e"></span> </span> <span class="theme-opt__name">星云 · 蓝紫</span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt" type="button" role="option" data-theme-value="sakura" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#ff8fc7"></span><span class="dot" style="background:#c79bff"></span><span class="dot" style="background:#ffd08e"></span> </span> <span class="theme-opt__name">樱语 · 粉紫</span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt" type="button" role="option" data-theme-value="miku" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#2ed3c2"></span><span class="dot" style="background:#6ea8ff"></span><span class="dot" style="background:#ffe08e"></span> </span> <span class="theme-opt__name">葱色 · 青绿</span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt" type="button" role="option" data-theme-value="ember" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#ffb35c"></span><span class="dot" style="background:#ff7e6b"></span><span class="dot" style="background:#ffd98e"></span> </span> <span class="theme-opt__name">暮金 · 暖橙</span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt" type="button" role="option" data-theme-value="dawn" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#6a5ce8"></span><span class="dot" style="background:#e0568f"></span><span class="dot" style="background:#b8821e"></span> </span> <span class="theme-opt__name">晨星 · 浅色</span> <span class="theme-opt__mark">✦</span> </button> </div> </div> <script type="module">const a=document.getElementById("themeBtn"),n=document.getElementById("themePop");function s(c){document.documentElement.dataset.theme=c;try{localStorage.setItem("stella-theme",c)}catch{}const e=getComputedStyle(document.documentElement).getPropertyValue("--bg-deep").trim();document.querySelector('meta[name="theme-color"]')?.setAttribute("content",e||"#070a1c"),document.querySelectorAll(".theme-opt").forEach(t=>{const d=t.dataset.themeValue===c;t.classList.toggle("is-active",d),t.setAttribute("aria-selected",String(d))})}if(a&&n){const c=document.documentElement.dataset.theme||"nebula";document.querySelectorAll(".theme-opt").forEach(e=>{const t=e.dataset.themeValue===c;e.classList.toggle("is-active",t),e.setAttribute("aria-selected",String(t))}),a.addEventListener("click",e=>{e.stopPropagation();const t=n.hidden;n.hidden=!t,a.setAttribute("aria-expanded",String(t))}),document.addEventListener("click",e=>{!n.hidden&&!e.target.closest(".theme-switch")&&(n.hidden=!0,a.setAttribute("aria-expanded","false"))}),document.addEventListener("keydown",e=>{e.key==="Escape"&&!n.hidden&&(n.hidden=!0,a.setAttribute("aria-expanded","false"),a.focus())}),n.addEventListener("click",e=>{const t=e.target.closest(".theme-opt");t&&(s(t.dataset.themeValue??"nebula"),n.hidden=!0,a.setAttribute("aria-expanded","false"))})}</script> <div class="theme-switch fx-switch"> <button class="theme-switch__btn" id="fxBtn" type="button" aria-haspopup="listbox" aria-expanded="false" aria-label="背景特效设置" title="背景特效设置"> <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"> <path d="M5 3v4M3 5h4M6.5 17.5v3M5 19h3"></path> <path d="M14.5 4.5 16 9l4.5 1.5L16 12l-1.5 4.5L13 12l-4.5-1.5L13 9l1.5-4.5Z"></path> </svg> </button> <div class="theme-pop" id="fxPop" role="listbox" aria-label="背景特效" hidden> <button class="theme-opt fx-opt" type="button" role="option" data-fx-value="off" aria-selected="false"> <span class="fx-opt__body"> <span class="fx-opt__name">关闭特效</span> <span class="fx-opt__hint">最省电</span> </span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt fx-opt" type="button" role="option" data-fx-value="standard" aria-selected="false"> <span class="fx-opt__body"> <span class="fx-opt__name">标准</span> <span class="fx-opt__hint">闪烁星空 + 流星</span> </span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt fx-opt" type="button" role="option" data-fx-value="fancy" aria-selected="false"> <span class="fx-opt__body"> <span class="fx-opt__name">华丽</span> <span class="fx-opt__hint">追加极光 / 星座 / 光尘</span> </span> <span class="theme-opt__mark">✦</span> </button> </div> </div> <script type="module">const n=document.getElementById("fxBtn"),a=document.getElementById("fxPop");function s(d){document.documentElement.dataset.fx=d;try{localStorage.setItem("stella-fx",d)}catch{}document.querySelectorAll("#fxPop .fx-opt").forEach(t=>{const e=t.dataset.fxValue===d;t.classList.toggle("is-active",e),t.setAttribute("aria-selected",String(e))}),document.dispatchEvent(new CustomEvent("stella-fx-change",{detail:d}))}if(n&&a){const d=document.documentElement.dataset.fx||"standard";document.querySelectorAll("#fxPop .fx-opt").forEach(t=>{const e=t.dataset.fxValue===d;t.classList.toggle("is-active",e),t.setAttribute("aria-selected",String(e))}),n.addEventListener("click",t=>{t.stopPropagation();const e=a.hidden;a.hidden=!e,n.setAttribute("aria-expanded",String(e))}),document.addEventListener("click",t=>{!a.hidden&&!t.target.closest(".fx-switch")&&(a.hidden=!0,n.setAttribute("aria-expanded","false"))}),document.addEventListener("keydown",t=>{t.key==="Escape"&&!a.hidden&&(a.hidden=!0,n.setAttribute("aria-expanded","false"),n.focus())}),a.addEventListener("click",t=>{const e=t.target.closest(".fx-opt");e&&(s(e.dataset.fxValue??"standard"),a.hidden=!0,n.setAttribute("aria-expanded","false"))})}</script> </div> </div> </header> <main id="main">  <article class="wrap post-layout" data-astro-cid-lvjzyg5v> <div class="post-main page-fade" data-astro-cid-lvjzyg5v> <header class="post-head" data-astro-cid-lvjzyg5v> <a class="crumb" href="/STELLASTOPVRC/posts/" data-astro-cid-lvjzyg5v>← 返回教程档案</a> <div class="post-head__meta" style="--accent:var(--ink-dim)" data-astro-cid-lvjzyg5v> <span class="badge" data-cat="Avatar 虚拟形象" data-astro-cid-lvjzyg5v>Avatar 虚拟形象</span> <time datetime="2026-11-09" data-astro-cid-lvjzyg5v>2026-11-09</time> <span class="post-head__reading" data-astro-cid-lvjzyg5v>⏱ 约 79 分钟</span>  </div> <h1 class="post-head__title" data-astro-cid-lvjzyg5v>Avatar 最佳化实操指南</h1> <p class="post-head__lead" data-astro-cid-lvjzyg5v>Avatar 材质应按材质类型设置 Render Queue（渲染队列）数值，以获得正确的渲染顺序。推荐取值范围如下：</p> <div class="chip-row" data-astro-cid-lvjzyg5v> <a class="chip" href="/STELLASTOPVRC/posts/?tag=%E7%9F%A5%E8%AF%86%E5%BA%93" data-astro-cid-lvjzyg5v> 知识库 </a><a class="chip" href="/STELLASTOPVRC/posts/?tag=avatar" data-astro-cid-lvjzyg5v> avatar </a> </div> </header> <div class="prose" data-astro-cid-lvjzyg5v> <hr>
+<h1 id="avatar-材质-render-queue-渲染队列推荐取值范围表不透明镂空透明粒子">Avatar 材质 Render Queue 渲染队列推荐取值范围表（不透明/镂空/透明/粒子）</h1>
+<p>Avatar 材质应按材质类型设置 Render Queue（渲染队列）数值，以获得正确的渲染顺序。推荐取值范围如下：</p>
+<table>
+<thead>
+<tr>
+<th>材质类型</th>
+<th>推荐 Render Queue</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>不透明(Opaque)</td>
+<td>2000-2449</td>
+<td>默认(Standard)</td>
+</tr>
+<tr>
+<td>透明(Transparent)</td>
+<td>2501-2999</td>
+<td>标准透明(Geometry+ queue)</td>
+</tr>
+<tr>
+<td>粒子 / 特效</td>
+<td>3000+</td>
+<td>Overlay 队列，最顶层渲染</td>
+</tr>
+<tr>
+<td>Cutout 镂空</td>
+<td>2450-2499</td>
+<td>Alpha Test 队列(Unity 标准)</td>
+</tr>
+</tbody>
+</table>
+<p>记忆要点：数值越大队列越靠后渲染；Cutout 镂空夹在不透明与透明之间（2450-2499），透明排在 2501-2999，粒子/特效使用 3000+ 的 Overlay 队列置于最顶层渲染。
+【口径说明】Unity 内置渲染队列参考值为 AlphaTest 2450、Transparent 3000、Overlay 4000；本文采用社区约定口径：透明 2501-2999、粒子/特效 3000+。两套口径并存，与其他资料对照时注意区分。</p>
+<hr>
+<hr>
+<h1 id="avatar-材质渲染异常诊断工作流与-lilavatarutils-批量检查验证方法">Avatar 材质渲染异常诊断工作流与 lilAvatarUtils 批量检查验证方法</h1>
+<p>Avatar 出现材质消失、重叠、失焦等渲染异常时，按以下六步诊断工作流排查：</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>1. 发现 Avatar 材质异常(消失/重叠/失焦)</span></span>
+<span class="line"><span>2. 选中异常材质 → Inspector → Shader Properties</span></span>
+<span class="line"><span>3. 检查 Render Queue 字段</span></span>
+<span class="line"><span>4. 与推荐范围对照（不透明 2000-2449、镂空 2450-2499、透明 2501-2999、粒子 3000+）</span></span>
+<span class="line"><span>5. 修正 Render Queue 到推荐范围</span></span>
+<span class="line"><span>6. 重新构建测试</span></span></code></pre>
+<p>工具辅助（lilAvatarUtils）：</p>
+<ul>
+<li>Materials Tab：可一次性查看所有材质的 Render Queue</li>
+<li>修改方式：lilAvatarUtils 中可批量修改 + Apply 一次性应用</li>
+<li>验证方式：改完后用 lilAvatarUtils Lighting Tab 的 In Shadow / No Light 模式验证</li>
+</ul>
+<hr>
+<hr>
+<h1 id="render-queue-常见误用后果与正确做法对照表">Render Queue 常见误用后果与正确做法对照表</h1>
+<p>Render Queue 设置错误的典型误用与修正方法如下：</p>
+<table>
+<thead>
+<tr>
+<th>误用</th>
+<th>后果</th>
+<th>正确做法</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>把所有材质都设为 2450 强制前渲</td>
+<td>擦除其他材质</td>
+<td>透明用 2501，镂空用 2450</td>
+</tr>
+<tr>
+<td>半透明用 Render Queue = 2000</td>
+<td>与天空盒冲突</td>
+<td>改为 2501</td>
+</tr>
+<tr>
+<td>在 Particle System 用 Render Queue = 2450</td>
+<td>遮挡问题</td>
+<td>改用 3000+</td>
+</tr>
+<tr>
+<td>复制 Shader 时不修改 Render Queue</td>
+<td>渲染顺序错乱</td>
+<td>按材质类型手动调整</td>
+</tr>
+</tbody>
+</table>
+<p>核心原则：不要为图省事把所有材质统一到同一个队列值，应让每种材质类型落在各自推荐区间；复制 Shader 改作他用时务必核对 Render Queue 是否仍适配新用途。</p>
+<hr>
+<hr>
+<h1 id="vrchat-客户端-dynamic-bone-limits-运行时限制系统默认-32-transforms--8-collision-checks超限全部禁用">VRChat 客户端 Dynamic Bone Limits 运行时限制系统（默认 32 Transforms / 8 Collision Checks，超限全部禁用）</h1>
+<p>除了上传时的 Performance Rank 评估，VRChat 客户端还有一套独立的运行时限制系统——用户端 Dynamic Bone Limits（2026-06-30 新增）：</p>
+<ul>
+<li>默认上限：Max Affected Transforms = 32，Max Collision Checks = 8</li>
+<li>超出后果：该 Avatar 的所有 Dynamic Bone + Collider 组件被禁用，且是全部禁用而非部分禁用</li>
+<li>配置位置：客户端 config.json，位于 %AppData%..\LocalLow\VRChat\vrchat\ 目录</li>
+</ul>
+<p>因此即使 Avatar 上传时性能评级达标，运行时一旦超过这些默认限制，骨骼动态与碰撞仍会整体失效；做 PhysBone 优化时应同时控制受影响 Transform 数量与碰撞检查数量。</p>
+<hr>
+<hr>
+<h1 id="physbone-两种实装方式对比直接建立在-transform-vs-收纳在空白物件内">PhysBone 两种实装方式对比：直接建立在 Transform vs 收纳在空白物件内</h1>
+<p>PhysBone（简称 PB）有两种实装方式，各有优劣：</p>
+<table>
+<thead>
+<tr>
+<th>方式</th>
+<th>优点</th>
+<th>缺点</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>直接建立在 Transform</td>
+<td>安装简单，不需指定 Root</td>
+<td>管理困难，散布各处</td>
+</tr>
+<tr>
+<td>建立在空白物件内</td>
+<td>管理方便，可批量启用/停用</td>
+<td>需手动指定 Root Transform</td>
+</tr>
+</tbody>
+</table>
+<p>选择取决于更看重安装便捷还是后续批量管理（例如批量开关 PB 做优化对比时，空白物件内收纳方式更有利）。后续使用 AAO Merge PhysBone 合并时，两种方式分别对应不同的合并操作步骤。</p>
+<hr>
+<hr>
+<h1 id="aao-merge-physbone-合并条件共同-root-不超两级--数值完全一致与抓取单边限制">AAO Merge PhysBone 合并条件（共同 Root 不超两级 + 数值完全一致）与抓取单边限制</h1>
+<p>使用 AAO Merge PhysBone 合并多个 PhysBone 时必须同时满足以下条件：</p>
+<ol>
+<li>不同 PB 的上一级必须有共同 Root Transform（不可超过两级）</li>
+<li>各 PB 的设定数值必须完全一致</li>
+</ol>
+<p>已知限制：合并后抓取（Grab）只能抓一边，同时抓两边时会有一边没反应；摇晃与碰撞不受影响。</p>
+<p>典型适用场景：左右对称的头发、耳朵等部件的 PB 设定通常一致，符合合并条件，可通过合并减少 PhysBone 组件数量以降低性能开销。</p>
+<hr>
+<hr>
+<h1 id="aao-merge-physbone-合并操作步骤transform-内与空白物件内两种场景">AAO Merge PhysBone 合并操作步骤：Transform 内与空白物件内两种场景</h1>
+<p>AAO Merge PhysBone 的合并操作按 PB 组织方式分两种场景：</p>
+<p>场景一：合并步骤（Transform 内，PB 直接建在骨骼上时）</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>1. 展开 Armature，找到有相同设定的 PB</span></span>
+<span class="line"><span>2. 在共同 Root Transform 上新建空白物件（如 Hair_Side）</span></span>
+<span class="line"><span>3. 将左右 PB 拉入该物件层级</span></span>
+<span class="line"><span>4. Add Component > AAO Merge PhysBone</span></span>
+<span class="line"><span>5. 将左右 PB 拖入添加元素</span></span></code></pre>
+<p>场景二：合并步骤（空白物件内，PB 已收纳在空白物件中时）</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>1. 展开物件，检查所有 PB 的 Root Transform 位置</span></span>
+<span class="line"><span>2. 找到可合并的 PB（如 Ear_L 和 Ear_R）</span></span>
+<span class="line"><span>3. 新建空白物件（如 Ear），将 PB 拉入</span></span>
+<span class="line"><span>4. Add Component > AAO Merge PhysBone</span></span>
+<span class="line"><span>5. 拖入目标 PB</span></span></code></pre>
+<hr>
+<hr>
+<h1 id="physbone-停用删除判断方向与衣服-collider-替换为-avatar-本体碰撞器步骤">PhysBone 停用/删除判断方向与衣服 Collider 替换为 Avatar 本体碰撞器步骤</h1>
+<p>PhysBone 组件层面的精简有两个方向：</p>
+<p>停用方向：</p>
+<ul>
+<li>会捏/拽但很少人用的 PB（如脸颊等）</li>
+<li>太小、移动幅度不明显的 PB</li>
+</ul>
+<p>终极做法：如果某 PB 影响的物件关闭后不影响整体表现，直接删除该 PB。</p>
+<p>碰撞器优化——大多数 Avatar 本身已内建完善 Collider，衣服自带的可以替换。替换步骤：</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>1. 固定 PB 的 Inspector</span></span>
+<span class="line"><span>2. 找到 Avatar 本体相同位置的 Collider</span></span>
+<span class="line"><span>3. 替换衣服自带的 Collider</span></span>
+<span class="line"><span>4. 删除衣服自带 Collider 元件</span></span></code></pre>
+<hr>
+<hr>
+<h1 id="aao-merge-bone-骨头合并作用一举三得收益融合间隔技巧与僵硬调整">AAO Merge Bone 骨头合并：作用、一举三得收益、融合间隔技巧与僵硬调整</h1>
+<p>AAO Merge Bone（骨头合并）的作用：将目标骨融合至上一级父骨，每合并一次减少一根骨。一举三得：</p>
+<ol>
+<li>减少 Bones 数量</li>
+<li>减少 PB 影响骨头数</li>
+<li>避免设定 PhysBone Ignore 时末端不能动的问题</li>
+</ol>
+<p>合并技巧（融合间隔选择）：上半部移动幅度小的保留，下半部移动幅度大的也保留。</p>
+<p>僵硬调整：融合后若有 PhysBone，动态效果可能变僵硬；调整方法是降低 Pull、Momentum、Immobile。</p>
+<p>（技巧由社区成员 Touma 与夜嵐蝶 Alma 介绍。）</p>
+<hr>
+<hr>
+<h1 id="aao-remove-mesh-系列四种减面组件的用途与使用场景选型表">AAO Remove Mesh 系列四种减面组件的用途与使用场景选型表</h1>
+<p>AAO 的 Remove Mesh 系列提供四种减面组件，按隐藏/裁切方式选用：</p>
+<table>
+<thead>
+<tr>
+<th>工具</th>
+<th>用途</th>
+<th>使用场景</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Remove Mesh By BlendShape</td>
+<td>删除隐藏身体部位的面数</td>
+<td>使用 Blend Shape 隐藏身体防止穿模时</td>
+</tr>
+<tr>
+<td>Remove Mesh By Mask</td>
+<td>用遮罩贴图移除</td>
+<td>多物件做在同 Skinned Mesh 时</td>
+</tr>
+<tr>
+<td>Remove Mesh By Box</td>
+<td>用方块裁切</td>
+<td>无法用 Blend Shape 或 UV 时</td>
+</tr>
+<tr>
+<td>Remove Mesh By UV Tile</td>
+<td>按 UV Tile 移除</td>
+<td>移除特定材质球的所有面数</td>
+</tr>
+</tbody>
+</table>
+<p>补充：Remove Mesh By Box 可以与 Mask 组合使用，砍得更精准。</p>
+<hr>
+<hr>
+<h1 id="remove-mesh-by-blendshape-原理blend-shape-隐藏不删面与使用步骤">Remove Mesh By BlendShape 原理（Blend Shape 隐藏不删面）与使用步骤</h1>
+<p>使用 Blend Shape 隐藏身体（防穿模）后，被隐藏部分的面数并不会消失，只是被挤成一坨看不见的东西，仍占用渲染开销；必须使用 AAO 的 Remove Mesh By BlendShape 组件才能真正删除这些面数。</p>
+<p>使用方法：</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>1. 选择有 Blend Shape 的物件</span></span>
+<span class="line"><span>2. Add Component > Remove Mesh By BlendShape</span></span>
+<span class="line"><span>3. 勾选用于隐藏身体的 Blend Shape</span></span>
+<span class="line"><span>4. 完成</span></span></code></pre>
+<hr>
+<hr>
+<h1 id="avatar-减面工具对比mantis-lod-editor--meshia--lilndmfmeshsimplifier价格与推荐度">Avatar 减面工具对比：Mantis LOD Editor / Meshia / lilNDMFMeshSimplifier（价格与推荐度）</h1>
+<p>Avatar 网格减面（自动简化）工具三方对比：</p>
+<table>
+<thead>
+<tr>
+<th>工具</th>
+<th>优点</th>
+<th>缺点</th>
+<th>价格</th>
+<th>状态</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Mantis LOD Editor</td>
+<td>模型不易破洞</td>
+<td>调整时卡顿</td>
+<td>$50</td>
+<td>✅ 活跃</td>
+</tr>
+<tr>
+<td>Meshia Mesh Simplification</td>
+<td>Burst 高速、BlendShape 保留、防破洞选项丰富</td>
+<td>需配置 Options</td>
+<td>免费</td>
+<td>✅ 推荐</td>
+</tr>
+<tr>
+<td>lilNDMFMeshSimplifier</td>
+<td>导入即见效</td>
+<td>看不到面数、无防破洞</td>
+<td>免费</td>
+<td>❌ 已废弃</td>
+</tr>
+</tbody>
+</table>
+<p>结论：优先选用 Meshia Mesh Simplification；lilNDMFMeshSimplifier 已废弃，新项目不要再使用。</p>
+<hr>
+<hr>
+<h1 id="meshia-mesh-simplification-两种模式使用步骤单-mesh--avatar-级联与实际面数偏差提示">Meshia Mesh Simplification 两种模式使用步骤（单 Mesh / Avatar 级联）与实际面数偏差提示</h1>
+<p>Meshia Mesh Simplification 提供两种使用模式。</p>
+<p>重要提示：Meshia 不会计算其他 NDMF 工具处理过的结果，实际面数可能低于目标面数。</p>
+<p>模式一：单 Mesh 模式（组件 MeshiaMeshSimplifier）</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>1. 选择目标 GameObject</span></span>
+<span class="line"><span>2. Add Component → MeshiaMeshSimplifier</span></span>
+<span class="line"><span>3. 配置 Target（MeshSimplificationTargetKind + Value）</span></span>
+<span class="line"><span>4. EditMode 实时预览</span></span></code></pre>
+<p>模式二：Avatar 级联模式（组件 MeshiaCascadingAvatarMeshSimplifier）</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>1. 在 Avatar 根节点下创建空 GameObject</span></span>
+<span class="line"><span>2. Add Component → MeshiaCascadingAvatarMeshSimplifier</span></span>
+<span class="line"><span>3. 选择目标 Performance Rank</span></span>
+<span class="line"><span>4. 调整每个 Mesh 的面数分配 + Options</span></span></code></pre>
+<p>更完整的参数说明见项目内技术文档 meshia-mesh-simplification.md。</p>
+<hr>
+<hr>
+<h1 id="meshia-网格简化三个关键修复选项preserveborderedges-等防破洞防扭曲开关">Meshia 网格简化三个关键修复选项：PreserveBorderEdges 等防破洞/防扭曲开关</h1>
+<p>Meshia Mesh Simplification 针对三类常见简化问题提供对应的修复选项：</p>
+<table>
+<thead>
+<tr>
+<th>问题</th>
+<th>启用选项</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>指尖/边缘破洞</td>
+<td>PreserveBorderEdges = true</td>
+</tr>
+<tr>
+<td>UV 接缝纹理扭曲</td>
+<td>UseBarycentricCoordinateInterpolation = true</td>
+</tr>
+<tr>
+<td>曲面失真</td>
+<td>PreserveSurfaceCurvature = true</td>
+</tr>
+</tbody>
+</table>
+<p>简化结果出现破洞、接缝拉伸或曲面变形时，在组件 Options 中启用对应布尔选项后重新简化即可。</p>
+<hr>
+<hr>
+<h1 id="meshia-使用技巧auto-adjust-批量调整锁头固定面数v31-按骨配置与禁止混用-lilndmf">Meshia 使用技巧：Auto Adjust 批量调整、锁头固定面数、v3.1 按骨配置与禁止混用 lilNDMF</h1>
+<p>Meshia Mesh Simplification 的其他实用技巧：</p>
+<ul>
+<li>使用 Enable Auto Adjust 可批量调整各 Mesh 的简化设置</li>
+<li>使用锁头功能固定特定物件的面数不被简化</li>
+<li>v3.1 及以上版本支持按骨配置 Border Edges，防破洞控制更精细</li>
+<li>目标面数设得太低导致效果不可接受时，应调高预期面数</li>
+<li>不要混用 lilNDMF 与 Meshia——两者属同类简化工具，重复执行会叠加破坏网格</li>
+</ul>
+<hr>
+<hr>
+<h1 id="continuous-avatar-uploader-批次上传管理建议每-asset-510-只--出错组存档点重传">Continuous Avatar Uploader 批次上传管理建议（每 Asset 5~10 只 + 出错组存档点重传）</h1>
+<p>使用 Continuous Avatar Uploader 进行多 Avatar 批次上传的管理建议：</p>
+<ul>
+<li>将 Avatar 分散到多个 Asset 中管理，建议每个 Asset 放 5~10 只</li>
+<li>单个 Asset 建议不超过 10 只</li>
+<li>上传出错时，从出错的那一组重新开始上传即可（类似存档点机制），不必从头重传全部 Avatar</li>
+</ul>
+<p>这样分组的好处是控制单次批量规模、降低失败影响面，出错后可从最近的分组断点续传。</p>
+<hr>
+<hr>
+<h1 id="绕过-vrcsdk-预构建硬限制检查的三种方案ndmf-工具处理后上传按钮被禁用时">绕过 VRCSDK 预构建硬限制检查的三种方案（NDMF 工具处理后上传按钮被禁用时）</h1>
+<p>现象：使用 NDMF 非破坏性工具（AAO、TTT、Meshia 等）优化后，模型实际已满足硬限制（AAO 处理后），但 VRCSDK Control Panel 上传按钮仍被禁用。
+原因：VRCSDK 在编译前检查性能等级，此时 NDMF 工具尚未运行，导致误判为超限。</p>
+<p>三种解决方案：</p>
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>来源</th>
+<th>优势</th>
+<th>风险</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>NDM Framework / Manual bake avatar</td>
+<td>NDMF 官方</td>
+<td>最稳妥，原始模型不被修改</td>
+<td>需要手动操作</td>
+</tr>
+<tr>
+<td>Sayamame-beans/Upload-without-preCheck</td>
+<td>社区</td>
+<td>一键操作</td>
+<td>VRCSDK 3.8.1-beta.1 暂时不兼容</td>
+</tr>
+<tr>
+<td>VRCQuestTools（VQT Avatar Builder）</td>
+<td>kurotu</td>
+<td>Quest 转换 + 绕过预检查</td>
+<td>主要是 Quest 工具</td>
+</tr>
+</tbody>
+</table>
+<p>重要前提：所有方法都只绕过预构建检查，不绕过构建后硬限制——模型如果真的超过限制，上传仍会失败。</p>
+<hr>
+<hr>
+<h1 id="avatar-布料物理选型cloth-与-physbones-在物理模型性能开销与适用场景上的五维对比">Avatar 布料物理选型：Cloth 与 PhysBones 在物理模型、性能开销与适用场景上的五维对比</h1>
+<p>结论：链状结构的摆动物体（头发、尾巴、绳子）优先用 PhysBones，裙摆、长袍、披风等大面积连续布料才考虑 Cloth；性能敏感的 Avatar 默认选 PhysBones，因为 Cloth 的每帧布料计算开销明显更高。
+两者在五个维度上的对比：</p>
+<ol>
+<li>物理模型：Cloth 基于物理面料模拟（有限元方法）；PhysBones 基于骨骼链，使用 Verlet 积分逐级解算摆动。</li>
+<li>性能：Cloth 开销重，每一帧都要进行布料计算；PhysBones 开销轻，只需解算骨骼链。</li>
+<li>必要条件：Cloth 必须搭配 Skinned Mesh Renderer 才能工作；PhysBones 没有前置条件。</li>
+<li>网格要求：Cloth 的网格必须单层、经过缝合、由四边形面片构成；PhysBones 对网格没有任何特殊要求。</li>
+<li>适用场景：Cloth 适合裙摆、长袍、披风等连续面料；PhysBones 适合头发、尾巴、绳子等链状物体。
+选型建议：只要骨骼链摆动能满足表现需求就用 PhysBones；只有在需要布料贴合、飘动等面料级效果时才引入 Cloth，并同步评估其对性能预算的占用。</li>
+</ol>
+<hr>
+<hr>
+<h1 id="unity-cloth-使用必要条件必须搭配-skinned-mesh-renderer-且网格需单层缝合四边形">Unity Cloth 使用必要条件：必须搭配 Skinned Mesh Renderer 且网格需单层、缝合、四边形</h1>
+<p>结论：使用 Unity Cloth 有两个硬性前提：物体必须搭配 Skinned Mesh Renderer（蒙皮网格渲染器），且网格本身必须满足单层、缝合、四边形三项拓扑要求；不满足时要么被 Unity 强制转换，要么布料模拟无法正常工作。
+具体要求：</p>
+<ol>
+<li>Skinned Mesh Renderer：Cloth 组件建立在蒙皮网格之上；普通非蒙皮物体直接加 Cloth 时，Unity 会自动把它转换为 Skinned Mesh Renderer 再继续。</li>
+<li>单层网格：参与布料模拟的网格应为单层面片，而不是带厚度的双层壳体。</li>
+<li>缝合：布料网格的接缝处需要做缝合（焊接）处理，保证顶点连续。</li>
+<li>四边形面片：布料网格应使用四边面构成，这是 Unity 布料模拟的标准拓扑前提。
+影响：这三项网格要求意味着布料必须在建模阶段提前规划，后期随手拿现成模型加 Cloth 往往行不通；相比之下 PhysBones 对网格没有任何特殊要求，接入成本低得多——这也是 Cloth 只在真正需要面料级效果时才值得使用的另一个原因。</li>
+</ol>
+<hr>
+<hr>
+<h1 id="cloth-碰撞器配置规则仅支持-capsulesphere-碰撞器双球成锥且必须勾选-is-trigger">Cloth 碰撞器配置规则：仅支持 Capsule/Sphere 碰撞器、双球成锥且必须勾选 Is Trigger</h1>
+<p>结论：为 Cloth 配置碰撞时只能使用 Capsule Collider（胶囊碰撞体）和 Sphere Collider（球形碰撞体）两类碰撞器；两个 Sphere Collider 组合放置时会自动形成锥体碰撞（这是一个隐藏功能）；并且所有参与布料碰撞的碰撞体都必须勾选 Is Trigger，否则布料会穿模，角色还会原地打转。
+配置要点：</p>
+<ol>
+<li>碰撞器类型白名单：只有 Capsule 和 Sphere 两种可用，Box Collider 或 Mesh Collider 不在支持范围内，需要包裹肢体时优先用胶囊体近似。</li>
+<li>双球成锥：把两个 Sphere Collider 组合起来可以模拟出锥形碰撞区域，适合做裙摆内部由粗到细的腿部碰撞体，不必依赖胶囊体。</li>
+<li>Is Trigger 必勾：漏勾 Is Trigger 时碰撞体会以实体方式参与物理，典型症状就是布料穿模加上角色转圈，属于最常见的配置错误。
+关联说明：PhysBones 侧的警告阈值与抓取参数 API 记载于另一文档 avatar-dynamic-bone-limits.md 第 9 节。【证据说明】本节为 yexcadocs 社区实操经验补充，未逐条核对官方文档。</li>
+</ol>
+<hr>
+<hr>
+<h1 id="trail-renderer-参数实操autodestruct-自毁emitting-发射控制与-settexturescale-纹理缩放">Trail Renderer 参数实操：AutoDestruct 自毁、Emitting 发射控制与 SetTextureScale 纹理缩放</h1>
+<p>结论：Trail Renderer 拖尾组件有三个关键参数，各自分工明确：AutoDestruct 负责一次性特效播完自毁，Emitting 控制拖尾是否继续生长，SetTextureScale 通过 Shader 调整拖尾贴图比例且比修改材质更省性能。
+参数明细：</p>
+<ol>
+<li>AutoDestruct（自动销毁）：启用后，Trail 在时间结束后自动销毁自身，适合一次性效果，例如技能残影播放完毕后自动清理场景中的残留对象。</li>
+<li>Emitting（发射开关）：控制 Trail 是否持续发射；关闭后拖尾不再增长，用于在运行中随时冻结拖尾长度。</li>
+<li>SetTextureScale（纹理缩放）：通过 Shader 层面对 Trail 的纹理做比例调整，用于修正拖尾贴图的拉伸变形；由于不需要更换或修改材质本身，这种方式的性能优于直接改材质。
+使用提醒：这三个参数的用法出自社区实操整理（yexcadocs），属于经验层面的总结；另外注意 Trail Renderer 会占用 Avatar 的材质球配额——每个 Trail 计 2 个材质球，添加拖尾前应把这笔开销一并纳入材质预算评估。</li>
+</ol>
+<hr>
+<hr>
+<h1 id="trail-renderer-材质配额占用每个拖尾计入-2-个材质球预算">Trail Renderer 材质配额占用：每个拖尾计入 2 个材质球预算</h1>
+<p>结论：每个 Trail Renderer 都会占用 2 个材质球的配额，给 Avatar 加拖尾时必须把这 2 个材质名额计入总预算，否则容易在不知不觉中超标。
+背景：材质球数量是 Avatar 性能评级的核心指标之一，原指南把这条提醒放在与粒子系统（Particle System）材质占用相同的语境下，说明拖尾与粒子共用同一套材质预算口径——凡视觉特效类组件，都要按其占用的材质数扣减 Avatar 可用的材质总额。
+实践含义：</p>
+<ol>
+<li>添加任何 Trail 之前，先盘点当前 Avatar 已用的材质球数量，确认剩余额度足以覆盖新增的 2 个名额。</li>
+<li>多个拖尾按个数线性累加，例如 3 个 Trail 要预留 6 个材质名额。</li>
+<li>额度紧张时优先考虑合并贴图、删减非必要特效，而不是放任材质超标。
+数据边界：本条只给出「每个 Trail 占 2 个材质球」这一相对关系；当前版本 Avatar 材质总数的具体上限数值不在本段内容内，且该上限历史上随 VRChat 性能等级调整过，使用时应以官方最新性能文档为准。（2026-07-04 记录）</li>
+</ol>
+<hr>
+<hr>
+<h1 id="vrchat-avatar-上传账号前提steam-登录账号不能上传且等级须达-new-user">VRChat Avatar 上传账号前提：Steam 登录账号不能上传且等级须达 New User</h1>
+<p>结论：向 VRChat 上传 Avatar 前，账号必须同时满足两个条件：一是不能使用 Steam 快捷登录生成的账号，必须使用在 VRChat 官网注册的账号；二是账号信任等级至少达到蓝色（New User）。
+判断是否为 Steam 账号的方法：查看账号名字——如果名字后面还跟着一串其他字符，说明这是通过 Steam 登录自动生成的账号。此类账号无法直接走上传流程，解决办法是改用官网注册的 VRChat 账号登录 SDK 后再上传。
+等级要求：账号等级需要达到蓝色的 New User 档位；刚注册或等级不足的账号会被挡在上传门槛之外。
+实操定位：这两条属于上传前的准备项检查——在 Unity 里折腾 SDK 之前先确认账号资质，可以避免走到 Build &#x26; Publish 一步才发现根本无法发布的浪费。
+证据边界：以上规则转引自社区教程 yexcadocs 的上传准备章节（2026-07-04 记录），账号政策可能随时间调整，遇到对不上的情况以 VRChat 官方账号文档为准。</p>
+<hr>
+<hr>
+<h1 id="vrchat-sdk-的-unity-版本绑定当前要求-unity-2022322f1旧版-2019431f1c1-已淘汰">VRChat SDK 的 Unity 版本绑定：当前要求 Unity 2022.3.22f1，旧版 2019.4.31f1c1 已淘汰</h1>
+<p>结论：当前版本的 VRChat SDK 把工程绑定在 Unity 2022.3.22f1 上；旧的 Unity 2019.4.31f1c1 工程已经不适用，必须迁移到新版本才能配合现行 SDK 正常上传。
+要点展开：</p>
+<ol>
+<li>版本一致性：VRChat SDK 与 Unity 编辑器版本强绑定，新建工程时应直接选用 SDK 指定的 2022.3.22f1，避免装完 SDK 才发现编辑器版本不符。</li>
+<li>旧工程处置：仍停留在 2019.4.31f1c1 的历史工程属于已被淘汰的版本线，继续在其上维护 Avatar 无法对接现行上传流程，需要走工程升级迁移。</li>
+<li>时效提醒：此处版本号为 2026-07-04 记录时的状态；VRChat 会跟随 Unity 官方支持周期整体切换版本，隔一段时间后此数值很可能失效。
+使用方式：动手建工程或迁移工程前，先核对 VRChat 官方公告给出的当前 Unity 版本要求，再决定新建还是升级；本文记录的 2022.3.22f1 适用于该时期的 SDK 安装与环境搭建判断。原文同时注明该数值与其另一份资料 SOUL.md 一致，属二手转述的官方兼容性要求。</li>
+</ol>
+<hr>
+<hr>
+<h1 id="vrchat-avatar-上传面板操作流程builder-编译就绪后-build--publish灰按钮用-auto-fix-解锁">VRChat Avatar 上传面板操作流程：Builder 编译就绪后 Build &#x26; Publish，灰按钮用 Auto Fix 解锁</h1>
+<p>结论：Avatar 的标准上传路径是：打开 VRChat SDK 控制面板的 Builder 页签，登录 VRChat 账号，等待编译完成后点击 Build &#x26; Publish for Windows；如果按钮呈灰色不可点击，逐项点击警告旁的 Auto Fix 修复即可解锁。
+标准流程四步：</p>
+<ol>
+<li>打开 VRChat SDK → Show Control Panel，切换到 Builder 页签。</li>
+<li>在面板中登录 VRChat 账号（注意须为官网注册账号，Steam 登录账号不能上传）。</li>
+<li>等待编译完成，面板显示 Build Available 字样表示构建就绪。</li>
+<li>点击 Build &#x26; Publish for Windows 提交发布。
+Build &#x26; Publish 不可点击时的处理：此时面板上方会出现六边形红色感叹号警告图标，每个警告条目后方都配有 Auto Fix 按钮；逐项点击 Auto Fix 把警告清空，全部修复后按钮即恢复可点击。警告可能有多个，需要多点几轮，不要修完一条就以为结束。
+来源与时效：这套流程来自社区教程 yexcadocs 的成品模型上传章节（2026-07-04 记录）；面板布局可能随后续 SDK 版本微调，但「登录→等编译就绪→发布→Auto Fix 清警告」的主线保持稳定。</li>
+</ol>
+<hr>
+<hr>
+<h1 id="vrchat-avatar-上传报错排查sdk2-缺-descriptorblueprint-冲突-detach-与-privatepublish-设置">VRChat Avatar 上传报错排查：SDK2 缺 Descriptor、BluePrint 冲突 Detach 与 Private/Publish 设置</h1>
+<p>结论：Avatar 上传环节的四类常见问题都有对应解法：SDK2 模型报 VRCAvatarDescriptor 错误需升级处理；BluePrint 报错用 Detach 分离后重传；按钮不可用靠 Auto Fix 清警告；Sharing 选项按公开意愿在 Private 与 Publish 之间选择。
+错误对照表：</p>
+<ol>
+<li>报错 A VRCAvatarDescriptor is required to build an Avatar：说明场景中的模型是 SDK2（旧版 SDK）时代的产物，缺少 SDK3 必需的描述器组件；解决途径是把模型升级到 SDK3 体系，或改用 SDK2 的上传通道。</li>
+<li>BluePrint 错误：在 Hierarchy 中选中角色，把右侧 Inspector 面板划到最底部，点击 Detach 按钮分离旧蓝图数据，然后重新上传即可。</li>
+<li>Build &#x26; Publish 按钮不可点击：点击各警告项后的 Auto Fix（可能有多项，逐一点完）。</li>
+<li>Sharing 可见性设置：Private 表示私有上传，可防止他人复制你的模型；Publish 表示公开发布。介意模型被盗用的作者应选 Private。
+以上对照关系来自社区教程 yexcadocs 的故障排除表（2026-07-04 记录），属于实操归纳；遇到表中未覆盖的新报错需另行查询官方渠道。</li>
+</ol>
+<hr>
+<hr>
+<h1 id="avatar-封面生成变迁vrccam-已被-thumbnailcapture-取代附-sdk2025-08-旧版摆拍八步">Avatar 封面生成变迁：VRCCam 已被 ThumbnailCapture 取代（附 SDK&#x3C;2025-08 旧版摆拍八步）</h1>
+<p>结论：SDK 2025-08 之后，VRChat 弃用了 VRCCam 拍封面的做法，改由新的 ThumbnailCapture 组件生成 Avatar 缩略图；以下 VRCCam 摆拍步骤仅适用于 SDK &#x3C; 2025-08 的旧版环境，新版工程应直接使用 ThumbnailCapture。
+旧版 VRCCam 摆拍八步（SDK &#x3C; 2025-08 参考）：</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>1. 在场景中找到 VRCCam 这个 GameObject，它是拍摄封面用的相机</span></span>
+<span class="line"><span>2. 右击 Hierarchy → 3D Object → Quad，新建四边形作为封面背景板</span></span>
+<span class="line"><span>3. 设置背景板 Transform：位置 z = 2.6，缩放 x = 4、y = 3、z = 1，使其正好填满相机视野</span></span>
+<span class="line"><span>4. 准备图片材质：新建 Material，Shader 选择例如 VRChat-Mobile-Toon Lit，把封面图片拖入该材质</span></span>
+<span class="line"><span>5. 把材质拖到四边形上，背景板即显示图片</span></span>
+<span class="line"><span>6. 隐藏 Avatar 模型本体（取消模型 GameObject 左侧的启用复选框），让画面只剩背景图</span></span>
+<span class="line"><span>7. 切到 Game 视图预览构图效果</span></span>
+<span class="line"><span>8. 回到 SDK 面板再次点击 Upload，完成封面生成与上传</span></span></code></pre>
+<p>时效说明：以上为旧版流程存档，原始教程标注了 2026-07-04 的时效性更新；ThumbnailCapture 组件的具体用法见缩略图设置相关块。</p>
+<hr>
+<hr>
+<h1 id="avatar-上传体积参考值模型加载大小约-200mb数值本身待查证">Avatar 上传体积参考值：模型加载大小约 200MB（数值本身待查证）</h1>
+<p>结论：Avatar 上传时的模型加载大小限制约为 200MB，这是规划模型体积时的预算红线参考值；但该数字的现行有效性未经核实，引用前应当查证。
+数值出处与可信度：200MB 这一限制转引自社区教程 yexcadocs（P1 章节），且原始教程自身在该数值旁标注了「需查证当前值」——即出处资料自己都不确定它是否仍是现行标准。VRChat 的资源限制历史上随技术升级多次变动，直接照搬旧数字有风险。
+实践建议：</p>
+<ol>
+<li>把 200MB 当作量级参考而非精确红线：模型接近这一量级时就应警惕体积超标。</li>
+<li>正式判断能否上传时，以 VRChat SDK 构建面板给出的实际结果与官方最新文档为准，不要依赖二手转述的固定数值。</li>
+<li>若构建产物超限，优先排查贴图尺寸与压缩设置、网格总量等大体积来源。</li>
+</ol>
+<hr>
+<hr>
+<h1 id="avatar-上传玄学故障五步递进排查重启解决-90-问题的经验法则">Avatar 上传玄学故障五步递进排查：“重启解决 90% 问题”的经验法则</h1>
+<p>结论：Avatar 上传遇到疑难杂症时，按「重新上传 → 重开 Unity → 新建工程上传 → 重启电脑 → 检查网络」的顺序逐级排查，教程作者经验中约九成的上传问题都能在这套递进流程的前几步内解决。
+五步法则明细：</p>
+<ol>
+<li>重新上传：最轻量的重试，排除一次性的偶发错误。</li>
+<li>重新打开 Unity：清除编辑器长时间运行积累的异常状态。</li>
+<li>新建工程上传：绕开当前工程自身的配置污染，用干净工程验证模型文件本身是否有问题。</li>
+<li>重启电脑：处理更底层的驱动、内存与进程残留类问题。</li>
+<li>检查网络：排除上传链路本身的连通性问题。
+使用要点：这套法则的价值在于顺序——从代价最小的操作开始逐步升级，不要一上来就重启电脑或重建工程；每执行一步都重试一次上传，问题消失即可停止升级手段。
+性质声明：这是 yexcadocs 教程作者的个人经验法则（推断），不是 VRChat 官方排障流程；对能复现、有明确报错信息的问题应优先按具体报错对照处理，本法则更适合原因不明的玄学故障。</li>
+</ol>
+<hr>
+<hr>
+<h1 id="vrchat-动画优化原则避免-fully-keyframed-全关键帧动画砍-mmd动作包并降低曲线精度">VRChat 动画优化原则：避免 fully-keyframed 全关键帧动画，砍 MMD/动作包并降低曲线精度</h1>
+<p>结论：VRChat 官方明确不建议使用完全关键帧（fully-keyframed）动画——这类 Animation Clip 的体积可以变得非常大，是 Avatar 包体中经常被忽视的大小来源。
+官方依据：VRChat 2024-03-14 的 Dev Update 原文写道 “Don’t use fully-keyframed animations, these can get really large!”（不要使用全关键帧动画，它们会变得非常大）。完全关键帧指动画曲线上每一帧都记录了关键点的动画；骨骼多、时长长的全关键帧动画会让 clip 文件急剧膨胀。
+四条动画瘦身原则：</p>
+<ol>
+<li>避免制作或导入 fully-keyframed 动画（官方明确）。</li>
+<li>避免向 Avatar 塞入过多 MMD 动画（社区整理）。</li>
+<li>避免使用动作包（motion pack）——动作包通常携带大量用不到的动画，白白撑大包体（社区整理）。</li>
+<li>降低动画曲线精度，减小 clip 体积（社区整理）。
+证据分层：「勿用全关键帧动画」为官方 FACT 级论断；其余三条为社区教程（VRCD 18-vrchat-CI4 动画方面章节）配套的实操建议，方向与官方口径一致但并非官方原文。</li>
+</ol>
+<hr>
+<hr>
+<h1 id="unity-动画压缩怎么选keyframe-reduction-与-optimal-对比动画数据量原理与推荐工具">Unity 动画压缩怎么选：Keyframe Reduction 与 Optimal 对比、动画数据量原理与推荐工具</h1>
+<p>结论：Unity 动画压缩首选导入设置里的 Optimal 模式，再配合 AAO/VRCFury 工具链做 Animator 级优化。</p>
+<p>数据量原理：一帧 N 个信息就占 N 份空间；动作动画（如手臂从大腿举到头顶）的占用由浮点小数精度决定——15°、16.98°、78.24° 这样的值每帧都存储；完全关键帧+无补间 = 巨大占用。VRChat 官方也明确建议 “Don’t use fully-keyframed animations, these can get really large!”</p>
+<p>Unity 内置压缩选项（完整文档见 Unity Manual class-AnimationClip）：</p>
+<table>
+<thead>
+<tr>
+<th>选项</th>
+<th>作用</th>
+<th>推荐度</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Keyframe Reduction</td>
+<td>减少冗余关键帧</td>
+<td>三星</td>
+</tr>
+<tr>
+<td>Optimal</td>
+<td>根据阈值自动减少冗余关键帧</td>
+<td>五星 推荐</td>
+</tr>
+</tbody>
+</table>
+<p>推荐工具：AAO Trace And Optimize（自动 Animator 优化）、VRCFury Actions 系统（模块化动画）、Unity 内置 Animation Compression（AnimationClip 导入设置）。适用版本口径：Unity 2022.3。</p>
+<hr>
+<hr>
+<h1 id="animator-有开关物件动画时-aao-会跳过-skinned-mesh-合并先清理简化-animator-再优化">Animator 有开关物件动画时 AAO 会跳过 Skinned Mesh 合并：先清理简化 Animator 再优化</h1>
+<p>结论：AAO 跳过 Skinned Mesh 合并的最常见原因是 Animator 里存在开关物件的 Animation。</p>
+<p>机制：当 Animator 中有开关物件的 Animation 时，AAO（Trace And Optimize / Merge Skinned Mesh）会主动跳过 Skinned Mesh 合并——因为合并会破坏 Toggle 的对象引用关系。</p>
+<p>处理：在跑 AAO 优化之前，先清理或简化 Animator（删除废弃层与无用开关动画、收敛 Toggle 结构），再让 AAO 执行合并优化。</p>
+<hr>
+<hr>
+<h1 id="avatar-音频优化速查短音效-adpcm长音频-vorbis禁-streamingquest-用-mp3">Avatar 音频优化速查：短音效 ADPCM、长音频 Vorbis、禁 Streaming、Quest 用 MP3</h1>
+<p>结论：Avatar 音频优化的速查口径是「按时长选格式、按平台换编码」。</p>
+<p>速查要点：</p>
+<ul>
+<li>短音效（脚步声、武器声）：ADPCM + Decompress On Load。</li>
+<li>长音频（音乐、歌曲）：Vorbis + Compressed In Memory。</li>
+<li>绝不在 Avatar 中使用 Streaming。</li>
+</ul>
+<p>Quest 平台特殊处理：Vorbis CPU 消耗高 → Android 平台使用 MP3 替代。</p>
+<p>完整参数（4 压缩格式 + 3 加载类型 + 量化数据 + Load In Background）见知识库 avatar-audio-optimization 页 §1.4 / §6.3。</p>
+<hr>
+<hr>
+<h1 id="avatar-缩略图设置vrccam-已被-thumbnailcapture-取代简单高级自定义方法与取色技巧">Avatar 缩略图设置：VRCCam 已被 ThumbnailCapture 取代、简单/高级自定义方法与取色技巧</h1>
+<p>结论：Avatar 缩略图的设置入口已换代——旧版场景内 VRCCam 对象已被 ThumbnailCapture 组件取代（标准 4:3 宽高比）。VRChat 官方明确：“this crash has been around since we moved away from the old VRCCam in the scene to make thumbnails.”（相关 SDK 3.8.2 崩溃反馈亦基于此背景。）</p>
+<p>新旧对照：</p>
+<ul>
+<li>旧版（SDK &#x3C; 2025-08）：VRCCam 是场景中的对象，上传前自动创建，可拖动改位置、调整 FOV/背景/纯色。</li>
+<li>当前（2026 推荐）：ThumbnailCapture 组件。</li>
+</ul>
+<p>简单方法（默认）：①上传窗口 → 选择本地图片文件；②或从 Unity 场景捕获。</p>
+<p>高级方法（自定义缩略图）7 步：</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>1. 创建 GameObject > 3D Object > Plane</span></span>
+<span class="line"><span>2. 导入图片作为纹理</span></span>
+<span class="line"><span>3. Plane Shader 设为 Unlit</span></span>
+<span class="line"><span>4. 调整 Plane 大小匹配 4:3（例：0.4 × 0.3）</span></span>
+<span class="line"><span>5. 把 Plane 放在场景中（不与 Avatar 重叠）</span></span>
+<span class="line"><span>6. 添加 Sharky's VRC Avatar Utils > Align Upload Camera 组件</span></span>
+<span class="line"><span>7. Build → Upload 窗口中调整</span></span></code></pre>
+<p>滴管取色技巧：选中背景 → Color Picker 工具 → 从 Avatar 拾取颜色微调，得到协调的纯色背景。</p>
+<hr>
+<hr>
+<h1 id="build--test-your-avatar-本地测试模式不上传即可预览仅自己可见">Build &#x26; Test Your Avatar 本地测试模式：不上传即可预览、仅自己可见</h1>
+<p>结论：上传前的免上传测试用 Build &#x26; Test 模式。</p>
+<p>操作：切换构建类型到 Build &#x26; Test Your Avatar → 本地构建 → 进入游戏后在 Avatars 菜单的 SDK Test Avatars 分区找到该 Avatar。</p>
+<p>边界：Test avatars 仅自己可见（官方原话：“your avatar will appear in the SDK Test Avatars section of your VRChat Avatars menu. Test avatars can only be seen by you.”），适合上传前的自测迭代，无法用于他人验证。</p>
+<hr>
+<hr>
+<h1 id="vrchat-viseme-口型同步两种配置方式jaw-flap-骨骼-vs-blendshapes-及-viseme-type-选项">VRChat Viseme 口型同步两种配置方式：Jaw-flap 骨骼 vs Blendshapes 及 Viseme type 选项</h1>
+<p>结论：VRChat 口型同步（Viseme）有两种实现路径，配置入口在 Avatar Descriptor 的相关设置区。</p>
+<p>两种方式：</p>
+<ol>
+<li>Jaw-flap bone：在 Rigging Configuration Screen 分配 jaw-flap 骨骼，靠单骨骼张合模拟口型。</li>
+<li>Blendshapes：通过 Blend Shape 定义 viseme，更灵活。</li>
+</ol>
+<p>Viseme type 选项：</p>
+<ul>
+<li>Jaw Flap：只用 1 个 BlendShape。</li>
+<li>Viseme：使用多个 BlendShape（对应标准音素形状）。</li>
+</ul>
+<hr>
+<hr>
+<h1 id="avatar-优化事前选择原则android-平台衣物挑选-5-大特征与选衣策略">Avatar 优化事前选择原则：Android 平台衣物挑选 5 大特征与选衣策略</h1>
+<p>结论先行：Avatar 优化的第一原则是「事前选择 > 事后优化」——在动手优化之前先选对资源，事半功倍；核心原则是事前选对资源，比事后优化 10 次更有效。</p>
+<p>适合 Android 的衣物有 5 大特征：</p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>特征</th>
+<th>原因</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>外观简洁</td>
+<td>低面数，减少减面负担</td>
+</tr>
+<tr>
+<td>2</td>
+<td>较少 PhysBone</td>
+<td>原始 PB 多（如裙子）在 Android 难保留</td>
+</tr>
+<tr>
+<td>3</td>
+<td>大面积覆盖上半身</td>
+<td>女性模型胸部面数最多，被覆盖后可移除</td>
+</tr>
+<tr>
+<td>4</td>
+<td>未使用特殊渲染属性</td>
+<td>切换 Shader 后能保持外观</td>
+</tr>
+<tr>
+<td>5</td>
+<td>只使用一个材质球和基础贴图</td>
+<td>材质球/贴图越少越易达到好评级</td>
+</tr>
+</tbody>
+</table>
+<p>实践策略：选择一件最适合的衣物，移除其他多余衣物；不要指望同时穿多件再靠优化救回——多件衣物面数叠加必然超出 Android 面数限制（Poor 上限 20,000 面）。</p>
+<p>事前选择与事后优化的分工：事前选择负责衣物选择、插件选择、Shader 选择（插件与 Shader 的原则见 android-development.md 的 Android 插件兼容性原则与 Avatar 着色器限制章节）；事后优化再由 AAO Trace And Optimize、Avatar Compressor (LAC)、Meshia 减面等工具进一步精修。</p>
+<hr>
+<hr>
+<h1 id="avatar-优化速查流程先摘-fx-再用-aaolacmeshia-精简的-7-步懒人包">Avatar 优化速查流程：先摘 FX 再用 AAO+LAC+Meshia 精简的 7 步懒人包</h1>
+<p>结论先行：Avatar 大幅优化的标准流水线是「先备份表情系统 → 复制 Avatar → 跑自动优化工具 → 装回」，共 7 步：</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>1. 复制 Avatar 的 FX Layer、Expression Menu、Expression Parameter</span></span>
+<span class="line"><span>2. 删除所有跟开关物件相关的设定（保留表情 Blend Shape）</span></span>
+<span class="line"><span>3. 复制 Avatar 本身</span></span>
+<span class="line"><span>4. 导入 AAO + Avatar Compressor (LAC) + Meshia Mesh Simplification</span></span>
+<span class="line"><span>5. 运行 AAO Trace And Optimize（自动 + LAC 自动纹理压缩 + Meshia 减面）</span></span>
+<span class="line"><span>6. 面数还太多 → Remove Mesh By BlendShape / Meshia 减面 / 脱掉</span></span>
+<span class="line"><span>7. 把 FX、参数、选单塞回复制出来的 Avatar</span></span></code></pre>
+<p>关键点：第 1-2 步把 FX、菜单、参数先摘出并清掉物件开关设定（保留表情 Blend Shape），是为了让自动优化工具放手合并网格而不破坏表情逻辑；第 7 步再把它们装回到复制出来的 Avatar 上。</p>
+<p>2026 推荐做法：在第 4 步加入 Avatar Compressor (LAC) 自动处理纹理压缩，无需手动逐张设置（工具详情见 lac-avatar-compressor.md 页面）。</p>
+<hr>
+<hr>
+<h1 id="aao-trace-and-optimize-自动优化组件6-项自动处理添加即用与跳过网格合并的例外">AAO Trace And Optimize 自动优化组件：6 项自动处理、添加即用与跳过网格合并的例外</h1>
+<p>结论先行：AAO（Avatar Optimizer）的 Trace And Optimize 组件是「添加即用」的一键自动优化入口：选中 Avatar 物件，在 Inspector > Add Component 中添加 AAO Trace And Optimize 即完成配置，无需逐项手动设置。</p>
+<p>自动处理项目共 6 类：</p>
+<ul>
+<li>合并 Skinned Mesh</li>
+<li>固定目前状态的 Blend Shape 并删除</li>
+<li>删除未使用物件</li>
+<li>删除没有实质作用的 end 骨</li>
+<li>删除没有作用的 PhysBone</li>
+<li>Animator 最佳化</li>
+</ul>
+<p>重要例外：若 Animator 中存在开关物件的 Animation，Trace And Optimize 会跳过 Skinned Mesh 合并——这是「跑了自动优化但网格没被合并」的常见原因；需要合并时应先按速查流程摘除物件开关相关的 Animation 设定。</p>
+<p>工具文档：<a href="https://vpm.anatawa12.com/avatar-optimizer/en/docs/reference/trace-and-optimize/">https://vpm.anatawa12.com/avatar-optimizer/en/docs/reference/trace-and-optimize/</a> ；AAO 全部 12 个组件的详解、API 与优化方向矩阵见知识库页面 avatar-optimizer.md。</p>
+<hr>
+<hr>
+<h1 id="avatar-光源light性能规则各评级允许数量为-0-与调-shader-不加灯原则">Avatar 光源（Light）性能规则：各评级允许数量为 0 与「调 Shader 不加灯」原则</h1>
+<p>结论先行：Avatar 上的光源（Light）规则是「没事不要放」。Performance Rank 各评级允许的光源数量为：Excellent = 0、Good = 0、Medium = 0、Poor = 1——任何一个实时光源都会把 Avatar 至少拖到 Poor 评级。</p>
+<table>
+<thead>
+<tr>
+<th>评级</th>
+<th>允许光源数</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Excellent</td>
+<td>0</td>
+</tr>
+<tr>
+<td>Good</td>
+<td>0</td>
+</tr>
+<tr>
+<td>Medium</td>
+<td>0</td>
+</tr>
+<tr>
+<td>Poor</td>
+<td>1</td>
+</tr>
+</tbody>
+</table>
+<p>替代方案：如果嫌 Avatar 太暗，正确做法是调整 Shader（提高材质亮度或自发光），而不是给 Avatar 加灯。</p>
+<hr>
+<hr>
+<h1 id="avatar-粒子系统particle-system性能限制表与数量控制要点">Avatar 粒子系统（Particle System）性能限制表与数量控制要点</h1>
+<p>结论先行：Avatar 的粒子系统（Particle System）无法像网格那样被工具最佳化，唯一手段是控制数量。Performance Rank 三项粒子指标的限制如下：</p>
+<table>
+<thead>
+<tr>
+<th>指标</th>
+<th>Excellent</th>
+<th>Good</th>
+<th>Medium</th>
+<th>Poor</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>粒子系统数</td>
+<td>0</td>
+<td>4</td>
+<td>8</td>
+<td>16</td>
+</tr>
+<tr>
+<td>粒子总数量</td>
+<td>0</td>
+<td>300</td>
+<td>1,000</td>
+<td>2,500</td>
+</tr>
+<tr>
+<td>粒子系统面数</td>
+<td>0</td>
+<td>1,000</td>
+<td>2,000</td>
+<td>5,000</td>
+</tr>
+</tbody>
+</table>
+<p>控制要点：</p>
+<ul>
+<li>用 Max Particles 调整粒子最大数量；</li>
+<li>Poor 极限是粒子总数量 2,500，超出会降到 Very Poor；</li>
+<li>粒子轨迹（Trail）与碰撞模块根据实际需求开关，不用就关；</li>
+<li>Trail Renderer 会吃掉 2 个材质球（材质栏位），挂多了会连带推高 Material Slots 计数。</li>
+</ul>
+<hr>
+<hr>
+<h1 id="vrchat-客户端运行时粒子限制系统configjson-11-变量与-quest-端强制启用">VRChat 客户端运行时粒子限制系统：config.json 11 变量与 Quest 端强制启用</h1>
+<p>结论先行：除了上传时的 Performance Rank 评估，VRChat 客户端内部还有一套独立的运行时 Particle System Limits 系统，它决定本地实际渲染多少粒子——即使 Avatar 通过了上传评级，仍可能被这套运行时限制削减粒子。</p>
+<p>要点：</p>
+<ul>
+<li>配置文件：config.json，位于 %AppData%..\LocalLow\VRChat\vrchat\ 目录；</li>
+<li>共 11 个变量，覆盖粒子数量、网格、碰撞、trail penalty 等维度；</li>
+<li>Quest 端默认启用且不可禁用；</li>
+<li>Penalty 计算公式是依据官方变量描述作出的推断，实际实现可能略有差异。</li>
+</ul>
+<p>更完整的 Penalty 系统机制见知识库页面 avatar-particle-system-limits 的 §4.2。（2026-06-30 新增信息）</p>
+<hr>
+<hr>
+<h1 id="贴图内存texture-memory决定原则vram-只看-unity-导入设置分级降分辨率表与-40mb-目标">贴图内存（Texture Memory）决定原则：VRAM 只看 Unity 导入设置、分级降分辨率表与 40MB 目标</h1>
+<p>结论先行：贴图的 VRAM 占用与源文件无关——无论原档是 PNG/JPG/PSD、解析度多高多低，最终 VRAM 使用量只由 Unity 内的贴图导入设定（Max Size、压缩格式等）决定。想省显存，改 Unity 导入设置，而不是换小的源图。</p>
+<p>按物件类型的降分辨率推荐：</p>
+<table>
+<thead>
+<tr>
+<th>物件类型</th>
+<th>推荐分辨率</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>主贴图</td>
+<td>2048 以下</td>
+</tr>
+<tr>
+<td>鞋子等不明显物件</td>
+<td>512 附近</td>
+</tr>
+<tr>
+<td>遮罩贴图</td>
+<td>128 也行</td>
+</tr>
+<tr>
+<td>MatCap 部位</td>
+<td>32 级别</td>
+</tr>
+</tbody>
+</table>
+<p>VRAM 与分辨率的换算关系：每降一级分辨率，VRAM 变为原来的 1/4；每升一级，VRAM 翻 4 倍。</p>
+<p>推荐目标：单 Avatar VRAM &#x3C; 40MB（对应 Excellent 评级线），活动用 Avatar 同样以 40MB 为目标。2026 推荐做法：使用 Avatar Compressor (LAC) 自动达成该目标，无需手动逐张设置（详见 lac-avatar-compressor.md 页面）。</p>
+<hr>
+<hr>
+<h1 id="unity-贴图压缩方式怎么选normalhigh-qualitycrunch-适用场景对照表">Unity 贴图压缩方式怎么选：Normal/High Quality/Crunch 适用场景对照表</h1>
+<p>结论先行：Unity 贴图压缩方式按「贴图重要性 + 是否有 A 通道」选择：普通贴图用 Normal Quality，皮肤等关键贴图用 High Quality，Crunch 一般不要用。</p>
+<table>
+<thead>
+<tr>
+<th>压缩方式</th>
+<th>适用场景</th>
+<th>注意</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Normal</td>
+<td>普通贴图</td>
+<td>对 R 频道破坏大</td>
+</tr>
+<tr>
+<td>High Quality</td>
+<td>皮肤等贴图</td>
+<td>无 A 频道的贴图用 High 会 VRAM 加倍</td>
+</tr>
+<tr>
+<td>Crunch</td>
+<td>下载大小优化</td>
+<td>VRAM 不变，不推荐</td>
+</tr>
+</tbody>
+</table>
+<p>记忆点：Crunch Compression 让下载变小，但代价是贴图破坏 + 解压消耗资源 + VRAM 占用完全不变——对运行时性能优化没有帮助。VRChat 官方也在 2024-03-14 Dev Update 中明确表示不应依赖 Crunch（详见本库 Crunch 官方立场条目：除非确有必要否则不要使用）。</p>
+<hr>
+<hr>
+<h1 id="avatar-compressor-lac-全自动贴图压缩手动设置的-4-个痛点与-lac-自动化能力清单">Avatar Compressor (LAC) 全自动贴图压缩：手动设置的 4 个痛点与 LAC 自动化能力清单</h1>
+<p>结论先行：2026 年推荐的贴图压缩方案是用 Avatar Compressor (LAC) 全自动完成，不再手动逐张设置。VPM 仓库地址：<a href="https://vpm.limitex.dev/">https://vpm.limitex.dev/</a> （工具详解见 lac-avatar-compressor.md 页面）。</p>
+<p>为什么不手动设置（4 个痛点）：</p>
+<ul>
+<li>每张贴图都要设 Max Size + Compression + 平台格式，繁琐；</li>
+<li>容易把 Normal Map 当 Albedo 压缩，破坏法线；</li>
+<li>共享贴图容易被重复处理；</li>
+<li>没有 VRAM 预估，属于盲调。</li>
+</ul>
+<p>LAC 的自动化能力：</p>
+<ul>
+<li>4 种分析策略：Fast / HighAccuracy / Perceptual / Combined；</li>
+<li>5 个内置预设，开箱即用；</li>
+<li>自动平台格式选择：PC 用 BC7，Quest 用 ASTC_4x4；</li>
+<li>自动识别贴图类型（Normal/Emission/Metallic 等）；</li>
+<li>识别共享贴图，避免重复处理；</li>
+<li>编译前 VRAM 预估。</li>
+</ul>
+<p>协作顺序：与 AAO 等优化工具配合时按「LAC → AAO」的顺序执行（NDMF 工具链顺序详见 ndmf-tools.md 页面）。</p>
+<hr>
+<hr>
+<h1 id="unity-贴图导入设置之-alpha-is-transparency作用关闭条件与-liltoon-alpha-蒙版陷阱">Unity 贴图导入设置之 Alpha Is Transparency：作用、关闭条件与 liltoon Alpha 蒙版陷阱</h1>
+<p>结论先行：Alpha Is Transparency（Alpha 是透明的）的作用是允许导入贴图中的透明部分，应与非 Opaque（透明）渲染模式的材质球配合使用；不含透明信息的贴图应当关闭它来减小体积。</p>
+<p>何时关闭：</p>
+<ul>
+<li>物体未包含透明部分；</li>
+<li>已用 PhotoShop 将贴图透明部分填充为纯色（黑/白），从根源减小贴图大小。</li>
+</ul>
+<p>重要警告：有些着色器（如 liltoon）使用 Alpha 蒙版制作半透明效果。遇到这类贴图时，不要改贴图的 Alpha Is Transparency 设置，而应修改贴图对应材质球的设置，否则半透明表现会被破坏。</p>
+<p>背景：在 Texture Memory 的优化手段中，调整贴图导入设置是减小贴图体积的最直接方法（本组导入设置来源：VRCD 18-vrchat-CI4 §贴图方面 + VRChat 官方 Dev Update 2024-03-14）。</p>
+<hr>
+<hr>
+<h1 id="generate-mipmaps-要不要关33-vram-与-33-导入大小两种口径的纠正说明">Generate Mipmaps 要不要关：33% VRAM 与 +33% 导入大小两种口径的纠正说明</h1>
+<p>结论先行：Generate Mipmaps（生成 Mipmap）的作用是生成一系列逐渐降低分辨率的贴图、按相机距离选用合适层级；是否关闭取决于你要优化 VRAM 还是导入体积——两个「33%」说的是不同口径。</p>
+<p>数据纠正（2026-07-04）：此前流传的「+33% 导入大小」来自 VRCD 18-vrchat-CI4 的测试数据（7.1MB → 9.5MB），测的是导入大小；lilAvatarUtils 官方文档（lilxyzw，2025）则明确指出关闭 Mipmap 可减少约 33% 的 VRAM 占用。两者不矛盾，只是应用场景不同：想省 VRAM 就考虑关闭，在意包体导入大小则保持开启。</p>
+<p>何时关闭：</p>
+<ul>
+<li>贴图无复杂纹理/渐变；</li>
+<li>不在意模型的远处视觉效果；</li>
+<li>Quest 平台性能要求严苛。</li>
+</ul>
+<p>例外：Vertex Shader 中使用的贴图（如 outline 遮罩）必须保持 MipMap 开启，否则依赖 mip 采样的顶点效果会异常。</p>
+<hr>
+<hr>
+<h1 id="readwrite-enabled-让-ram-翻倍99-avatar-贴图都应关闭的读写开关">Read/Write Enabled 让 RAM 翻倍：99% Avatar 贴图都应关闭的读写开关</h1>
+<p>结论先行：Read/Write Enabled 允许脚本访问贴图数据（ReadPixels/SetPixels/GetPixels），代价是 RAM 占用翻倍——lilAvatarUtils 官方文档原话：“Copying textures for script access doubles the RAM consumption”。纯展示用途的 Avatar 贴图 99% 都应该关闭此选项。</p>
+<p>何时关闭：贴图不需要在脚本中读取（绝大多数 Avatar 贴图属于此类）。</p>
+<p>何时开启：</p>
+<ul>
+<li>需要运行时修改贴图的功能，如 Paint、笔刷、截图；</li>
+<li>极少数特殊 Shader 需要 CPU 端采样。</li>
+</ul>
+<p>来源：lilAvatarUtils 官方文档 + Unity 官方 Texture Import Settings（<a href="https://lilxyzw.github.io/lilAvatarUtils/en_US/docs/TexturesGUI.html">https://lilxyzw.github.io/lilAvatarUtils/en_US/docs/TexturesGUI.html</a> ）。</p>
+<hr>
+<hr>
+<h1 id="mip-streaming-流式加载贴图按需加载-mip-层降-vram-的实验性功能unity-20212">Mip Streaming 流式加载贴图：按需加载 mip 层降 VRAM 的实验性功能（Unity 2021.2+）</h1>
+<p>结论先行：Mip Streaming（Mip 流式加载）让引擎根据相机位置按需加载 Mipmap——只加载当前可见的 mip 层级，从而降低 VRAM 消耗，特别适合高分辨率贴图。</p>
+<p>使用须知：</p>
+<ul>
+<li>状态：实验性功能（来源：lilAvatarUtils 官方文档）；</li>
+<li>版本要求：需 Unity 2021.2 及以上支持；</li>
+<li>定位：作为 Generate Mipmap 之外的补充手段，用于缓解高分辨率贴图的 VRAM 压力，启用前应在目标平台上自行验证稳定性。</li>
+</ul>
+<hr>
+<hr>
+<h1 id="贴图-max-size-设置影响-90-视觉效果的核心项与-400-内存阶梯量化表">贴图 Max Size 设置：影响 90% 视觉效果的核心项与 400% 内存阶梯量化表</h1>
+<p>结论先行：在全部贴图导入设置中，Max Size（最大尺寸）是影响 90% 视觉效果与体积的关键项：它把贴图分辨率限制在设定值内，原始分辨率低于设定值时按原始分辨率导入。</p>
+<p>量化数据（Normal Quality 压缩，同一张原始 7.8MB 的图）：</p>
+<table>
+<thead>
+<tr>
+<th>设定值</th>
+<th>原始</th>
+<th>压缩后</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>4096</td>
+<td>7.8MB</td>
+<td>8.0MB</td>
+</tr>
+<tr>
+<td>2048</td>
+<td>7.8MB</td>
+<td>2.0MB</td>
+</tr>
+<tr>
+<td>1024</td>
+<td>7.8MB</td>
+<td>0.5MB</td>
+</tr>
+<tr>
+<td>512</td>
+<td>7.8MB</td>
+<td>128KB</td>
+</tr>
+</tbody>
+</table>
+<p>官方依据：VRChat 官方明确表示 “Each step of texture resolution increases memory &#x26; filesize by 400%!”——分辨率每提高一档，内存与文件体积增加 400%（即变为约 4 倍）。因此把 Max Size 从 4096 降到 2048 这一档操作，就能砍掉约四分之三的贴图内存。（量化表实测来源未注明，仅标注测试条件为 Normal Quality 压缩）</p>
+<hr>
+<hr>
+<h1 id="unity-贴图-format-选择dxt5bc3-通吃-99-贴图dxt1-体积减半与法线贴图禁改格式">Unity 贴图 Format 选择：DXT5/BC3 通吃 99% 贴图、DXT1 体积减半与法线贴图禁改格式</h1>
+<p>结论先行：贴图格式（Format）的选择规则：默认 DXT5（BC3），无透明需求降级 DXT1（BC1），法线贴图永远保持 Automatic。</p>
+<ul>
+<li>DXT5 | BC3：适用于 99% 的贴图，支持导入透明度；</li>
+<li>DXT1 | BC1：不需要透明度时使用，体积比 DXT5 小一半；</li>
+<li>法线贴图（Normal）：不应更改格式，保持 Automatic——强行改动会破坏 R 通道，导致法线数据错误、光照表现异常。</li>
+</ul>
+<hr>
+<hr>
+<h1 id="compression-压缩质量四档对比与normal-quality-被误译为法线质量翻译陷阱">Compression 压缩质量四档对比与「Normal Quality 被误译为法线质量」翻译陷阱</h1>
+<p>结论先行：Compression（压缩质量）四档的选择口诀：默认 Normal、关键 High、极限 Low、避免 None。</p>
+<table>
+<thead>
+<tr>
+<th>选项</th>
+<th>体积</th>
+<th>画质</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>None</td>
+<td>最大（甚至大于原图）</td>
+<td>无损</td>
+<td>完全不进行压缩</td>
+</tr>
+<tr>
+<td>Low Quality</td>
+<td>极小</td>
+<td>较低</td>
+<td>进一步压缩可选</td>
+</tr>
+<tr>
+<td>Normal Quality</td>
+<td>中等</td>
+<td>良好</td>
+<td>默认推荐</td>
+</tr>
+<tr>
+<td>High Quality</td>
+<td>较大</td>
+<td>最佳</td>
+<td>皮肤贴图等关键部位</td>
+</tr>
+</tbody>
+</table>
+<p>翻译陷阱：中文版 Unity 把 “Normal Quality” 错误翻译成「法线质量」，它的实际含义是「普通质量」（此处 Normal = 普通），与法线贴图（Normal Map）没有任何关系——不要因为翻译而避开这个默认推荐档。</p>
+<hr>
+<hr>
+<h1 id="crunch-compression-官方立场只减下载不减-vram除非确有必要否则不要用">Crunch Compression 官方立场：只减下载不减 VRAM，除非确有必要否则不要用</h1>
+<p>结论先行：Crunch Compression（使用 Crunch 压缩）在任何情况下都应避免使用，除非你明确知道自己需要它——它只减小下载大小，完全不减小 VRAM 占用，同时增加 CPU 负担并破坏贴图质量。</p>
+<p>VRChat 官方明确立场（2024-03-14 Dev Update 原文）：“Crunching textures may or may not help. Avoid relying on it. Crunch reduces quality and doesn’t affect uncompressed size at all. The AssetBundle compressor does a decent job at compression anyways, and finally, un-Crunching costs CPU time. As such, you shouldn’t use Crunch unless you know you need it.”</p>
+<p>要点拆解：</p>
+<ul>
+<li>Crunch 降低贴图质量，且对未压缩体积毫无影响；</li>
+<li>AssetBundle 压缩器本身已经足够好，下载体积不靠 Crunch 来省；</li>
+<li>解压 Crunch 需要消耗 CPU 时间，运行时有额外开销。</li>
+</ul>
+<hr>
+<hr>
+<h1 id="按贴图类型的推荐分辨率矩阵albedonormalmatcapmask-分档速查表">按贴图类型的推荐分辨率矩阵：Albedo/Normal/MatCap/Mask 分档速查表</h1>
+<p>结论先行：贴图分辨率按类型分档即可，不必一刀切全 2048：Albedo 1024/2048、Normal 512/1024、MatCap 128/256、Mask 256/512，4096 一律不推荐。</p>
+<p>推荐分辨率矩阵（来源：VRCD 18-vrchat-CI4 §Max Size 表格）：</p>
+<table>
+<thead>
+<tr>
+<th>分辨率</th>
+<th>主色/Albedo</th>
+<th>法线/Normal</th>
+<th>材质捕捉/MatCap</th>
+<th>各种 Mask</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>128</td>
+<td></td>
+<td></td>
+<td>✓</td>
+<td></td>
+</tr>
+<tr>
+<td>256</td>
+<td></td>
+<td></td>
+<td>✓</td>
+<td>✓</td>
+</tr>
+<tr>
+<td>512</td>
+<td></td>
+<td>✓</td>
+<td></td>
+<td>✓</td>
+</tr>
+<tr>
+<td>1024</td>
+<td>✓</td>
+<td>✓</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>2048</td>
+<td>✓</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>4096</td>
+<td>（不推荐）</td>
+<td>（不推荐）</td>
+<td>（不推荐）</td>
+<td>（不推荐）</td>
+</tr>
+</tbody>
+</table>
+<p>选型原则：Albedo 用 1024 或 2048 即可；Normal 用 512 或 1024；MatCap 用 128 或 256；Mask 用 256 或 512。</p>
+<hr>
+<hr>
+<h1 id="贴图导入设置批量化工具清单lilavatarutils--avatar-compressor-lac--aao-trace-and-optimize">贴图导入设置批量化工具清单：lilAvatarUtils / Avatar Compressor (LAC) / AAO Trace And Optimize</h1>
+<p>结论先行：批量优化贴图导入设置有三个常用工具，按自动化程度递进：lilAvatarUtils（手动批量）、Avatar Compressor (LAC)（全自动，推荐）、AAO Trace And Optimize（整体自动优化）。</p>
+<ul>
+<li>lilAvatarUtils（作者 lilxyzw）：批量调整贴图导入设置；GitHub：<a href="https://github.com/lilxyzw/lilAvatarUtils">https://github.com/lilxyzw/lilAvatarUtils</a> ；原生不支持中文，汉化包：<a href="https://hrenact.booth.pm/items/5843998">https://hrenact.booth.pm/items/5843998</a> ；</li>
+<li>Avatar Compressor (LAC)：全自动纹理压缩，2026 推荐方案，详见 lac-avatar-compressor.md 页面；</li>
+<li>AAO Trace And Optimize：添加组件即自动执行全面优化。</li>
+</ul>
+<p>工具链的详细对比与执行顺序见 ndmf-tools.md §1.4。</p>
+<hr>
+<hr>
+<h1 id="skinned-mesh-renderer-合并策略可合并条件face-保持独立原则与无法穿脱的代价">Skinned Mesh Renderer 合并策略：可合并条件、Face 保持独立原则与无法穿脱的代价</h1>
+<p>结论先行：Skinned Mesh 合并的原则是「能跟骨架变形的都可合，唯独 Face 保持独立」：头发、身体等物件合并后 CPU 处理负担降低，Material Slots 也同步减少（同一材质球的多 Mesh 合并后按一个 Slot 计）；代价是合并后的物件无法单独开关——也就是不能做穿脱衣服之类的切换功能。</p>
+<p>Face 特殊处理：Face 的 Blend Shape 数量通常最多，把它混进大合并反而增加负担，因此建议头发、身体等参与合并，Face 单独保留。</p>
+<p>冲击 Excellent 评级的两个进阶动作：</p>
+<ol>
+<li>把 Body 也扔进 MergeMesh；</li>
+<li>使用 Freeze BlendShape 固定当前外观并删除 Blend Shape（以放弃表情为代价换取评级）。</li>
+</ol>
+<hr>
+<hr>
+<h1 id="aao-merge-skinned-mesh-五步配置root-transform--anchor-override--optimize-blendshape">AAO Merge Skinned Mesh 五步配置：Root Transform / Anchor Override / Optimize BlendShape</h1>
+<p>结论先行：用 AAO 的 Merge Skinned Mesh 组件手动合并蒙皮网格，按以下 5 步配置：</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>1. 在 Avatar 物件上 Add Component > AAO Merge Skinned Mesh</span></span>
+<span class="line"><span>2. 绑定 Root Transform（通常是 Hips）</span></span>
+<span class="line"><span>3. 设置 Anchor Override（建议用 Body）</span></span>
+<span class="line"><span>4. 将要合并的物件拖入「添加元素」</span></span>
+<span class="line"><span>5. 取消勾选 Optimize BlendShape（如需保留 Blend Shape）</span></span></code></pre>
+<p>配置要点：Root Transform 决定合并后网格的骨架根，通常绑定 Hips；Anchor Override 建议指定 Body，保证光照与 LOD 锚点稳定；第 5 步只在你想保留表情等 Blend Shape 时才需要操作——组件默认的 Optimize BlendShape 会对 Blend Shape 数据做优化删减。</p>
+<hr>
+<hr>
+<h1 id="material-与-material-slots-的区别只有编译后-slot-数影响评级及两条减少路径">Material 与 Material Slots 的区别：只有编译后 Slot 数影响评级及两条减少路径</h1>
+<p>结论先行：Performance Rank 看的是 Material Slots（材质栏位）而不是 Material（材质球文件）：前者是编译后 Avatar 上实际的材质槽数量，直接影响评级；后者只是工程资产文件计数，不影响评级。</p>
+<table>
+<thead>
+<tr>
+<th>概念</th>
+<th>定义</th>
+<th>影响</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Material（材质球）</td>
+<td>以文件为单位</td>
+<td>无</td>
+</tr>
+<tr>
+<td>Material Slots（材质栏位）</td>
+<td>编译后实际数量</td>
+<td>影响 Performance Rank</td>
+</tr>
+</tbody>
+</table>
+<p>减少 Material Slots 的两条路径：</p>
+<ol>
+<li>合并 Skinned Mesh——同一材质球的多 Mesh 合并后按一个 Slot 计；</li>
+<li>合并材质球（Atlas 化）——使用 TexTransTool 把多个材质烘焙进一张图集。</li>
+</ol>
+<hr>
+<hr>
+<h1 id="textranstool-atlas-化能力边界不直接压材质槽必须配合-mergeskinnedmesh-及按材质性质分组">TexTransTool Atlas 化能力边界：不直接压材质槽、必须配合 MergeSkinnedMesh 及按材质性质分组</h1>
+<p>结论先行：TexTransTool 的 AtlasTexture 能压材质球数量和 VRAM，但它不直接压缩材质槽（Material Slot）——想让评级里的 Material Slots 真正下降，必须再配合 AvatarOptimizer 的 MergeSkinnedMesh。这是 TTT 图集化最常见的认知误区。</p>
+<p>第二条铁律：分组必须按材质性质进行（皮肤/头发/衣服/半透明/玻璃/金属各自分开），否则半透明材质会在图集上混合错误。</p>
+<p>v1.0.1 当前的分组方法（AtlasTexture GameObject 上的组件结构）：</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>AtlasTexture GameObject:</span></span>
+<span class="line"><span>├ Material Selector: 勾选要合并的材质球</span></span>
+<span class="line"><span>├ Material Merge Group: 按性质分组（实验性→稳定）</span></span>
+<span class="line"><span>├ All Material Merge Reference: 指定所有材质合并目标</span></span>
+<span class="line"><span>├ Atlas Texture Size: 输出纹理大小（2 的幂）</span></span>
+<span class="line"><span>└ Force Set Texture: 强制覆盖纹理（Quest 适配用）</span></span></code></pre>
+<p>版本备注：v0.10.0 后 MergeMaterial 更名为 AllMaterialMergeReference，语义更清晰。工具官网 <a href="https://ttt.rs64.net/">https://ttt.rs64.net/</a> ，完整文档见 tex-trans-tool.md 页面。（版本基线：TexTransTool v1.0.1，2025-12-26）</p>
+<hr>
+<hr>
+<h1 id="textranstool-quest-适配四步与烘焙兜底force-set-texture-输出单材质单图集">TexTransTool Quest 适配四步与烘焙兜底：Force Set Texture 输出单材质单图集</h1>
+<p>结论先行：TexTransTool 图集适配 Quest 的标准路径是「全选材质 → 指向 Quest 专用材质 → Force Set Texture 强制覆盖」，最终 Quest 端只保留 1 个材质 + 1 张图集。</p>
+<p>Quest 适配关键步骤：</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>1. Material Selector 全选所有材质</span></span>
+<span class="line"><span>2. All Material Merge Reference → Quest 专用材质</span></span>
+<span class="line"><span>3. Force Set Texture → True</span></span>
+<span class="line"><span>4. Build → Quest 端：1 个材质 + 1 张图集</span></span></code></pre>
+<p>复杂材质合并出问题的兜底方案是烘焙：</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>1. 备份该材质球</span></span>
+<span class="line"><span>2. 选择适合的烘焙选项</span></span>
+<span class="line"><span>3. 完成</span></span></code></pre>
+<p>注意：烘焙技巧由社区成员 Touma 分享，属实践经验；操作前务必备份原始材质球。</p>
+<hr>
+<hr>
+<h1 id="textranstool-与-aao-协作执行顺序atlastexture--mergeskinnedmesh--traceandoptimizev090-api-协作">TexTransTool 与 AAO 协作执行顺序：AtlasTexture → MergeSkinnedMesh → TraceAndOptimize（v0.9.0+ API 协作）</h1>
+<p>结论先行：TexTransTool 与 AAO（Avatar Optimizer）组合使用时执行顺序是关键，固定为：TTT AtlasTexture → AAO MergeSkinnedMesh → AAO TraceAndOptimize。</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>执行顺序（关键）：</span></span>
+<span class="line"><span>1. TTT AtlasTexture（图集化、合并材质球）</span></span>
+<span class="line"><span>2. AAO MergeSkinnedMesh（合并 Mesh + Material Slot）</span></span>
+<span class="line"><span>3. AAO TraceAndOptimize（最终优化）</span></span></code></pre>
+<p>深度协作机制（v0.9.0 起，通过 API 实现）：</p>
+<ul>
+<li>AAO RemoveMeshBy* 删除的区域不会分配图集空间，避免给看不见的面浪费图集像素；</li>
+<li>AAO 向 UV1 写入 UV 时，TTT 通过 API 获知改写位置并同步处理。</li>
+</ul>
+<p>这意味着两个工具需要在 NDMF 工具链中按序生效；乱序执行可能导致图集空间浪费或 UV 错位。</p>
+<hr>
+<hr>
+<h1 id="textranstool-故障排查速查表上传不生效--ndmf-缺失--gpu-兼容--gizmo--旧资产迁移">TexTransTool 故障排查速查表：上传不生效 / NDMF 缺失 / GPU 兼容 / Gizmo / 旧资产迁移</h1>
+<p>结论先行：TexTransTool 常见故障先查这张速查表，多数问题源于组件未激活、NDMF 缺失、老 GPU 兼容或版本迁移，而不是图集配置本身。</p>
+<table>
+<thead>
+<tr>
+<th>问题</th>
+<th>原因</th>
+<th>解决</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>上传不生效</td>
+<td>组件未 Active</td>
+<td>激活组件</td>
+</tr>
+<tr>
+<td>上传不生效</td>
+<td>NDMF 未安装</td>
+<td>安装 NDMF v1.7.0+</td>
+</tr>
+<tr>
+<td>GTX10/9 + DX11 故障</td>
+<td>已知 GPU 兼容问题</td>
+<td>升级 v0.10.0+ 或用 Vulkan</td>
+</tr>
+<tr>
+<td>Gizmo 不显示</td>
+<td>SceneView 开关</td>
+<td>启用 Gizmo 总开关</td>
+</tr>
+<tr>
+<td>旧资产不工作</td>
+<td>SaveData 不兼容</td>
+<td>Tools > TexTransTool > Migrator</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<hr>
+<h1 id="avatar-材质-render-queue-三阈值规则2500-天空盒冲突2501-失焦无阴影2450-擦除材质">Avatar 材质 Render Queue 三阈值规则：&#x3C;2500 天空盒冲突、≥2501 失焦无阴影、≤2450 擦除材质</h1>
+<p>结论先行：Avatar 材质的 Render Queue 有三个关键阈值，配置错误是 Avatar 渲染异常的常见根因：透明材质的安全值是 2501，低于 2500 会与天空盒冲突，低于等于 2450 会擦除其他材质（破坏性 Bug）。</p>
+<p>三阈值总览：</p>
+<table>
+<thead>
+<tr>
+<th>Render Queue 范围</th>
+<th>行为</th>
+<th>风险等级</th>
+<th>典型症状</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>&#x3C; 2500（含透明材质）</td>
+<td>与天空盒渲染顺序冲突</td>
+<td>中</td>
+<td>透明物体在天空盒后面、显示异常</td>
+</tr>
+<tr>
+<td>≥ 2501</td>
+<td>失去焦点 + 无法接收阴影</td>
+<td>中</td>
+<td>半透明物体模糊、投影丢失</td>
+</tr>
+<tr>
+<td>≤ 2450（透明材质过低）</td>
+<td>擦除其他材质</td>
+<td>高</td>
+<td>整个 Avatar 的部分材质被擦除</td>
+</tr>
+</tbody>
+</table>
+<p>规则 1：透明材质 &#x3C; 2500——官方原文：“If a material that includes transparency is set to less than 2500, rendering problems may occur when it overlaps with the skybox.” 根因：Render Queue &#x3C; 2500 会被 Unity 当作「不透明」队列、在天空盒之后渲染；症状：户外场景中透明部分显示在天空盒「后面」。解决方案：将透明材质的 Render Queue 设为 2501（Unity Transparent 标准）。</p>
+<p>规则 2：Render Queue ≥ 2501——官方原文：“If it is set to 2501 or more, the lens effect will cause the material to lose focus and it will not be able to receive shadows.” 根因：Transparent 队列的材质不参与深度写入；症状：失去焦点（虚化效果失效）、无法接收其他物体的阴影。影响：通常这是正确的表现，除非你需要透明材质接收阴影。</p>
+<p>规则 3：Render Queue ≤ 2450（严重 Bug）——官方原文：“If a transparent material is set to an excessively low value (such as 2450 or less), it is very likely to cause problems with other materials being erased.” 根因：过低的 Render Queue 导致 Z-test 异常；症状：其他材质被「擦除」（视觉上消失）。这是破坏性问题，必须立即修复：将 Render Queue 调整到 2501（标准透明）或 3000+（特殊效果）。</p>
+<p>来源：lilAvatarUtils 官方文档 MaterialsGUI 页（<a href="https://lilxyzw.github.io/lilAvatarUtils/en_US/docs/MaterialsGUI.html">https://lilxyzw.github.io/lilAvatarUtils/en_US/docs/MaterialsGUI.html</a> ，2026-07-04 收录）；三段英文引文的最初出处仅确认转引自 lilAvatarUtils 官方文档，未逐条溯源核验。</p>
+<hr> </div> <p class="kb-source-note" data-astro-cid-lvjzyg5v>
+本文由 VRChat 开发知识库自动整理（社区整理  · 可信度 high ），
+          遇到与手写教程冲突的地方，以官方文档为最高优先级。
+</p> <section class="comments" id="comments" data-astro-cid-lvjzyg5v> <h2 class="comments__title" data-astro-cid-lvjzyg5v>✦ 旅人留言（0）</h2> <p class="comments__empty" id="commentsEmpty" data-astro-cid-lvjzyg5v>
+还没有旅人留言 —— 有疑问就写在下面，站长都会回复。
+</p> <form class="comment-form" id="commentForm" data-target="kb-avatar-optimization-guide" data-astro-cid-lvjzyg5v> <p class="comment-form__title" data-astro-cid-lvjzyg5v>写下你的留言</p> <input id="cAuthor" maxlength="20" placeholder="昵称（留空则为「旅人」）" data-astro-cid-lvjzyg5v> <textarea id="cBody" maxlength="1000" required placeholder="想问的问题、想说的感谢都可以（最多 1000 字）" data-astro-cid-lvjzyg5v></textarea> <div class="comment-form__actions" data-astro-cid-lvjzyg5v> <button class="btn btn--primary" type="submit" data-astro-cid-lvjzyg5v>发布留言</button> <span class="form-hint" data-astro-cid-lvjzyg5v>留言保存在本站，站长在写作台里能看到</span> <span class="form-msg" id="cMsg" data-astro-cid-lvjzyg5v></span> </div> </form> </section> <nav class="station-nav" aria-label="站间导航" data-astro-cid-lvjzyg5v> <a href="/STELLASTOPVRC/posts/kb-avatar-performance-rank/" data-astro-cid-lvjzyg5v> <span class="dir" data-astro-cid-lvjzyg5v>← 上一站 · 更新的星光</span> <span class="to" data-astro-cid-lvjzyg5v>Avatar Performance Ranking System — 上传时 SDK 性能分级（PC/Quest 档位表、Very Poor 风险与 SPS 影响）</span> </a> <a href="/STELLASTOPVRC/posts/kb-avatar-modular-avatar/" data-astro-cid-lvjzyg5v> <span class="dir" data-astro-cid-lvjzyg5v>下一站 · 更早的星光 →</span> <span class="to" data-astro-cid-lvjzyg5v>Modular Avatar (MA) 完整知识库</span> </a> </nav> </div> <aside class="toc" id="toc" hidden> <p class="toc__title">✦ 本页星图</p> <nav id="tocNav" aria-label="文章目录"></nav> </aside> <script type="module">const i=document.querySelector(".prose"),d=document.getElementById("toc"),u=document.getElementById("tocNav"),l=[];if(i&&d&&u){const c=[...i.querySelectorAll("h1, h2, h3")];if(c.length>=3){d.hidden=!1,c.forEach((o,e)=>{o.id||(o.id=`sec-${e}`);const n=document.createElement("a");n.href=`#${o.id}`;const s=(o.textContent??"").replace(/\s+/g," ").trim(),r=s.search(/[：:]/),a=r>=4?s.slice(0,r):s;n.textContent=a.length>40?`${a.slice(0,40)}…`:a,n.title=s,u.appendChild(n),l.push({a:n,h:o})});const t=()=>{let o=l[0];for(const e of l)e.h.getBoundingClientRect().top<=130&&(o=e);for(const e of l)e.a.classList.toggle("is-active",e===o)};addEventListener("scroll",t,{passive:!0}),t()}}document.querySelectorAll(".prose pre").forEach(c=>{const t=document.createElement("button");t.className="code-copy",t.type="button",t.textContent="复制",t.addEventListener("click",async()=>{const o=c.querySelector("code")?.innerText??c.innerText;try{await navigator.clipboard.writeText(o)}catch{const e=document.createElement("textarea");e.value=o,document.body.appendChild(e),e.select(),document.execCommand("copy"),e.remove()}t.textContent="已复制 ✓",t.classList.add("is-ok"),setTimeout(()=>{t.textContent="复制",t.classList.remove("is-ok")},1500)}),c.appendChild(t)});</script> </article>  </main> <footer class="site-footer"> <div class="wrap"> <p class="star-line" aria-hidden="true"> <svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> <svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> </p> <p>星之驿站 StellaStop —— 在虚拟宇宙中，为你保留一座驿站</p> <p class="site-footer__disclaimer">
+该网页目前是测试阶段，仅用于测试，所有内容仅供参考；内容全部为引用互联网当中的信息。
+</p> <p>© 2026 星之驿站 · 由 <a href="https://astro.build">Astro</a> 与星光驱动</p> <p> <a data-desk-login hidden title="写作台：登录 / 注册">登录 / 注册</a> ·
+<a href="/STELLASTOPVRC/announcements/">官方公告</a> ·
+<a href="/STELLASTOPVRC/ai/">问星 AI</a> ·
+<a href="/STELLASTOPVRC/feedback/">旅人留言板</a> </p> </div> </footer> <button class="to-top" id="toTop" aria-label="回到顶部"> <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"> <path d="M12 20V5"></path> <path d="M5.5 11.5 12 5l6.5 6.5"></path> </svg> </button> <script type="module">const e=document.getElementById("toTop");if(e){const t=()=>e.classList.toggle("is-visible",scrollY>480);addEventListener("scroll",t,{passive:!0}),t(),e.addEventListener("click",()=>{const o=matchMedia("(prefers-reduced-motion: reduce)").matches;scrollTo({top:0,behavior:o?"auto":"smooth"})})}</script> <script>(function(){const deskConfigured = "";
+
+      /* 写作台探测（页面尾部执行，DOM 已就绪）：
+         1. 计算写作台地址：站点配置 deskUrl（公网部署时填）> 本机默认 localhost:4322 > 同主机 4322
+         2. 探测 /api/gate/status —— 在线才点亮「登录 / 注册」入口，并复用给验证门横幅
+         3. 不在线则保持隐藏，绝不会把访客拽进内网地址；同时给出一次性「镜像模式」提示 */
+      (function () {
+        var host = location.hostname;
+        var isLocal = host === 'localhost' || host === '127.0.0.1' || host === '[::1]';
+        var desk = deskConfigured ||
+          (isLocal ? 'http://localhost:4322' : location.protocol + '//' + host + ':4322');
+        window.STELLA_DESK = desk;
+
+        function revealLogin() {
+          document.querySelectorAll('[data-desk-login]').forEach(function (a) {
+            a.href = desk + '/admin';
+            a.removeAttribute('hidden');
+          });
+        }
+        function showBanner(css, html, shiftHeader) {
+          var bar = document.createElement('div');
+          bar.style.cssText = css;
+          bar.innerHTML = html;
+          document.body.prepend(bar);
+          if (shiftHeader) {
+            var header = document.querySelector('.site-header');
+            if (header) header.style.marginTop = '42px';
+          }
+        }
+        function hintMirrorMode() {
+          try {
+            if (sessionStorage.getItem('stella-desk-hint')) return;
+            sessionStorage.setItem('stella-desk-hint', '1');
+          } catch (e) { /* 无痕模式等：忽略 */ }
+          var tip = document.createElement('div');
+          tip.style.cssText = 'position:fixed;left:14px;bottom:14px;z-index:9998;max-width:min(92vw,430px);padding:.65rem .9rem;border-radius:12px;background:rgba(18,20,44,.92);border:1px solid rgba(150,142,255,.35);color:#e8e6ff;font-size:.82rem;line-height:1.6;font-family:system-ui,sans-serif;box-shadow:0 8px 30px rgba(0,0,0,.35)';
+          tip.innerHTML = 'ℹ️ 静态镜像模式：登录 / 评论 / AI 等互动功能需要站长写作台在线，当前不可用。' +
+            '<span id="stellaDeskHintClose" style="float:right;cursor:pointer;opacity:.75;font-weight:700;margin-left:.6rem" title="关闭">×</span>';
+          document.body.appendChild(tip);
+          var close = function () { tip.remove(); };
+          tip.querySelector('#stellaDeskHintClose').addEventListener('click', close);
+          setTimeout(close, 9000);
+        }
+
+        try {
+          var ctrl = new AbortController();
+          var timer = setTimeout(function () { ctrl.abort(); }, 2500);
+          fetch(desk + '/api/gate/status', { credentials: 'include', signal: ctrl.signal })
+            .then(function (r) { return r.ok ? r.json() : null; })
+            .then(function (d) {
+              clearTimeout(timer);
+              if (!d) throw new Error('desk-offline');
+              window.STELLA_DESK_OK = true;
+              revealLogin();
+              if (d.regionBlocked) {
+                showBanner(
+                  'position:fixed;top:0;left:0;right:0;z-index:9999;padding:1.2rem;text-align:center;background:#1a0a0a;color:#ff9ed2;font-size:.95rem;border-bottom:2px solid #ff4d6d;font-family:system-ui,sans-serif',
+                  '⛔ 你所在的地区（' + (d.regionCountry || '未知') + '）暂不开放访问。',
+                  false
+                );
+                return;
+              }
+              if (d.enabled && !d.passed) {
+                showBanner(
+                  'position:fixed;top:0;left:0;right:0;z-index:9999;padding:0.7rem;text-align:center;background:linear-gradient(94deg,rgba(143,127,247,.25),rgba(98,200,245,.18));border-bottom:1px solid rgba(150,142,255,.3);color:#f0efff;font-size:.88rem;font-family:system-ui,sans-serif',
+                  '🔒 本站启用了安全验证 —— <a href="' + desk + '/gate?next=' + encodeURIComponent(location.href) + '" style="color:#ffd98e;font-weight:700;text-decoration:underline">点击完成验证</a>，通过后即可使用全部功能（30 天免验）。',
+                  true
+                );
+              }
+            })
+            .catch(function () {
+              clearTimeout(timer);
+              window.STELLA_DESK_OK = false;
+              hintMirrorMode();
+            });
+        } catch (e) { /* 忽略 */ }
+      })();
+    })();</script> </body> </html> <script type="module">const m=document.getElementById("commentForm"),s=document.getElementById("cMsg"),u=`${location.protocol}//${location.hostname}:4322/api/message`;function r(e,t=!1){s&&(s.textContent=e,s.classList.toggle("is-err",t),s.classList.toggle("is-ok",!t))}function y(){const e=new Date,t=n=>String(n).padStart(2,"0");return`${e.getFullYear()}-${t(e.getMonth()+1)}-${t(e.getDate())}`}function f(e){let t=7;for(const n of e)t=(t*31+n.charCodeAt(0))%360;return t}function g(e,t){const n=document.createElement("li");n.className="comment",n.innerHTML=`
+      <span class="comment__avatar"></span>
+      <div class="comment__bubble">
+        <div class="comment__head">
+          <span class="comment__name"></span>
+          <time class="comment__date">${y()}</time>
+        </div>
+        <p class="comment__body"></p>
+      </div>`;const o=n.querySelector(".comment__avatar");return o.style.setProperty("--h",String(f(e))),o.textContent=e.slice(0,1),n.querySelector(".comment__name").textContent=e,n.querySelector(".comment__body").textContent=t,n}m?.addEventListener("submit",async e=>{e.preventDefault();const t=document.getElementById("cBody").value.trim();if(!t)return r("留言内容不能为空哦",!0);const n=document.getElementById("cAuthor").value.trim()||"旅人",o=m.querySelector("button");o&&(o.disabled=!0);try{const c=await fetch(u,{credentials:"include",method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({target:m.dataset.target,kind:"comment",author:n,body:t})}),d=await c.json().catch(()=>({}));if(!c.ok)throw new Error(d.error||`发送失败（${c.status}）`);const l=document.querySelector(".comment-list");l&&l.appendChild(g(n,t)),document.getElementById("commentsEmpty")?.remove(),document.getElementById("cBody").value="",r("留言已发布，感谢支持 ✦");const a=document.querySelector(".comments__title"),i=a?.textContent?.match(/（(\d+)）/);a&&i&&(a.textContent=a.textContent.replace(/（\d+）/,`（${Number(i[1])+1}）`))}catch(c){r(c instanceof TypeError?"写作台没在运行，暂时收不到留言 —— 双击「启动博客.bat」就好":c.message,!0)}finally{o&&(o.disabled=!1)}});</script> 

@@ -1,0 +1,3467 @@
+<!DOCTYPE html><html lang="zh-CN"> <head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="generator" content="Astro v5.18.2"><meta name="description" content="Modular Avatar（MA）衣服装上后不动或完全没反应，绝大多数是三件事没做到位——没执行 Setup Outfit、骨骼名不匹配、或 Apply On Play 没勾选。"><meta name="theme-color" content="#070a1c"><meta property="og:title" content="Modular Avatar (MA) 完整知识库 · 星之驿站 StellaStop"><meta property="og:description" content="Modular Avatar（MA）衣服装上后不动或完全没反应，绝大多数是三件事没做到位——没执行 Setup Outfit、骨骼名不匹配、或 Apply On Play 没勾选。"><meta property="og:type" content="website"><meta name="twitter:card" content="summary"><link rel="icon" type="image/svg+xml" href="/STELLASTOPVRC/favicon.svg"><script>
+      // 在渲染前恢复主题与特效档位，避免闪一下默认状态
+      try {
+        document.documentElement.dataset.theme =
+          localStorage.getItem('stella-theme') || 'nebula';
+        document.documentElement.dataset.fx =
+          localStorage.getItem('stella-fx') || 'standard';
+      } catch {
+        /* 隐私模式读不到就算了 */
+      }
+    </script><link rel="stylesheet" href="/STELLASTOPVRC/custom-vars.css"><title>Modular Avatar (MA) 完整知识库 · 星之驿站 StellaStop</title><link rel="stylesheet" href="/STELLASTOPVRC/_astro/about.Bgh6wcGl.css">
+<style>.post-head__meta[data-astro-cid-lvjzyg5v]{color:var(--ink-faint);font-family:var(--font-mono);font-size:.82rem}.post-head[data-astro-cid-lvjzyg5v] .chip-row[data-astro-cid-lvjzyg5v]{margin-top:1rem}.kb-source-note[data-astro-cid-lvjzyg5v]{max-width:760px;margin:2.2rem auto 0;font-size:.82rem;color:var(--ink-faint);border-top:1px dashed var(--line);padding-top:1rem}
+</style></head> <body> <div class="site-notice" id="siteNotice"> <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> <span class="site-notice__text">欢迎来到星之驿站！</span> <button class="site-notice__close" id="noticeClose" type="button" aria-label="关闭公告">
+×
+</button> </div> <a class="skip-link" href="#main">跳到主要内容</a> <canvas id="starfield" aria-hidden="true" data-astro-cid-ra7sfcwn></canvas> <div class="fx-aurora fx-aurora--a" aria-hidden="true" data-astro-cid-ra7sfcwn></div> <div class="fx-aurora fx-aurora--b" aria-hidden="true" data-astro-cid-ra7sfcwn></div>  <script type="module">const u=document.getElementById("starfield");if(u){let F=function(){const n=Math.random();return n<.1?"gold":n<.42?"blue":"white"},v=function(){const n=Math.min(window.devicePixelRatio||1,2);s=window.innerWidth,d=window.innerHeight,u.width=s*n,u.height=d*n,u.style.width=`${s}px`,u.style.height=`${d}px`,t.setTransform(n,0,0,n,0,0);const e=Math.min(190,Math.round(s*d/8500));l=Array.from({length:e},()=>({x:Math.random()*s,y:Math.random()*d,r:r(.4,1.7),base:r(.25,.8),amp:r(.12,.4),speed:r(6e-4,.0022),phase:r(0,Math.PI*2),c:F()})),C=Array.from({length:26},()=>({x:Math.random()*s,y:Math.random()*d,r:r(.9,2.4),vx:r(-.006,.006),vy:r(-.02,-.006),base:r(.2,.5),speed:r(8e-4,.002),phase:r(0,Math.PI*2),c:Math.random()<.5?"gold":"violet"})),c==="off"&&m(0,!0)},D=function(n){const e=Math.random()<.5?1:-1,o=r(Math.PI/7,Math.PI/5),a=r(.45,.75);y.push({x:r(s*.15,s*.85),y:r(-20,d*.3),vx:Math.cos(o)*a*e,vy:Math.sin(o)*a,born:n,life:r(750,1050),len:r(100,170)})},S=function(n){y=y.filter(e=>n-e.born<e.life);for(const e of y){const o=(n-e.born)/e.life,a=e.x+e.vx*(n-e.born),i=e.y+e.vy*(n-e.born),f=o<.15?o/.15:o>.7?(1-o)/.3:1,h=Math.hypot(e.vx,e.vy),x=e.vx/h,g=e.vy/h,b=t.createLinearGradient(a,i,a-x*e.len,i-g*e.len);b.addColorStop(0,`rgba(236,242,255,${(.85*f).toFixed(3)})`),b.addColorStop(1,"rgba(236,242,255,0)"),t.strokeStyle=b,t.lineWidth=1.6,t.lineCap="round",t.beginPath(),t.moveTo(a,i),t.lineTo(a-x*e.len,i-g*e.len),t.stroke()}},B=function(){let o=0;t.lineWidth=.7;for(let a=0;a<l.length&&o<26;a++)for(let i=a+1;i<l.length&&o<26;i++){const f=l[a].x-l[i].x,h=l[a].y-l[i].y,x=f*f+h*h;if(x<16900){const g=(1-Math.sqrt(x)/130)*.17;t.strokeStyle=`rgba(178,170,255,${g.toFixed(3)})`,t.beginPath(),t.moveTo(l[a].x,l[a].y),t.lineTo(l[i].x,l[i].y),t.stroke(),o++}}},X=function(n){for(const e of C){e.x+=e.vx*16,e.y+=e.vy*16,e.y<-12&&(e.y=d+10),e.x<-12&&(e.x=s+10),e.x>s+12&&(e.x=-10);const o=Math.max(.05,e.base+.25*Math.sin(n*e.speed+e.phase)),[a,i,f]=A[e.c];t.beginPath(),t.arc(e.x,e.y,e.r,0,7),t.shadowBlur=9,t.shadowColor=`rgba(${a},${i},${f},0.9)`,t.fillStyle=`rgba(${a},${i},${f},${o.toFixed(3)})`,t.fill()}t.shadowBlur=0},m=function(n,e=!1){t.clearRect(0,0,s,d);for(const o of l){const a=c==="off"?o.base:Math.max(.05,o.base+o.amp*Math.sin(n*o.speed+o.phase)),[i,f,h]=A[o.c];t.beginPath(),t.arc(o.x,o.y,o.r,0,7),o.r>1.25?(t.shadowBlur=7,t.shadowColor=`rgba(${i},${f},${h},0.85)`):t.shadowBlur=0,t.fillStyle=`rgba(${i},${f},${h},${a.toFixed(3)})`,t.fill()}if(t.shadowBlur=0,c!=="off"&&!e){c==="fancy"&&(B(),X(n));const o=c==="fancy"?r(2600,6e3):r(4200,9500);n>P&&(D(n),P=n+o),S(n)}},$=function(n){m(n),M=requestAnimationFrame($)},p=function(){if(c==="off"){m(0,!0);return}cancelAnimationFrame(M),M=requestAnimationFrame($)},w=function(){cancelAnimationFrame(M),t.clearRect(0,0,s,d),m(0,!0)};const t=u.getContext("2d"),k=matchMedia("(prefers-reduced-motion: reduce)").matches,A={white:[240,240,255],blue:[150,215,250],gold:[255,218,150],violet:[178,170,255]};let s=0,d=0,l=[],C=[],y=[],P=2500,M=0,c=document.documentElement.dataset.fx||"standard";k&&(c="off");const r=(n,e)=>n+Math.random()*(e-n);v(),addEventListener("resize",v),document.addEventListener("stella-fx-change",n=>{c=n.detail,c==="off"?w():p()}),c==="off"?m(0,!0):(p(),document.addEventListener("visibilitychange",()=>{document.hidden?w():p()}))}</script> <header class="site-header"> <div class="wrap site-header__inner"> <a class="logo" href="/STELLASTOPVRC/"> <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> <span>星之驿站</span> <span class="logo__romaji">StellaStop</span> </a> <div class="header-right"> <nav class="site-nav" aria-label="站内导航"> <a href="/STELLASTOPVRC/"> 首页 </a><a href="/STELLASTOPVRC/start/"> 新手 </a><a href="/STELLASTOPVRC/posts/"> 教程 </a><a href="/STELLASTOPVRC/videos/"> 视频 </a><a href="/STELLASTOPVRC/resources/"> 资源 </a><a href="/STELLASTOPVRC/booth/"> Booth </a><a href="/STELLASTOPVRC/announcements/"> 公告 </a><a href="/STELLASTOPVRC/ai/"> 问星 </a><a href="/STELLASTOPVRC/changelog/"> 更新日志 </a><a href="/STELLASTOPVRC/about/"> 关于 </a> </nav> <a class="login-link" data-desk-login hidden title="写作台：登录 / 注册后可发教程、传资源">
+登录 / 注册
+</a> <div class="theme-switch"> <button class="theme-switch__btn" id="themeBtn" type="button" aria-haspopup="listbox" aria-expanded="false" aria-label="切换主题配色" title="切换主题配色"> <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"> <path d="M12 3a9 9 0 1 0 9 9c0-1.2-1-2-2.2-2H17a2 2 0 0 1-2-2V6.2C15 5 14.2 4 13 4.4A9 9 0 0 0 12 3Z"></path> <circle cx="7.5" cy="11.5" r="1" fill="currentColor" stroke="none"></circle> <circle cx="10" cy="7.5" r="1" fill="currentColor" stroke="none"></circle> <circle cx="15" cy="7" r="1" fill="currentColor" stroke="none"></circle> </svg> </button> <div class="theme-pop" id="themePop" role="listbox" aria-label="选择主题" hidden> <button class="theme-opt" type="button" role="option" data-theme-value="nebula" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#8f7ff7"></span><span class="dot" style="background:#62c8f5"></span><span class="dot" style="background:#ffd98e"></span> </span> <span class="theme-opt__name">星云 · 蓝紫</span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt" type="button" role="option" data-theme-value="sakura" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#ff8fc7"></span><span class="dot" style="background:#c79bff"></span><span class="dot" style="background:#ffd08e"></span> </span> <span class="theme-opt__name">樱语 · 粉紫</span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt" type="button" role="option" data-theme-value="miku" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#2ed3c2"></span><span class="dot" style="background:#6ea8ff"></span><span class="dot" style="background:#ffe08e"></span> </span> <span class="theme-opt__name">葱色 · 青绿</span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt" type="button" role="option" data-theme-value="ember" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#ffb35c"></span><span class="dot" style="background:#ff7e6b"></span><span class="dot" style="background:#ffd98e"></span> </span> <span class="theme-opt__name">暮金 · 暖橙</span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt" type="button" role="option" data-theme-value="dawn" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#6a5ce8"></span><span class="dot" style="background:#e0568f"></span><span class="dot" style="background:#b8821e"></span> </span> <span class="theme-opt__name">晨星 · 浅色</span> <span class="theme-opt__mark">✦</span> </button> </div> </div> <script type="module">const a=document.getElementById("themeBtn"),n=document.getElementById("themePop");function s(c){document.documentElement.dataset.theme=c;try{localStorage.setItem("stella-theme",c)}catch{}const e=getComputedStyle(document.documentElement).getPropertyValue("--bg-deep").trim();document.querySelector('meta[name="theme-color"]')?.setAttribute("content",e||"#070a1c"),document.querySelectorAll(".theme-opt").forEach(t=>{const d=t.dataset.themeValue===c;t.classList.toggle("is-active",d),t.setAttribute("aria-selected",String(d))})}if(a&&n){const c=document.documentElement.dataset.theme||"nebula";document.querySelectorAll(".theme-opt").forEach(e=>{const t=e.dataset.themeValue===c;e.classList.toggle("is-active",t),e.setAttribute("aria-selected",String(t))}),a.addEventListener("click",e=>{e.stopPropagation();const t=n.hidden;n.hidden=!t,a.setAttribute("aria-expanded",String(t))}),document.addEventListener("click",e=>{!n.hidden&&!e.target.closest(".theme-switch")&&(n.hidden=!0,a.setAttribute("aria-expanded","false"))}),document.addEventListener("keydown",e=>{e.key==="Escape"&&!n.hidden&&(n.hidden=!0,a.setAttribute("aria-expanded","false"),a.focus())}),n.addEventListener("click",e=>{const t=e.target.closest(".theme-opt");t&&(s(t.dataset.themeValue??"nebula"),n.hidden=!0,a.setAttribute("aria-expanded","false"))})}</script> <div class="theme-switch fx-switch"> <button class="theme-switch__btn" id="fxBtn" type="button" aria-haspopup="listbox" aria-expanded="false" aria-label="背景特效设置" title="背景特效设置"> <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"> <path d="M5 3v4M3 5h4M6.5 17.5v3M5 19h3"></path> <path d="M14.5 4.5 16 9l4.5 1.5L16 12l-1.5 4.5L13 12l-4.5-1.5L13 9l1.5-4.5Z"></path> </svg> </button> <div class="theme-pop" id="fxPop" role="listbox" aria-label="背景特效" hidden> <button class="theme-opt fx-opt" type="button" role="option" data-fx-value="off" aria-selected="false"> <span class="fx-opt__body"> <span class="fx-opt__name">关闭特效</span> <span class="fx-opt__hint">最省电</span> </span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt fx-opt" type="button" role="option" data-fx-value="standard" aria-selected="false"> <span class="fx-opt__body"> <span class="fx-opt__name">标准</span> <span class="fx-opt__hint">闪烁星空 + 流星</span> </span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt fx-opt" type="button" role="option" data-fx-value="fancy" aria-selected="false"> <span class="fx-opt__body"> <span class="fx-opt__name">华丽</span> <span class="fx-opt__hint">追加极光 / 星座 / 光尘</span> </span> <span class="theme-opt__mark">✦</span> </button> </div> </div> <script type="module">const n=document.getElementById("fxBtn"),a=document.getElementById("fxPop");function s(d){document.documentElement.dataset.fx=d;try{localStorage.setItem("stella-fx",d)}catch{}document.querySelectorAll("#fxPop .fx-opt").forEach(t=>{const e=t.dataset.fxValue===d;t.classList.toggle("is-active",e),t.setAttribute("aria-selected",String(e))}),document.dispatchEvent(new CustomEvent("stella-fx-change",{detail:d}))}if(n&&a){const d=document.documentElement.dataset.fx||"standard";document.querySelectorAll("#fxPop .fx-opt").forEach(t=>{const e=t.dataset.fxValue===d;t.classList.toggle("is-active",e),t.setAttribute("aria-selected",String(e))}),n.addEventListener("click",t=>{t.stopPropagation();const e=a.hidden;a.hidden=!e,n.setAttribute("aria-expanded",String(e))}),document.addEventListener("click",t=>{!a.hidden&&!t.target.closest(".fx-switch")&&(a.hidden=!0,n.setAttribute("aria-expanded","false"))}),document.addEventListener("keydown",t=>{t.key==="Escape"&&!a.hidden&&(a.hidden=!0,n.setAttribute("aria-expanded","false"),n.focus())}),a.addEventListener("click",t=>{const e=t.target.closest(".fx-opt");e&&(s(e.dataset.fxValue??"standard"),a.hidden=!0,n.setAttribute("aria-expanded","false"))})}</script> </div> </div> </header> <main id="main">  <article class="wrap post-layout" data-astro-cid-lvjzyg5v> <div class="post-main page-fade" data-astro-cid-lvjzyg5v> <header class="post-head" data-astro-cid-lvjzyg5v> <a class="crumb" href="/STELLASTOPVRC/posts/" data-astro-cid-lvjzyg5v>← 返回教程档案</a> <div class="post-head__meta" style="--accent:var(--ink-dim)" data-astro-cid-lvjzyg5v> <span class="badge" data-cat="Avatar 虚拟形象" data-astro-cid-lvjzyg5v>Avatar 虚拟形象</span> <time datetime="2026-11-09" data-astro-cid-lvjzyg5v>2026-11-09</time> <span class="post-head__reading" data-astro-cid-lvjzyg5v>⏱ 约 263 分钟</span>  </div> <h1 class="post-head__title" data-astro-cid-lvjzyg5v>Modular Avatar (MA) 完整知识库</h1> <p class="post-head__lead" data-astro-cid-lvjzyg5v>Modular Avatar（MA）衣服装上后不动或完全没反应，绝大多数是三件事没做到位——没执行 Setup Outfit、骨骼名不匹配、或 Apply On Play 没勾选。</p> <div class="chip-row" data-astro-cid-lvjzyg5v> <a class="chip" href="/STELLASTOPVRC/posts/?tag=%E7%9F%A5%E8%AF%86%E5%BA%93" data-astro-cid-lvjzyg5v> 知识库 </a><a class="chip" href="/STELLASTOPVRC/posts/?tag=avatar" data-astro-cid-lvjzyg5v> avatar </a> </div> </header> <div class="prose" data-astro-cid-lvjzyg5v> <hr>
+<h1 id="modular-avatar-衣服装上后不动或没反应的诊断依次检查-setup-outfit-执行骨骼名匹配与-apply-on-play-勾选">Modular Avatar 衣服装上后不动或没反应的诊断：依次检查 Setup Outfit 执行、骨骼名匹配与 Apply On Play 勾选</h1>
+<p>Modular Avatar（MA）衣服装上后不动或完全没反应，绝大多数是三件事没做到位——没执行 Setup Outfit、骨骼名不匹配、或 Apply On Play 没勾选。</p>
+<p>第一步检查 Setup Outfit 是否真的执行过：在 Unity 中对衣服执行右键菜单 Modular Avatar 下的 Setup Outfit，成功后衣服根上会出现 Merge Armature 组件；没有这个组件说明从未成功设置。</p>
+<p>第二步检查骨骼名匹配：衣服的 Hips 等主要骨骼名需要能对应上素体的同名骨骼（例如衣服 Hips 名包含素体 Hips 名），名字对不上时合并会失败或错位。</p>
+<p>第三步也是最高频原因（社区经验约 99%）：Apply On Play 没有勾选。检查路径是选中 Avatar 根对象 → VRC Avatar Descriptor → 勾选 Apply On Play。该开关不打开时，MA 在进入 Play 模式或上传时不会对 Avatar 做任何处理，所有组件自然全部无效。</p>
+<p>补充验证手段：右键 Avatar → Modular Avatar → Manual bake avatar 可在不进 Play 模式的情况下直接生成烘焙结果，用来确认最终效果。</p>
+<hr>
+<hr>
+<h1 id="modular-avatar-衣服穿模破洞的处理shape-changer-隐藏遮挡部位physbone-blocker-挡动态穿模overdraw-半透明视图查看穿模程度">Modular Avatar 衣服穿模破洞的处理：Shape Changer 隐藏遮挡部位、PhysBone Blocker 挡动态穿模、Overdraw 半透明视图查看穿模程度</h1>
+<p>Modular Avatar（MA）场景下衣服穿模破洞有两类处理——静态遮挡用 Shape Changer 自动隐藏被遮住的身体，动态顶穿用 PhysBone Blocker 挡住物理骨骼影响；判断穿模严重程度则用 Unity Scene 视图的 Overdraw 半透明视图。</p>
+<p>Shape Changer 是 Modular Avatar 的反应式组件，启用后可修改形态键值或直接删除多边形，常用于在衣服遮挡处把身体对应部位收进去，避免身体从领口、袖口等位置露出来。</p>
+<p>PhysBone Blocker 是 VRChat 的组件，加在被顶穿的部位（如胸、腹部）后，可以阻止 PhysBone 在该区域推动骨骼，从而消除动态穿模。</p>
+<p>查看穿模程度的方法：Unity 的 Scene 视图左上角着色（Shaded）下拉菜单中选择 Overdraw，场景会以半透明叠加方式渲染，穿模重叠越多的区域越明显，便于定位问题部位。</p>
+<hr>
+<hr>
+<h1 id="modular-avatar-服装适配两问调体型衣服不变形用-blendshape-sync-同步形态键鞋子陷进地板用-floor-adjuster-调垂直位置">Modular Avatar 服装适配两问：调体型衣服不变形用 Blendshape Sync 同步形态键、鞋子陷进地板用 Floor Adjuster 调垂直位置</h1>
+<p>两个常见服装适配问题各有专用组件——体型联动靠 Blendshape Sync，贴地高度靠 Floor Adjuster，两者都是 Modular Avatar 的组件。</p>
+<p>调体型时衣服不变形：身体的体型通常由形态键（Blendshape）驱动，衣服若带有同用途形态键但未被关联，就不会跟随。解决方法是在衣服上添加 Blendshape Sync 组件，建立身体形态键到衣服形态键的同步映射，之后拖动体型滑块时衣服会一起变形。</p>
+<p>鞋子陷进地板：鞋类模型的原点或底部位置偏低时，穿上后会整体沉入地面。解决方法是添加 Floor Adjuster 组件，用它调整物件的垂直位置，使鞋底正好落在地面高度。</p>
+<p>这两个组件都属于装衣服后的常规微调步骤，是玩家最高频提问的前几名。</p>
+<hr>
+<hr>
+<h1 id="modular-avatar-物件开关化与验证object-toggle-做可切换发型菜单default-复选框即时预览换装闪现裸体是-1-帧延迟保护">Modular Avatar 物件开关化与验证：Object Toggle 做可切换发型菜单、Default 复选框即时预览、换装闪现裸体是 1 帧延迟保护</h1>
+<p>在 Modular Avatar（MA）中做可开关的发型或服饰，用 Object Toggle 组件把物件接入菜单；调试时点 Inspector 里 MA Menu Item 的 Default 复选框即可立刻在 Scene 视图看到物件出现或消失，不需要进 Play 模式；切换瞬间闪现裸体是正常的，Object Toggle 自带 1 帧延迟保护自动处理。</p>
+<p>制作概要：为发型（或任何想开关的 GameObject）配置 Object Toggle，并通过 MA Menu Item 暴露成菜单项；多个互斥发型各自做成一个开关项，即可实现同时只显示一个。</p>
+<p>快速验证技巧：点击 MA Menu Item 上的 Default 复选框，Scene 视图立即反映效果。这是官方教程 3 强调的做法，能在不进 Play 的情况下确认开关是否配对。</p>
+<p>关于闪现：切换衣物时偶尔看到一瞬间的裸体不是配置错误——Object Toggle 的设计带 1 帧延迟保护，用于隐藏切换空档，属于 Modular Avatar 的自动行为（对应官方 Reaction Timing 机制），无需修复。</p>
+<hr>
+<hr>
+<h1 id="modular-avatar-在-mmd-世界的四个高频疑问表情不对找-worldmmd-layer-control-必须装在-layer-上小组件失效是保护行为总开关在-vrchat-settings-组件">Modular Avatar 在 MMD 世界的四个高频疑问：表情不对找 World、MMD Layer Control 必须装在 layer 上、小组件失效是保护行为、总开关在 VRChat Settings 组件</h1>
+<p>MMD 世界相关的四类高频问题各有明确答案——表情不对找 World 不找 Avatar；Layer Control 装错位置就 build 失败；小组件失效多半是 Modular Avatar 在刻意保护你的配置；总开关藏在 VRChat Settings 组件里。</p>
+<p>表情不对：在 MMD 世界跳舞时面部表情异常，社区经验是约 99% 由 World 自身的表情覆盖行为导致，不是你的 Avatar 配置问题，一般无需改动 Avatar。</p>
+<p>build 失败：使用 MMD Layer Control 时如果构建报错，几乎都是安装位置错误——它必须装到 animator 的 layer 上，而不是装到 state 上。</p>
+<p>小组件失效：自己做的开关或小组件进了 MMD 世界就不工作，默认这是 Modular Avatar 的保护行为（防止用户配置被 MMD 动画覆盖），很多时候这个默认恰恰是正确的；确需放开时用 MMD World Support 开关。</p>
+<p>总开关位置：Modular Avatar 的 VRChat Settings 组件中提供 MMD World Support 复选框，控制是否让 Avatar 适配 MMD World 的行为。</p>
+<p>以上机制对应 Modular Avatar 官方文档 General Behavior 下的 MMD World Workarounds 子页（relay layers、padding layers、MMD Layer Control），源页标注为完整覆盖。版本备注：对应源页 v1.2（2026-08-13 复核，MA 1.17.x 时点）的官方文档转述；证据级 official。</p>
+<hr>
+<hr>
+<h1 id="modular-avatar-参数冲突防护三招ma-parameters-勾-internal-防冲突menu-item-自动参数取消-saved-与-syncedsync-parameter-sequence-与-vrcfury-parameter-compressor-互斥">Modular Avatar 参数冲突防护三招：MA Parameters 勾 Internal 防冲突、Menu Item 自动参数取消 Saved 与 Synced、Sync Parameter Sequence 与 VRCFury Parameter Compressor 互斥</h1>
+<p>Modular Avatar 参数体系有三个关键规则——分发 Prefab 用 Internal 防冲突、临时参数取消 Saved 与 Synced、跨平台顺序问题用 Sync Parameter Sequence 且不得与 VRCFury Parameter Compressor 同时使用。</p>
+<p>防参数冲突：自制 Prefab 若与其他作者组件可能同场使用，在 Prefab 内的 MA Parameters 组件上勾选 Internal，让参数以内部方式处理，避免与别人同名参数互相干扰。</p>
+<p>不保存不同步：Menu Item 会在使用时自动创建参数名；若这个参数只是临时控制、不需要保存状态或网络同步，在该 Menu Item 上取消 Saved 和 Synced 两个复选框即可。</p>
+<p>跨平台顺序：同一 Avatar 分别上传 PC 与 Android 后若出现参数顺序对不上，使用 Sync Parameter Sequence 组件固定参数顺序。注意硬性限制：它与 VRCFury Parameter Compressor 冲突，同一个项目里只能二选一。</p>
+<p>版本备注：Sync Parameter Sequence 与 VRCFury Parameter Compressor 冲突的具体表现与适用版本范围在候选来源片段中未说明，引用时建议对照官方文档复核。</p>
+<hr>
+<hr>
+<h1 id="modular-avatar-错误报告工具用法tools--show-error-report-打开错误窗口改完配置需重新-build-或-manual-bake-才会刷新">Modular Avatar 错误报告工具用法：Tools → Show Error Report 打开错误窗口，改完配置需重新 Build 或 Manual Bake 才会刷新</h1>
+<p>Modular Avatar（MA）的错误诊断入口是 Tools → Modular Avatar → Show Error Report；错误列表只在重新构建后刷新，改完配置必须重新 Build 一次才能确认错误是否消除。</p>
+<p>打开错误窗口：在 Unity 顶部菜单依次点 Tools → Modular Avatar → Show Error Report，即可看到当前 Avatar 的构建错误与警告列表。</p>
+<p>刷新机制：错误报告对应最近一次构建结果。修复配置后若错误仍然显示，不代表没修好，而是还没重新构建——两种方式任选其一：进入 Play 模式触发自动构建，或执行 Tools → Manual Bake Avatar 手动烘焙。构建完成后错误报告即更新。</p>
+<p>建议的调试节奏：改一处配置 → Manual Bake → 看错误窗口清零，再继续下一处，避免多处同时修改后难以定位是哪一处引发错误。</p>
+<hr>
+<hr>
+<h1 id="vcc-添加-modular-avatar-仓库报-failed-to-add-repo-的处理点-cancel-并确认-bd_-仓库已勾选vcc-已知-bug">VCC 添加 Modular Avatar 仓库报 Failed to add Repo 的处理：点 Cancel 并确认 bd_ 仓库已勾选（VCC 已知 bug）</h1>
+<p>VCC（VRChat Creator Companion）添加 Modular Avatar 仓库时弹出 Failed to add Repo 属于 VCC 已知 bug，点 Cancel 关掉即可，随后确认 bd_ 仓库已被勾选，不影响正常使用。</p>
+<p>处理步骤：出现报错弹窗时点 Cancel；打开 VCC 的仓库设置页面，检查列表中是否有名为 bd_ 的仓库并确认其处于勾选状态；该仓库地址为 <a href="https://vpm.nadena.dev/vpm.json">https://vpm.nadena.dev/vpm.json</a> ，勾选后即可在项目管理中正常安装 Modular Avatar。</p>
+<p>补充：官方推荐用 ALCOM 代替 VCC 管理 VPM 包（ALCOM 添加同一 bd_ 仓库即可），且安装预发布版本时官方明确要求必须使用 ALCOM，因为 VCC 的依赖解析存在 bug。</p>
+<p>证据边界：Cancel + 核对勾选的处理步骤在本条来源片段内无官方原文直接引用，属社区速查表表述；同主题的官方口径另见本页「Failed to add Repo 根因」相关条目（official）。</p>
+<hr>
+<hr>
+<h1 id="学习-modular-avatar-组件内部结构的方法拆解官方-samples-的-fingerpen-与-clap-示例-prefab">学习 Modular Avatar 组件内部结构的方法：拆解官方 Samples 的 Fingerpen 与 Clap 示例 Prefab</h1>
+<p>想知道一个 Modular Avatar 小组件内部长什么样，最快的办法是拆 Modular Avatar 自带的官方 Samples，入门推荐 Fingerpen（手指笔）和 Clap（鼓掌）这两个例子。</p>
+<p>做法：在项目中导入 Modular Avatar 的 Samples 后，把示例 Prefab 拖进场景，逐层展开层级树，观察它的组件搭配——例如 Object Toggle、MA Menu Item、MA Parameters、Merge Animator 是如何组合在一个小道具里的；看完删除即可，不影响自己的 Avatar。</p>
+<p>价值：Samples 是官方维护的规范范例，能直观看到命名、层级、参数注册的惯例，是自己动手做 Prefab 前最好的参照物。</p>
+<p>证据边界：本条为社区经验归纳（inferred），Samples 清单详见源页 §9.6。</p>
+<hr>
+<hr>
+<h1 id="modular-avatar-衣服换色换材质material-swap-组件批量替换材质配合-quick-swap-一键切换与即时预览">Modular Avatar 衣服换色换材质：Material Swap 组件批量替换材质，配合 Quick Swap 一键切换与即时预览</h1>
+<p>衣服换颜色或换材质，用 Modular Avatar 的 Material Swap 组件做批量材质替换，配合 Quick Swap 可以一键切换并即时预览效果。</p>
+<p>组件分工：Material Swap 属于 Modular Avatar 的反应式组件，启用时按预设映射批量替换单个或多个渲染器上的材质，适合一套衣服做多套配色的场景；Material Setter 则是逐槽位替换材质的姊妹组件，二者按粒度选用。</p>
+<p>使用要点：先把各配色做成材质资产，在 Material Swap 里建立原材质到目标材质的映射，再把它接入菜单（如配合 Quick Swap 或 Menu Item），即可在游戏内作为独立选项切换。</p>
+<hr>
+<hr>
+<h1 id="modular-avatar-衣服局部删除与顶点颜色清理mesh-cutter-配-by-mask-vertex-filter-删袖子等部位remove-vertex-color-加到-avatar-根解决染色">Modular Avatar 衣服局部删除与顶点颜色清理：Mesh Cutter 配 By Mask Vertex Filter 删袖子等部位，Remove Vertex Color 加到 Avatar 根解决染色</h1>
+<p>两类网格级清理都由 Modular Avatar 组件在构建期完成——删局部用 Mesh Cutter（配 By Mask Vertex Filter 过滤），去顶点色用 Remove Vertex Color 且要加在 Avatar 根上。</p>
+<p>删除衣物局部：给衣服对象添加 Mesh Cutter 组件，选择 By Mask Vertex Filter 作为顶点过滤方式，按遮罩圈出要删除的部分（例如长袖改为短袖时删掉袖段），构建时会自动删除或隐藏这些多边形，源模型文件保持不变。</p>
+<p>清除顶点颜色：部分模型自带顶点色，会把头发等部位染出不期望的颜色。处理方法是给 Avatar 根对象添加 Remove Vertex Color 组件，构建时统一移除顶点色，恢复材质原本的颜色表现。</p>
+<hr>
+<hr>
+<h1 id="modular-avatar-菜单归置与平台过滤menu-installer-指定-install-to-子菜单避免顶层混乱platform-filter-加-include-vrchat-让菜单只在-vrchat-出现">Modular Avatar 菜单归置与平台过滤：Menu Installer 指定 Install To 子菜单避免顶层混乱，Platform Filter 加 Include VRChat 让菜单只在 VRChat 出现</h1>
+<p>菜单混乱用 Menu Installer 指定安装位置解决，平台差异用 Platform Filter 解决，两者都是 Modular Avatar 的标准做法。</p>
+<p>菜单归置：安装带菜单的小组件或 Prefab 时，Menu Installer 组件允许指定 Install To 目标子菜单，把它的菜单项放进你规划的分类（如服装、道具）而不是堆在顶层，多个组件共存时菜单依然整洁。</p>
+<p>平台过滤：给只想在特定平台出现的对象（如菜单项）挂 Platform Filter，添加 Include VRChat 条件后，该项目只会保留在 VRChat 平台的构建中，Android 构建会自动排除，适合放仅 PC 可用的功能入口。</p>
+<hr>
+<hr>
+<h1 id="modular-avatar-道具世界固定与缩放隔离world-fixed-object-钉在世界且多实例只生成-1-个-constraint-不额外费性能world-scale-object-不随-avatar-缩放">Modular Avatar 道具世界固定与缩放隔离：World Fixed Object 钉在世界且多实例只生成 1 个 constraint 不额外费性能，World Scale Object 不随 Avatar 缩放</h1>
+<p>World Fixed Object 把物件固定在世界坐标中不随 Avatar 移动，World Scale Object 让物件脱离 Avatar 的缩放影响；且 World Fixed Object 多个并存不额外费性能——无论几个都只生成 1 个 constraint。</p>
+<p>World Fixed Object：适合做放在世界里的道具，例如放置后不跟随玩家移动的标记物。组件在构建期为整个 Avatar 生成一个共享约束，所有挂了该组件的物件复用它，所以添加多个不会产生多个约束的性能负担。</p>
+<p>World Scale Object：当 Avatar 被整体缩放（如大人化或小孩化）时，挂了该组件的物件保持自身尺度，不跟着变大变小，适合手持道具、武器等对尺寸敏感的东西。</p>
+<p>证据边界：「只生成 1 个 constraint」的实现细节未附官方出处，引用前建议以 Modular Avatar 官方 World Fixed Object 文档复核。</p>
+<hr>
+<hr>
+<h1 id="modular-avatar-global-collider-的两种玩法与-6-个上限manual-remap-把手指-collider-移到嘴部模拟咬东西跨-avatar-碰撞他人-physbone">Modular Avatar Global Collider 的两种玩法与 6 个上限：Manual Remap 把手指 collider 移到嘴部模拟咬东西，跨 Avatar 碰撞他人 PhysBone</h1>
+<p>Modular Avatar 的 Global Collider 组件有两个典型用途——用 Manual Remap 把手指碰撞体挪到任意位置（经典用法是移到嘴里模拟咬东西），以及让自己的 PhysBone 能撞到别人的 PhysBone；使用时有全局 6 个的数量上限需要注意。</p>
+<p>咬东西玩法：给手部配置 Global Collider 并启用 Manual Remap，把 collider 的映射目标改到头部或下巴附近的骨骼，运行时手指的碰撞体就会出现在嘴部，可以与食物道具交互。</p>
+<p>双人物理碰撞：默认情况下各自的 PhysBone 只与本 Avatar 碰撞；通过 Global Collider 把自己的碰撞体公开后，就能与他人的 PhysBone 产生碰撞效果，适合互动舞蹈、打闹类玩法。</p>
+<p>数量限制：全局 collider 有 6 个的上限（源页以警示标出），规划互动功能时要预留名额。证据边界：6 个上限的具体出处（VRChat 官方限制还是 Modular Avatar 文档规定）未在候选片段标明，建议复核官方文档。</p>
+<hr>
+<hr>
+<h1 id="modular-avatar-visible-head-accessory-第一人称可见头发组件用法及不可挂在-physbone-链子级的硬性限制">Modular Avatar Visible Head Accessory 第一人称可见头发：组件用法及不可挂在 PhysBone 链子级的硬性限制</h1>
+<p>第一人称看不到自己的头发，用 Modular Avatar 的 Visible Head Accessory 组件解决；硬性限制是该组件所在的物件不能挂在 PhysBone 链的子级上。</p>
+<p>背景：VRChat 出于视线遮挡考虑，第一人称视角会隐藏整个头部网格，头发作为头部子物件一并消失。Visible Head Accessory 在构建时把指定头部配件标记为第一人称可见，实现帽子、刘海在第一人称仍可见的效果。</p>
+<p>使用约束：目标物件必须按常规层级挂在头部下方，不能塞进 PhysBone 链条（如发梢的物理骨子级），否则组件无法正确处理，第一人称依旧不可见。</p>
+<hr>
+<hr>
+<h1 id="modular-avatar-整体比例调整move-independently-配合-scale-adjusternon-uniform-缩放必须用-scale-adjuster子对象联动由-adjust-child-positions-控制">Modular Avatar 整体比例调整：Move Independently 配合 Scale Adjuster，non-uniform 缩放必须用 Scale Adjuster，子对象联动由 Adjust child positions 控制</h1>
+<p>调整 Avatar 整体比例的正确组合是 Move Independently 加 Scale Adjuster；不等比缩放只能用 Scale Adjuster；子对象被连带移动时，取消 Adjust child positions 勾选即可。</p>
+<p>整体放大缩小：选中 Avatar 后用 Move Independently 方式配合 Scale Adjuster 组件调整整体比例，避免直接拖 transform 缩放带来的骨骼与约束错乱。</p>
+<p>不等比缩放：当 XYZ 三个轴需要不同倍率（如只拉高不拉宽）时，必须使用 Scale Adjuster——普通缩放工具在不等比情形下会让子物体产生剪切歪斜，Scale Adjuster 会在构建期做安全换算。</p>
+<p>子对象联动控制：Scale Adjuster 默认会按比例调整子对象位置以维持形状；如果只想缩放对象本身、保持子对象原位，取消组件上的 Adjust child positions 复选框。</p>
+<hr>
+<hr>
+<h1 id="modular-avatar-reactive-组件两条铁律优先级由-hierarchy-层级顺序决定最低者赢不要依赖精确反应时序官方明确警告">Modular Avatar Reactive 组件两条铁律：优先级由 Hierarchy 层级顺序决定（最低者赢），不要依赖精确反应时序（官方明确警告）</h1>
+<p>Modular Avatar 反应式（Reactive）组件有两条必须记住的规则——冲突时层级顺序最低的赢；时序上不要追求精确，官方明确警告不要依赖精确 timing。</p>
+<p>优先级规则：当多个 Reactive 组件（如多个 Shape Changer、Object Toggle）试图控制同一个对象或形态键时，Hierarchy 中层级顺序最低（更靠后）的那个获胜。排布组件时把最终想要的效果放在更低层级即可稳定覆盖其他配置。</p>
+<p>时序规则：反应式组件的生效通过构建期生成的动画实现，可能存在一帧级别的延迟。官方文档明确警告不要依赖精确的反应时间，因此在设计必须精确到某一帧切换的效果时应改用显式动画或其他方案，不要拿 Reactive 当帧级调度器。</p>
+<p>证据边界：优先级规则的完整表述位于源页 §5.1，本条速查表仅一行概括；详解见后续「Reactive 组件通用规则」条目。</p>
+<hr>
+<hr>
+<h1 id="modular-avatar-blendshape-sync-不支持链式同步只支持-ab-与-ac-的星型映射不能-abc-接力官方限制">Modular Avatar Blendshape Sync 不支持链式同步：只支持 A→B 与 A→C 的星型映射，不能 A→B→C 接力（官方限制）</h1>
+<p>Modular Avatar 的 Blendshape Sync 只支持星型映射（一个源直接同步到多个目标），不支持链式接力——A 到 B、A 到 C 都可以，A 到 B 到 C 不行，这是官方明确的限制。</p>
+<p>正确做法：让所有需要联动的物件都直接以同一个源（通常是身体的形态键）建立各自的 Blendshape Sync 映射，形成一对多的扇形结构。</p>
+<p>错误做法：指望第一件衣服把形态键转发给第二件衣服。链式结构中的中间节点不会成为新的同步源，末端物件不会得到同步，表现为静默失效。</p>
+<hr>
+<hr>
+<h1 id="modular-avatar-replace-object-的一对一约束一个组件实例只能替换一个目标对象">Modular Avatar Replace Object 的一对一约束：一个组件实例只能替换一个目标对象</h1>
+<p>Modular Avatar 的 Replace Object 用于把一个 GameObject 整体替换 Avatar 上的另一个对象（典型用途是用 Prefab 模型替换素体自带的头发或配饰），使用时注意一对一限制：一个组件实例只能服务一个替换目标。</p>
+<p>正确用法：每需要替换一处，就在来源对象上添加一个 Replace Object 并指定一个目标；有多处替换需求时并列添加多个组件实例。</p>
+<p>常见误用：试图用一个实例替换多个对象，或在替换链上叠加依赖——这类配置不会按预期工作，应拆分为多个一对一替换。</p>
+<hr>
+<hr>
+<h1 id="modular-avatar-merge-animator-路径模式选择relative-相对当前对象absolute-绝对路径direct-blend-tree-强行对齐动画时长导致播放速度不对改用-merge-animator">Modular Avatar Merge Animator 路径模式选择：Relative 相对当前对象、Absolute 绝对路径；Direct Blend Tree 强行对齐动画时长导致播放速度不对，改用 Merge Animator</h1>
+<p>Merge Animator 配置的核心两点——Path mode 按动画路径书写基准在 Relative 与 Absolute 之间二选一；发现动画播放速度不对，多半是误用了 Direct Blend Tree 的时长对齐特性，应改用 Merge Animator。</p>
+<p>Path mode 选择：Relative 模式下动画里的路径相对于 Merge Animator 所挂的对象解析，适合组件自带、按相对结构制作的动画；Absolute 模式按 Avatar 根开始的绝对路径解析，适合针对固定骨架结构编写的动画。选错模式的表现是动画作用不到目标对象。</p>
+<p>Direct Blend Tree 的坑：Direct Blend Tree 为了让各分支同步混合，会把所有参与的动画对齐到同一时长，短动画被拉长、长动画被压短，观感就是播放速度不对。需要原速播放时改用 Merge Animator 直接合并动画层。</p>
+<hr>
+<hr>
+<h1 id="禁用-modular-avatar-约束自动转换删除-avatar-根上的-convert-constraints-组件即可">禁用 Modular Avatar 约束自动转换：删除 Avatar 根上的 Convert Constraints 组件即可</h1>
+<p>Modular Avatar 的约束自动转换能力由 Avatar 根上的 Convert Constraints 组件承载；不需要该行为时，直接删除这个组件即可，无需改任何全局设置。</p>
+<p>操作：在 Hierarchy 选中 Avatar 根对象，找到 Convert Constraints 组件，右键 Remove Component 删除。删除后 Modular Avatar 在构建期不再自动执行约束转换，场景中的约束保持原样。</p>
+<p>适用场景：与其它也处理约束的工具链共存、或需要精确控制约束处理时机时，禁用自动转换可避免双重处理。</p>
+<hr>
+<hr>
+<h1 id="modular-avatar-官方文档-general-behavior-章节定位讲-ma-会自动做什么的机制说明与操作型-tutorials-互补当前唯一子页是-mmd-world-workarounds">Modular Avatar 官方文档 General Behavior 章节定位：讲 MA 会自动做什么的机制说明，与操作型 Tutorials 互补，当前唯一子页是 MMD World Workarounds</h1>
+<p>Modular Avatar 官方文档的 General Behavior 章节是通用行为说明——解释 MA 在特定场景下会自动做什么以及为什么，属于机制解释而非操作教程；目前它只有一个子页面：MMD World Workarounds。</p>
+<p>与 Tutorials 的区别（社区归纳的四维对比）：视角上，Tutorials 是「我要做 X」的第一人称操作视角，General Behavior 是「MA 会自动做 X」的行为视角；颗粒度上，前者是操作步骤，后者是机制原理；触发阅读的场景，前者是接到具体任务，后者是遇到异常或疑问；教学意义上，前者解决「跟着做」，后者解决「理解为什么这样做有效」。</p>
+<p>覆盖情况：源页将其 MMD 相关内容（§7.16 组件、§9.2 行为、§15 教学法）对应到官方 MMD World Workarounds 子页，并标注为完整覆盖。</p>
+<p>证据边界：四维对比表为源页作者的社区归纳而非官方原文；对应源页 §0.5（v1.2，2026-08-13 复核）。</p>
+<hr>
+<hr>
+<h1 id="modular-avatar-是什么让拖入-prefab-即完成换装成立的编译期组装工具五大痛点与解法对照">Modular Avatar 是什么：让拖入 Prefab 即完成换装成立的编译期组装工具，五大痛点与解法对照</h1>
+<p>Modular Avatar（MA）解决的核心问题是把换装从手工手术变成拖拽安装——拖一个衣服或组件 Prefab 到 Avatar 上，剩下的骨骼合并、参数注册、穿模处理、动画修正全部由 MA 在构建期自动完成。</p>
+<p>五大痛点与解法对照：衣服要手动合并骨骼、动骨、菜单——拖入后右键 Setup Outfit 一键完成；多个小组件参数冲突——MA Parameters 自动重命名隔离；衣服影响别的部位（穿模）——Shape Changer 自动隐藏被遮挡的身体；不同玩家的骨骼名不一样——Merge Armature 智能匹配骨骼；装上衣服后表情或动画坏掉——Merge Animator 自动修正动画路径。</p>
+<p>理解类比（社区说法）：MA 之于 Avatar 组件，就像包管理器之于软件包——每个下载的衣服或小组件自带说明书，MA 负责把所有说明书翻译并正确安装到你的 Avatar 上。</p>
+<p>证据边界：五大痛点框架与包管理器类比源自源页 §1 的整理表述（inferred 成分），非官方文档逐字内容。</p>
+<hr>
+<hr>
+<h1 id="modular-avatar-安装三步官方推荐-alcom添加-bd_-仓库-vpmjsonmanage-project-点加号apply-生效更新点绿色箭头">Modular Avatar 安装三步（官方推荐 ALCOM）：添加 bd_ 仓库 vpm.json、Manage Project 点加号、APPLY 生效，更新点绿色箭头</h1>
+<p>安装 Modular Avatar 的官方推荐途径是 ALCOM，三步完成——添加 bd_ 仓库、在 Manage Project 中点加号、APPLY 应用；升级时点版本号旁的绿色箭头后 APPLY。</p>
+<p>步骤明细：第一步，打开 ALCOM 添加仓库，URL 填 <a href="https://vpm.nadena.dev/vpm.json">https://vpm.nadena.dev/vpm.json</a> ，Repository Name 填 bd_，点击 Add VPM Repository；第二步，打开目标项目的 Manage Project 页面，找到 Modular Avatar 条目，点击其旁边的加号；第三步，点击 APPLY，安装完成。</p>
+<p>版本更新：同一界面中版本号旁会出现绿色箭头，点击即可升级到新版本，随后 APPLY 生效。</p>
+<p>官方依据：官方文档原文为 “The recommended way to install Modular Avatar is using ALCOM.”；VCC（VRChat Creator Companion）仍受支持，但因依赖解析缺陷不作推荐，且预发布版本官方明确要求必须使用 ALCOM。版本备注：MA 1.17.0 文档时点（源页 last_review 2026-08-13）。</p>
+<hr>
+<hr>
+<h1 id="modular-avatar-预发布版本必须用-alcom-安装vcc-依赖解析有-bug需勾选-show-pre-release-packages-并重新添加仓库">Modular Avatar 预发布版本必须用 ALCOM 安装：VCC 依赖解析有 bug，需勾选 Show pre-release packages 并重新添加仓库</h1>
+<p>Modular Avatar 的预发布版本（prerelease）只能用 ALCOM 安装，这是官方明确要求——原因是 VCC 的依赖解析存在 bug（官方原文：“Due to bugs in VCC dependency resolution, please use ALCOM to install prerelease versions of Modular Avatar.”）；VCC 连正式版都只是可用但不推荐，预发布则是完全不支持。</p>
+<p>启用步骤：打开 ALCOM → 进入 Settings 窗口 → 勾选 Show pre-release packages → 重新添加仓库（确保选择预发布版本标签）→ 在 Manage Project 中选择预发布版本安装。</p>
+<p>仓库与文档：主仓库地址不变，为 <a href="https://vpm.nadena.dev/vpm.json">https://vpm.nadena.dev/vpm.json</a> （bd_ 仓库中可切换 prerelease 标签）；预发布版本文档站点为 <a href="https://modular-avatar.nadena.dev/dev">https://modular-avatar.nadena.dev/dev</a> 。</p>
+<p>风险提示：预发布版本可能包含错误和兼容性问题，反馈渠道是 GitHub Issues（github.com/bdunderscore/modular-avatar/issues）。例外：正式版（stable）不受此限，VCC 也可安装正式版。版本备注：MA 1.17.0 文档时点。</p>
+<hr>
+<hr>
+<h1 id="modular-avatar-工作模型三阶段编辑模式摆组件编译时play-与上传一次性翻译成最终-avatar运行时只跑产物ma-组件不是运行时组件">Modular Avatar 工作模型三阶段：编辑模式摆组件、编译时（Play 与上传）一次性翻译成最终 Avatar、运行时只跑产物——MA 组件不是运行时组件</h1>
+<p>Modular Avatar（MA）是编译期工具——编辑模式摆组件，进 Play 或上传时 MA 一次性把所有组件翻译成最终 Avatar，VRChat 里运行的只是产物；MA 组件本身不是运行时组件。</p>
+<p>三阶段模型：编辑模式指你在 Unity 中的一切操作——摆放组件、配置参数、调整骨骼；编译时（Build Time）由进 Play 模式或上传 Avatar 触发，MA 读取所有组件配置并生成最终 Avatar（这一步也叫烘焙 bake）；运行时（Runtime）指编译产物在 VRChat 中运行，此时 MA 组件本身已不参与。</p>
+<p>推论：因为工作全部发生在编译时，Avatar 运行性能不受 MA 组件数量影响（影响的是产物结构）；反过来，任何装了没效果的问题都应首先怀疑构建没有发生（如 Apply On Play 未勾选）或组件配置未被正确读取，而不是运行时逻辑出错。</p>
+<hr>
+<hr>
+<h1 id="modular-avatar-三个核心组件merge-armature-管骨骼挂接merge-animator-管动画合并ma-parameters-管参数注册其余-20-多个组件都是它们的快捷方式">Modular Avatar 三个核心组件：Merge Armature 管骨骼挂接、Merge Animator 管动画合并、MA Parameters 管参数注册，其余 20 多个组件都是它们的快捷方式</h1>
+<p>Modular Avatar 组件虽多，核心只有三个——Merge Armature 管骨骼挂接、Merge Animator 管动画合并、MA Parameters 管参数注册；其余 20 多个组件都是这三个核心的快捷方式或附加功能。</p>
+<p>Merge Armature：把衣服的骨骼挂到素体上，凡是 Skinned Mesh 物件（衣服、头饰、尾巴等）都要经过它，Setup Outfit 快捷方式底层调用的就是它。</p>
+<p>Merge Animator：把小组件自带的 Animator 动画合并到 Avatar 的动画控制器里，任何带动画的组件都依赖它。</p>
+<p>MA Parameters：注册并按需重命名 Animator 参数，解决多组件参数命名冲突，凡是用到 Animator 参数的小组件都应通过它声明参数。</p>
+<p>学习建议：先吃透这三个组件的心智模型，再按需查其余组件，可以把 20 多个组件的学习成本压缩成三大件加语法糖。</p>
+<hr>
+<hr>
+<h1 id="modular-avatar-反应式组件核心思想gameobject-启用即触发效果object-toggle-切对象shape-changer-改形态键material-setter-与-material-swap-换材质mesh-cutter-删多边形">Modular Avatar 反应式组件核心思想：GameObject 启用即触发效果——Object Toggle 切对象、Shape Changer 改形态键、Material Setter 与 Material Swap 换材质、Mesh Cutter 删多边形</h1>
+<p>Modular Avatar 的反应式（Reactive）组件共同遵循一个思想——不写动画，让 GameObject 在启用时自动产生效果；五个常用组件分别是 Object Toggle、Shape Changer、Material Setter、Material Swap、Mesh Cutter。</p>
+<p>组件效果对照：Object Toggle 启用时启用或禁用其他 GameObject；Shape Changer 修改形态键值或直接删除多边形；Material Setter 替换材质；Material Swap 批量替换材质；Mesh Cutter 删除或隐藏多边形。</p>
+<p>自动工作的原理：这些组件响应三类触发信号——动画对 GameObject 激活状态的控制、其他 Object Toggle 的联动、菜单的选中状态。也就是说，无论状态变化来自菜单、动画还是另一个开关，反应式组件都会随之重新计算效果。</p>
+<p>设计意义：用户只需要声明什么状态对应什么效果的映射，构建期由 Modular Avatar 生成相应的动画层，省去手写 Animation Clip 与 layer 的工作量。</p>
+<hr>
+<hr>
+<h1 id="modular-avatar-官方教程六个隐含教学原则截图说话一步一动作明确预期结果给出失败模式小步推进具体-avatar-举例">Modular Avatar 官方教程六个隐含教学原则：截图说话、一步一动作、明确预期结果、给出失败模式、小步推进、具体 Avatar 举例</h1>
+<p>Modular Avatar 官方教程隐含六条教学原则——截图说话、一步一动作、明确预期结果、给出失败模式、小步推进、具体举例；面向零基础玩家教学时可直接复用。</p>
+<p>原则明细：截图说话——每一步配 1 到 2 张截图，用「看到 Inspector 出现某字段就对了」代替文字描述界面。一步一动作——每个步骤只包含一个操作，官方教程 1 共 4 步、教程 6 共 6 步，把装衣服拆成拖入、Setup、隐藏原衣、Play 看效果。明确预期结果——每步结尾写明应该看到什么，没看到就回去检查什么。给出失败模式——像官方教程 4 那样用大段内容讲可能没效果的诊断，例如 Play 模式没动大概率是某个具体原因。小步推进——不假设学员掌握后面才用到的知识，今天先做步骤 1 到 3，熟练后再做 4 到 6。具体举例——用具体的 Avatar 与服装示范（官方用 Sailor Onepiece 与 Anon-chan），并引导学员用自己的素材实践一遍。</p>
+<p>证据边界：六原则为对官方教程写法的编辑归纳（inferred），非官方发布的清单。</p>
+<hr>
+<hr>
+<h1 id="modular-avatar-三类典型玩家提问的标准回答框架装上没反应查-merge-armature骨骼名manual-bake加开关教-object-toggle穿模给-shape-changer-加-blendshape-sync-联合方案">Modular Avatar 三类典型玩家提问的标准回答框架：装上没反应查 Merge Armature/骨骼名/Manual Bake，加开关教 Object Toggle，穿模给 Shape Changer 加 Blendshape Sync 联合方案</h1>
+<p>Modular Avatar 新手提问集中在三类，每类有固定的回答框架——没反应查三步、加开关教 Object Toggle、穿模给联合方案。</p>
+<p>类型一「我刚装上没反应」：典型描述是衣服在场景里能看到，进 Play 模式就不见了。回答按序：检查 Merge Armature 组件是否存在 → 验证衣服与素体骨骼名匹配 → 让对方用 Manual Bake Avatar 直接看烘焙结果定位问题。</p>
+<p>类型二「我想加个开关」：典型诉求是让帽子之类能开能关。直接教 Object Toggle 方案——它是所有开关方案里最简单的，成功率高，适合建立信心。</p>
+<p>类型三「衣服和身体穿模」：典型描述是穿衣服后腰部有缝。回答给 Shape Changer 与 Blendshape Sync 的联合方案：Shape Changer 收起被遮挡部位，Blendshape Sync 保证体型变化时衣服跟随。</p>
+<p>证据边界：三类框架为社区答疑经验归纳（inferred）。</p>
+<hr>
+<hr>
+<h1 id="modular-avatar-五步问题诊断法截图留证查最简单原因查-setup-outfit查骨骼名manual-bake-看最终结果">Modular Avatar 五步问题诊断法：截图留证、查最简单原因、查 Setup Outfit、查骨骼名、Manual Bake 看最终结果</h1>
+<p>Modular Avatar 出问题时按五步诊断法排查——截图留证、查最简单原因、查 Setup Outfit、查骨骼名、Manual Bake 看最终结果；这套流程玩家自己也能独立执行。</p>
+<p>步骤 1 截图保存：看到异常先拍照或截图，方便回溯与求助时提供现场。</p>
+<p>步骤 2 检查最简单原因：组件根本没添加？拖的对象拖错了？没进 Play 模式就期待效果？三个低级原因排除掉再往下走。</p>
+<p>步骤 3 检查 Setup Outfit：看 Outfit 根对象上有没有 Merge Armature 组件，没有说明设置从未成功。</p>
+<p>步骤 4 检查骨骼名：核对衣服的 Hips 等主要骨骼名是否能对应素体骨骼名（如衣服 Hips 名包含素体 Hips 名）。</p>
+<p>步骤 5 Manual Bake 终审：右键 Avatar → Modular Avatar → Manual bake avatar，直接查看构建产物，绕过 Play 模式的变量确认最终效果。</p>
+<p>证据边界：五步法为社区整理的诊断流程（inferred）；其中各单项事实（Merge Armature 判据、Manual Bake 行为）另有官方依据。</p>
+<hr>
+<hr>
+<h1 id="教-modular-avatar-的四组反例话术对照预期结果代替催促封装编译概念具体操作代替抽象名词前置确认代替技能假设">教 Modular Avatar 的四组反例话术对照：预期结果代替催促、封装编译概念、具体操作代替抽象名词、前置确认代替技能假设</h1>
+<p>教 Modular Avatar 时有四类常见坏话术，每类都有直接可用的替代写法——用预期结果代替催促、用黑盒封装代替编译概念、用具象操作代替抽象名词、用前置确认代替技能假设。</p>
+<p>对照一：反例「你装好了吗？现在点击 Play」→ 正确「你应该看到 X。如果没看到，回去检查 Y」。前者是催促，后者给出可验证的预期与回退路径。</p>
+<p>对照二：反例「这个组件用 NDMF 编译时会处理」→ 正确「你不用理解这个，Unity 帮你做了」。对零基础学员，构建管线应当作黑盒封装，概念留到进阶阶段。</p>
+<p>对照三：反例「写一个空对象」→ 正确「新建一个空 GameObject（右键 → Create Empty）」。抽象名词必须落到具体菜单操作。</p>
+<p>对照四：反例「你应该知道 Animator 怎么用」→ 正确「先确认你打开过 Unity 的 Animator 窗口」。技能假设换成可执行的前置检查。</p>
+<p>证据边界：话术对照为教学经验归纳（inferred）。</p>
+<hr>
+<hr>
+<h1 id="modular-avatar-分层教学路线表纯新手从教程-1-与-3-起步跳过-ndmf-与参数入门加教程-2-与-4进阶加教程-5-与-6高级创作者读组件全集与-prefab-分发">Modular Avatar 分层教学路线表：纯新手从教程 1 与 3 起步跳过 NDMF 与参数，入门加教程 2 与 4，进阶加教程 5 与 6，高级创作者读组件全集与 Prefab 分发</h1>
+<p>Modular Avatar 的六个官方教程应按学员水平分层切入——纯新手学教程 1 和 3，入门加教程 2 和 4，进阶加教程 5 和 6，高级创作者直接读组件全集与 Prefab 分发指南。</p>
+<p>分层明细：纯新手——从教程 1（配置简单服装）和教程 3（简单对象开关）开始，明确跳过 NDMF 概念与参数内容。入门——在会穿衣服、会做开关的基础上，加教程 2（复杂服装）与教程 4（高级开关），暂缓手动动画。进阶——补教程 5（编辑菜单）与教程 6（手动动画），至此覆盖全部六个教程。高级创作者——不再依赖教程叙事，直接研读 Component Reference 全集与 Distributing Prefabs（Prefab 分发）材料。</p>
+<p>使用建议：答疑时先判断对方水平再给对应起点，避免一股脑甩出六个教程链接。</p>
+<p>证据边界：分层路线为社区教学归纳（inferred）。</p>
+<hr>
+<hr>
+<h1 id="modular-avatar-教学设计模式之-default-复选框即时预览不进-play-模式即可验证开关效果出自官方教程-3">Modular Avatar 教学设计模式之 Default 复选框即时预览：不进 Play 模式即可验证开关效果（出自官方教程 3）</h1>
+<p>教 Modular Avatar 开关时最有价值的一个设计是利用 MA Menu Item 的 Default 复选框做即时预览——点一下，Scene 视图立刻显示物件出现或消失，全程不需要进 Play 模式。</p>
+<p>官方出处：该做法来自官方教程 3 的演示——在 Inspector 上点击 MA Menu Item 的 Default 复选框，Scene 视图立即反映开关的目标状态。</p>
+<p>教学价值：一是学员无需进 Play 模式即可验证，省去反复进出 Play 的时间；二是即时反馈显著减少做了但不知道对不对的焦虑；三是教学话术可以直接固化为一句话——「点 Default 复选框就能看到效果」。</p>
+<p>类比（帮助理解的讲法）：类似 VSCode 改 CSS 的实时预览、后台管理面板的设置即时生效，核心都是把反馈周期压到秒级。</p>
+<p>证据边界：教学价值分析为社区归纳（inferred），机制事实（Default 复选框即时反映目标状态）出自官方教程 3。</p>
+<hr>
+<hr>
+<h1 id="用-unity-scene-视图-overdraw-调试模式目视验证模型重叠与穿模问题">用 Unity Scene 视图 Overdraw 调试模式目视验证模型重叠与穿模问题</h1>
+<p>在 Unity Scene 视图把着色模式切换为 Overdraw，可以直接看见模型之间的重叠与穿模区域，是验证 Modular Avatar 换装与形态键效果最直观的调试手段；凡是判断两个物体是否重叠、穿模的问题都用它做目视验证，而不是靠截图和文字描述去猜。</p>
+<p>三类典型应用：一是调整形态键（比如缩胸部、缩身体的 shrink 形态键）之后，确认衣服和身体不再互相穿插；二是调整 Collider（碰撞体）之后，确认碰撞范围正确；三是任何「这两个部件到底重不重叠」的疑问，都可以切到 Overdraw 一眼看出。</p>
+<p>核心价值在于让玩家看到问题而不是猜：重叠区域在 Overdraw 视图下会叠加成明显的高亮色块，比截图加文字描述直观得多。教学时可以直接教玩家用眼睛看穿模，自己动手确认，而不是反复进游戏试探。</p>
+<p>版本备注：对应官方教程设计模式 2 的教学分析（MA 1.x 文档时点）；证据级 inferred（教学模式归纳）。</p>
+<hr>
+<hr>
+<h1 id="modular-avatar-组件顺序即菜单-ui-优先级把-menu-installer-等玩家常改的组件放在-inspector-列表最前">Modular Avatar 组件顺序即菜单 UI 优先级：把 Menu Installer 等玩家常改的组件放在 Inspector 列表最前</h1>
+<p>在 Modular Avatar 中，Inspector 里组件的排列顺序相当于面向玩家的 UI 优先级——越靠上的组件，玩家越容易注意到、越方便修改。官方教程 6（手动配置）的做法就是把 Menu Installer 组件拖到组件列表最上面，因为它是玩家最常改动的入口。</p>
+<p>创作建议：发布成品或预设时，按照玩家最常改的放最前来排序组件，让换装、开关菜单这类高频操作一目了然。</p>
+<p>教学提示：可以向学员点明「组件顺序是 UI 优先级」这一心智模型，让他们理解排序不是随意的，而是面向使用者体验的设计决策。</p>
+<hr>
+<hr>
+<h1 id="setup-outfit-自动化机制自动找-armature自动加-merge-armature自动处理-a-poset-pose-转换">Setup Outfit 自动化机制：自动找 Armature、自动加 Merge Armature、自动处理 A-Pose/T-Pose 转换</h1>
+<p>Modular Avatar 的 Setup Outfit 是一条全自动流水线——右键衣服根对象选择 Modular Avatar → Setup Outfit 之后，它会自动完成三件事：①自动找到衣服层级里的 Armature（骨架）；②自动添加 Merge Armature 组件完成骨骼合并；③自动识别并处理 A-Pose/T-Pose 骨骼姿态差异。</p>
+<p>这意味着使用者不需要理解骨骼合并、姿态转换这些高级概念的具体原理，Modular Avatar 已经把它们封装起来自动完成。教新手时也不必讲解为什么能自动，只需要说明它会自动帮你做好即可——这正是一键换装对新手友好的核心原因，也是官方教程 1 把它作为入门第一步的设计意图。</p>
+<hr>
+<hr>
+<h1 id="形态键联动效果在编辑器无法预览用-avatar-30-emulator-或-gesture-manager-在-play-模式测试">形态键联动效果在编辑器无法预览：用 Avatar 3.0 Emulator 或 Gesture Manager 在 Play 模式测试</h1>
+<p>Modular Avatar 的形态键联动效果（例如 Shape Changer 随开关缩放身体部位）在编辑器中无法直接预览，这是官方在 Warning 框中明确告知的限制；正确的验证方式是进入 Play 模式，配合 Avatar 3.0 Emulator 或 Gesture Manager 这类模拟工具测试。</p>
+<p>这两个第三方工具可以在 Play 模式下模拟 VRChat 的菜单开关与表情状态，让你不上传模型就能看到联动效果。官方的处理方式值得学习：不隐藏限制，同时给出绕过限制的方法。</p>
+<p>排查思路：如果你在 Scene 视图里发现形态键联动没有生效，先不要以为是配置错误——那是编辑器本来就不预览此类效果，应改用上述 Play 模式工具验证，而不是反复改动配置。</p>
+<hr>
+<hr>
+<h1 id="modular-avatar-六教程学习路线按需求选教程顺序90-玩家只需教程-1-加教程-3">Modular Avatar 六教程学习路线：按需求选教程顺序，90% 玩家只需教程 1 加教程 3</h1>
+<p>Modular Avatar 官方六篇教程不必全学——90% 的玩家只需要教程 1（配置简单服装/换装）和教程 3（简单对象开关）两篇，其余教程等遇到具体问题再按需学习。</p>
+<p>按需求的衔接路径：① 完全新手（约 90% 玩家）：教程 1 换装 → 教程 3 开关，到此即可完成日常需求；② 遇到穿模：教程 1 → 教程 3 → 教程 5（形态键联动，用 Shape Changer 缩身体部位解决穿模）；③ 有布娃娃/布料衣服（Cloth）：教程 1 → 教程 2（配置复杂布料服装，处理 Collider）；④ 想编辑菜单或制作小组件：教程 1 → 教程 3 → 教程 4（菜单），可选继续教程 6（手动配置，理解底层组件）。</p>
+<p>这份路径的核心思想是按问题驱动学习：先用最小组合满足日常，再针对具体障碍补充对应教程，避免新手被一次塞进全部概念。</p>
+<p>证据边界：路径与比例为社区整理的教学建议（inferred）。</p>
+<hr>
+<hr>
+<h1 id="modular-avatar-教学原则-1-prefab-first配置封装成单个-prefab-拖入即用再拆解原理">Modular Avatar 教学原则 1 Prefab-First：配置封装成单个 prefab 拖入即用，再拆解原理</h1>
+<p>教 Modular Avatar 的第一原则是 Prefab-First（prefab 优先）：所有教学 demo 都要先封装成单个 prefab，学员第一步只需把 prefab 拖进场景就能看到效果，而不是先研究组件参数。</p>
+<p>依据：官方 Sample 与 Preset 的发布方式都是把完整配置打包成单个 prefab，玩家拖入即用——这本身就是官方示范的最佳教学结构。</p>
+<p>反例警示：如果一上来就截图罗列组件 Inspector 的各个字段、让学员照着手动拼装，学习曲线会直接崩溃，新手很容易放弃。</p>
+<p>推荐话术：「先别看里面有什么——你先拖进去看效果。看完效果我们再拆解它为什么有效。」先让学员体验成功，再拆解原理。</p>
+<p>证据边界：教学原则为社区归纳（inferred），非官方发布内容。</p>
+<hr>
+<hr>
+<h1 id="modular-avatar-教学原则-2-抽象层透明讲它替你做了什么不展开内部实现公式">Modular Avatar 教学原则 2 抽象层透明：讲它替你做了什么，不展开内部实现公式</h1>
+<p>教 Modular Avatar 时要对学员保持抽象层透明：告诉他们组件是什么、会自动帮他们做什么，但不要展开内部实现。</p>
+<p>依据：官方 Setup Outfit 会自动识别 Hips 骨骼、T-Pose/A-Pose 姿态和骨骼轴向，替用户隐藏了绝大部分机械性工作——官方设计意图就是让不懂绑定的新手也能完成换装。</p>
+<p>反例警示：教 Bone Proxy 时塞进 50 行矩阵/四元数公式，学员会被直接劝退；这些数学细节对完成换装毫无必要。</p>
+<p>推荐话术：「你不需要理解它怎么算的，你只需要知道它会自动帮你做。」演示时分两层：先展示这是什么（组件卡片），再用一句话概括它替你做了什么。</p>
+<p>证据边界：教学原则为社区归纳（inferred）。</p>
+<hr>
+<hr>
+<h1 id="modular-avatar-教学原则-3-兼容降级明示讲清不装-modular-avatar-时的替代方案fallback">Modular Avatar 教学原则 3 兼容降级明示：讲清不装 Modular Avatar 时的替代方案（fallback）</h1>
+<p>教任何一个 Modular Avatar 组件时，都必须顺带讲清没有 MA 时怎么办，也就是兼容降级路径（fallback），不能默认人人必装 Modular Avatar。</p>
+<p>依据：官方发布物区分两级支持——Compatible（不含 MA 组件、普通环境可用）与 Preset（含 MA 组件、需安装 MA），说明官方本身就考虑了无 MA 环境。</p>
+<p>典型例子：Bone Proxy 与 Merge Armature 都能把对象挂接到素体骨骼，但没有 Modular Avatar 时只能用传统父级挂接思路替代；不讲清选择标准，学员会误以为安装 MA 是唯一出路。</p>
+<p>反例警示：默认学员必装 MA、从不解释替代方案，学员换个没装 MA 的项目就束手无策。</p>
+<p>推荐话术：「这个组件依赖 MA。没装 MA 的话，可以用父级挂接的方式替代。」</p>
+<p>证据边界：教学原则为社区归纳（inferred）。</p>
+<hr>
+<hr>
+<h1 id="modular-avatar-教学原则-4-命名约定优先exact-name-matching-比模糊匹配可靠衣服-hips-名必须包含素体-hips-名">Modular Avatar 教学原则 4 命名约定优先：exact name matching 比模糊匹配可靠，衣服 Hips 名必须包含素体 Hips 名</h1>
+<p>使用 Modular Avatar 合并骨骼时，命名约定比事后补救更重要：官方文档明确说 exact name matching（精确名称匹配）比 fuzzy matching（模糊匹配）可靠，所以应在项目开始就统一命名规范。</p>
+<p>具体规范：衣服侧的 Hips 骨骼名字必须包含素体 Hips 的名字，Armature 父级等关键层级同样按约定命名，让 Modular Avatar 能精确配对骨骼。</p>
+<p>反例警示：让学员随意命名、指望模糊匹配救场，多次安装/换装之后匹配参数会越来越乱，出现骨骼错配且难以排查。</p>
+<p>推荐话术：「Hips 骨骼必须包含你素体的 Hips 名——从一开始就这么做。」命名习惯在第一节课定型，后续所有换装都受益。</p>
+<p>版本备注：精确匹配优于模糊匹配为官方口径（MA 1.x 文档时点）；教学展开部分为社区归纳。</p>
+<hr>
+<hr>
+<h1 id="modular-avatar-教学原则-5-危险操作先警告每个组件先列常见踩坑清单things-to-avoid">Modular Avatar 教学原则 5 危险操作先警告：每个组件先列常见踩坑清单（Things to avoid）</h1>
+<p>教 Modular Avatar 组件时要先警告、后教学：每个组件开讲之前先给出常见踩坑清单，再进入正常操作流程。</p>
+<p>依据：官方文档单独设立 Things to avoid（应避免事项）章节，明确列出典型禁忌——在 humanoid 骨骼上挂 PhysBone、创建与素体完全同名的 Armature、做错误的 Pose 转换等。官方尚且把避坑放在显眼位置，教学更应如此。</p>
+<p>做法建议：每个组件配 3 个常见踩坑条目，用真实截图加红框标记错误现场，让学员一眼认出问题长什么样。</p>
+<p>反例警示：只讲顺利路径（happy path），学员踩坑后只能去 Discord 求助，对教程的信任会崩塌。</p>
+<p>推荐话术：「在教你组件之前，先说 3 个会坑死你的点。」</p>
+<p>证据边界：教学原则为社区归纳（inferred）；Things to avoid 清单本身出自官方文档。</p>
+<hr>
+<hr>
+<h1 id="modular-avatar-验证三件套edit-mode-syncplay-modemanual-bake-逐步自检">Modular Avatar 验证三件套：Edit mode sync、Play mode、Manual Bake 逐步自检</h1>
+<p>Modular Avatar 官方提供三种验证/调试手段，教学时应让学员每做完一步就自检。</p>
+<p>三件套用法：①Edit mode sync（编辑模式同步）——在场景里旋转或移动素体骨骼，观察衣服骨骼是否跟随，用来验证骨骼合并是否成功；②Play mode（运行模式）——进入 Play 查看真实运行效果；③Manual Bake（手动烘焙）——执行 Manual Bake Avatar 生成克隆后的最终 Avatar，直接检查烘焙产物是否正常。</p>
+<p>教学落地：每章节配自检 3 问——旋转骨骼跟了吗？进 Play 看效果对吗？Manual Bake 克隆正常吗？让学员养成做完一步自己检查一下的习惯。</p>
+<p>反例警示：只教点击 Setup Outfit 而不给验证步骤，学员会盲信结果，出错时完全无从排查。</p>
+<p>版本备注：三种手段均为官方功能（MA 1.x 文档时点）；「每步自检」节奏为社区教学建议。</p>
+<hr>
+<hr>
+<h1 id="modular-avatar-教学原则-7-版本与品牌边界标注基于-ma-1xx不滥用官方-logo-不暗示背书">Modular Avatar 教学原则 7 版本与品牌边界：标注基于 MA 1.x.x、不滥用官方 logo 不暗示背书</h1>
+<p>制作和发布 Modular Avatar 教学内容时，要提前划清两条边界：版本边界与品牌边界。</p>
+<p>版本边界：Modular Avatar 采用 SemVer 语义化版本管理，Minor 版本升级不保证反向（向后旧版）可用，所以教学发布物应标注基于 MA 1.x.x 及具体版本号，让学员知道内容适用的版本范围，避免新版本行为不一致时产生困惑。</p>
+<p>品牌边界：MA 的 logo 使用决定权在作者 bd_/pumo 手中，官方不允许第三方暗示背书。教学素材不要放 Modular Avatar logo，更不能拿它当封面吸引流量。</p>
+<p>反例警示：教学视频挂 MA logo 做封面，既让学员误以为是官方教程，也违反官方品牌准则。</p>
+<p>推荐话术：「基于 MA 1.x.x。不要在作品页面挂 MA logo——你只是用它，不是做它。」</p>
+<p>版本备注：SemVer 行为与 logo 政策为官方口径（MA 1.x 文档时点）。</p>
+<hr>
+<hr>
+<h1 id="modular-avatar-三段式教学法玩-5-分钟--拆-10-分钟--造-30-分钟以上不要跳过玩直接教造">Modular Avatar 三段式教学法：玩 5 分钟 → 拆 10 分钟 → 造 30 分钟以上，不要跳过玩直接教造</h1>
+<p>Modular Avatar 新手教学适合采用三段式节奏：玩 → 拆 → 造。</p>
+<table>
+<thead>
+<tr>
+<th>阶段</th>
+<th>时间</th>
+<th>目标</th>
+<th>玩家心理</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>玩</td>
+<td>约 5 分钟</td>
+<td>拖一个 prefab 进场景看效果</td>
+<td>「哦，这么简单」</td>
+</tr>
+<tr>
+<td>拆</td>
+<td>约 10 分钟</td>
+<td>展开 prefab 看内部有哪些组件</td>
+<td>「哦，原来是这样」</td>
+</tr>
+<tr>
+<td>造</td>
+<td>30 分钟以上</td>
+<td>用教程方法自己做一个</td>
+<td>「哦，我也能造」</td>
+</tr>
+</tbody>
+</table>
+<p>关键洞察：不要跳过玩直接教造——大约 90% 的新手一看到概念讲解就放弃了。先让学员用 5 分钟获得拖进去就生效的成功体验，建立信心后再拆解内部结构，最后才引导独立创作。</p>
+<p>这套方法论提炼自官方 Samples 章节的示例组织方式，适用于一切 Modular Avatar 入门教学场景。</p>
+<p>证据边界：三段式框架与时长为社区教学法归纳（inferred）。</p>
+<hr>
+<hr>
+<h1 id="modular-avatar-reactive-组件通用规则active-双条件判定hierarchy-下方优先invert-反转条件">Modular Avatar Reactive 组件通用规则：Active 双条件判定、Hierarchy 下方优先、Invert 反转条件</h1>
+<p>Modular Avatar 的 Reactive 类组件（Object Toggle、Shape Changer 等）遵循三条通用规则：激活判定、冲突优先级、Invert 反转。</p>
+<p>一、Active（激活）判定须同时满足两个条件：①组件所在 GameObject 自身及其所有父级在 Hierarchy 中都处于 active 状态；②如果组件位于某个 Menu Item（菜单项）同级或其子级，则该菜单项当前必须被选中。注意：菜单判定只统计第一层父菜单，更深层子菜单的选中状态会被忽略。</p>
+<p>二、优先级：当多个 Reactive 组件对同一对象的效果冲突时，Hierarchy 层级中位置最下方（排序靠后）的那个组件胜出。</p>
+<p>三、Invert（反转）：勾选后组件逻辑反转——在条件不满足时生效，可用于实现关闭某菜单项时才触发的效果。</p>
+<p>排查 Reactive 不生效时按此顺序检查：先看对象与父级是否 active，再看菜单项是否被选中且层级深度是否只有一层父菜单，最后看是否有排在更下方的同功能组件覆盖了效果。</p>
+<hr>
+<hr>
+<h1 id="modular-avatar-reaction-1-帧延迟机制链式反应逐帧生效防止切换闪烁裸露">Modular Avatar Reaction 1 帧延迟机制：链式反应逐帧生效防止切换闪烁裸露</h1>
+<p>Modular Avatar 的 Reactive 反应带有 1 帧延迟，这是防止切换瞬间闪烁的核心机制，而非缺陷。</p>
+<p>以 A→B→C 链式联动、A 被关掉为例，时序如下：</p>
+<table>
+<thead>
+<tr>
+<th>帧</th>
+<th>发生什么</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>不发生任何事（A 的 disable 被延迟）</td>
+</tr>
+<tr>
+<td>2</td>
+<td>A 真正 disable（B 的 disable 被延迟）</td>
+</tr>
+<tr>
+<td>3</td>
+<td>B 和 C 同时 disable</td>
+</tr>
+</tbody>
+</table>
+<p>设计原因：以脱外套为例，关掉外套必须等内衣先显形之后再发生；如果没有这 1 帧延迟，两层衣物在同一帧切换，中间就会出现 1 帧裸体闪烁。</p>
+<p>版本提示：官方说明完整时序细节可能在未来版本变化，但 1 帧延迟这一核心特性是稳定的。排查开关切换异常时应首先想到这一机制，不要把正常的逐帧生效误判为故障。版本备注：MA 1.x 官方文档（未标明具体版本号）。</p>
+<hr>
+<hr>
+<h1 id="modular-avatar-reaction-debugger-调试工具打开方式与-object-state--reaction-section-两区域用法">Modular Avatar Reaction Debugger 调试工具：打开方式与 Object state / Reaction section 两区域用法</h1>
+<p>Reaction Debugger 是 Modular Avatar 自带的高级调试工具，可以在不进入 VRChat 的情况下模拟各种开关与菜单状态，预演 Reactive 组件的行为。</p>
+<p>打开方式有两种：①在 Hierarchy 中右键目标 GameObject，选择 Modular Avatar → Show Reaction Debugger；②在任意 Reactive 组件的 Inspector 上点击 Open reaction debugger 按钮。</p>
+<p>窗口分两个区域：①Object state（对象状态区）——手动强制某个对象为 active/inactive，或强制某个菜单项被选中/取消选中，用来模拟玩家的操作；②Reaction section（反应区）——列出当前影响这个对象的所有 Reactive 组件及其触发条件，用来核对联动关系是否符合预期。</p>
+<p>教学建议：让玩家养成进 Play 模式之前先用 Debugger 验证一遍的习惯，省得每次都要进 Play 模式反复等待。</p>
+<hr>
+<hr>
+<h1 id="modular-avatar-一键换装四步流程拖-prefab--setup-outfit--隐藏原衣服--play-验证">Modular Avatar 一键换装四步流程：拖 prefab → Setup Outfit → 隐藏原衣服 → Play 验证</h1>
+<p>用 Modular Avatar 给 Avatar 换装的标准流程只要四步。这也是官方教程 1（配置简单服装）演示的完整过程，示例为把 Capettiya 的 Sailor Onepiece 连衣裙装到 Anon-chan 素体上。</p>
+<p>步骤详解：</p>
+<p>①拖衣服到 Avatar：把衣服 Prefab 从工程面板拖到场景里 Avatar 的子级。注意不要拆 Prefab（不要 unpack），保持 prefab 完整以便后续更新。</p>
+<p>②右键 Setup Outfit：在 Hierarchy 中右键衣服根对象，选择 Modular Avatar → Setup Outfit，Modular Avatar 会自动添加 Merge Armature 组件完成骨骼合并。</p>
+<p>③隐藏原衣服（可选）：如果 Avatar 自带衣服，关闭原衣服对象的可见性（教程中关闭的是 SailorOnepiece_Anon_PB），避免新旧两件同时显示。</p>
+<p>④Play 模式验证：进入 Play 模式，衣服应该跟着素体一起动，说明骨骼合并成功。</p>
+<p>装好后的衣服层级结构如下（Modular Avatar 已在衣服根对象上添加 Merge Armature）：</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>OutfitName (GameObject) ← MA 加了 Merge Armature</span></span>
+<span class="line"><span>  └─ Armature (GameObject)</span></span>
+<span class="line"><span>      └─ Hips (Bone, 名字要包含素体 Hips 名字)</span></span>
+<span class="line"><span>          └─ Spine</span></span>
+<span class="line"><span>              └─ ...</span></span></code></pre>
+<p>这是约 90% 玩家需要的全部换装知识，第一次教学就讲这套流程。</p>
+<hr>
+<hr>
+<h1 id="merge-armature-骨骼合并三规则同名共享独有下挂含组件保留">Merge Armature 骨骼合并三规则：同名共享、独有下挂、含组件保留</h1>
+<p>Modular Avatar 的 Merge Armature（含 Setup Outfit 自动添加的同款组件）在合并衣服与素体骨骼时执行三条智能规则：</p>
+<p>①同名骨骼 → 共享素体骨骼：衣服上与素体同名的骨骼（如 Hips、Spine）不会重复创建，而是直接复用素体的对应骨骼，衣服顶点跟随素体骨骼运动；</p>
+<p>②衣服独有骨骼 → 移到对应素体骨骼下：衣服特有的骨骼（如裙摆、飘带骨）会被移动挂接到素体骨架的对应位置之下，保留独立运动能力；</p>
+<p>③含组件的骨骼 → 保留为单独对象：如果某根骨骼上挂了组件（如 PhysBone、Collider），合并时会把它保留为独立对象，避免组件丢失。</p>
+<p>排查应用：换装出问题时按这三条规则逐一核对 Hierarchy——衣服完全不动查同名骨骼是否正确配对；裙摆飘带不动查独有骨骼挂接位置；PhysBone 失效查含组件骨骼是否被意外处理。</p>
+<hr>
+<hr>
+<h1 id="blendshape-sync-用法把素体形态键胸围体型同步到衣服的四步配置">Blendshape Sync 用法：把素体形态键（胸围体型）同步到衣服的四步配置</h1>
+<p>换装后如果调整素体体型（如胸部大小、身体形状），衣服不会自动跟着变——需要在衣服上添加 Modular Avatar 的 Blendshape Sync 组件，把素体的形态键变化同步到衣服上。</p>
+<p>操作步骤：①选中衣服上带 Mesh Renderer 的对象；②添加 Blendshape Sync 组件；③点 + 新增一条同步项，绑定素体上的形态键（胸部大小、身体形状等）与衣服上对应的形态键；④按需添加多条同步项覆盖所有相关形态键。</p>
+<p>配置完成后同步是全自动的：之后无论怎么改素体的形态键，衣服都会跟着变形，始终贴合身体，不会再出现调了体型衣服却穿不进的错位。</p>
+<p>该步骤通常在 Setup Outfit 完成换装之后进行，属于标准换装流程的收尾环节。</p>
+<hr>
+<hr>
+<h1 id="modular-avatar-布料服装配置流程bone-proxy-挂-collider-加-blendshape-sync-同步裙装以官方教程-2-dress-lumi-为例">Modular Avatar 布料服装配置流程：Bone Proxy 挂 Collider 加 Blendshape Sync 同步裙装（以官方教程 2 Dress Lumi 为例）</h1>
+<p>带布料（Cloth）和多 Collider 的复杂服装，在标准换装流程之外还要多做两步：用 Bone Proxy 挂接 Collider、用 Blendshape Sync 同步形态键。</p>
+<p>完整流程：</p>
+<p>①拖入服装并执行 Setup Outfit（与普通换装相同的基础流程）；</p>
+<p>②处理 Colliders：在 Hierarchy 中选中所有 Hips_Collider 之类的 Collider 对象，一次性批量添加 MA Bone Proxy 组件，把 Target 拖入素体的对应骨骼（如 Hips）；Attachment Mode 会自动变为 As child; keep position（作为子级、保持世界坐标位置）；</p>
+<p>③对其余 Collider 重复同样的操作；</p>
+<p>④用 Blendshape Sync 处理 Skirt（裙子）和 Tops（上衣）的形态键，使体型调整能同步到布料部件。</p>
+<p>两个关键组件的作用：MA Bone Proxy 负责把对象挂接到素体的特定骨骼上并保持世界坐标；Blendshape Sync 负责同步身体形状相关的形态键。</p>
+<p>新手提示：这是进阶内容，新手阶段通常不需要；只有遇到 Cloth 布料破洞、穿透等问题时再回来学。</p>
+<hr>
+<hr>
+<h1 id="merge-animator-布料自动化与-outfit-changer-冲突可自动设置胸部形态键与关闭-cloth但两者不可混用">Merge Animator 布料自动化与 Outfit Changer 冲突：可自动设置胸部形态键与关闭 Cloth，但两者不可混用</h1>
+<p>Modular Avatar 官方教程 2 提到一个可选的高级技巧——用 Merge Animator 自动化处理布料服装：通过动画直接把胸部放大形态键设为 100、bra_off 设为 100、并关闭 Cloth 组件，省去手动逐项调整。</p>
+<p>硬性警告：这种自动化方式会和 Outfit Changer（换装器）冲突，两者不能混用，使用前必须谨慎评估。</p>
+<p>建议：教程本身不强制使用这个高级选项。新手阶段直接跳过；遇到 Cloth 破洞等问题时先掌握 Bone Proxy 加 Blendshape Sync 的标准方案；只有在确定不需要 Outfit Changer 动态换装的前提下，才考虑引入 Merge Animator 自动化。</p>
+<hr>
+<hr>
+<h1 id="modular-avatar-create-toggle-三步做物件开关自动生成-menu-item--menu-installer--object-toggle-三组件">Modular Avatar Create Toggle 三步做物件开关：自动生成 Menu Item / Menu Installer / Object Toggle 三组件</h1>
+<p>给物件（如 Anon-chan 的连帽衫）做表情菜单开关，最快的路径是 Modular Avatar 的 Create Toggle 一键生成，共三步。</p>
+<p>操作步骤：</p>
+<p>①右键 Avatar → Modular Avatar → Create Toggle，MA 会自动创建一个带全套组件的新 GameObject；</p>
+<p>②在这个新 GameObject 上：改名成易识别的名字（如 Hoodie）；在 Object Toggle 组件上点 +，拖入你要开关的目标对象；用勾选状态决定菜单选中时目标是启用还是禁用；</p>
+<p>③测试：勾选 Menu Item 上的 Default 项，场景中应该能看到物件发生对应变化。</p>
+<p>Create Toggle 自动生成的三个组件各司其职：MA Menu Item 定义菜单项本身；MA Menu Installer 把这个菜单项安装到 Avatar 的主菜单；MA Object Toggle 承担实际的开关逻辑。</p>
+<p>教学定位：这是 100% 玩家第一个要学的功能，教学时直接教 Create Toggle 方案，不要先教手动组装方案。</p>
+<hr>
+<hr>
+<h1 id="shape-changer-形态键联动防穿模六步配置shrink-键归零加-delete-模式删多边形加-overdraw-验证官方教程-4-核心场景">Shape Changer 形态键联动防穿模六步配置：shrink 键归零加 Delete 模式删多边形加 Overdraw 验证（官方教程 4 核心场景）</h1>
+<p>开关鞋子时脚部穿模、袜子与脚之间出缝的问题，用 Modular Avatar 的 Shape Changer 做形态键联动解决——这是官方教程 4（高级开关/形态键联动）的核心场景。</p>
+<p>问题背景：很多 Avatar 带 shrink 形态键（穿衣服时自动收缩身体部位），鞋子关闭后袜子和脚之间出现缝隙，就是因为两层都被各自的 shrink 形态键收缩了，手动逐个管理非常麻烦。</p>
+<p>配置步骤：</p>
+<p>①先观察问题：关闭鞋子，确认袜子和脚之间出现缝隙；</p>
+<p>②找到两层各自的 shrink 形态键（素体 Anon_body 上的一个、Socks 袜子上的一个），全部重置为 0；</p>
+<p>③在鞋子 GameObject 上添加 Shape Changer：绑定要缩的底层形态键，模式选 Delete——直接删除被遮盖的多边形，性能更好；</p>
+<p>④在袜子 GameObject 上同样添加 Shape Changer；</p>
+<p>⑤用 Scene 视图的 Overdraw 调试模式验证不再穿模；</p>
+<p>⑥创建菜单子菜单，把开关项放进去供玩家使用。</p>
+<p>注意：形态键联动效果在编辑器中无法直接预览，最终效果需进 Play 模式配合 Avatar 3.0 Emulator 或 Gesture Manager 确认。</p>
+<hr>
+<hr>
+<h1 id="modular-avatar-同步参数必须在-primary-平台全量声明缺失即-build-失败且不兼容-vrcfury-parameter-compressor">Modular Avatar 同步参数必须在 Primary 平台全量声明，缺失即 Build 失败，且不兼容 VRCFury Parameter Compressor</h1>
+<p>Modular Avatar 做参数同步时，Primary 平台必须包含所有要同步的参数，缺任何一个都会导致 Build 直接失败。</p>
+<p>具体要求：</p>
+<ul>
+<li>Primary 平台必须完整声明所有需要同步的参数；</li>
+<li>存在缺失时 Build 阶段报错失败，不会静默跳过。</li>
+</ul>
+<p>已知限制：该机制与 VRCFury Parameter Compressor 不兼容，两者不可同时使用；若已安装 VRCFury 的参数压缩功能，需要在两者之间二选一。</p>
+<p>排查建议：遇到因参数导致的 Build 失败时，先核对 Primary 平台参数列表是否覆盖全部被引用的同步参数，再检查是否启用了 VRCFury Parameter Compressor。</p>
+<hr>
+<hr>
+<h1 id="modular-avatar-convert-constraints-组件编译时把-unity-constraints-转换为-vrc-constraints-的性能优化">Modular Avatar Convert Constraints 组件：编译时把 Unity Constraints 转换为 VRC Constraints 的性能优化</h1>
+<p>Modular Avatar 的 Convert Constraints 组件用于在编译时把 Unity Constraints 转换成 VRC Constraints，是一项性能优化措施。</p>
+<p>使用方式：</p>
+<ul>
+<li>默认用法：把 Convert Constraints 组件安装到 Avatar 根对象上；</li>
+<li>VRChat Auto Fix 会在需要时自动为 Avatar 添加该组件，通常无需手动配置。</li>
+</ul>
+<p>原理与收益：VRC Constraints 的运行性能优于 Unity Constraints，经编译期转换后 Avatar 运行开销更低。</p>
+<hr>
+<hr>
+<h1 id="modular-avatar-merge-armature-字段详解merge-targetprefixsuffixposition-lock-modeavoid-name-collisions-与通用-prefab-禁忌">Modular Avatar Merge Armature 字段详解：Merge Target、Prefix/Suffix、Position Lock Mode、Avoid Name Collisions 与通用 prefab 禁忌</h1>
+<p>Merge Armature 用于把服装/饰品的骨架合并进 Avatar 目标骨骼，但它绑定的是设置时那一个 Avatar 的固定骨骼，官方明确不适合面向多种 Avatar 通用的 prefab，跨模型复用会骨骼错位。</p>
+<p>Inspector 字段一览：</p>
+<table>
+<thead>
+<tr>
+<th>字段</th>
+<th>类型</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Merge Target</td>
+<td>GameObject / path</td>
+<td>拖入 Avatar 上对应的目标骨骼；内部以路径形式保存，保证 prefab 序列化后可恢复</td>
+</tr>
+<tr>
+<td>Prefix / Suffix</td>
+<td>string</td>
+<td>匹配骨骼时自动剥离的前后缀（通常 Setup Outfit 时自动设置）</td>
+</tr>
+<tr>
+<td>Position Lock Mode</td>
+<td>enum</td>
+<td>Not locked / Base==>Target（单向）/ Base&#x3C;==>Target（双向）；Setup Outfit 默认单向</td>
+</tr>
+<tr>
+<td>Avoid Name Collisions</td>
+<td>bool</td>
+<td>默认开启，为新增骨骼改名以避免与其他合并资产冲突</td>
+</tr>
+<tr>
+<td>Reset Position to Base Avatar</td>
+<td>按钮 + 3 子选项</td>
+<td>Do It! 按钮，附 Also set rotation / Also set local scale / Adjust outfit overall scale to match base avatar</td>
+</tr>
+</tbody>
+</table>
+<p>关键限制（官方原文）：</p>
+<ul>
+<li>Merge Armature 不是为可通用于多种不同 Avatar 的 prefab 设计的（例如 finger-pen 类通用道具）；</li>
+<li>组件假设被绑定的骨骼不会移动，因此无法泛化到设置时所针对的 Avatar 之外；</li>
+<li>自 1.7.0 起支持嵌套合并（A→B→C），由 Modular Avatar 自动决定合并顺序。版本备注：嵌套合并特性要求 MA 1.7.0+。</li>
+</ul>
+<p>常见误用（经验归纳）：把通用化 prefab 交给 Merge Armature 处理，换 Avatar 就骨骼错位；随手关闭 Avoid Name Collisions 导致与他人物资的骨骼名冲突；误以为 Reset Position 是一次性永久调整。</p>
+<p>证据边界：「常见误用」为原文标注的经验归纳（INFERENCE），非官方原文。</p>
+<hr>
+<hr>
+<h1 id="modular-avatar-merge-animator-字段详解layer-typepath-modelayer-prioritymerge-mode-与-write-defaults-匹配">Modular Avatar Merge Animator 字段详解：Layer Type、Path Mode、Layer Priority、Merge Mode 与 Write Defaults 匹配</h1>
+<p>Merge Animator 把指定的 AnimatorController 合并进 Avatar 的对应动画层，本质是追加而非替换；想让用户彻底替换某一层，应让其按传统方式在 Avatar Descriptor 中替换；多个组件对同一 Layer Type 使用 Replace 模式会直接报错。</p>
+<p>Inspector 字段一览：</p>
+<table>
+<thead>
+<tr>
+<th>字段</th>
+<th>类型</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Animator to merge</td>
+<td>AnimatorController</td>
+<td>要合并的动画控制器</td>
+</tr>
+<tr>
+<td>Layer Type</td>
+<td>enum</td>
+<td>目标层：FX / Action / Base / Additive / Gesture</td>
+</tr>
+<tr>
+<td>Path Mode</td>
+<td>enum</td>
+<td>Relative（以组件所在对象为路径根）/ Absolute（以 Avatar 根）</td>
+</tr>
+<tr>
+<td>Relative Path Root</td>
+<td>GameObject</td>
+<td>Relative 模式下作为路径根的对象</td>
+</tr>
+<tr>
+<td>Layer Priority</td>
+<td>int</td>
+<td>数字越小越先应用；相同 priority 按 hierarchy 顺序</td>
+</tr>
+<tr>
+<td>Merge Mode</td>
+<td>enum</td>
+<td>Add（追加）/ Replace Existing Animator（替换 Avatar Descriptor 上同层 animator）</td>
+</tr>
+<tr>
+<td>Match Avatar Write Defaults</td>
+<td>bool</td>
+<td>匹配 Avatar 的写默认值设置，避免 ON/OFF 混用</td>
+</tr>
+<tr>
+<td>Delete attached animator</td>
+<td>bool</td>
+<td>Build 时移除临时 Animator 组件</td>
+</tr>
+</tbody>
+</table>
+<p>关键限制（官方原文）：</p>
+<ul>
+<li>Merge Animator 只向现有动画层追加内容，不会替换它们；需要最终用户完全替换某层时，更推荐让其在 Avatar Descriptor 里按传统方式替换；</li>
+<li>多个 Merge Animator 对同一 Layer Type 且均为 Replace 模式时会报错；</li>
+<li>VRCAnimatorLayerControl 只支持引用同一 animator 内部的层：需保证其 Playable 字段与 Merge Animator 设置的层一致，Layer 字段填写目标层在该 animator 内的索引；</li>
+<li>部分 blend tree 类型不支持 Write Defaults OFF 场景的转换。</li>
+</ul>
+<p>常见误用（经验归纳）：Absolute 模式下在 prefab 内用临时 Animator 录动画导致路径错位；想覆盖官方动画层却忘记切换 Replace Mode；humanoid 骨骼动画不受 Relative Path 影响，误去调整路径。</p>
+<p>证据边界：「常见误用」为原文标注的经验归纳（INFERENCE），非官方原文。</p>
+<hr>
+<hr>
+<h1 id="modular-avatar-parameters-字段详解parameter-type-五类savedsynced-合并语义与-256-同步上限">Modular Avatar Parameters 字段详解：Parameter Type 五类、Saved/Synced 合并语义与 256 同步上限</h1>
+<p>Parameters 组件统一声明和管理参数：Animator Only 与 Prefix 类型不会加入 Expressions Parameters；勾选 Synced 会占用 VRChat 网络同步配额（上限共 256 个）；Saved 取最外层设置，多个非嵌套组件设置不一致时任一勾选 Saved 即生效保存。</p>
+<p>Inspector 字段一览：</p>
+<table>
+<thead>
+<tr>
+<th>字段</th>
+<th>类型</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Name</td>
+<td>string</td>
+<td>参数名或 PhysBone prefix</td>
+</tr>
+<tr>
+<td>Parameter Type</td>
+<td>enum</td>
+<td>Bool / Int / Float / Animator Only / Prefix</td>
+</tr>
+<tr>
+<td>Change name to</td>
+<td>string</td>
+<td>把本作用域内的引用重映射到外部名字</td>
+</tr>
+<tr>
+<td>Auto rename</td>
+<td>bool</td>
+<td>自动挑选未被占用的名字</td>
+</tr>
+<tr>
+<td>Default Value</td>
+<td>多种类型</td>
+<td>Avatar 重置时使用的默认值</td>
+</tr>
+<tr>
+<td>Override Animator Defaults</td>
+<td>bool</td>
+<td>连带改写 Animator Controller 内的默认值</td>
+</tr>
+<tr>
+<td>Saved</td>
+<td>bool</td>
+<td>跨 Avatar 切换/重启保留取值</td>
+</tr>
+<tr>
+<td>Synced</td>
+<td>bool</td>
+<td>占用网络参数配额（VRChat 总共 256 个）</td>
+</tr>
+</tbody>
+</table>
+<p>类型要点：</p>
+<ul>
+<li>Animator Only 与 Prefix 不会加入 Expressions Parameters；</li>
+<li>Prefix 用于 PhysBone / Raycast 链路的批量参数配置。</li>
+</ul>
+<p>关键规则（官方原文）：</p>
+<ul>
+<li>Saved 参数取最外层的 Saved 设置；多个非嵌套组件把 Saved 设成不同值时，只要其中任意一个设为保存，该参数就会被保存；</li>
+<li>多个非嵌套组件设置了不同的非空默认值时会显示警告，因为无法确定应采用哪一个。</li>
+</ul>
+<p>例外：多个非嵌套组件设置了不同的非空默认值时会显示警告（无法确定采用哪个）；嵌套场景下以外层设置为准。</p>
+<p>常见误用（经验归纳）：把所有 bool 一律勾 Synced，撞上 VRChat 256 个同步参数上限；忘开 Override Animator Defaults 导致重置不生效；prefab 间非嵌套地拆分参数引发重命名冲突。</p>
+<p>证据边界：「常见误用」为原文标注的经验归纳（INFERENCE），非官方原文；256 为网络同步参数个数上限的原文表述。</p>
+<hr>
+<hr>
+<h1 id="modular-avatar-object-toggle-字段与行为规则hierarchy-靠后者胜出状态更新晚一帧全部-inactive-回退原状态">Modular Avatar Object Toggle 字段与行为规则：Hierarchy 靠后者胜出、状态更新晚一帧、全部 inactive 回退原状态</h1>
+<p>Object Toggle 以自身所在 GameObject 作为控制对象，按条件批量开关 Target 列表中的物体；多个 Toggle 冲突时 hierarchy 顺序靠后者生效，且状态变化比控制时机晚一帧。</p>
+<p>Inspector 字段一览：</p>
+<table>
+<thead>
+<tr>
+<th>字段</th>
+<th>类型</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Target</td>
+<td>GameObject 列表 + bool</td>
+<td>按 + 添加目标；勾选＝条件满足时目标 active=true，不勾选＝条件满足时目标 active=false</td>
+</tr>
+<tr>
+<td>Invert condition</td>
+<td>bool</td>
+<td>反转触发条件</td>
+</tr>
+<tr>
+<td>控制对象</td>
+<td>GameObject</td>
+<td>组件自身所在的 GameObject 即为控制对象</td>
+</tr>
+</tbody>
+</table>
+<p>关键行为规则（官方原文）：</p>
+<ul>
+<li>多个 Object Toggle 控制同一目标发生冲突时，hierarchy 中最后出现的那个优先生效；</li>
+<li>Object Toggle 在控制对象更新后的一帧才更新受动物体；Toggle 自身被禁用时，目标物体的禁用也比平常晚一帧；</li>
+<li>当控制某目标的全部 Object Toggle 都处于 inactive 状态时，目标使用其原始状态；若还有其他动画在操纵该物体，则使用动画状态。</li>
+</ul>
+<p>常见误用（经验归纳）：用 Object Toggle 反向控制同一个父级造成循环；不了解一帧延迟，快速连切时看到闪烁误以为故障；多 prefab 冲突时没检查 hierarchy 顺序而误判为 bug。</p>
+<p>证据边界：「常见误用」为原文标注的经验归纳（INFERENCE），非官方原文。</p>
+<hr>
+<hr>
+<h1 id="modular-avatar-shape-changer-字段与规则deleteset-双模式threshold-阈值与勿改动画驱动-blendshape冲突禁忌">Modular Avatar Shape Changer 字段与规则：Delete/Set 双模式、Threshold 阈值与「勿改动画驱动 blendshape」冲突禁忌</h1>
+<p>Shape Changer 对目标 SkinnedMeshRenderer 的 blendshape 执行 Delete（删除多边形）或 Set（设为指定值）两种操作；严禁用它修改同时被其他动画驱动的 blendshape，此类需求应改为对含 Shape Changer 的物体本身做开/关动画。</p>
+<p>Inspector 字段一览：</p>
+<table>
+<thead>
+<tr>
+<th>字段</th>
+<th>类型</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Target Renderer</td>
+<td>SkinnedMeshRenderer</td>
+<td>要操作的目标网格（一般是身体）</td>
+</tr>
+<tr>
+<td>Blendshape 列表</td>
+<td>List<blendshape></blendshape></td>
+<td>每条记录可选 Delete 或 Set 模式</td>
+</tr>
+<tr>
+<td>Mode（每条 shape）</td>
+<td>enum</td>
+<td>Delete（删除多边形）/ Set（设为指定值）</td>
+</tr>
+<tr>
+<td>Value（Set 模式下）</td>
+<td>float</td>
+<td>目标 blendshape 值</td>
+</tr>
+<tr>
+<td>Threshold</td>
+<td>float</td>
+<td>判定顶点受 blendshape 影响的阈值，调小可让更多顶点被删除</td>
+</tr>
+</tbody>
+</table>
+<p>关键规则（官方原文）：</p>
+<ul>
+<li>不要用本组件修改同时被其他动画驱动的 blendshape；应改为对包含 Shape Changer 组件的物体做开/关动画；</li>
+<li>多个 Shape Changer 同时操作同一 blendshape 时，hierarchy 中较低者一般获胜；</li>
+<li>无动画参与时 Delete 能真正减少实测多边形数（性能最优）；有动画参与时仍能完全隐藏，但不会减少多边形数。</li>
+</ul>
+<p>常见误用（经验归纳）：拿 Shape Changer 去改被表情动画驱动的 blendshape，导致表情失效；Threshold 未调整导致隐藏不完全；混淆 Delete 与 Set 两种模式的用途。</p>
+<p>证据边界：「常见误用」为原文标注的经验归纳（INFERENCE），非官方原文。</p>
+<hr>
+<hr>
+<h1 id="modular-avatar-bone-proxy-字段与限制attachment-mode-选择及不适合服装合并的原因">Modular Avatar Bone Proxy 字段与限制：Attachment Mode 选择及不适合服装合并的原因</h1>
+<p>Bone Proxy 把对象附着到指定的 humanoid 骨骼上（内部以 humanoid bone + 相对路径保存以便 prefab 序列化）；官方明确它不是用来配置服装的，服装合并应改用 Merge Armature。</p>
+<p>Inspector 字段一览：</p>
+<table>
+<thead>
+<tr>
+<th>字段</th>
+<th>类型</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Target</td>
+<td>GameObject / humanoid bone + path</td>
+<td>目标骨骼；内部以 humanoid bone + 相对路径形式保存</td>
+</tr>
+<tr>
+<td>Attachment Mode</td>
+<td>enum</td>
+<td>As child at root（位置旋转归零、保持世界 scale）/ As child keep world pose（保留世界坐标姿态）</td>
+</tr>
+<tr>
+<td>Match Parent Scale</td>
+<td>bool</td>
+<td>开启时 local scale 被调整为 (1,1,1)，用于目标骨骼父级被缩放的场景</td>
+</tr>
+<tr>
+<td>Advanced</td>
+<td>折叠区</td>
+<td>手动调整 humanoid bone / relative path</td>
+</tr>
+</tbody>
+</table>
+<p>附着模式细节（官方原文）：</p>
+<ul>
+<li>子选项允许仅保留 position 或 rotation 其中之一；</li>
+<li>As child keep world pose 通常只对特定 Avatar 专用的 prefab 有用，不适合跨 Avatar 通用。</li>
+</ul>
+<p>关键限制（官方原文）：Bone Proxy 不是为配置服装设计的，请改用 Merge Armature。</p>
+<p>常见误用（经验归纳）：用 Bone Proxy 挂衣服（正确做法是 Merge Armature）；在非专用 prefab 上选 keep world pose，换 Avatar 后错位；忽略 Match Parent Scale，父骨骼被缩放时饰品变形。</p>
+<p>证据边界：「常见误用」为原文标注的经验归纳（INFERENCE），非官方原文。</p>
+<hr>
+<hr>
+<h1 id="modular-avatar-menu-item-字段与规则菜单类型is-default-唯一性未绑定无效规则与菜单满自动分页">Modular Avatar Menu Item 字段与规则：菜单类型、Is Default 唯一性、未绑定无效规则与菜单满自动分页</h1>
+<p>Menu Item 定义一个表达式菜单项，菜单显示名直接取自所在 GameObject 的名字；未绑定到菜单树的 Menu Item 完全无效，必须通过子层级、Menu Installer 或 Menu Group 三者之一挂接；多个菜单项同时勾 Is Default 属于未定义行为。</p>
+<p>Inspector 字段一览：</p>
+<table>
+<thead>
+<tr>
+<th>字段</th>
+<th>类型</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Menu Item Name</td>
+<td>string</td>
+<td>取自所在 GameObject 的名字（在 hierarchy 直接改名即可）</td>
+</tr>
+<tr>
+<td>Menu Type</td>
+<td>enum</td>
+<td>Toggle / SubMenu 等</td>
+</tr>
+<tr>
+<td>Icon</td>
+<td>Texture2D</td>
+<td>菜单图标</td>
+</tr>
+<tr>
+<td>Parameter</td>
+<td>string</td>
+<td>关联的 Animator 参数名</td>
+</tr>
+<tr>
+<td>Submenu Source</td>
+<td>enum</td>
+<td>Expressions Menu Asset（使用 VRC 菜单资产）/ Children（使用子级节点）</td>
+</tr>
+<tr>
+<td>Source Object Override</td>
+<td>GameObject</td>
+<td>Children 模式下替换子节点来源</td>
+</tr>
+<tr>
+<td>Is Default</td>
+<td>bool</td>
+<td>是否默认启用；多个勾选＝行为未定义</td>
+</tr>
+<tr>
+<td>Saved / Synced</td>
+<td>bool</td>
+<td>参数为自动创建时显示</td>
+</tr>
+</tbody>
+</table>
+<p>关键规则（官方原文）：</p>
+<ul>
+<li>子菜单条目数超过 VRC 菜单上限时，会自动创建 next 项进行分页；</li>
+<li>多个菜单项被设为 Is Default 时结果未定义，官方明言不要这样做；</li>
+<li>未绑定的菜单项没有任何效果，必须通过子层级 / Menu Installer / Menu Group 三选一绑定；</li>
+<li>参数名未在 MA Parameters 或 VRC Expressions Parameters 中声明时会被自动创建。</li>
+</ul>
+<p>常见误用（经验归纳）：Menu Item 没绑到 Installer/Group，导致表情菜单里找不到该项；多个菜单项都勾 Is Default 造成行为不确定；改了 GameObject 名字却没意识到菜单显示名也随之改变。</p>
+<p>证据边界：「常见误用」为原文标注的经验归纳（INFERENCE），非官方原文。</p>
+<hr>
+<hr>
+<h1 id="modular-avatar-menu-installer-字段与规则默认安装顶层菜单满自动分页与自制子菜单需两个菜单资产">Modular Avatar Menu Installer 字段与规则：默认安装顶层、菜单满自动分页与自制子菜单需两个菜单资产</h1>
+<p>Menu Installer 把 prefab 自带的菜单安装到 Avatar 的动作菜单，默认安装在顶层；目标菜单装满时自动拆分成多页；要自制子菜单必须创建两个菜单资产——一个作为子菜单控件、一个作为内层菜单本体。</p>
+<p>Inspector 字段一览：</p>
+<table>
+<thead>
+<tr>
+<th>字段</th>
+<th>类型</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Disable</td>
+<td>bool</td>
+<td>勾选后完全关闭本 prefab 的菜单安装</td>
+</tr>
+<tr>
+<td>Install To</td>
+<td>Menu path</td>
+<td>通过 Select Menu 双击选择目标子菜单；支持引用其它 Menu Installer 正在安装的子菜单以实现扩展</td>
+</tr>
+<tr>
+<td>Menu to install</td>
+<td>VRCExpressionsMenu</td>
+<td>在 Prefab Developer Options 标签下添加要追加的菜单</td>
+</tr>
+<tr>
+<td>Menu sources</td>
+<td>自动生成</td>
+<td>附加 Menu Item / Menu Group 后自动生成菜单条目</td>
+</tr>
+</tbody>
+</table>
+<p>关键规则（官方原文）：</p>
+<ul>
+<li>默认情况下，prefab 的菜单会安装到 Avatar 动作菜单的顶层；</li>
+<li>所选菜单装满时会自动拆分成多页（子菜单）；</li>
+<li>若想要自己的子菜单，需要创建两个菜单资产：一个用于子菜单控件，一个用于内层菜单本身。</li>
+</ul>
+<p>常见误用（经验归纳）：把子菜单控件和内层菜单合并成一个资产，导致子菜单内容与控件重复或缺失；Select Menu 选错位置，把 prefab 菜单装进了错误的分组；误以为 Installer 会替换已有菜单，实际行为是追加。</p>
+<p>证据边界：「常见误用」为原文标注的经验归纳（INFERENCE），非官方原文。</p>
+<hr>
+<hr>
+<h1 id="modular-avatar-官方问题诊断的分布式设计六类渠道分工与查问题分流原则">Modular Avatar 官方问题诊断的分布式设计：六类渠道分工与查问题分流原则</h1>
+<p>Modular Avatar 官方把问题诊断责任分散到多个渠道，Dealing with problems 章节刻意保持精简（整个章节只覆盖 2 个问题），查问题时必须按渠道分流，不能指望单一页面覆盖一切。</p>
+<p>官方 problems 章节的实际规模：</p>
+<ul>
+<li>主页仅 1 个常见问题：Nothing is getting processed at all；</li>
+<li>install 子页仅 1 个常见问题：Failed to add Repo。</li>
+</ul>
+<p>六类渠道的责任分工：</p>
+<table>
+<thead>
+<tr>
+<th>渠道</th>
+<th>责任</th>
+<th>示例</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Dealing with problems</td>
+<td>最高频、影响最大的 2-3 个问题</td>
+<td>Apply On Play、Failed to add Repo</td>
+</tr>
+<tr>
+<td>Component Reference</td>
+<td>每个组件附 Known limitations 段</td>
+<td>哪些情况不能用、已知 bug</td>
+</tr>
+<tr>
+<td>General Behavior</td>
+<td>自动行为与玩家须知的平台行为</td>
+<td>MMD World 自动处理</td>
+</tr>
+<tr>
+<td>FAQ</td>
+<td>能不能 X / 怎么处理 Y 类问题</td>
+<td>导出 VRM、跨 Avatar 衣服</td>
+</tr>
+<tr>
+<td>GitHub Issues</td>
+<td>实际 bug 与新功能请求</td>
+<td>错误堆栈、性能问题</td>
+</tr>
+<tr>
+<td>Discord</td>
+<td>实时讨论与社区经验</td>
+<td>玩家互助</td>
+</tr>
+</tbody>
+</table>
+<p>实践启示：回答 Modular Avatar 相关问题时不要假装权威去硬猜资料里没有的内容，应主动告知用户这类问题更适合到 Discord（关键词搜索）或 GitHub Issues（Issue 搜索）求助；编写教学文档时宜聚焦最高频的少数问题并教会读者自行检索这些渠道，而不是堆砌大量低频问题充数。</p>
+<p>证据边界：六渠道分工为对官方文档结构的归纳表述（inferred），各渠道职责描述与官方原文措辞可能存在差异。</p>
+<hr>
+<hr>
+<h1 id="modular-avatar-错误报告窗口用法打开方式实时诊断能力与先看错误窗口再看-console原则">Modular Avatar 错误报告窗口用法：打开方式、实时诊断能力与「先看错误窗口再看 Console」原则</h1>
+<p>排查 Modular Avatar 问题的第一步是打开 Modular Avatar 错误报告窗口，而不是去 Unity Console 里翻——错误窗口只显示 MA 相关错误、随编辑实时更新、点击对象名即可跳转定位。</p>
+<p>打开方式：</p>
+<ul>
+<li>自动：MA 检测到错误时自动弹出；</li>
+<li>手动：Unity 工具栏 Tools → Modular Avatar → Show Error Report。</li>
+</ul>
+<p>与 Console 的对比：</p>
+<table>
+<thead>
+<tr>
+<th>维度</th>
+<th>Console</th>
+<th>MA 错误窗口</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>信息杂度</td>
+<td>极高，所有 Unity/SDK/MA 错误混在一起</td>
+<td>只显示 MA 相关错误</td>
+</tr>
+<tr>
+<td>更新机制</td>
+<td>静态，需要重新触发</td>
+<td>实时跟随编辑更新</td>
+</tr>
+<tr>
+<td>定位对象</td>
+<td>需自己在 Hierarchy 中搜索</td>
+<td>点击对象名直接跳转选中</td>
+</tr>
+<tr>
+<td>适合人群</td>
+<td>高级用户</td>
+<td>新手友好</td>
+</tr>
+</tbody>
+</table>
+<p>错误窗口的三项核心能力：</p>
+<ul>
+<li>点击错误条目中的对象名，直接跳到 Hierarchy 并选中对应对象，不用自己找；</li>
+<li>修改组件后错误实时消失或变化，无需重新触发；</li>
+<li>详情区显示具体是哪个组件、哪个字段出了问题。</li>
+</ul>
+<p>使用原则：看到错误先看错误窗口再动手修改；指导新手时不要引导其去 Console 查找 Modular Avatar 错误，那条路信息噪音大且容易漏。</p>
+<p>证据边界：行为事实（只显 MA 错误、实时更新、点击跳转）来自官方页面；对比维度为教学归纳表述。</p>
+<hr>
+<hr>
+<h1 id="vcc-添加-modular-avatar-仓库报-failed-to-add-repo-的根因与三步处理多为误报点-cancel-即可">VCC 添加 Modular Avatar 仓库报 Failed to add Repo 的根因与三步处理（多为误报，点 Cancel 即可）</h1>
+<p>VCC 添加 Modular Avatar 仓库时弹出 Failed to add Repo，多数情况是 VCC 自身 bug 导致的误报——仓库其实已经添加成功；正确做法是点 Cancel 取消，然后到 Community Repositories 列表确认 bd_ 仓库已勾选，而不是反复重试。</p>
+<p>症状：在 VCC 中添加 Modular Avatar 仓库时出现 Failed to add Repo 错误弹窗。</p>
+<p>根因：VCC 已知 bug（官方原话：“due to a bug in the VCC”）。</p>
+<p>正确处理三步：</p>
+<ol>
+<li>点击 Cancel 取消错误弹窗；</li>
+<li>查看左侧 Community Repositories 列表；</li>
+<li>找到 bd_ 仓库并确认其 checkbox 已勾选——已勾选即代表添加成功，无需理会该报错。</li>
+</ol>
+<p>兜底方案（列表中确实没有 bd_ 时）：</p>
+<ul>
+<li>重新添加仓库 URL：<a href="https://vpm.nadena.dev/vpm.json">https://vpm.nadena.dev/vpm.json</a> ；</li>
+<li>重启 VCC 再试；</li>
+<li>改用 ALCOM 替代 VCC（VCC 已知问题较多）。</li>
+</ul>
+<p>要点提醒：这是一个反直觉但正确的操作——见到报错反而应当取消并不再重复添加；官方对此不掩饰工具缺陷，直接给出绕过方案。版本备注：对应官方 Dealing with problems/install 子页口径（源页 v1.2 复核时点）。</p>
+<hr>
+<hr>
+<h1 id="modular-avatar-进-play-完全不处理的最高频原因apply-on-play-未勾选及六步修复">Modular Avatar 进 Play 完全不处理的最高频原因：Apply On Play 未勾选及六步修复</h1>
+<p>给 Avatar 加了 Modular Avatar 组件、点了 Setup Outfit 却毫无反应时，绝大多数情况是 VRC Avatar Descriptor 里的 Apply On Play 复选框没有勾选；勾上后进入 Play 模式，Modular Avatar 就会自动处理。</p>
+<p>症状：做了加组件、Setup Outfit 等操作，但 Avatar 没有任何变化。</p>
+<p>根因：Apply On Play 未勾选（官方收录的最高频问题）。</p>
+<p>修复步骤（精确到字段）：</p>
+<ol>
+<li>选中 Avatar 根 GameObject；</li>
+<li>查看 Inspector 面板；</li>
+<li>找到 VRC Avatar Descriptor 组件；</li>
+<li>在该组件内找到 Apply On Play 复选框；</li>
+<li>勾选它；</li>
+<li>进入 Play 模式，Modular Avatar 自动完成处理。</li>
+</ol>
+<p>补充：该问题出自官方 Dealing with problems 主页；若勾选后仍有异常，可用 Modular Avatar 错误报告窗口继续定位具体组件与字段。</p>
+<hr>
+<hr>
+<h1 id="apply-on-play-字段位置与教学话术位于-avatar-根的-vrc-avatar-descriptor-内必须进-play-模式触发">Apply On Play 字段位置与教学话术：位于 Avatar 根的 VRC Avatar Descriptor 内，必须进 Play 模式触发</h1>
+<p>Modular Avatar 组件「装上没反应」的最常见原因是 VRC Avatar Descriptor 的 Apply On Play 字段未勾选：该字段不是独立组件，而是位于 Avatar 根 GameObject 上 VRC Avatar Descriptor 组件里的一个复选框，并且必须进入 Play 模式才会触发 Modular Avatar 的处理。</p>
+<p>玩家教学要点：</p>
+<ul>
+<li>「99% 的情况」是友好教学表述，不要绝对化；</li>
+<li>指路要精确到「组件 + 字段名」，不要抽象地说「勾上那个选项」；</li>
+<li>玩家不需要理解背后原理，照做即可；</li>
+<li>不要向玩家解释「MA 在 Editor 不会自动处理」这类抽象信息。</li>
+</ul>
+<p>可直接使用的教学话术：「装上组件没反应？99% 是没勾 Apply On Play。选中 Avatar 根（你素体最外层那个对象）→ 看右边 Inspector → 找 VRC Avatar Descriptor 组件 → 找里面那个 Apply On Play 复选框 → 勾上 → 进 Play 模式看看。」</p>
+<hr>
+<hr>
+<h1 id="modular-avatar-错误报告两种更新机制与需要重新-build-的三种方法">Modular Avatar 错误报告两种更新机制与需要重新 Build 的三种方法</h1>
+<p>Modular Avatar 的错误报告窗口有两种更新机制：大多数错误会随编辑自动重新评估、立即刷新；少数错误必须重新 Build 后窗口才会更新。</p>
+<table>
+<thead>
+<tr>
+<th>类型</th>
+<th>行为</th>
+<th>何时遇到</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>自动更新（大多数）</td>
+<td>改完组件，错误窗口立即重新评估</td>
+<td>配置错误、组件缺失</td>
+</tr>
+<tr>
+<td>需要重新 Build（少数）</td>
+<td>错误窗口提示“需要重新 Build”</td>
+<td>Animator 错误、骨骼结构问题</td>
+</tr>
+</tbody>
+</table>
+<p>需要重新 Build 的典型场景：Animator Controller 报错、骨骼名不匹配、某些 NDMF 错误。</p>
+<p>重新 Build 的三种方法（任选其一）：</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>方法 A: 进 Play 模式一次（最简单）</span></span>
+<span class="line"><span>方法 B: Tools → Modular Avatar → Manual Bake Avatar（最干净）</span></span>
+<span class="line"><span>方法 C: Tools → NDM Framework → Force Reserialize（最彻底）</span></span></code></pre>
+<p>教学意义：玩家改完组件后发现错误还在容易慌张，应提前告知「有些错误需要重新 Build 才会消失」；改完不消失时统一引导「进 Play 模式 / 重新 Build」。版本备注：菜单路径以所用版本的官方文档为准。</p>
+<hr>
+<hr>
+<h1 id="modular-avatar-常见问题快速诊断表15-种症状的原因与修复对照">Modular Avatar 常见问题快速诊断表：15 种症状的原因与修复对照</h1>
+<p>Modular Avatar 常见问题可按「症状 → 可能原因 → 修复」对照表快速定位：先找到与当前症状一致的行，再执行对应的修复动作。</p>
+<table>
+<thead>
+<tr>
+<th>症状</th>
+<th>可能原因</th>
+<th>修复</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>装上衣服原地不动</td>
+<td>Setup Outfit 没执行</td>
+<td>右键衣服 → Setup Outfit</td>
+</tr>
+<tr>
+<td>装上衣服没反应</td>
+<td>Apply On Play 没勾</td>
+<td>Avatar 根 → VRC Avatar Descriptor → Apply On Play 勾上</td>
+</tr>
+<tr>
+<td>错误窗口打不开</td>
+<td>出错时未弹出</td>
+<td>Tools → Modular Avatar → Show Error Report</td>
+</tr>
+<tr>
+<td>改完错误还在</td>
+<td>需要重新 Build</td>
+<td>进 Play 模式 / Manual Bake Avatar</td>
+</tr>
+<tr>
+<td>衣服部分穿模</td>
+<td>Shrink 形态键没联动</td>
+<td>装衣服的对象加 Shape Changer</td>
+</tr>
+<tr>
+<td>调体型衣服不变形</td>
+<td>没加 Blendshape Sync</td>
+<td>加 Blendshape Sync</td>
+</tr>
+<tr>
+<td>鞋子陷地</td>
+<td>衣服层级 Y 位置不对</td>
+<td>加 Floor Adjuster</td>
+</tr>
+<tr>
+<td>多个小组件参数冲突</td>
+<td>参数名相同</td>
+<td>加 MA Parameters → Internal</td>
+</tr>
+<tr>
+<td>编辑器有效果，VRChat 无</td>
+<td>GameObject 路径不对</td>
+<td>检查 Setup Outfit 是否成功</td>
+</tr>
+<tr>
+<td>装上后报错</td>
+<td>骨骼名不匹配</td>
+<td>手动改衣服骨骼名 + 重做 Setup Outfit</td>
+</tr>
+<tr>
+<td>Apply On Play 灰了</td>
+<td>没装 VRCSDK</td>
+<td>装 VRCSDK</td>
+</tr>
+<tr>
+<td>VCC 提示 Failed to add Repo</td>
+<td>VCC 已知 bug</td>
+<td>点 Cancel，确认 bd_ 仓库已勾选</td>
+</tr>
+<tr>
+<td>衣服跟着 Avatar 反而错乱</td>
+<td>Position Lock 模式不对</td>
+<td>改“Not locked”模式测试</td>
+</tr>
+<tr>
+<td>Console 找不到 MA 错误</td>
+<td>看错地方了</td>
+<td>看错误窗口，不是 Console</td>
+</tr>
+<tr>
+<td>Blend Shape 排障</td>
+<td>MA 组件冲突 / FX Layer 冲突 / WD 不一致</td>
+<td>按专门的 Blend Shape 排障流程四步步法逐项排查</td>
+</tr>
+</tbody>
+</table>
+<p>优先核对三类最高频原因：Setup Outfit 是否执行、Apply On Play 是否勾选、改动后是否需要重新 Build；Blend Shape 类问题转向专门的 Blend Shape 排障流程处理。版本备注：组件名与菜单路径以所用版本的官方文档为准。</p>
+<hr>
+<hr>
+<h1 id="modular-avatar-五步问题诊断法官方流程图版从错误窗口到-manual-bake-的排查链路">Modular Avatar 五步问题诊断法（官方流程图版）：从错误窗口到 Manual Bake 的排查链路</h1>
+<p>Modular Avatar 出问题时可按五步诊断法排查，核心思想是从最高频原因开始逐步深入；绝大多数（约 99%）玩家做完前三步就能解决问题。</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>步骤 1: 看到问题 → 截图保存</span></span>
+<span class="line"><span>  └─ 错误窗口截图 + Scene 视图截图</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>步骤 2: 看错误窗口（不是 Console！）</span></span>
+<span class="line"><span>  ├─ 打开方式：Tools → Modular Avatar → Show Error Report</span></span>
+<span class="line"><span>  ├─ 点对象名跳到 Hierarchy</span></span>
+<span class="line"><span>  └─ 大多数错误会自动更新</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>步骤 3: 检查最高频原因（按官方顺序）</span></span>
+<span class="line"><span>  ├─ Apply On Play 勾了吗？（最常见，约占九成）</span></span>
+<span class="line"><span>  ├─ Setup Outfit 执行了吗？</span></span>
+<span class="line"><span>  └─ VRCSDK 装了吗？（Apply On Play 灰了的情况）</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>步骤 4: 检查组件配置</span></span>
+<span class="line"><span>  ├─ 组件有没有添加？</span></span>
+<span class="line"><span>  ├─ 拖的对象拖对了吗？</span></span>
+<span class="line"><span>  ├─ MA Parameters 位置对吗？（常见易错点）</span></span>
+<span class="line"><span>  └─ 骨骼名匹配吗？（衣服 Hips 含素体 Hips 名）</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>步骤 5: 用 Manual Bake Avatar 看最终结果</span></span>
+<span class="line"><span>  └─ 选中 Avatar → Tools → Modular Avatar → Manual bake avatar</span></span>
+<span class="line"><span>  └─ 看 ModularAvatarOutput 文件夹的结果</span></span></code></pre>
+<p>反向使用建议：普通玩家做完步骤 1-3 即可解决绝大多数问题；进阶玩家才需要步骤 4-5；穷尽以上步骤仍无果时，用 GitHub Issues 搜索或在 Discord 提问，不要硬猜。版本备注：菜单路径以所用版本的官方文档为准。</p>
+<hr>
+<hr>
+<h1 id="问题诊断文档写作八原则与五条禁忌提炼自-modular-avatar-官方-problems-章节">问题诊断文档写作八原则与五条禁忌（提炼自 Modular Avatar 官方 problems 章节）</h1>
+<p>编写 Modular Avatar（及同类工具）的问题诊断文档时，可参考从官方 problems 章节提炼的 8 条设计原则：</p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>原则</th>
+<th>官方做法</th>
+<th>写文档时的应用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>只列最高频问题</td>
+<td>整个章节就 2 个问题</td>
+<td>不要“为了完整”列 20 个问题</td>
+</tr>
+<tr>
+<td>2</td>
+<td>错误窗口 > Console</td>
+<td>专门有 Show Error Report 按钮</td>
+<td>教玩家“先看错误窗口，不要看 Console”</td>
+</tr>
+<tr>
+<td>3</td>
+<td>诚实告知工具 bug</td>
+<td>“due to a bug in the VCC”</td>
+<td>不要掩饰工具问题</td>
+</tr>
+<tr>
+<td>4</td>
+<td>路径精确到字段</td>
+<td>“VRC Avatar Descriptor → Apply On Play”</td>
+<td>写清“这个组件 + 这个字段”，不抽象</td>
+</tr>
+<tr>
+<td>5</td>
+<td>错误自动更新提示</td>
+<td>“Most errors … will update automatically”</td>
+<td>提前说“有些错误需要重新 Build”</td>
+</tr>
+<tr>
+<td>6</td>
+<td>给出绕过方案</td>
+<td>“Click Cancel, look in the list…”</td>
+<td>不要只说“这是 bug”，要给替代方案</td>
+</tr>
+<tr>
+<td>7</td>
+<td>不假设完美</td>
+<td>“Usually this means…”</td>
+<td>用“99%”“通常”表述，不绝对化</td>
+</tr>
+<tr>
+<td>8</td>
+<td>错误窗口可重开</td>
+<td>工具栏菜单明文</td>
+<td>教玩家“出错关掉了也没事”</td>
+</tr>
+</tbody>
+</table>
+<p>配套的 5 条禁忌（反例 → 正确写法）：</p>
+<table>
+<thead>
+<tr>
+<th>❌ 反例</th>
+<th>✅ 正确</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>“可能有很多原因”</td>
+<td>“99% 是 X”</td>
+</tr>
+<tr>
+<td>“检查你的设置”</td>
+<td>“VRC Avatar Descriptor → Apply On Play”</td>
+</tr>
+<tr>
+<td>“看 Console 找错误”</td>
+<td>“打开 MA 错误窗口”</td>
+</tr>
+<tr>
+<td>“这是 VCC 的问题”</td>
+<td>“VCC 已知 bug，点 Cancel……”并给绕过步骤</td>
+</tr>
+<tr>
+<td>“如果还不行……”</td>
+<td>“重新 Build（进 Play 模式）”</td>
+</tr>
+</tbody>
+</table>
+<p>证据边界：八条原则为编辑者对官方文档写法的归纳（inferred），官方并未以清单形式发布。</p>
+<hr>
+<hr>
+<h1 id="modular-avatar-导出-vrm-等其他格式manual-bake-加-univrm-两段式转换流程">Modular Avatar 导出 VRM 等其他格式：Manual Bake 加 UniVRM 两段式转换流程</h1>
+<p>Modular Avatar 不能把 Avatar 自动导出为 VRM 等其他格式；正确做法是先用 Manual Bake Avatar 手动执行全部 MA 转换，再用 UniVRM 之类的工具完成格式转换。</p>
+<p>具体操作：</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>1. 选中 Avatar</span></span>
+<span class="line"><span>2. Unity 工具栏: Tools → Modular Avatar → Manual bake avatar</span></span>
+<span class="line"><span>3. 自动复制 Avatar + 应用所有 MA 转换</span></span>
+<span class="line"><span>4. 结果在 ModularAvatarOutput 文件夹</span></span>
+<span class="line"><span>5. 之后用 UniVRM 之类的工具正常转换</span></span></code></pre>
+<p>警告：手动 Bake 时 Modular Avatar 会生成大量 Mesh 和资源文件，且不会自动清理；转换完成后可以放心删除 ModularAvatarOutput 文件夹。</p>
+<p>适用定位：这是创作者/特殊场景工具，不是日常操作——只有想把 Avatar 弄到 VRM 等其他平台时才需要；绝大多数 VRChat 玩家用不到，教学中不要主动推荐，除非玩家明确问「我想导出到 XXX」。版本备注：菜单路径以所用版本的官方文档为准。</p>
+<hr>
+<hr>
+<h1 id="modular-avatar-跨-avatar-穿衣骨骼名匹配前提setup-outfit-失败处理与手动对齐">Modular Avatar 跨 Avatar 穿衣：骨骼名匹配前提、Setup Outfit 失败处理与手动对齐</h1>
+<p>可以用 Modular Avatar 把衣服装到别的 Avatar 上（跨 Avatar 穿衣），前提是骨骼名匹配：Modular Avatar 假设源 Avatar 和衣服的骨骼名相同；不匹配时需要重命名衣服的骨骼来适配你的 Avatar。骨骼名匹配后，你对衣服骨骼位置的调整会被 Merge Armature 保留。</p>
+<p>实操流程：</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>1. 把衣服 Prefab 拖到你的 Avatar 下</span></span>
+<span class="line"><span>2. 右键 → Setup Outfit</span></span>
+<span class="line"><span>3. 如果 Setup Outfit 失败（找不到 Hips 匹配）:</span></span>
+<span class="line"><span>   → 进入衣服的 Armature，重命名骨骼以匹配你的 Avatar</span></span>
+<span class="line"><span>4. 用 Reset position to base avatar 功能大致对齐衣服位置</span></span>
+<span class="line"><span>5. 手动微调</span></span></code></pre>
+<p>预期管理：这属于创作者向场景，普通玩家几乎不会遇到，常见于把「通用衣服」装到自己的小众 Avatar 上；跨 Avatar 穿衣经常需要手动调位置，不是「拖一下就好」，是否值得折腾由玩家自己决定。版本备注：功能名称以所用版本的官方文档为准。</p>
+<hr>
+<hr>
+<h1 id="modular-avatar-官方文档语言支持英语与日语两种无中文的教学对策">Modular Avatar 官方文档语言支持：英语与日语两种、无中文的教学对策</h1>
+<p>Modular Avatar 官方文档界面支持的语言（截至该文档版本）为 English（默认）与日本語（Japanese）两种，页面右上角有🌐图标可切换到日语；没有官方中文翻译。</p>
+<p>面向中文玩家的教学对策：虽然没有中文界面，但配合截图和简单的英文术语，玩家都能看懂；教学时用中文讲解，但保留英文 UI 字段名（如 MA Menu Item、Bone Proxy），因为玩家在 Unity 里实际看到的是英文界面。</p>
+<p>版本备注：语言支持列表标注为「截至文档版本」，当前版本可能新增更多语言。</p>
+<hr>
+<hr>
+<h1 id="manual-bake-avatar-适用场景对照普通上传不需要调试导出验证等五类场景需要">Manual Bake Avatar 适用场景对照：普通上传不需要，调试/导出/验证等五类场景需要</h1>
+<p>手动 Bake Avatar（Manual Bake Avatar）是否需要按场景区分：普通 VRChat 上传完全不需要——Play 模式或 Build 时 Modular Avatar 会自动处理；其余五类场景则需要手动 Bake。</p>
+<table>
+<thead>
+<tr>
+<th>场景</th>
+<th>是否需要手动 Bake</th>
+<th>原因</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>普通 VRChat 上传</td>
+<td>❌ 不需要</td>
+<td>Play 模式 / Build 时 MA 自动处理</td>
+</tr>
+<tr>
+<td>调试 Avatar 问题</td>
+<td>✅ 需要</td>
+<td>看“MA 处理完的真实 Avatar”长什么样</td>
+</tr>
+<tr>
+<td>导出到 UniVRM</td>
+<td>✅ 需要</td>
+<td>UniVRM 不认识 MA 组件，需要先转成普通 Avatar</td>
+</tr>
+<tr>
+<td>导出到 Resonite</td>
+<td>✅ 需要</td>
+<td>同上</td>
+</tr>
+<tr>
+<td>给非 VRChat 平台用</td>
+<td>✅ 需要</td>
+<td>MA 是 VRChat 专用，其他平台不会自动触发</td>
+</tr>
+<tr>
+<td>验证“我的组件配置正确吗”</td>
+<td>✅ 需要</td>
+<td>直接看最终结果，不用进 Play 模式</td>
+</tr>
+</tbody>
+</table>
+<p>定位：99% 的 VRChat Avatar 玩家不需要此功能；它主要服务于创作者或需要导出到其他平台的用户。版本备注：场景列表以所用版本的官方文档为准。</p>
+<hr>
+<hr>
+<h1 id="manual-bake-avatar-五步操作流程不进-play-获得-modular-avatar-处理后的最终-avatar">Manual Bake Avatar 五步操作流程：不进 Play 获得 Modular Avatar 处理后的最终 Avatar</h1>
+<p>Manual Bake Avatar 的完整操作共五步，可以在不进 Play 模式的情况下获得 Modular Avatar 处理后的最终 Avatar：</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>步骤 1: 选中 Avatar 根 GameObject</span></span>
+<span class="line"><span>  └─ 必须是带 VRC Avatar Descriptor 的那个对象</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>步骤 2: 工具栏 Tools → Modular Avatar → Manual bake avatar</span></span>
+<span class="line"><span>  └─ 也可以右键 Avatar → 同一选项</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>步骤 3: MA 自动复制 Avatar + 应用所有 MA 转换</span></span>
+<span class="line"><span>  └─ 注意: 是“复制”, 原 Avatar 不变</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>步骤 4: 查看 ModularAvatarOutput 文件夹</span></span>
+<span class="line"><span>  └─ 位置: Assets/ModularAvatarOutput/</span></span>
+<span class="line"><span>  └─ 默认所有资产打包成单个文件</span></span>
+<span class="line"><span>  └─ 选中文件 → Inspector → 点 Unpack 拆开</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>步骤 5: 删除 baked avatar 副本时, ModularAvatarOutput 也可安全删除</span></span>
+<span class="line"><span>  └─ 中间产物, 不留垃圾</span></span></code></pre>
+<p>版本备注：菜单路径以所用版本的官方文档为准。</p>
+<hr>
+<hr>
+<h1 id="modularavataroutput-输出文件夹机制单文件打包的原因与-unpack-拆开的时机">ModularAvatarOutput 输出文件夹机制：单文件打包的原因与 Unpack 拆开的时机</h1>
+<p>ModularAvatarOutput 是 Modular Avatar 手动 Bake 后存放产物的专用文件夹，位置在 Assets/ModularAvatarOutput/。专门设置这个文件夹的原因有三点：避免 Unity 已知 bug、提升处理速度、保持工程文件整洁。</p>
+<p>默认把所有生成资产打包成单个文件，原因是：多个散文件容易触发 Unity 导入 bug，打包后处理速度更快。</p>
+<p>Unpack 按钮（选中文件 → Inspector → Unpack）的使用时机：</p>
+<ul>
+<li>想单独查看每个生成资源的形态；</li>
+<li>想用 git diff 等版本控制工具对比变化；</li>
+<li>调试单个组件的错误。</li>
+</ul>
+<p>不需要这些操作时保持打包状态即可。</p>
+<hr>
+<hr>
+<h1 id="manual-bake-手动烘焙三条关键警告与玩家教学定位">Manual Bake 手动烘焙三条关键警告与玩家教学定位</h1>
+<p>使用 Modular Avatar 手动 Bake 时有三条关键警告：</p>
+<ul>
+<li>不要把 ModularAvatarOutput 当作核心资源长期保留——它是中间产物；</li>
+<li>不要在 baked avatar 副本还没删除时单独删 ModularAvatarOutput——会引发引用丢失；</li>
+<li>不要期望手动 Bake 后原 Avatar 会变化——它只生成副本，原 Avatar 不受影响。</li>
+</ul>
+<p>教学定位（玩家向）：99% 的玩家不需要手动 Bake，只在玩家明确提出「想把 Avatar 弄到 VRM 等其他平台」时才教；不要主动推荐，强调这是创作者/特殊场景工具而非日常操作。可直接使用的话术：「99% 玩家不需要这个。它是给『想把 Avatar 弄到其他平台』的人用的。」</p>
+<p>证据边界：三条警告来自官方文档；「教学定位」段落为编辑整理的教学建议，非官方原文。</p>
+<hr>
+<hr>
+<h1 id="modular-avatar-mmd-world-层禁用兼容机制识别并禁用原-fx-层-23relay-layers-恢复merge-animator-层受-padding-layers-保护">Modular Avatar MMD World 层禁用兼容机制：识别并禁用原 FX 层 2/3、relay layers 恢复、Merge Animator 层受 padding layers 保护</h1>
+<p>部分 MMD Worlds 在 VRChat 中会主动禁用 Avatar FX Animator Controller 的第 2 层和第 3 层，目的是禁掉表情、让 MMD World 接管表情控制——这是 VRChat MMD 圈子的约定行为。Modular Avatar 会自动处理以兼容这一行为，流程分五步：</p>
+<table>
+<thead>
+<tr>
+<th>步骤</th>
+<th>MA 做什么</th>
+<th>为什么</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>识别“原本是层 2、3”的层</td>
+<td>这些层就是 MMD World 想禁的</td>
+</tr>
+<tr>
+<td>2</td>
+<td>让它们在 MMD World 中被禁用</td>
+<td>满足 MMD World 的预期</td>
+</tr>
+<tr>
+<td>3</td>
+<td>如果新层插入到它们之前，添加 relay layers</td>
+<td>中继层用于在 MMD World 之外时重新启用原 2、3 层（drive layers 2 and 3 off and on appropriately）</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Merge Animator 添加的层不参与</td>
+<td>由下述保护机制保证</td>
+</tr>
+<tr>
+<td>5</td>
+<td>必要时添加 padding layers</td>
+<td>用来“垫”出位置，让 Merge Animator 的层落在非 2、3 的位置</td>
+</tr>
+</tbody>
+</table>
+<p>保护机制（官方原话）：Layers added via Merge Animator (even in replace mode) will not be affected by this MMD world behavior; if necessary, padding layers will be added to protect them.</p>
+<p>各情况是否受 MMD World 影响：</p>
+<table>
+<thead>
+<tr>
+<th>情况</th>
+<th>是否受 MMD 影响</th>
+<th>原因</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>原本在层 2、3</td>
+<td>✅ 是</td>
+<td>MMD World 设计如此</td>
+</tr>
+<tr>
+<td>Merge Animator 添加的层</td>
+<td>❌ 否</td>
+<td>MA 主动保护</td>
+</tr>
+<tr>
+<td>Merge Animator + Replace 模式</td>
+<td>❌ 否</td>
+<td>即使 replace 也保护</td>
+</tr>
+<tr>
+<td>手动添加到层 2、3 的层</td>
+<td>⚠️ 取决于手动管理</td>
+<td>MA 不能自动管理手动添加的层</td>
+</tr>
+</tbody>
+</table>
+<p>例外：手动添加到层 2、3 的层取决于手动管理，MA 的自动保护不覆盖这种情况。版本备注：层保护行为以所用版本的 Modular Avatar 官方文档为准。</p>
+<hr>
+<hr>
+<h1 id="modular-avatar-mmd-layer-control把-merge-animator-合并层主动-opt-in-进-mmd-world-禁用范围必须装在-layer-上">Modular Avatar MMD Layer Control：把 Merge Animator 合并层主动 opt-in 进 MMD World 禁用范围，必须装在 layer 上</h1>
+<p>Merge Animator 合并的动画层默认不受 MMD World 影响；若希望某层在 MMD 播放时像素体原生层一样被禁用，需要主动 opt-in——把 Modular Avatar 的 MMD Layer Control（state machine behavior）直接加到目标层上。</p>
+<p>行为对照：</p>
+<ul>
+<li>默认：Merge Animator 层完全不参与 MMD 控制，MMD World 只禁用素体原生层 2、3；</li>
+<li>opt-in 后：加了 MMD Layer Control 的层会像原层 2、3 一样被 MMD World 禁用。</li>
+</ul>
+<p>硬性限制：MMD Layer Control 必须直接安装到层上，不能安装到单个 state 上。官方原话：“Due to how state machine behaviors work, I can’t stop you from attaching them to individual states - but this will break your build (so don’t do that).”——装到 state 会破坏 build。</p>
+<p>版本备注：MMD Layer Control 属较新特性，实际可用性以所用 Modular Avatar 版本为准（候选来源未标注具体版本号）。</p>
+<hr>
+<hr>
+<h1 id="modular-avatar-vrchat-settings-组件两步关闭-mmd-world-支持全局总闸与-mmd-layer-control-细粒度的关系">Modular Avatar VRChat Settings 组件两步关闭 MMD World 支持：全局总闸与 MMD Layer Control 细粒度的关系</h1>
+<p>完全关闭 Modular Avatar 的 MMD World 支持只需两步——① 给 avatar 添加 VRChat Settings 组件；② 在组件里关闭 MMD World Support 设置。关闭后 Modular Avatar 不做任何 MMD 相关处理，avatar 在 MMD World 中的行为回到原生状态。</p>
+<p>约束：VRChat Settings 组件在整个 avatar 上只能存在一个实例，但可以放在层级里的任意位置。</p>
+<p>适用场景：玩家或创作者不希望 Modular Avatar 自动改写 MMD 相关层行为时，用此开关整体停用该机制，而不必逐层配置 MMD Layer Control。</p>
+<p>与 MMD Layer Control 的关系：VRChat Settings 的 MMD World Support 开关是全局总闸——关闭后 Modular Avatar 不做任何 MMD 相关处理；MMD Layer Control 则是逐层 opt-in 的细粒度手段。两者分别对应『全量停用』与『单个合并层参与禁用』两种需求。</p>
+<p>版本备注：该组件属较新特性，候选来源未标注具体 Modular Avatar 版本号，以所用版本文档为准。</p>
+<hr>
+<hr>
+<h1 id="modular-avatar-mmd-兼容边界workaround-仅对禁用-fx-层-2-和-3-的世界有效禁其他层的-mmd-world-无法保护">Modular Avatar MMD 兼容边界：workaround 仅对禁用 FX 层 2 和 3 的世界有效，禁其他层的 MMD World 无法保护</h1>
+<p>Modular Avatar 的 MMD World 兼容方案有明确边界——只对『专门禁用层 2 &#x26; 3』的世界生效。如果某个 MMD World 禁用的是别的层（例如 4 &#x26; 5），Modular Avatar 无能为力，服装在该世界里仍会乱动。</p>
+<p>原因：VRChat 当前 API 不支持通用方案。官方原话：“This workaround only works for worlds which specifically disable layers 2 &#x26; 3. Given current VRChat constraints, it’s not possible to provide a more general solution.” 这是平台限制，不是 Modular Avatar 的缺陷。</p>
+<p>应对：玩家遇到此类世界时，可联系 World 作者反馈，或放弃在该 World 使用 MMD 集成；不应期待 Modular Avatar 侧修复。</p>
+<p>版本备注：候选来源未标注具体 Modular Avatar 版本号，边界行为以所用版本文档为准。</p>
+<hr>
+<hr>
+<h1 id="分发含-modular-avatar-的-prefab许可证允许夹带-ma-副本但官方强烈建议引导用户去-github-releases-自行安装">分发含 Modular Avatar 的 Prefab：许可证允许夹带 MA 副本但官方强烈建议引导用户去 GitHub Releases 自行安装</h1>
+<p>发布含 Modular Avatar 组件的 Prefab 时，许可证虽然允许在包内夹带 MA 副本，但官方强烈建议不要这样做，而应引导用户前往 GitHub Releases（<a href="https://github.com/bdunderscore/modular-avatar/releases">https://github.com/bdunderscore/modular-avatar/releases</a> ）自行下载安装最新版 Modular Avatar。</p>
+<p>不要夹带的三个原因：</p>
+<ol>
+<li>用户可能装到很旧的 Modular Avatar 版本；</li>
+<li>旧版可能把其他 Prefab 已装好的 Modular Avatar 降级、装坏；</li>
+<li>多个 Prefab 各自带副本时容易出现版本错乱。</li>
+</ol>
+<p>补充：作者计划提供 VCC-based 安装方式，但需等待 VCC 自身改进后落地。</p>
+<p>性质界定：夹带 Modular Avatar 副本在许可证层面是被允许的，不构成违规；『引导用户去官方仓库』是基于版本管理可靠性的强烈建议（strongly recommend），而非许可条款的强制要求。版本备注：候选来源未标注具体版本号。</p>
+<hr>
+<hr>
+<h1 id="嵌套-prefab-方案让同一服装同时兼容-modular-avatar-用户与非-ma-用户create-base-四步流程与-apply-as-override-选择性同步">嵌套 Prefab 方案让同一服装同时兼容 Modular Avatar 用户与非 MA 用户：Create Base 四步流程与 Apply as Override 选择性同步</h1>
+<p>通过嵌套 Prefab 把『outfit 核心』和『MA 配置』分离，可以同时服务装了 Modular Avatar 和没装的两类用户：装了 Modular Avatar 的用户用原 prefab（带 MA 配置，拖入即完成）；没装的用户改用 base prefab（手动配置）。</p>
+<p>完整 4 步流程：</p>
+<ol>
+<li>正常创建 outfit prefab；</li>
+<li>在 Project 视图双击 prefab 进入 prefab mode；</li>
+<li>把 prefab 根对象拖回 Project 窗口，弹窗点 “Create Base”，重命名为好记的名字（如 “Outfit without Modular Avatar”）；</li>
+<li>在原 prefab 上设置 MA 组件，在新 base prefab 上设置非 MA 的常规设置。</li>
+</ol>
+<p>关键技巧：在测试场景修改设置后，用 Prefab Overrides 菜单（Apply as Override）选择把这次修改应用到 base prefab 还是 MA prefab，实现同一修改的选择性同步。</p>
+<p>版本备注：候选来源未标注具体 Modular Avatar 版本号。</p>
+<hr>
+<hr>
+<h1 id="modular-avatar-internal-参数机制编译期自动重命名避免小组件-animator-参数撞名">Modular Avatar Internal 参数机制：编译期自动重命名避免小组件 Animator 参数撞名</h1>
+<p>把小组件的 Animator 参数标记为 Internal，可以彻底避免参数名冲突——Internal 参数在构建编译时会自动重命名为唯一名字，因此多个 Prefab 即便用了相同参数名也互不影响。</p>
+<p>推荐做法：任何『用 Animator 参数实现的小组件』（例如简单的物件开关动画）都把其参数设为 Internal；这样多个小组件复用同一参数名也不会互相干扰。</p>
+<p>机制参考：<a href="https://modular-avatar.nadena.dev/docs/reference/parameters">https://modular-avatar.nadena.dev/docs/reference/parameters</a> 。适用对象主要是发布服装/配件 Prefab 的创作者，尤其是 Prefab 会与其他人的 Prefab 叠加使用的场合。</p>
+<p>版本备注：候选来源未标注具体 Modular Avatar 版本号。</p>
+<hr>
+<hr>
+<h1 id="modular-avatar-语义化版本策略主版本破坏兼容次版本向后兼容补丁一般无影响推荐同主版本内升到最新">Modular Avatar 语义化版本策略：主版本破坏兼容、次版本向后兼容、补丁一般无影响，推荐同主版本内升到最新</h1>
+<p>Modular Avatar 遵循 Semantic Versioning（semver.org），三位版本号的含义与 Prefab 兼容性如下：</p>
+<table>
+<thead>
+<tr>
+<th>版本变化</th>
+<th>含义</th>
+<th>对你的 Prefab 影响</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>主版本（1.x.x → 2.x.x）</td>
+<td>不兼容变更</td>
+<td>Prefab 必须更新才能继续使用</td>
+</tr>
+<tr>
+<td>次版本（1.0.x → 1.1.x）</td>
+<td>向后兼容的新功能</td>
+<td>1.0.x 做的 Prefab 在 1.1.x 上仍可用；反之 1.1.x 做的不保证能在 1.0.x 上用</td>
+</tr>
+<tr>
+<td>补丁（1.0.0 → 1.0.1）</td>
+<td>Bugfix（不破坏存档格式）</td>
+<td>一般无影响，个别 bugfix 可能产生影响</td>
+</tr>
+</tbody>
+</table>
+<p>推荐策略：建议用户安装同一主版本下的最新版（例如 1.x.x 系列直接升到 1.20.x）。例外提示：个别 bugfix 也可能影响 Prefab 行为，补丁版本并非绝对零风险。版本备注：候选来源未标注具体版本号。</p>
+<hr>
+<hr>
+<h1 id="modular-avatar-api-稳定性承诺仅-nadenadevmodular-avatar-这个-qualified-name-稳定内部类名pass-顺序随时可能变">Modular Avatar API 稳定性承诺：仅 nadena.dev.modular-avatar 这个 Qualified Name 稳定，内部类名/pass 顺序随时可能变</h1>
+<p>Modular Avatar 对外只保证一个稳定 API——Qualified Name『nadena.dev.modular-avatar』本身。其余内部标识全部随时可能变化：</p>
+<table>
+<thead>
+<tr>
+<th>类别</th>
+<th>稳定性</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>nadena.dev.modular-avatar（Qualified Name 本身）</td>
+<td>唯一稳定的 API</td>
+</tr>
+<tr>
+<td>internal class 名称</td>
+<td>不稳定（补丁版本都可能变）</td>
+</tr>
+<tr>
+<td>internal method 名称</td>
+<td>不稳定</td>
+</tr>
+<tr>
+<td>NDMF pass 的 Qualified Name</td>
+<td>不稳定</td>
+</tr>
+<tr>
+<td>NDMF pass 的执行顺序</td>
+<td>不稳定</td>
+</tr>
+</tbody>
+</table>
+<p>给插件开发者的三条建议：① 不要在代码里 hardcode internal 类名或方法签名；② 插件自身的 Qualified Name 使用 nadena.dev.modular-avatar；③ 若确需依赖特定 Modular Avatar pass，到 GitHub（<a href="https://github.com/bdunderscore/modular-avatar">https://github.com/bdunderscore/modular-avatar</a> ）提 Feature Request 说明用例，作者会考虑添加稳定 API。</p>
+<p>例外：确需依赖特定 MA pass 时，应到 GitHub 提 Feature Request 说明用例，由作者评估增加稳定 API。版本备注：候选来源未标注具体版本号。</p>
+<hr>
+<hr>
+<h1 id="modular-avatar-logo-使用资格决策表仅限含-ma-组件的-prefab-与兼容-ma-的-ndmf-编辑器扩展两类产品">Modular Avatar Logo 使用资格决策表：仅限含 MA 组件的 Prefab 与兼容 MA 的 NDMF 编辑器扩展两类产品</h1>
+<p>Modular Avatar Logo 表示『该产品可通过 Modular Avatar 一致地一键安装』，只有满足条件的产品才能使用。</p>
+<p>许可前置：无需提前申请；但 bd_ 与 pumo 保留最终裁决权，被要求撤下时必须撤下。</p>
+<p>资格决策表：</p>
+<table>
+<thead>
+<tr>
+<th>产品类型</th>
+<th>能否用 Logo</th>
+<th>条件</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>带 MA 组件的 Avatar/服装 Prefab</td>
+<td>可以</td>
+<td>Prefab 必须含预配置的 MA 组件，且 MA 是主要安装方式</td>
+</tr>
+<tr>
+<td>NDMF 非破坏性编辑器扩展</td>
+<td>可以</td>
+<td>必须兼容或依赖 MA，并满足下方额外约束</td>
+</tr>
+<tr>
+<td>不含 MA 组件的 Prefab（纯 Compatible）</td>
+<td>不可用</td>
+<td>—</td>
+</tr>
+<tr>
+<td>手工安装流程的 Prefab</td>
+<td>不可用</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<p>NDMF 编辑器扩展的额外约束（易踩坑）：① 卸载只需删除 prefab 即可（非破坏性）；② 不得要求用户手动触发任何处理/生成操作；③ 不能在自家 UI 中使用 Modular Avatar Logo（避免与 MA 自带 UI 混淆）；④ 不得暗示获得 Modular Avatar 官方背书或认可。</p>
+<p>完整官方规则：<a href="https://modular-avatar.nadena.dev/docs/distributing-prefabs/logo-usage">https://modular-avatar.nadena.dev/docs/distributing-prefabs/logo-usage</a> 。版本备注：候选来源未标注具体版本号。</p>
+<hr>
+<hr>
+<h1 id="modular-avatar-logo-摆放规范整体使用禁改动禁动画背景保持对比度与原始颜色唯一允许加工是描边阴影">Modular Avatar Logo 摆放规范：整体使用禁改动、禁动画背景、保持对比度与原始颜色，唯一允许加工是描边阴影</h1>
+<p>使用 Modular Avatar Logo 时必须遵守摆放红线：Logo 要整体使用、不得改动图形本身，唯一允许的加工是添加描边或阴影以提升对比度。</p>
+<p>具体规则：</p>
+<ul>
+<li>禁止将 Logo 制作为动画；禁止将其用作图案或背景（视频中过渡动画属例外，但不得显著改变形状/风格）；</li>
+<li>Logo 必须具备足够对比度，并与页面中其他元素保持合理距离；</li>
+<li>必须使用原始颜色，多色变体可选。</li>
+</ul>
+<p>资源与联系：官方 Logo 资源包 <a href="https://modular-avatar.nadena.dev/assets/files/modular_avatar_logo-711f570c8ad26b2b46d46b44e198f647.zip">https://modular-avatar.nadena.dev/assets/files/modular_avatar_logo-711f570c8ad26b2b46d46b44e198f647.zip</a> ；边界情况或特殊许可联系 bd_（Discord: bd_ ／ Twitter: @bd_j ／ Misskey: @<a href="mailto:bd_@misskey.niri.la">bd_@misskey.niri.la</a> ／ Email: <a href="mailto:bd_@nadena.dev">bd_@nadena.dev</a>）。</p>
+<p>版本备注：候选来源未标注具体版本号。</p>
+<hr>
+<hr>
+<h1 id="modular-avatar-创作者支持等级对比compatible无-ma-组件低成本不可用-logovs-preset预置-ma-组件高成本可用-logo">Modular Avatar 创作者支持等级对比：Compatible（无 MA 组件低成本不可用 Logo）vs Preset（预置 MA 组件高成本可用 Logo）</h1>
+<p>Modular Avatar 对创作者提供两档支持等级，核心差异是『是否预置 MA 组件』：</p>
+<table>
+<thead>
+<tr>
+<th>维度</th>
+<th>Modular Avatar Compatible</th>
+<th>Modular Avatar Preset</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>含 MA 组件</td>
+<td>无</td>
+<td>含</td>
+</tr>
+<tr>
+<td>依赖 MA 安装</td>
+<td>不需要</td>
+<td>需要</td>
+</tr>
+<tr>
+<td>创作者成本</td>
+<td>低（保证命名规范即可）</td>
+<td>高（需预跑 Setup Outfit + 加增强组件）</td>
+</tr>
+<tr>
+<td>Logo 使用权</td>
+<td>不可用</td>
+<td>可用</td>
+</tr>
+<tr>
+<td>用户操作</td>
+<td>拖入后自己右键 Setup Outfit</td>
+<td>拖入后无需任何操作</td>
+</tr>
+<tr>
+<td>适用对象</td>
+<td>通用服装、跨生态分销</td>
+<td>MA 用户专享</td>
+</tr>
+</tbody>
+</table>
+<p>关键洞察：两种等级不互斥——创作者可以同时发布两个版本（一个含 MA 组件的 Preset 版、一个不含的 Compatible base 版），用嵌套 Prefab 把 outfit 核心与 MA 配置解耦，同时覆盖 Modular Avatar 用户与非 MA 用户。</p>
+<p>版本备注：候选来源未标注具体版本号。</p>
+<hr>
+<hr>
+<h1 id="setup-outfit-工作机制四阶段识别骨骼ta-pose-转换创建-merge-armature创建-mesh-settings">Setup Outfit 工作机制四阶段：识别骨骼、T/A Pose 转换、创建 Merge Armature、创建 Mesh Settings</h1>
+<p>Setup Outfit 不是简单挂组件，而是按固定四阶段处理服装：</p>
+<table>
+<thead>
+<tr>
+<th>阶段</th>
+<th>做什么</th>
+<th>关键点</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>① 识别骨骼</td>
+<td>找衣服的 Hips 骨骼</td>
+<td>路径 OutfitRoot → [Armature] → Hips；Hips 名必须含素体 Hips 名</td>
+</tr>
+<tr>
+<td>② T/A Pose 转换</td>
+<td>旋转手臂对齐素体</td>
+<td>手臂长度必须完全相同才能转换，否则跳过</td>
+</tr>
+<tr>
+<td>③ 创建 Merge Armature</td>
+<td>合并骨骼树</td>
+<td>同名骨骼复用；含组件的骨骼不合并，移到对应素体骨骼下</td>
+</tr>
+<tr>
+<td>④ 创建 Mesh Settings</td>
+<td>配置渲染设置</td>
+<td>Light Probe + Bounding Box 与素体保持一致</td>
+</tr>
+</tbody>
+</table>
+<p>例外：手臂长度不一致时 T/A Pose 转换会被跳过（转换失败）。</p>
+<p>排查指引：遇到『Setup Outfit 后衣服不跟随/位置不对』类问题时，按阶段顺序检查——先确认 Hips 是否被正确识别，再检查双方手臂长度是否一致，最后查看 Merge Armature 的骨骼归并与 Mesh Settings 是否正确生成。</p>
+<p>版本备注：候选来源未标注具体 Modular Avatar 版本号。</p>
+<hr>
+<hr>
+<h1 id="setup-outfit-骨骼命名规则统一前后缀一致且大小写敏感模糊匹配兜底可靠性差应避免依赖">Setup Outfit 骨骼命名规则：统一前后缀一致且大小写敏感，模糊匹配兜底可靠性差应避免依赖</h1>
+<p>Setup Outfit 依靠骨骼命名约定工作：衣服骨骼名应为『统一前缀 + 素体骨骼名 + 统一后缀』，所有骨骼的前后缀必须一致、大小写敏感；缺少统一前后缀的骨骼不会合并到素体。</p>
+<p>命名相关事实：</p>
+<ul>
+<li>Armature 对象名任意，Setup Outfit 不关心它叫什么（不强制叫 Armature）；</li>
+<li>骨骼轴向 X/Y/Z 任意组合均可，Merge Armature 自动处理。</li>
+</ul>
+<p>模糊匹配模式（兜底）：当衣服骨骼名不规范时，Setup Outfit 会尝试重命名衣服骨骼以匹配素体。官方明确建议避免这种模式——可靠性差；最佳实践是从一开始就让衣服骨骼精确包含素体骨骼名。</p>
+<p>智能行为补充：同名骨骼共享素体骨骼（不重复创建）；含组件（非 Transform）的骨骼不合并、移到对应素体骨骼下作为子级；素体没有的骨骼（如 Upper Chest）保留为独立骨骼；上半身存在特殊骨骼时自动用多个 Merge Armature 协同。</p>
+<hr>
+<hr>
+<h1 id="bone-proxy-与-merge-armature-选型对比整树按名合并-vs-单对象按-humanoid-角色绑定">Bone Proxy 与 Merge Armature 选型对比：整树按名合并 vs 单对象按 Humanoid 角色绑定</h1>
+<p>Merge Armature 与 Bone Proxy 解决不同问题——前者合并整棵骨骼树，后者移动单个对象到指定骨骼。</p>
+<table>
+<thead>
+<tr>
+<th>维度</th>
+<th>Merge Armature</th>
+<th>Bone Proxy</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>作用</td>
+<td>合并整棵骨骼树</td>
+<td>移动单个对象到指定骨骼</td>
+</tr>
+<tr>
+<td>目标匹配方式</td>
+<td>按骨骼名匹配</td>
+<td>按 Humanoid 角色匹配（与骨骼名无关）</td>
+</tr>
+<tr>
+<td>通用性</td>
+<td>弱（依赖命名约定）</td>
+<td>强（可适配任意 Avatar）</td>
+</tr>
+<tr>
+<td>位置/旋转控制</td>
+<td>自动</td>
+<td>可选 snap / keep pose</td>
+</tr>
+<tr>
+<td>整体开关联动</td>
+<td>是（联动所有从 outfit scatter 出的对象）</td>
+<td>否</td>
+</tr>
+<tr>
+<td>典型场景</td>
+<td>多骨骼服装（衣服、头饰、尾巴）</td>
+<td>单点小物件（发卡、手持物）</td>
+</tr>
+</tbody>
+</table>
+<p>核心区别：Bone Proxy 用 Humanoid 角色匹配，可制作跨 Avatar 通用的 Prefab；Merge Armature 智能合并骨骼树，用户的任何动画开关都能联动整组散落对象。</p>
+<p>选型口诀：多骨骼服装用 Merge Armature，跨 Avatar 单点小物件用 Bone Proxy。</p>
+<hr>
+<hr>
+<h1 id="创作者避坑physbone-残留在-hipschest-等-humanoid-骨骼上会导致-modular-avatar-行为不可预测">创作者避坑：PhysBone 残留在 Hips/Chest 等 humanoid 骨骼上会导致 Modular Avatar 行为不可预测</h1>
+<p>服装 Prefab 中残留在 humanoid 骨骼（Hips/Chest 等）上的 PhysBone 组件是高发雷区——这类组件多半是从素体复制时忘记删除的，Modular Avatar 会尝试删除它们，造成不可预测的行为。</p>
+<p>避坑方法（二选一）：</p>
+<ol>
+<li>确保 PhysBone 组件位于 Merge Armature 范围之外的 GameObject 上；</li>
+<li>或者把 PhysBone 放在衣服独有的骨骼上（不与素体骨骼同名）。</li>
+</ol>
+<p>自查时机：发布 Preset 前、或收到『穿上衣服物理表现异常』反馈时，优先检查衣服 Armature 内 humanoid 骨骼上是否挂着多余的 PhysBone 组件。</p>
+<p>成因说明：这类残留多发生在以素体模型为基础改制服装时——PhysBone 组件随骨架被一并复制进衣服 Prefab，落在 Hips/Chest 等 humanoid 骨骼上未清理；Modular Avatar 构建时会试图删除它们，删除动作与其他处理的叠加使最终表现难以预测。</p>
+<hr>
+<hr>
+<h1 id="创作者避坑衣服与素体的-armature-和全部骨骼完全同名会触发-unity-bug勿依赖-1-后缀兜底">创作者避坑：衣服与素体的 Armature 和全部骨骼完全同名会触发 Unity bug，勿依赖 .1 后缀兜底</h1>
+<p>当衣服的 Armature GameObject 和全部骨骼都与素体完全同名时，会触发一个 Unity 已知 bug。Setup Outfit 有兜底机制——自动给 Armature 加 .1 后缀回避问题——但创作者不应依赖这条兜底路径。</p>
+<p>正确做法：从一开始就修改衣服的 Armature 名或 Hips 名（例如加统一前缀），避免触发 bug 兜底逻辑。</p>
+<p>关联提示：这与 Setup Outfit 骨骼命名规则一致——衣服骨骼名本就应带统一前缀/后缀以区分素体；完全同名既触发 Unity bug，也不符合命名预期。</p>
+<p>自查方法：对照素体层级，逐一核对衣服 Armature 对象名与各骨骼名是否与素体完全相同；若完全相同，先重命名 Armature 或 Hips 再执行 Setup Outfit，不要依赖 .1 后缀兜底。</p>
+<hr>
+<hr>
+<h1 id="modular-avatar-preset-增强组件清单blendshape-syncshape-changerobject-toggle-与-menu-item-grouping-子菜单组织">Modular Avatar Preset 增强组件清单：Blendshape Sync、Shape Changer、Object Toggle 与 Menu Item Grouping 子菜单组织</h1>
+<p>制作 Modular Avatar Preset（预先替用户跑好 Setup Outfit）时，推荐按需叠加以下增强组件：</p>
+<table>
+<thead>
+<tr>
+<th>组件</th>
+<th>用途</th>
+<th>关键点</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Blendshape Sync</td>
+<td>同步体型形态键</td>
+<td>胸部大小等跨服装同步</td>
+</tr>
+<tr>
+<td>Shape Changer</td>
+<td>缩/藏被衣服遮挡的身体部位</td>
+<td>响应 Object Toggle 与动画；always-enabled 时直接删除多边形，性能最优</td>
+</tr>
+<tr>
+<td>Object Toggle</td>
+<td>菜单开关物件</td>
+<td>控制衣物部件显隐</td>
+</tr>
+<tr>
+<td>Menu Item Grouping</td>
+<td>把多个 Toggle 合并为子菜单</td>
+<td>父对象 = Sub Menu，子级 = Toggle</td>
+</tr>
+</tbody>
+</table>
+<p>例外提示：Shape Changer 在 always-enabled 状态下会直接删除被遮挡多边形（性能最优），而非仅在动画时缩藏。</p>
+<p>子菜单组织示例：</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>Outfit (Root)</span></span>
+<span class="line"><span>├─ TopToggle (MA Object Toggle + MA Menu Item)</span></span>
+<span class="line"><span>├─ BottomToggle (MA Object Toggle + MA Menu Item)</span></span>
+<span class="line"><span>└─ SubMenu (MA Menu Item, Type=Sub Menu) ← 作为"上衣"父菜单</span></span>
+<span class="line"><span>   ├─ ShirtToggle</span></span>
+<span class="line"><span>   └─ JacketToggle</span></span></code></pre>
+<hr>
+<hr>
+<h1 id="ndmf-生态执行顺序优化工具先行fury-次之modular-avatar-收尾">NDMF 生态执行顺序：优化工具先行、Fury 次之、Modular Avatar 收尾</h1>
+<p>多个 NDMF 工具共存时必须遵守固定执行顺序：先跑所有 NDMF 优化工具（AAO、Meshia 等），再跑 Fury，最后跑 Modular Avatar 与其他新内容 NDMF 工具——不按此顺序会出错。</p>
+<p>原理：</p>
+<ul>
+<li>NDMF 优化工具会修改 Mesh，必须发生在一切合并之前；</li>
+<li>Fury 的换装逻辑需要先于 Modular Avatar 注入；</li>
+<li>Modular Avatar 定位为『最后一棒』，负责把所有组件翻译成最终 Avatar。</li>
+</ul>
+<p>执行链条速记：优化工具（AAO、Meshia 等）→ Fury → Modular Avatar；前两类处理都必须发生在 Modular Avatar 把组件翻译成最终 Avatar 之前。</p>
+<p>排查指引：同时安装 AAO/Fury/Modular Avatar 时出现网格异常或换装失效，优先核对各工具的实际执行顺序是否符合上述链条。</p>
+<hr>
+<hr>
+<h1 id="modular-avatar-服装调试三步法edit-mode-syncplay-模式模拟与-manual-bake-的递进及最短诊断路径">Modular Avatar 服装调试三步法：Edit mode sync、Play 模式模拟与 Manual Bake 的递进及最短诊断路径</h1>
+<p>Modular Avatar 创作者有三种递进式调试方法，建议按序使用：</p>
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>操作</th>
+<th>适用场景</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Edit mode sync</td>
+<td>Setup Outfit 后旋转基骨骼，看衣服是否跟随</td>
+<td>快速肉眼验证（无需进 Play）</td>
+</tr>
+<tr>
+<td>Testing in play mode</td>
+<td>Play 模式下 MA 自动合并 Avatar；推荐 Avatar 3.0 Emulator 或 Gesture Manager 验证菜单</td>
+<td>接近上传的最终效果</td>
+</tr>
+<tr>
+<td>Manual Bake</td>
+<td>右键 Avatar → Modular Avatar → Manual Bake Avatar，生成 Avatar 克隆</td>
+<td>调试 + 导出到其他工具（如 UniVRM）</td>
+</tr>
+</tbody>
+</table>
+<p>最短诊断路径（以『装上衣服不动』为例）：先做 Edit mode sync 旋转素体 Hip 验证 → 失败则进 Play 模式（Avatar 3.0 Emulator）→ 仍失败则 Manual Bake 一次性查看最终结果。</p>
+<p>证据边界：三种调试方法本体为官方功能；「最短诊断路径」疑似整理者综合的实践流程而非官方原文步骤。</p>
+<hr>
+<hr>
+<h1 id="modular-avatar-服装创作者九步-sop从骨骼检查到版本发布的分发前标准流程">Modular Avatar 服装创作者九步 SOP：从骨骼检查到版本发布的分发前标准流程</h1>
+<p>向他人分发 Modular Avatar 服装（Compatible 兼容衣装或 Preset 预设）之前，创作者应按以下九步 SOP 执行：</p>
+<ol>
+<li>检查骨骼命名：层级需为 OutfitRoot → [任意名] → Hips，且该 Hips 名称包含素体的 Hips 名。</li>
+<li>把服装拖到任意素体上执行 Setup Outfit，并进入 Play 模式验证。</li>
+<li>检查 PhysBone：确保它不挂在 humanoid 骨骼上，必要时移到 Merge Armature 作用范围之外。</li>
+<li>将 Armature 或 Hips 至少其中一个改名，以避开 Unity 的相关 bug。</li>
+<li>决定本次作品做 Compatible 还是 Preset。</li>
+<li>若做 Preset：添加 Blendshape Sync、Shape Changer、Object Toggle 与 Menu Installer 组件。</li>
+<li>Logo 决策：只有 Preset 可以使用 Logo，且必须按合规要求使用。</li>
+<li>引导用户自行安装官方版 Modular Avatar，不要在自己的资源里夹带。</li>
+<li>版本号遵守 Semantic Versioning（语义化版本），并用 Internal 参数防止参数冲突。</li>
+</ol>
+<p>其中第 1、3、4 步分别针对骨骼命名规范、PhysBone 与 humanoid 骨骼冲突、Unity 已知重名 bug 三类高频问题，是发布前最容易出错、也最值得逐项核对的检查点。</p>
+<hr>
+<hr>
+<h1 id="ndmf-插件用-beforeplugin-控制-modular-avatar-前置构建步骤含稳定性警告">NDMF 插件用 BeforePlugin 控制 Modular Avatar 前置构建步骤（含稳定性警告）</h1>
+<p>NDMF（Non-Destructive Modular Framework）允许开发者注册自定义构建插件，并用 BeforePlugin 精确控制自己的步骤相对 Modular Avatar 的执行顺序。最小可用示例（C#）：</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="csharp"><code><span class="line"><span style="color:#E1E4E8">[</span><span style="color:#F97583">assembly</span><span style="color:#E1E4E8">: </span><span style="color:#B392F0">ExportsPlugin</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">typeof</span><span style="color:#E1E4E8">(</span><span style="color:#B392F0">MyPlugin</span><span style="color:#E1E4E8">))]</span></span>
+<span class="line"><span style="color:#F97583">namespace</span><span style="color:#B392F0"> nadena</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">dev</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">ndmf</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">sample</span></span>
+<span class="line"><span style="color:#E1E4E8">{</span></span>
+<span class="line"><span style="color:#F97583">    public</span><span style="color:#F97583"> class</span><span style="color:#B392F0"> MyPlugin</span><span style="color:#E1E4E8"> : </span><span style="color:#B392F0">Plugin</span><span style="color:#E1E4E8">&#x3C;</span><span style="color:#B392F0">MyPlugin</span><span style="color:#E1E4E8">></span></span>
+<span class="line"><span style="color:#E1E4E8">    {</span></span>
+<span class="line"><span style="color:#F97583">        protected</span><span style="color:#F97583"> override</span><span style="color:#F97583"> void</span><span style="color:#B392F0"> Configure</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"><span style="color:#E1E4E8">        {</span></span>
+<span class="line"><span style="color:#B392F0">            InPhase</span><span style="color:#E1E4E8">(BuildPhase.Generating)</span></span>
+<span class="line"><span style="color:#E1E4E8">                .</span><span style="color:#B392F0">BeforePlugin</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"nadena.dev.modular-avatar"</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#E1E4E8">                .</span><span style="color:#B392F0">Run</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"Do something"</span><span style="color:#E1E4E8">, </span><span style="color:#B392F0">ctx</span><span style="color:#F97583"> =></span><span style="color:#E1E4E8"> { </span><span style="color:#6A737D">/* ... */</span><span style="color:#E1E4E8"> });</span></span>
+<span class="line"><span style="color:#E1E4E8">        }</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<p>结构要点：程序集特性 ExportsPlugin 负责注册插件类型；插件类继承 Plugin<myplugin> 并覆写 Configure()；链式调用依次声明所属阶段 InPhase(BuildPhase.Generating)、相对排序 BeforePlugin 与实际步骤 Run(“Do something”, ctx => …)。若自定义逻辑必须发生在 Modular Avatar 处理之前，就以 BeforePlugin(“nadena.dev.modular-avatar”) 锚定顺序。</myplugin></p>
+<p>稳定性警告：NDMF 内部 API 不稳定；对 Modular Avatar 而言只有主版本插件标识 “nadena.dev.modular-avatar” 这一字符串是稳定的，不要依赖其内部实现细节。例外：确需依赖特定 pass 时到 GitHub 提 Feature Request 由作者评估增加稳定 API。</p>
+<hr>
+<hr>
+<h1 id="modular-avatar-实验性功能清单与启用方法resonite-支持与-portable-avatar-components需-beta-版-ndmfma">Modular Avatar 实验性功能清单与启用方法：Resonite 支持与 Portable Avatar Components，需 beta 版 NDMF/MA</h1>
+<p>Modular Avatar 当前有两项实验性功能：Resonite 支持（把 Avatar 构建到 Resonite 平台）与 Portable Avatar Components（不依赖具体平台 SDK 的跨平台 Avatar 组件）。官方明确警告：实验性功能可能在未来版本以不向后兼容的方式变化。</p>
+<p>启用流程：</p>
+<ol>
+<li>安装最新 beta 版 Modular Avatar 与 NDMF；</li>
+<li>打开 Unity 菜单栏 Tools → NDM Framework → Experimental Features；</li>
+<li>在弹出窗口中勾选需要的实验性功能。</li>
+</ol>
+<p>关键前提：必须使用 beta 版 NDMF/MA 才能看到这些开关。如果安装的是正式版，Experimental Features 窗口里不会有这些选项。因此「找不到实验性功能入口」时的第一排查项，就是确认当前安装的是否为 beta 版本。版本备注：beta（MA + NDMF），功能随开发进度变化。</p>
+<hr>
+<hr>
+<h1 id="resonite-支持包独立安装与-ndmf-console-构建-resonite-avatar-六步流程">Resonite 支持包独立安装与 NDMF Console 构建 Resonite Avatar 六步流程</h1>
+<p>Resonite 支持不是默认 Modular Avatar 包的一部分——它是一个独立的可选包，必须单独安装后才能构建 Resonite Avatar。</p>
+<p>安装与构建六步：</p>
+<ol>
+<li>打开 VCC → Manage Project → 点 + 添加 “Modular Avatar - Resonite support”；</li>
+<li>点击 APPLY 完成安装；</li>
+<li>打开 Unity 菜单栏 Tools → NDM Framework → NDMF Console；</li>
+<li>在顶部选择目标 Avatar；</li>
+<li>在底部 “Avatar platform” 下拉框选 “Resonite”；</li>
+<li>点击 Build。</li>
+</ol>
+<p>结果判读：构建成功时底部显示 “Build finished!”；构建失败时切换到 Console 标签页，寻找红色感叹号定位错误原因。版本备注：实验性功能，流程随版本演进可能变化。</p>
+<hr>
+<hr>
+<h1 id="resonite-avatar-功能支持矩阵visemes-仅支持-blendshape-型口型reactive-与-unity-constraints-尚未支持">Resonite Avatar 功能支持矩阵：Visemes 仅支持 Blendshape 型口型，Reactive 与 Unity Constraints 尚未支持</h1>
+<p>通过 Modular Avatar 构建到 Resonite 平台时，Avatar 级功能的支持状态如下（官方支持矩阵）：</p>
+<table>
+<thead>
+<tr>
+<th>功能</th>
+<th>状态</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Avatar viewpoint</td>
+<td>✅ 支持</td>
+<td>无限制</td>
+</tr>
+<tr>
+<td>Visemes</td>
+<td>⚠️ 部分支持</td>
+<td>仅支持 Blendshape visemes</td>
+</tr>
+<tr>
+<td>Dynamic bones</td>
+<td>⚠️ 部分支持</td>
+<td>按 Dynamic Bones 转换规则有限转换</td>
+</tr>
+<tr>
+<td>Reactive Components</td>
+<td>⌛ 计划中（Planned）</td>
+<td>尚未支持</td>
+</tr>
+<tr>
+<td>Unity Constraints</td>
+<td>⌛ 计划中（Planned）</td>
+<td>尚未支持</td>
+</tr>
+<tr>
+<td>半加载 Avatar 防护</td>
+<td>✅ 支持</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<p>最需要注意的限制是 Visemes：只有 Blendshape 型口型能被支持。若 Avatar 的嘴型由其他机制驱动，迁移到 Resonite 前要先确认实现方式，否则口型会失效。Dynamic bones 的「部分支持」含义见转换规则：只有有限的参数集合会被转换。版本备注：官方文档时点快照，随 Modular Avatar 版本演进变化。</p>
+<hr>
+<hr>
+<h1 id="resonite-下-modular-avatar-组件支持全景表七个已支持六个仅-vrchat其余-planned">Resonite 下 Modular Avatar 组件支持全景表：七个已支持、六个仅 VRChat、其余 Planned</h1>
+<p>Modular Avatar 各组件在 Resonite 构建路径下的支持状态全表如下（官方矩阵）：</p>
+<table>
+<thead>
+<tr>
+<th>组件</th>
+<th>支持状态</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Bone Proxy</td>
+<td>✅ 已支持</td>
+</tr>
+<tr>
+<td>Merge Armature</td>
+<td>✅ 已支持</td>
+</tr>
+<tr>
+<td>Move Independently</td>
+<td>✅ 已支持</td>
+</tr>
+<tr>
+<td>Physbone Blocker</td>
+<td>✅ 已支持</td>
+</tr>
+<tr>
+<td>Replace Object</td>
+<td>✅ 已支持</td>
+</tr>
+<tr>
+<td>Remove Vertex Color</td>
+<td>✅ 已支持</td>
+</tr>
+<tr>
+<td>Scale Adjuster</td>
+<td>✅ 已支持</td>
+</tr>
+<tr>
+<td>Convert Constraints</td>
+<td>✖ 仅 VRChat</td>
+</tr>
+<tr>
+<td>Merge Animator</td>
+<td>✖ 仅 VRChat</td>
+</tr>
+<tr>
+<td>Merge Blend Tree</td>
+<td>✖ 仅 VRChat</td>
+</tr>
+<tr>
+<td>MMD Layer Control</td>
+<td>✖ 仅 VRChat</td>
+</tr>
+<tr>
+<td>Sync Parameter Sequence</td>
+<td>✖ 仅 VRChat</td>
+</tr>
+<tr>
+<td>VRChat Settings</td>
+<td>✖ 仅 VRChat</td>
+</tr>
+<tr>
+<td>Blendshape Sync</td>
+<td>⌛ 计划中</td>
+</tr>
+<tr>
+<td>Menu Group / Install Target / Installer / Item</td>
+<td>⌛ 计划中</td>
+</tr>
+<tr>
+<td>Mesh Settings</td>
+<td>⌛ 计划中</td>
+</tr>
+<tr>
+<td>Parameters</td>
+<td>⌛ 计划中（将转为 Dynamic Variables）</td>
+</tr>
+<tr>
+<td>Visible Head Accessory</td>
+<td>⌛ 计划中</td>
+</tr>
+<tr>
+<td>World Fixed Object</td>
+<td>⌛ 计划中</td>
+</tr>
+<tr>
+<td>World Scale Object</td>
+<td>⌛ 计划中</td>
+</tr>
+</tbody>
+</table>
+<p>速查口径：动画与参数类组件（Convert Constraints、Merge Animator、Merge Blend Tree、MMD Layer Control、Sync Parameter Sequence、VRChat Settings）目前全部属于 VRChat 专用，做 Resonite 迁移时不能假设它们继续生效；Parameters 未来会转译为 Resonite 的 Dynamic Variables。版本备注：官方文档时点快照，随 Modular Avatar 版本演进变化。</p>
+<hr>
+<hr>
+<h1 id="resonite-构建-dynamic-bones-转换规则仅转换四类配置其余参数按七种命名模板共享五项设置">Resonite 构建 Dynamic Bones 转换规则：仅转换四类配置，其余参数按七种命名模板共享五项设置</h1>
+<p>把 Avatar 构建到 Resonite 时，物理骨骼会被自动转换。自动检测源有两种：Portable Dynamic Bones（NDMF 跨平台版）与 VRChat PhysBones；两者都会转换为 Resonite dynamic bones，且包含 colliders。</p>
+<p>能带过去的配置项只有四类：exclusions（包括 Physbone Blocker 产生的排除）、colliders、collision radius、grabbability。其余大多数参数（如 Inertia、Stiffness 等）不做逐项转换。</p>
+<p>替代机制是“命名 templates”分组：系统按骨骼名自动归类，模板名共七个——skirt、breast、hair、long_hair、ear、tail、generic。同一模板下的所有 dynamic bone 共享五项设置：Inertia、InertiaForce、Damping、Elasticity、Stiffness。</p>
+<p>实践含义：想在 Resonite 上获得合理的裙摆/头发物理表现，重点不是逐骨调参，而是让骨骼命名命中正确的模板关键词，然后接受模板级的统一参数；原始 PhysBone 的精细逐骨差异在转换后不会保留。版本备注：官方文档时点快照，随 Modular Avatar 版本演进变化。</p>
+<hr>
+<hr>
+<h1 id="ma-settings-copier-跨-avatar-版本复制设置三步操作与两个前置条件">MA Settings Copier 跨 Avatar 版本复制设置：三步操作与两个前置条件</h1>
+<p>在 Resonite 中更新 Avatar 版本后，可用 MA Settings Copier 把旧 Avatar 上的设置搬到新 Avatar，避免重新逐项调参。它的复制范围是 Avatar Settings 槽下的所有子 Slot。</p>
+<p>操作三步：</p>
+<ol>
+<li>戴上旧 Avatar；</li>
+<li>用激光拾取（laser pick）新的 Avatar；</li>
+<li>打开右键菜单 → MA Settings Copier → Copy To Avatar。</li>
+</ol>
+<p>两个前置条件缺一不可：其一，设置必须存放在 Avatar Settings 槽之下——放在其他位置的设置不会被识别和复制；其二，旧 Avatar 与新 Avatar 必须都已加载到 Resonite 中。排查“设置复制不过去”时，优先核对这两条。</p>
+<hr>
+<hr>
+<h1 id="resonite-构建产物两种落地方式对比copy-to-clipboard-临时测试-vs-save-as-package-文件长期使用">Resonite 构建产物两种落地方式对比：Copy to Clipboard 临时测试 vs Save as Package 文件长期使用</h1>
+<p>在 NDMF Console 以 Resonite 平台完成 Build 之后，产物进入 Resonite 有两条路径，按用途选择：</p>
+<table>
+<thead>
+<tr>
+<th>方式</th>
+<th>步骤</th>
+<th>适用场景</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Copy to Clipboard</td>
+<td>点击 NDMF Console 的对应按钮 → 进入 Resonite 后在 Dash 菜单选 “Paste content from clipboard”</td>
+<td>临时测试</td>
+</tr>
+<tr>
+<td>Save as…</td>
+<td>把产物保存为 Resonite Package 文件 → 将文件拖入 Resonite</td>
+<td>长期使用 / 分发</td>
+</tr>
+</tbody>
+</table>
+<p>选择逻辑很简单：只想立刻看一眼效果的临时验证用 Copy to Clipboard；要长期留存、反复使用或者发给别人的，用 Save as… 导出成 Resonite Package 文件。</p>
+<hr>
+<hr>
+<h1 id="resonite-支持三条硬警告api-与存档不保证兼容反馈走独立仓库dynamic-variable-名不稳定">Resonite 支持三条硬警告：API 与存档不保证兼容、反馈走独立仓库、Dynamic Variable 名不稳定</h1>
+<p>Resonite 支持是 Modular Avatar 里成熟度最低的功能之一，官方给出三条硬警告：</p>
+<ol>
+<li>项目正在重新开发中——API 与存档均不保证兼容（官方原话），今天能用的构建产物与接口未来可能直接失效；</li>
+<li>反馈与 Bug 报告请提交到独立仓库 bdunderscore/modular-avatar-resonite 的 GitHub Issues，而不是 Modular Avatar 主仓库；</li>
+<li>Dynamic Variable 的命名与取值将来可能变化，例如 modular_avatar/MeshNotLoaded、modular_avatar/HumanBone.* 这类变量名都不应被当作稳定接口依赖。</li>
+</ol>
+<p>教学边界：约 99% 的玩家根本不需要 Resonite 支持；只在玩家明确提出「要做 Resonite Avatar」时才引入教学，并且必须强调其“实验性”身份，避免玩家误把它当成稳定的生产工具。版本备注：beta（实验性，随开发进度变化）。</p>
+<hr>
+<hr>
+<h1 id="portable-avatar-components-定位与三组件最小可用配置ndmfavatarroot--viewpoint--blendshape-visemes">Portable Avatar Components 定位与三组件最小可用配置（NDMFAvatarRoot / Viewpoint / Blendshape Visemes）</h1>
+<p>Portable Avatar Components（便携 Avatar 组件）是 NDMF 提供的一套不依赖具体平台 SDK（例如 VRCSDK）的 Avatar 组件体系，定位是支撑跨平台 Avatar 构建；它属于实验性功能，未来极可能以不兼容方式变更。</p>
+<p>最小可用配置只需要三个组件：</p>
+<ol>
+<li>在 Avatar 根对象上挂载 NDMFAvatarRoot（必需）；</li>
+<li>在视点位置创建一个空 GameObject 并挂载 NDMF Viewpoint（推荐直接放在根下）；</li>
+<li>如果 Avatar 的嘴型采用 Blendshape visemes，则挂载 NDMF Blendshape Visemes，并配置面部 mesh 与对应的 viseme blendshape。</li>
+</ol>
+<p>例外：第三步仅在使用 Blendshape visemes 嘴型的 Avatar 上需要。</p>
+<p>教学边界：99% 的玩家不需要 Portable Avatar Components——它是为“未来的跨平台 Avatar 工具链”打基础的实验性能力，除非学习者明确要开发跨平台工具，否则不建议现在教授或投入实际使用。版本备注：实验性（beta，未来可能不兼容变更）。</p>
+<hr>
+<hr>
+<h1 id="portable-dynamic-bones-优先级规则与-settings-template-机制平台特定组件覆盖跨平台定义">Portable Dynamic Bones 优先级规则与 settings template 机制：平台特定组件覆盖跨平台定义</h1>
+<p>Portable Dynamic Bones（便携动态骨骼）用于在不绑定特定 SDK 的前提下，把骨骼标记为需要物理模拟。设计上有三个特点：</p>
+<ol>
+<li>只配置跨平台共有的最小属性集，不含平台专属参数；</li>
+<li>具体物理行为由 settings template（设置模板）名称控制；</li>
+<li>平台层可以在模板基础上做平台特定的配置覆盖。</li>
+</ol>
+<p>优先级规则：当同一骨骼根 transform 上同时存在 portable 组件与平台特定的 dynamic bone 组件时，平台特定组件优先——平台专属定义会覆盖跨平台的最小定义。</p>
+<p>成熟度警告：官方明确说明该组件“尚未完全可用”——现在能用，但未来极有可能以不兼容方式变更，不应把它当作稳定接口来依赖。版本备注：实验性（尚未完全可用）。</p>
+<hr>
+<hr>
+<h1 id="modular-avatar-官方-samples-双-prefab-设计意图fingerpen-全家福最小集与-clap-参数冲突避坑递进">Modular Avatar 官方 Samples 双 Prefab 设计意图：Fingerpen 全家福最小集与 Clap 参数冲突避坑递进</h1>
+<p>Modular Avatar 包内自带 2 个示范 Prefab，位置在 Packages → Modular Avatar → Samples，属于“现成 Prefab 拆解”型教学素材，与从零搭建式教程互补，目标是让学习者看懂一个完整的 MA 小组件长什么样。</p>
+<table>
+<thead>
+<tr>
+<th>Prefab</th>
+<th>名字</th>
+<th>教学定位</th>
+<th>演示组件</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Fingerpen</td>
+<td>指间笔</td>
+<td>MA 组件全家福迷你版</td>
+<td>Merge Animator + 自动 Synced Parameters + Menu Installer + Bone Proxy</td>
+</tr>
+<tr>
+<td>Clap</td>
+<td>拍手</td>
+<td>避坑教学（递进）</td>
+<td>Fingerpen 全部 + Contact Receivers + Internal Parameters</td>
+</tr>
+</tbody>
+</table>
+<p>为什么只有 2 个：这不是偷懒，而是官方刻意设计的最小教学样本——Fingerpen 给出 4 个核心组件的最小集，让人先把“整头牛”看一遍；Clap 在其之上只新增一个知识点（参数冲突）加物理交互（Contact Receivers），形成递进。</p>
+<p>推荐学习路径：玩 Fingerpen（拖一下就能用）→ 拆 Fingerpen（看内部组件）→ 玩 Clap（发现多了功能）→ 拆 Clap（看参数如何防冲突），完成后认知模型升级为“我能看穿任何 MA 小组件的结构”。</p>
+<p>证据边界：教学定位表述含社区归纳成分；“仅含两个 Prefab”的事实以所用版本的 Samples 目录为准。</p>
+<hr>
+<hr>
+<h1 id="fingerpen-prefab-层级拆解menu-installerparametersbone-proxyanimator-组合与拖入即用的零配置设计承诺">Fingerpen Prefab 层级拆解：Menu Installer/Parameters/Bone Proxy/Animator 组合与拖入即用的零配置设计承诺</h1>
+<p>Fingerpen（指间笔）Prefab 的内部层级大致如下：</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>Fingerpen  (根对象)</span></span>
+<span class="line"><span>├── Armature（或直接挂 Mesh）</span></span>
+<span class="line"><span>│   └── HandRef            ← 挂有 MA Bone Proxy 组件</span></span>
+<span class="line"><span>│       └── PenMesh         ← 笔的 3D 模型</span></span>
+<span class="line"><span>├── Animator Controller    ← 动画控制器（在 Project 窗口，不在层级树里）</span></span>
+<span class="line"><span>├── MenuInstaller          ← 顶层对象，带 Select Menu 按钮</span></span>
+<span class="line"><span>└── Parameters             ← MA Parameters 组件，登记参数用</span></span></code></pre>
+<p>新手只需抓住三点：一个笔的模型（PenMesh）、几块充当“配置说明牌”的 MA 组件、一个让笔动起来的动画控制器。</p>
+<p>核心教学点——“拖入即完成 80% 的工作”：把 Fingerpen Prefab 拖到 Avatar 子级，笔就已经可以直接使用；拆开看根对象能看到一串 MA 组件（Merge Animator、Menu Installer、Parameters 等）。官方敢让玩家只拖一下，是因为所有配置说明牌都已经在 Prefab 内写好——这正是 Modular Avatar 的核心设计承诺：让卖 Prefab 的人封装全部复杂配置，买的人零配置上手。</p>
+<p>证据边界：层级图为教学示意，具体结构以实际导入的 Samples 为准。</p>
+<hr>
+<hr>
+<h1 id="ma-menu-installer-的-select-menu-五步操作与-vrchat-菜单格子上限背景">MA Menu Installer 的 Select Menu 五步操作与 VRChat 菜单格子上限背景</h1>
+<p>MA Menu Installer 组件负责把功能开关安装进 Avatar 菜单树，Select Menu 按钮就是“菜单装到哪”的开关。以 Fingerpen 为例的五步操作：</p>
+<ol>
+<li>选中 Fingerpen 根对象，查看右侧 Inspector（Unity 右侧显示组件属性的面板）；</li>
+<li>找到 MA Menu Installer 组件；</li>
+<li>点击 Select Menu 按钮；</li>
+<li>在弹出窗口中双击想把开关装进去的目标菜单（默认是 Avatar 顶级菜单）；</li>
+<li>上传 VRChat 后，菜单里就会出现 “Fingerpen On/Off” 这样的开关项。</li>
+</ol>
+<p>为什么需要手动选菜单：VRChat 玩家的菜单格子数量有上限（属于 256 参数限额的一部分）。Menu Installer 因此把安装位置的自主权交给用户——可以放进主菜单方便随手切换，也可以收进子菜单节省空间，灵活但不强制。</p>
+<hr>
+<hr>
+<h1 id="ma-bone-proxy-跨-avatar-挂载机制humanoid-骨骼引用自动转译与两种-attachment-mode-取舍">MA Bone Proxy 跨 Avatar 挂载机制：humanoid 骨骼引用自动转译与两种 Attachment Mode 取舍</h1>
+<p>MA Bone Proxy 赋予道具 Prefab avatar-agnostic（与具体 Avatar 无关）的挂载能力：无论是哪个 Avatar，只要有对应的手指骨骼，笔就会自动挂上去并跟随手指运动。Play 模式验证方法：进入 Play 后合拢 Avatar 右手手指，笔出现在指间并一起移动。</p>
+<p>工作机制：Fingerpen 中名为 HandRef 的空对象是一个看不见的“挂载点”，其上的 MA Bone Proxy 组件把 Target 字段指向 Avatar 的右手手指骨骼；Modular Avatar 在编译（构建）时把这个挂载点重新连接到目标 Avatar 上对应的手指骨。</p>
+<p>引用与转译细节：Bone Proxy 通过 humanoid 骨骼 + 相对路径引用目标；Prefab 保存时会自动完成引用转译，使同一引用在不同 Avatar 上都能正确解析。</p>
+<p>Attachment Mode 二选一：As child at root——挂载物位置归零，适合做成通用 Prefab；As child keep world pose——保留世界位置，适合针对特定 Avatar 摆好姿态的场景。</p>
+<hr>
+<hr>
+<h1 id="modular-avatar-fingerpen-手指笔样例五步安装流程拖入-avatar-子级select-menu-选菜单play-验证">Modular Avatar Fingerpen 手指笔样例五步安装流程：拖入 Avatar 子级、Select Menu 选菜单、Play 验证</h1>
+<p>Modular Avatar 官方示例 Fingerpen（手指笔）面向零 Unity 经验玩家，安装只需五步：准备工程、找到样例、拖入 Avatar、选菜单、Play 验证。</p>
+<p>Step 1 准备：需要一个能进 Play 模式的 Avatar 工程；没有的话先按入门教程装好 Unity + VCC + Modular Avatar（MA）+ 一个测试 Avatar。</p>
+<p>Step 2 拿到 Fingerpen：在 Project 窗口依次展开 Packages → Modular Avatar → Samples → Fingerpen；如果看不到，说明 Modular Avatar 没正确导入，需回头检查安装。</p>
+<p>Step 3 拖上去：把 Fingerpen Prefab 拖到 Hierarchy 里 Avatar 的子级。注意不要拖到场景根目录，必须拖到 Avatar 里面。</p>
+<p>Step 4 选菜单：选中 Fingerpen 根对象，在 Inspector 找到 MA Menu Installer 组件，点“Select Menu”后双击想用的菜单（默认即可）；看到 Selected Menu 字段显示菜单名即为成功。</p>
+<p>Step 5 验证：点 Unity 上方 ▶ Play 按钮，在 Game 视图应能看到笔已经挂在手指上。这一步通过只代表 Prefab 内部没坏，上传 VRChat 前仍需继续完整验证。</p>
+<hr>
+<hr>
+<h1 id="fingerpen-安装易错点排查表找不到样例位置不对不跟手选菜单没反应四类对号入座">Fingerpen 安装易错点排查表：找不到样例、位置不对、不跟手、选菜单没反应四类对号入座</h1>
+<p>Fingerpen 安装卡住时按现象对号入座，四类最常见问题各有明确的成因和修复动作。</p>
+<table>
+<thead>
+<tr>
+<th>现象</th>
+<th>原因</th>
+<th>修复</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Project 窗口找不到 Fingerpen</td>
+<td>MA 没装 / 没启用 Samples</td>
+<td>装 Modular Avatar 后，在 Project 搜索框输入 Fingerpen 试</td>
+</tr>
+<tr>
+<td>拖进去笔位置不对</td>
+<td>没拖到 Avatar 子级</td>
+<td>删掉，重新拖到 Avatar 下面</td>
+</tr>
+<tr>
+<td>笔在场景里但不跟手</td>
+<td>没进 Play 模式</td>
+<td>点 ▶ Play</td>
+</tr>
+<tr>
+<td>选菜单没反应</td>
+<td>Avatar 没有菜单结构</td>
+<td>确认 Avatar 上有 VRC Avatar Descriptor 组件</td>
+</tr>
+</tbody>
+</table>
+<p>排查思路：“找不到 Fingerpen”优先怀疑 Modular Avatar 本体导入；“选菜单没反应”说明问题不在样例，而在 Avatar 缺少 VRChat 菜单所需的基础组件。</p>
+<hr>
+<hr>
+<h1 id="vrchat-contact-receiver-接触接收器概念与拍手判定条件门铃比喻距离近且速度快才触发">VRChat Contact Receiver 接触接收器概念与拍手判定条件（门铃比喻：距离近且速度快才触发）</h1>
+<p>VRChat 的 Contact Receiver（接触接收器）是一种接收“接触事件”的组件；Modular Avatar 拍手样例（Clap）正是靠它把“双手快速合拢”这个物理动作变成音效和粒子的触发信号。</p>
+<p>场景理解：在 VRChat 里把双手合拢时，Avatar 之间会发生“接触”，VRChat 系统能检测到这种接触事件（简单说：你的两只手“撞”到一起了）。Contact Receiver 就是用来接收这种接触事件的组件。</p>
+<p>门铃比方：家里有门铃按钮（相当于 Contact Sender，按下去会响）和门铃接收器（相当于 Contact Receiver，听到响声就知道有人按）。拍手里两只手互相撞就是“按门铃”，拍手 Prefab 里的接收器听到响声后，就触发拍手音效和粒子。</p>
+<p>拍手的判定条件：两只手的位置在空间里接近到一定距离，且接近的速度够快，才会被判定为“拍手”；缓慢合掌不会触发。</p>
+<hr>
+<hr>
+<h1 id="clap-拍手样例-prefab-内部结构在-fingerpen-全部组件上叠加-contactreceiveraudiosource-与-particlesystem">Clap 拍手样例 Prefab 内部结构：在 Fingerpen 全部组件上叠加 ContactReceiver、AudioSource 与 ParticleSystem</h1>
+<p>Clap（拍手）是 Modular Avatar 官方 Samples 中在 Fingerpen（手指笔）基础上叠加出来的进阶样例：保留 Fingerpen 的全部组件，额外增加了 ContactReceiver、AudioSource 和 ParticleSystem。</p>
+<p>内部结构：</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>Clap  (根对象)</span></span>
+<span class="line"><span>├── ... (和 Fingerpen 一样的所有组件)</span></span>
+<span class="line"><span>├── ContactReceiver ← 多出来的！监听“拍手”事件</span></span>
+<span class="line"><span>├── AudioSource     ← 拍手音效播放器</span></span>
+<span class="line"><span>└── ParticleSystem  ← 拍手粒子效果</span></span></code></pre>
+<p>关键不同：Clap Prefab 里多了一个 MA Parameters 组件和多个 Contact Receiver，每个 Receiver 监听不同的身体接触组合（比如左手碰右手、左手碰头、右手碰头等），因此不同部位的碰撞都能汇入同一个“拍手”表现。</p>
+<p>证据边界：结构图为教学示意，具体层级以实际导入的 Samples 为准。</p>
+<hr>
+<hr>
+<h1 id="ma-parameters-的-internal-复选框防参数冲突机制自动改名加内部引用同步99-场景都应勾选">MA Parameters 的 Internal 复选框防参数冲突机制：自动改名加内部引用同步，99% 场景都应勾选</h1>
+<p>Modular Avatar 的 MA Parameters 组件中，每个参数旁边都有一个 Internal 复选框；勾选后 Modular Avatar 会在生成 Avatar 时自动给参数改名（例如 On 变成 _On_internal_1 一类的内部名），并把组件内部引用同步到新名字，使该参数永远不会与其他组件冲突——绝大多数情况都应该勾上 Internal，这是 Modular Avatar 设计的“无脑安全默认”。</p>
+<p>问题场景：装了 Clap，又装了一个别人做的“心跳特效”，两个组件都用同一个参数名 On。此时 VRChat 菜单系统会报错或行为异常——菜单里只有一个开关，却说不清控制的是哪个组件；Avatar 上存在两个叫 On 的参数，VRChat 不允许这样（参数限额 + 命名冲突）。</p>
+<p>勾选与不勾的差异（以同时装 3 个都用 On 的小组件为例）：</p>
+<table>
+<thead>
+<tr>
+<th>同时装了 3 个小组件</th>
+<th>没勾 Internal 时</th>
+<th>都勾 Internal 时</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Fingerpen（用 On）</td>
+<td>3 个组件都往 VRChat 菜单塞 On 开关</td>
+<td>MA 自动给每个 On 起不同内部名字</td>
+</tr>
+<tr>
+<td>Clap（用 On）</td>
+<td>菜单里只有 1 个 On</td>
+<td>菜单里有 3 个独立开关</td>
+</tr>
+<tr>
+<td>别人的发型切换（用 On）</td>
+<td>按下去 3 个东西同时切换，一团乱</td>
+<td>各自管各自的东西</td>
+</tr>
+</tbody>
+</table>
+<p>对玩家的含义：不需要手动想参数名，不需要担心和别人组件打架，Modular Avatar 在编译时自动完成改名与引用同步。例外：只有“必须和其他组件共享同一个参数”时才不勾，这种情况极少见。</p>
+<p>证据边界：参数自动改名的具体格式（_On_internal_1）为语料示意写法，实际生成名以 Modular Avatar 实际输出为准；Internal 复选框所属的 MA 版本范围语料未标注。</p>
+<hr>
+<hr>
+<h1 id="clap-样例三大教学点物理事件驱动触发链组件叠加哲学internal-默认安全选项">Clap 样例三大教学点：物理事件驱动触发链、组件叠加哲学、Internal 默认安全选项</h1>
+<p>Clap 样例的教学价值集中在三个要点：拍手是物理事件驱动的交互、Modular Avatar 组件遵循乐高式叠加哲学、Internal 是默认安全选项。</p>
+<p>教学点 1 拍手＝物理交互触发：</p>
+<table>
+<thead>
+<tr>
+<th>阶段</th>
+<th>玩家做什么</th>
+<th>看到什么</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>玩</td>
+<td>进 VRChat → 双手快速合拢</td>
+<td>听到“啪”一声 + 看到粒子</td>
+</tr>
+<tr>
+<td>拆</td>
+<td>Clap 的工作链路</td>
+<td>Contact Receiver 检测接触 → 触发 Animator 参数 → Animator 播放音效和粒子动画</td>
+</tr>
+<tr>
+<td>思</td>
+<td>和 Fingerpen 用菜单开关的“主动控制”不同，Clap 是物理事件驱动</td>
+<td>你的身体动作就是“按钮”</td>
+</tr>
+</tbody>
+</table>
+<p>教学点 2 组件叠加哲学：Clap 在 Fingerpen 之上没有改动任何 Fingerpen 所教的结构，只是额外加了 Contact Receiver 和 Internal Parameters。这就是 Modular Avatar 的“组件叠加”哲学——功能像乐高一样往上拼，不重写底层。</p>
+<p>教学点 3 Internal＝默认安全选项：官方把 Clap 样例做成“所有参数都勾 Internal”的样子，就是让玩家照抄。以后做任何 Modular Avatar Prefab，第一步就是把所有参数勾 Internal，除非有“必须和别的组件共享参数”的需求（极少见）。</p>
+<p>证据边界：三个教学点为语料作者的教学法归纳（inferred），非 Modular Avatar 官方文档原文。</p>
+<hr>
+<hr>
+<h1 id="clap-简化版复刻步骤与易错点查-internal-勾选vrchat-实测拍手效果contact-特性检查">Clap 简化版复刻步骤与易错点：查 Internal 勾选、VRChat 实测拍手效果、Contact 特性检查</h1>
+<p>复刻简化版 Clap 的流程与安装 Fingerpen 基本一致，新增的关键观察点是 MA Parameters 里每个参数右侧的 Internal 复选框；另有三类典型故障各有对应排查方向。</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>Step 1-3: 跟 Fingerpen 一样（装 MA、拿到 Clap Prefab、拖到 Avatar 子级）</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>Step 4: 看 Internal 勾选情况</span></span>
+<span class="line"><span>  - 选中 Clap 根对象</span></span>
+<span class="line"><span>  - Inspector 找到 MA Parameters 组件</span></span>
+<span class="line"><span>  - 展开参数列表</span></span>
+<span class="line"><span>  - 每个参数名右边都应有 Internal ✅ 复选框</span></span>
+<span class="line"><span>  - 这就是“防冲突”的关键开关</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>Step 5: 选菜单 + 验证</span></span>
+<span class="line"><span>  - 点 “Select Menu” → 双击目标菜单</span></span>
+<span class="line"><span>  - 进 Play 模式 → 看 Prefab 正常出现</span></span>
+<span class="line"><span>  - 拍手效果只能在 VRChat 里实测，编辑器里看不到完整效果</span></span></code></pre>
+<p>易错点排查：</p>
+<ul>
+<li>看不到 Internal 复选框 → Modular Avatar 版本太老 → 升级 Modular Avatar；</li>
+<li>多个 Contact Receiver 没反应 → Avatar 没启用 Contact 特性 → 检查 Avatar Descriptor 的 Contact 字段；</li>
+<li>装上后菜单里看不到开关 → 没选菜单，或 Menu Installer 没启用。</li>
+</ul>
+<p>证据边界：易错点三条为语料经验总结，未附具体 Modular Avatar 版本依据；“看不到 Internal 复选框→升级 MA”提示该行为依赖 MA 版本。</p>
+<hr>
+<hr>
+<h1 id="ma-samples-玩家提问路由表六类提问对应的样例学习起点与理由">MA Samples 玩家提问路由表：六类提问对应的样例学习起点与理由</h1>
+<p>决定是否把玩家引向 Modular Avatar Samples 时，按提问类型选择起点：理解型问题看简介与入门章，使用型问题学 Fingerpen 拆解，冲突型问题学 Clap 拆解。</p>
+<table>
+<thead>
+<tr>
+<th>玩家提问</th>
+<th>推荐起始点</th>
+<th>原因</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>“MA 是什么/解决什么问题”</td>
+<td>Samples 简介 + 入门基础章</td>
+<td>先看“完成效果”再学“怎么造”</td>
+</tr>
+<tr>
+<td>“怎么用别人做的 MA 小组件”</td>
+<td>Fingerpen 样例拆解</td>
+<td>玩 + 拆两阶段</td>
+</tr>
+<tr>
+<td>“我装了多个组件参数冲突”</td>
+<td>Clap 样例拆解</td>
+<td>Internal Parameters 是核心</td>
+</tr>
+<tr>
+<td>“我想看一个 MA Prefab 内部什么样”</td>
+<td>Samples 整体</td>
+<td>唯一官方“内部样本”</td>
+</tr>
+<tr>
+<td>“我完全不会 Unity”</td>
+<td>入门基础章 → Fingerpen 拖入 → 看效果</td>
+<td>不要先教组件定义</td>
+</tr>
+<tr>
+<td>“我想自己造一个 MA Prefab”</td>
+<td>从零搭建教程 1-6 + Samples 作参考</td>
+<td>教程教搭建，Samples 作参考</td>
+</tr>
+</tbody>
+</table>
+<p>核心原则：零基础玩家不从组件定义入手，而是先让他亲手拖一个 Fingerpen 看到效果。</p>
+<p>证据边界：路由表为社区教学法归纳（inferred）；原表章节编号已转写为描述性名称以保持自包含。</p>
+<hr>
+<hr>
+<h1 id="ma-samples-四阶段教学法框架玩-5-分钟--拆-10-分钟--进阶-15-分钟--造-30-分钟以上可选">MA Samples 四阶段教学法框架：玩 5 分钟 → 拆 10 分钟 → 进阶 15 分钟 → 造 30 分钟以上（可选）</h1>
+<p>教零基础玩家上手 Modular Avatar Samples，采用“先玩 → 再拆 → 最后造”的四阶段框架，建议时长分别为 5、10、15、30+ 分钟。</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>阶段 1: 玩（5 分钟）</span></span>
+<span class="line"><span>  - 拖 Fingerpen 到 Avatar</span></span>
+<span class="line"><span>  - 选菜单</span></span>
+<span class="line"><span>  - 进 Play 模式看效果</span></span>
+<span class="line"><span>  - 玩家心理: “哦,原来这么简单”</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>阶段 2: 拆（10 分钟）</span></span>
+<span class="line"><span>  - 展开 Fingerpen 根对象</span></span>
+<span class="line"><span>  - 逐一介绍 4 个核心组件</span></span>
+<span class="line"><span>  - 强调“avatar-agnostic”（不绑定特定 Avatar）和“封装”（内部实现对外不可见）</span></span>
+<span class="line"><span>  - 玩家心理: “哦,原来内部是这样”</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>阶段 3: 进阶（15 分钟）</span></span>
+<span class="line"><span>  - 玩 Clap → 拆 Clap</span></span>
+<span class="line"><span>  - 解释 Internal Parameters 解决参数冲突</span></span>
+<span class="line"><span>  - 解释 Contact Receivers 的物理交互</span></span>
+<span class="line"><span>  - 玩家心理: “哦,原来可以这样扩展”</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>阶段 4: 造（30+ 分钟,可选）</span></span>
+<span class="line"><span>  - 教玩家自己从零搭一个简化版</span></span>
+<span class="line"><span>  - 用从零搭建系列教程（教程 1-6）的方法</span></span>
+<span class="line"><span>  - 玩家心理: “原来我也能造一个”</span></span></code></pre>
+<p>设计逻辑：每阶段都以学员的可感知成功收尾（对应各行“玩家心理”）；前两阶段只接触 Fingerpen，第三阶段才引入 Clap 带来的增量知识点。</p>
+<p>例外：第 4 阶段“造”为可选环节，视学员意愿与时间安排。证据边界：各阶段时长为语料建议值，非硬性要求（inferred）。</p>
+<hr>
+<hr>
+<h1 id="samples-教学四大误用场景对照先展示能运行的成品再拆解internal-讲成让两个组件不打架">Samples 教学四大误用场景对照：先展示能运行的成品再拆解，Internal 讲成「让两个组件不打架」</h1>
+<p>用 Samples 做 Modular Avatar 教学时，有四种典型误用需要避免：不要一上来教 25 个组件定义、不要替学员拆解、不要把 Internal Parameters 讲成省参数额度、不要因“太简单”而跳过 Samples。</p>
+<table>
+<thead>
+<tr>
+<th>❌ 错误做法</th>
+<th>✅ 正确做法</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>“MA 是一个工具，先学 25 个组件的定义”</td>
+<td>“MA 是一个工具，先看一个能用的 Prefab 什么样”</td>
+</tr>
+<tr>
+<td>“我教你写一个 Object Toggle”</td>
+<td>“我教你装一个 Fingerpen，然后你自己拆开看怎么搭的”</td>
+</tr>
+<tr>
+<td>“Internal Parameters 是用来节省参数限额的”</td>
+<td>“Internal Parameters 是让两个组件不打架”——用真实冲突场景讲</td>
+</tr>
+<tr>
+<td>“Samples 里的东西太简单，先不教”</td>
+<td>“Samples 是唯一官方权威的‘完整 Prefab 长什么样’参考”</td>
+</tr>
+</tbody>
+</table>
+<p>共同规律：教学起点永远先是能跑的成品，再由学员亲手打开看内部；抽象定义和代劳拆解都会切断这条学习路径。</p>
+<p>证据边界：对照表为社区教学法归纳（inferred）。</p>
+<hr>
+<hr>
+<h1 id="ma-samples-的元学习价值四维度看穿能力递进式教学成品优先官方文档三层结构">MA Samples 的元学习价值四维度：看穿能力、递进式教学、成品优先、官方文档三层结构</h1>
+<p>Samples 除了教 Modular Avatar 本身，还示范了一套“用现成 Prefab 教学”的方法论，包含四个可迁移到其他工具的价值维度。</p>
+<table>
+<thead>
+<tr>
+<th>价值维度</th>
+<th>体现</th>
+<th>应用到其他工具教学</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>看穿能力</td>
+<td>玩家能“看穿”任何 BOOTH 上卖的 MA 小组件</td>
+<td>任何“组件库”型工具都可借鉴：给一个完整 Prefab，玩家学会看穿所有类似物</td>
+</tr>
+<tr>
+<td>递进式教学</td>
+<td>Fingerpen → Clap，后者在前者之上 +1 个知识点</td>
+<td>不要写 5 个并列例子，要写“在 N 之上 +1”的递进链</td>
+</tr>
+<tr>
+<td>展示完成效果 > 展示制作过程</td>
+<td>玩家先看能用的东西，再拆内部</td>
+<td>入门阶段先给“能用的成品”，拆解阶段再讲“怎么搭”</td>
+</tr>
+<tr>
+<td>官方文档三层结构</td>
+<td>展示效果（Samples）→ 展示搭建（教程）→ 展示组件（Reference）</td>
+<td>任何工具文档都应分这三层，新手从第一层进入</td>
+</tr>
+</tbody>
+</table>
+<p>这套方法论适用于一切“组件库”型工具（例如 BOOTH 上售卖的各类 Avatar 小组件）的教学设计与文档编排。</p>
+<p>证据边界：本表为语料作者的方法论提炼，属教学经验（inferred）而非 Modular Avatar 产品事实。</p>
+<hr>
+<hr>
+<h1 id="modular-avatar-与-ndmf-生态工具协作顺序表aaomeshiacascadingmantis-先装easyquestswitch-任意vrcfury-共存需排序">Modular Avatar 与 NDMF 生态工具协作顺序表：AAO/Meshia/Cascading/Mantis 先装、EasyQuestSwitch 任意、VRCFury 共存需排序</h1>
+<p>Modular Avatar 与 NDMF 生态工具混装时的顺序原则：性能优化与网格简化类工具装在 Modular Avatar 之前，EasyQuestSwitch 任意顺序，VRCFury 存在顺序冲突需特别注意。</p>
+<table>
+<thead>
+<tr>
+<th>工具</th>
+<th>用途</th>
+<th>配合方式</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Avatar Optimizer (AAO)</td>
+<td>性能优化</td>
+<td>装在 MA 之前</td>
+</tr>
+<tr>
+<td>Meshia Mesh Simplification</td>
+<td>网格简化（推荐，替代已废弃的 lilNDMFMeshSimplifier）</td>
+<td>装在 MA 之前</td>
+</tr>
+<tr>
+<td>Cascading Avatar Mesh Simplifier</td>
+<td>级联简化</td>
+<td>装在 MA 之前</td>
+</tr>
+<tr>
+<td>Mantis LOD Editor NDMF</td>
+<td>LOD 编辑</td>
+<td>装在 MA 之前</td>
+</tr>
+<tr>
+<td>EasyQuestSwitch</td>
+<td>PC/Quest 切换</td>
+<td>任意顺序</td>
+</tr>
+<tr>
+<td>VRCFury</td>
+<td>老式换装</td>
+<td>注意顺序冲突</td>
+</tr>
+</tbody>
+</table>
+<p>VRCFury 共存警告：Modular Avatar 与 VRCFury 两者互不感知，执行顺序错会出 bug；推荐顺序为 NDMF 优化 → Fury → Modular Avatar。网格简化需求优先选 Meshia Mesh Simplification，不要再用已废弃的 lilNDMFMeshSimplifier。</p>
+<p>版本备注：Meshia 替代 lilNDMFMeshSimplifier 的废弃时间与适用 MA/NDMF 版本范围，来源未标注具体版本号。</p>
+<hr>
+<hr>
+<h1 id="modular-avatar-教学决策树速查21-类玩家提问到教程组件场景的路由表">Modular Avatar 教学决策树速查：21 类玩家提问到教程/组件/场景的路由表</h1>
+<p>玩家提出问题时，按本决策树把原话匹配到最近的类别，即可定位 Modular Avatar 的教学起点：服装穿着类走从零搭建教程，冲突调试类走对应组件，创作售卖类走创作者向完整版，MMD 类走 MMD 场景排查。</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>玩家问题 → 教学起点</span></span>
+<span class="line"><span>├─ 刚买了个衣服怎么装 → 从零搭建教程 1（配置简单服装）</span></span>
+<span class="line"><span>├─ 装上了但和身体穿模 → 教程 4（高级开关：Shape Changer）</span></span>
+<span class="line"><span>├─ 想加个开关菜单 → 教程 3（简单对象开关）</span></span>
+<span class="line"><span>├─ 想让 Avatar 跟视频/音频互动 → 教程 6（Merge Animator）+ Samples Fingerpen 拆解</span></span>
+<span class="line"><span>├─ 装了多个小组件菜单打架/参数冲突 → MA Parameters 组件 + Samples Clap 拆解（Internal 复选框）</span></span>
+<span class="line"><span>├─ 想看一个 MA 小组件内部什么样 → Samples（Fingerpen + Clap）拆解</span></span>
+<span class="line"><span>├─ 想做自己的衣服卖给别人 → 创作者向完整版（必读）+ Compatible/Preset 选择 + SOP 标准操作流程 + Logo 合规清单</span></span>
+<span class="line"><span>├─ 做了衣服但玩家反馈装上不动 → 创作者向调试方法（Edit sync / Play / Manual Bake）</span></span>
+<span class="line"><span>├─ 做的衣服能不能用 MA Logo → Logo 使用决策表</span></span>
+<span class="line"><span>├─ 想做跨 Avatar 通用的小组件（发卡/手持物）→ Bone Proxy vs Merge Armature 决策表</span></span>
+<span class="line"><span>├─ Prefab 升级 MA 后坏了 → 版本策略（Semantic Versioning + 稳定 API）</span></span>
+<span class="line"><span>├─ 想用 MA 内部 API 写插件 → API 稳定性表（nadena.dev.modular-avatar 是唯一稳定 API）</span></span>
+<span class="line"><span>├─ 装上鞋子陷地了 → Floor Adjuster 组件</span></span>
+<span class="line"><span>├─ 多个小组件参数冲突了 → MA Parameters 组件</span></span>
+<span class="line"><span>├─ 调体型时衣服不变 → Blendshape Sync 组件</span></span>
+<span class="line"><span>├─ VRChat 里看着错但编辑器正常 → Manual Bake Avatar + 错误窗口</span></span>
+<span class="line"><span>├─ 完全不会 Unity → 先学基础：VRChat 官方教程 + 从零搭建教程 1</span></span>
+<span class="line"><span>├─ 在 MMD 跳舞世界表情不对 → MMD 场景 A（先确认 World 行为）</span></span>
+<span class="line"><span>├─ MMD Layer Control 装上没生效/build 失败 → MMD 场景 B（检查装到 layer 还是 state）</span></span>
+<span class="line"><span>├─ 我的小组件在 MMD 世界不工作了 → MMD 场景 C（默认保护，可能正是想要的）</span></span>
+<span class="line"><span>└─ 想完全关掉 MMD 处理 → VRChat Settings 里关闭 MMD World Support</span></span></code></pre>
+<p>例外：「完全不会 Unity」的玩家一律先回 VRChat 官方基础教程加从零搭建教程 1，不直接进入组件讲解。同一问题若有多个可用入口（如参数冲突既通 MA Parameters 又通 Clap 样例），优先给组件级修复方案，再用样例演示巩固。</p>
+<p>证据边界：决策树为社区教学法归纳（inferred）。</p>
+<hr>
+<hr>
+<h1 id="modular-avatar-教学语言双轨制默认玩家用生活化操作语言高级玩家才切换专业叙述">Modular Avatar 教学语言双轨制：默认玩家用生活化操作语言，高级玩家才切换专业叙述</h1>
+<p>向 VRChat 玩家讲解 Modular Avatar（MA）操作时，采用双层语言风格：默认玩家一律用简单叙述，确认对方有 Unity 基础后才用专业叙述。</p>
+<p>简单叙述（默认）：把步骤说成日常操作。可以说“把衣服拖到 Avatar 身上”“右键选 Setup Outfit”“如果没动，可能是 X”；不要说「执行 NDMF 编译管线」「调用 Merge Armature 组件的 merge 流程」这类暴露内部实现的表述。</p>
+<p>专业叙述（高级玩家）：直接讲机制与阶段。例如“NDMF 在 Generating 阶段执行 Merge Armature pass”“Layer Priority 控制 Animator 合并顺序”“Write Defaults 匹配避免混用 ON/OFF 状态”。</p>
+<p>判断标准：默认玩家假设为无或仅有少量 Unity 基础；只有当玩家主动说出 Animator Layer、Write Defaults、Blend Tree、NDMF、Constraint、Expression Parameter、PhysBone 等术语时，才切换到专业叙述。</p>
+<p>证据边界：双轨制为社区教学法归纳（inferred）。</p>
+<hr>
+<hr>
+<h1 id="切换专业叙述的触发词清单说出-animator-layer--write-defaults--blend-tree--ndmf-等任一术语即可升级">切换专业叙述的触发词清单：说出 Animator Layer / Write Defaults / Blend Tree / NDMF 等任一术语即可升级</h1>
+<p>在 Modular Avatar（MA）教学与答疑场景中，可通过玩家使用的词汇判断其基础水平，决定是否切换专业叙述。</p>
+<p>触发词清单（说出任一即可升级为专业叙述）：</p>
+<ul>
+<li>Animator Layer</li>
+<li>Write Defaults</li>
+<li>Blend Tree</li>
+<li>NDMF</li>
+<li>Constraint</li>
+<li>Expression Parameter</li>
+<li>PhysBone</li>
+</ul>
+<p>这些术语表明玩家已接触 Unity Animator 或 VRChat Avatar 3.0 概念，能理解诸如“NDMF 在 Generating 阶段执行 Merge Armature pass”这类机制层面的表述。玩家话语中未出现上述词汇时，继续使用生活化操作语言（如“把衣服拖到 Avatar 身上”），不主动引入术语。</p>
+<p>证据边界：清单为社区教学法归纳（inferred）。</p>
+<hr>
+<hr>
+<h1 id="mmd-world-是什么会自动接管-avatar-表情控制的-vrchat-舞蹈世界绝大多数玩家无需处理">MMD World 是什么：会自动接管 Avatar 表情控制的 VRChat 舞蹈世界，绝大多数玩家无需处理</h1>
+<p>MMD World 是 VRChat 里一类特殊的世界（通常带音乐和舞蹈），它们会自动接管你的表情控制，让所有 Avatar 的表情同步成它们的舞蹈动作。</p>
+<p>要点：</p>
+<ul>
+<li>绝大多数玩家永远不需要关心 MMD World——这是给“会去 MMD 世界的玩家”准备的进阶知识；</li>
+<li>只有少数玩家会因为「我装了 MMD Layer Control 但没生效」或「我在 MMD 世界的表情不对」来提问；</li>
+<li>教学优先级低：不要主动教，等玩家问到再讲。</li>
+</ul>
+<p>口径说明：文档中「约九成玩家不需要关心、只有极少数玩家会问」为经验估计值，并非精确统计数据，无统计来源。</p>
+<hr>
+<hr>
+<h1 id="mmd-相关三类典型提问对照表表情不对layer-control-没生效小组件动画不播放各对应不同诊断方向">MMD 相关三类典型提问对照表：表情不对、Layer Control 没生效、小组件动画不播放各对应不同诊断方向</h1>
+<p>Modular Avatar 教学中，MMD 相关玩家提问可归纳为三类，每类对应不同诊断方向：</p>
+<table>
+<thead>
+<tr>
+<th>玩家提问</th>
+<th>实际含义</th>
+<th>处理方向</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>我去 MMD 跳舞世界表情不对</td>
+<td>可能 MMD World 想禁的表情没禁掉</td>
+<td>场景 A：核对 World 禁用层与 Avatar 表情控制层</td>
+</tr>
+<tr>
+<td>我的小组件装了 MMD Layer Control 没生效</td>
+<td>可能装错位置（装到 state 而不是 layer）</td>
+<td>场景 B：检查组件挂载位置</td>
+</tr>
+<tr>
+<td>我装了个小组件，进 MMD 世界后它的动画不播了</td>
+<td>用了 Merge Animator，MA 默认保护该层不被禁</td>
+<td>场景 C：确认是否真的需要被 MMD 禁用</td>
+</tr>
+</tbody>
+</table>
+<p>先用这张表判断玩家的问题属于哪一类，再进入对应的五步诊断流程；三个场景的具体步骤见各自的诊断条目。</p>
+<p>证据边界：三类归类为社区答疑经验归纳（inferred）。</p>
+<hr>
+<hr>
+<h1 id="mmd-世界表情没被禁掉的五步诊断核查-avatar-是否真用-fx-层-23-做表情">MMD 世界表情没被禁掉的五步诊断：核查 Avatar 是否真用 FX 层 2、3 做表情</h1>
+<p>玩家反馈「去 MMD 跳舞世界，表情没被禁掉，看着很怪」时，按以下五步诊断：</p>
+<ol>
+<li>问玩家：是哪个 MMD World？不同 World 行为不同。</li>
+<li>解释机制：这类 World 是通过禁用 FX 的层 2 和层 3 来禁表情的。</li>
+<li>让玩家自查：Avatar 的层 2、3 是否用于表情控制？玩家不会查就教他“打开 Animator 窗口，看 FX 层 2 和 3 的名字”。</li>
+<li>绝大多数情况（约 99%）：玩家根本没用层 2、3 做表情，所以 World 禁不掉——这不是玩家 Avatar 的故障。</li>
+<li>解决方案：要么由 World 作者修复兼容，要么换一个 World。</li>
+</ol>
+<p>例外：若玩家确实在层 2、3 放了表情控制但仍异常，则属 World 侧兼容问题，只能由 World 作者修复或更换 World。</p>
+<p>注意事项：不要说「执行 MMD Layer Control」——绝大多数玩家不需要这个；也不要让玩家「加 MMD Layer Control」——玩家没在层 2、3 加东西，加了也没用。</p>
+<hr>
+<hr>
+<h1 id="mmd-layer-control-没效果或-build-失败的排查组件误装到-state-而非-layer">MMD Layer Control 没效果或 build 失败的排查：组件误装到 state 而非 layer</h1>
+<p>玩家反馈「按教程加了 MMD Layer Control，没效果，还 build 失败」时，最常见原因是组件装错了位置——装到了 state（Animator 里的状态）而不是 layer（整个层）。</p>
+<p>诊断与修复步骤：</p>
+<ol>
+<li>让玩家截图组件在 Hierarchy／Animator 里的位置。</li>
+<li>检查组件是不是装到了 state 上。</li>
+<li>解释规则：必须直接装到 layer，不能装到层里面的 state。</li>
+<li>修复：右键 layer 标题 → Add Behavior → MMD Layer Control。</li>
+<li>重新 build。</li>
+</ol>
+<p>教学比喻（可直接引用）：「layer 是大盒子，state 是盒子里的小球。你要把组件放到大盒子上，不是小球上。」</p>
+<hr>
+<hr>
+<h1 id="小组件动画在-mmd-world-仍播放的原因modular-avatar-默认保护-merge-animator-添加的层属预期行为而非故障">小组件动画在 MMD World 仍播放的原因：Modular Avatar 默认保护 Merge Animator 添加的层，属预期行为而非故障</h1>
+<p>玩家反馈「我装了个小组件，进 MMD World 它还在动」或相反「它的动画不播了」时，先确认组件的实现方式——这类小组件通常用 Merge Animator 制作。</p>
+<p>机制说明：Modular Avatar 默认保护 Merge Animator 添加的层，不让 MMD World 禁用它们。所以小组件在 MMD World 里仍在运动，正是 Modular Avatar 在起保护作用，属于预期行为而非故障。</p>
+<p>处理决策：</p>
+<ul>
+<li>希望它被 MMD World 禁掉 → 加 MMD Layer Control（必须装到 layer 上，不能装到 state 上）；</li>
+<li>不希望它被禁 → 什么都不用做，当前已经是正确状态。</li>
+</ul>
+<p>教学关键句：“MA 帮你把你的小组件保护起来了。如果你想让它在 MMD World 被禁掉，加一个组件。”</p>
+<hr>
+<hr>
+<h1 id="mmd-话题升级专业叙述的信号表提到-fx-第-23-层layer-priorityrelay-layer-等即可展开机制">MMD 话题升级专业叙述的信号表：提到 FX 第 2/3 层、Layer Priority、Relay layer 等即可展开机制</h1>
+<p>MMD 相关教学中，出现下列玩家表述即可升级到专业叙述：</p>
+<table>
+<thead>
+<tr>
+<th>玩家提到</th>
+<th>升级理由</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>FX 动画器的第 2 层和第 3 层</td>
+<td>说明他们懂 Avatar 3.0</td>
+</tr>
+<tr>
+<td>Animator Layer Priority</td>
+<td>说明他们懂 Animator</td>
+</tr>
+<tr>
+<td>Write Defaults</td>
+<td>说明他们懂 Animator 状态设置</td>
+</tr>
+<tr>
+<td>Relay layer / Padding layer</td>
+<td>说明他们读过 Modular Avatar 官方文档</td>
+</tr>
+<tr>
+<td>VRChat Settings 的 MMD World Support</td>
+<td>说明他们了解 VRChat 设置项</td>
+</tr>
+</tbody>
+</table>
+<p>未命中这些信号的玩家，继续用「有些世界会接管你的表情」这类生活化说法，不展开层号与内部机制。此表是 MMD 话题专属的升级判据，与通用触发词清单（Animator Layer、Blend Tree、NDMF 等）配合使用。</p>
+<p>证据边界：信号表为社区教学法归纳（inferred）。</p>
+<hr>
+<hr>
+<h1 id="mmd-教学应主动跳过的四类内部细节relaypadding-实现api-平台限制replace-模式行为">MMD 教学应主动跳过的四类内部细节：relay/padding 实现、API 平台限制、replace 模式行为</h1>
+<p>向默认玩家讲解 Modular Avatar 的 MMD 处理时，应主动跳过以下内部细节，避免信息过载：</p>
+<ul>
+<li>relay layers 的具体实现方式（MA 内部机制）；</li>
+<li>padding layers 的具体插入方式（MA 内部机制）；</li>
+<li>「VRChat 当前 API 不支持通用方案」这一平台限制（玩家无法改变）；</li>
+<li>replace 模式下 Merge Animator 的具体行为（组件内部细节）。</li>
+</ul>
+<p>替代做法：前两类用一句“MA 会自动帮你处理这些”概括；平台限制类内容直接不讲；replace 模式细节仅在玩家显式追问时简要说明。这样回答既保住玩家需要的结论，又不把实现负担转嫁给用户。</p>
+<p>例外：玩家明确追问（如“那别的 World 呢”“MA 具体加了什么层”）时可简要说明对应细节。</p>
+<p>证据边界：跳过清单为社区教学法归纳（inferred）。</p>
+<hr>
+<hr>
+<h1 id="mmd-问题教学决策树六类玩家提问分流到对应诊断分支">MMD 问题教学决策树：六类玩家提问分流到对应诊断分支</h1>
+<p>处理玩家 MMD 相关提问时，按以下决策树分流：</p>
+<ol>
+<li>玩家完全不知道 MMD World 是什么 → 只用一句话介绍（“MMD World 是会自动接管表情控制的舞蹈世界”），跳过详细机制。</li>
+<li>玩家在 MMD World 表情不对 → 进入场景 A 五步诊断（核对 World 禁层与 Avatar 表情层）。</li>
+<li>MMD Layer Control 没生效或 build 失败 → 进入场景 B，检查组件装到了 layer 还是 state。</li>
+<li>Merge Animator 小组件在 MMD World 不工作了 → 进入场景 C，说明 Modular Avatar 默认就是保护，可能正是想要的效果。</li>
+<li>玩家想让小组件被 MMD 控制 → 按场景 B 处理，并提示必须装到 layer。</li>
+<li>玩家想完全关掉 MMD 处理 → 指引到 VRChat Settings 关闭 MMD World Support 选项。</li>
+</ol>
+<p>前置纪律：MMD 属于低优先级进阶知识，只在玩家问到时按此树响应，不主动展开。</p>
+<p>证据边界：决策树为社区教学法归纳（inferred）；第 6 分支指向的设置页具体操作步骤见本页 VRChat Settings 相关条目。</p>
+<hr>
+<hr>
+<h1 id="mmd-教学反例对照表五种错误说法与正确替代话术">MMD 教学反例对照表：五种错误说法与正确替代话术</h1>
+<p>MMD 相关教学中，以下五种说法是反例，右侧为推荐替代：</p>
+<table>
+<thead>
+<tr>
+<th>错误说法</th>
+<th>正确替代</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>MMD World 会禁你的 layer 2 和 3</td>
+<td>有些世界会接管你的表情（叫 MMD World）</td>
+</tr>
+<tr>
+<td>MA 会加 relay layer 和 padding layer</td>
+<td>MA 会自动帮你处理这些</td>
+</tr>
+<tr>
+<td>VRChat API 不支持通用方案</td>
+<td>跳过，不要讲平台限制（玩家改不了）</td>
+</tr>
+<tr>
+<td>这个 workaround 只对禁用 2&#x26;3 的 World 有效</td>
+<td>跳过不讲，除非玩家问“那别的 World 呢”</td>
+</tr>
+<tr>
+<td>你在 Animator state machine behavior 上加错了</td>
+<td>你装错了——应该装到大盒子（layer）不是小球（state）</td>
+</tr>
+</tbody>
+</table>
+<p>共同原则：对默认玩家隐藏实现层词汇（层号、组件内部名、平台限制），用结果导向的生活化语言替代。</p>
+<p>例外：玩家显式追问技术细节时（如“那别的 World 呢”），可突破「跳过」类反例的限制作简要说明。</p>
+<p>证据边界：反例表为社区教学法归纳（inferred）。</p>
+<hr>
+<hr>
+<h1 id="flex-fisheye-lens-借助-modular-avatar-拖入即装的第三方案例pcvr-专用鱼眼摄影插件的安装分工">Flex Fisheye Lens 借助 Modular Avatar 拖入即装的第三方案例：PCVR 专用鱼眼摄影插件的安装分工</h1>
+<p>Flex Fisheye Lens（Goat-Cannery 出品的 Avatar 端鱼眼相机摄影增强工具）是第三方插件借助 Modular Avatar 实现“拖入 Prefab 即安装”的实际案例（2026-07 收录）。</p>
+<p>安装与 Modular Avatar 分工：</p>
+<ul>
+<li>基础安装：需要 Modular Avatar。把 Prefab 拖到 Avatar 身上即完成安装，Prefab 路径为 Assets/GoatCannery/FishEyeCam/FishEyeCam.prefab ，左撇子版本为 FishEyeCam_Left；</li>
+<li>菜单自动生成：由 Modular Avatar 处理挂载——安装后自动在 Expressions 菜单添加 [FishEyeLens] 选项，并在 Radial Menu 添加 FishEyeCam 菜单；</li>
+<li>质量调整、位置调整、相机外形替换：不需要 Modular Avatar，分别直接编辑 Inspector、Hierarchy 和 Addon。</li>
+</ul>
+<p>硬性约束：</p>
+<ul>
+<li>仅支持 PC VR 模式，桌面（Desktop）和 Quest 不可用；</li>
+<li>必须使用最新版 Modular Avatar，旧版可能出现导入错误；</li>
+<li>付费插件，BOOTH 售价 2000 日元。</li>
+</ul>
+<hr>
+<hr>
+<h1 id="virtuallens2-非破坏性安装五步流程依赖-ma-180-菜单集成旧破坏性设置可一键迁移">VirtualLens2 非破坏性安装五步流程：依赖 MA 1.8.0+ 菜单集成，旧破坏性设置可一键迁移</h1>
+<p>VirtualLens2（logi_9／ろじらぼ）是 VRChat 摄影社区主流的 Avatar 端虚拟相机工具，自 Modular Avatar 1.8.0 起与 Modular Avatar 深度集成，提供非破坏性安装流程。</p>
+<p>安装五步：</p>
+<ol>
+<li>导入 VirtualLens2 unitypackage；</li>
+<li>右键 Avatar 根对象 → VirtualLens2 → Non-Destructive Setup；</li>
+<li>配置设置（虚拟形象、目标手、设置模板等）；</li>
+<li>点击 Apply 按钮；</li>
+<li>重新上传 Avatar。</li>
+</ol>
+<p>Modular Avatar 承担的职责：基础安装必需；菜单自动生成（经 MA Menu Installer 挂载到 Avatar 菜单）；参数同步（MA Parameters 自动管理）；升级兼容（v2.10.0 之前的破坏性设置可通过 Migrate as a Non-destructive Module 按钮迁移）。</p>
+<p>约束与备注：</p>
+<ul>
+<li>主功能仅支持 PCVR（桌面+VR）；Android 平台通过 Remote Only Mode 降级，仅显示头像；</li>
+<li>表情参数需求：至少 8 bit 余量（1 个 Int 或 Float 参数）；</li>
+<li>价格 1500 日元（BOOTH，Pay What You Want 模式）；</li>
+<li>工具对比：VRCLens 自身未做非破坏性设计，需用 VRCFury Prefab 包装才能实现非破坏性安装；</li>
+<li>官方参考资料：VirtualLens2 Setup Guide（vlens2.logilabo.dev）与中文文档（docs.vrcd.org.cn/books/virtual-lens2）。</li>
+</ul>
+<p>版本备注：要求 MA 1.8.0+；VirtualLens2 2.10.0 为破坏性/非破坏性设置的迁移分界。</p>
+<hr>
+<hr>
+<h1 id="modular-avatar-1170-更新清单2026-05-11新增-floor-adjustervrcraycast-支持bone-proxy-match-scale">Modular Avatar 1.17.0 更新清单（2026-05-11）：新增 Floor Adjuster、VRCRaycast 支持、Bone Proxy Match scale</h1>
+<p>Modular Avatar 1.17.0（2026-05-11 发布）版本增量一览：</p>
+<ul>
+<li>新增 MA Floor Adjuster 组件；</li>
+<li>MA Parameters 支持 VRCRaycast components/parameters；</li>
+<li>MA Bone Proxy 增加 Match scale 选项；</li>
+<li>Blendshape picker 支持多选；同时修复导入 World Project 时的编译错误；</li>
+<li>针对 VRCSDK Expressions Menu 编辑器卡死问题加入规避手段；菜单 GUI 增加 watchdog，便于诊断渲染耗时。</li>
+</ul>
+<p>使用含义：依赖上述能力的项目应以 1.17.0 为最低版本要求；排查 Expressions Menu 编辑卡顿时可关注新版 watchdog 的耗时输出。来源为官方 GitHub Release（tag 1.17.0）。版本备注：1.17.0（2026-05-11）。</p>
+<hr>
+<hr>
+<h1 id="modular-avatar-1180-alpha0-预发布变更与风险blendshape-sync-曲线重映射等三项prerelease-不保证-api-兼容">Modular Avatar 1.18.0-alpha.0 预发布变更与风险：Blendshape Sync 曲线重映射等三项，prerelease 不保证 API 兼容</h1>
+<p>Modular Avatar 1.18.0-alpha.0（2026-05-31 发布，预发布版）主要变更：</p>
+<ul>
+<li>MA Blendshape Sync 支持使用曲线重映射 blendshape；</li>
+<li>Mesh Cutter 预览与构建性能提升；</li>
+<li>Mesh Deleter 预览逻辑调整，以改善与其他插件的兼容性。</li>
+</ul>
+<p>风险评估：该版本是 prerelease，官方明确提示可能存在 bug 且 API 兼容性未保证；正式项目使用前应备份项目，或等稳定版发布后再引入上述特性。来源为官方 GitHub Release（tag 1.18.0-alpha.0）。版本备注：1.18.0-alpha.0（2026-05-31，prerelease）。</p>
+<hr>
+<hr>
+<h1 id="shape-changer-的-delete-与-set-模式选择规则无动画用-delete-省性能会被动画影响必须用-set">Shape Changer 的 Delete 与 Set 模式选择规则：无动画用 Delete 省性能，会被动画影响必须用 Set</h1>
+<p>Modular Avatar 的 Shape Changer 组件提供两种作用模式，选择依据是目标形态键是否会被动画使用。</p>
+<p>Delete 模式：直接删除形态键对应的多边形，节省 GPU 开销；形态键没有动画使用时应选用，组件在没有相关动画时也会自动采用该模式。</p>
+<p>Set 模式：把形态键设置为指定值；形态键会被其他动画影响时必须选用 Set，否则动画无法控制已被删除的部分。</p>
+<hr>
+<hr>
+<h1 id="形态键联动效果编辑器无法预览play-模式配合模拟工具测试overdraw-叠加排查穿模">形态键联动效果编辑器无法预览：Play 模式配合模拟工具测试，Overdraw 叠加排查穿模</h1>
+<p>已知限制：形态键联动效果（如 Shape Changer）在 Unity 编辑器中无法预览。验证方法是进入 Play 模式，使用 Avatar 3.0 Emulator 或 Gesture Manager 这类模拟工具测试实际表现。</p>
+<p>排查穿模：打开 Scene 视图 → 调试叠加（调试渲染模式）→ Overdraw，以半透明方式查看网格相互穿透的位置。</p>
+<p>教学提示：这是中高级功能，新手可以先跳过，遇到穿模问题再学习。</p>
+<p>证据边界：Avatar 3.0 Emulator 与 Gesture Manager 为第三方测试工具，非 Modular Avatar 自带。</p>
+<hr>
+<hr>
+<h1 id="extract-menu把现有-avatar-菜单转换为-hierarchy-对象管理的操作流程">Extract Menu：把现有 Avatar 菜单转换为 Hierarchy 对象管理的操作流程</h1>
+<p>目标：不手动创建 VRC Expressions Menu 资产，改用 Hierarchy 对象管理 Avatar 菜单。</p>
+<p>转换现有 Avatar 菜单的步骤：</p>
+<ol>
+<li>右键 Avatar → Modular Avatar → Extract menu；</li>
+<li>出现 Avatar Menu 对象，其中包含顶级菜单项；</li>
+<li>想编辑某个子菜单时，点击 extract to objects 按钮，把子菜单展开为可编辑对象；</li>
+<li>用拖拽重新组织菜单结构；</li>
+<li>需要新增项目时，点击 Add menu item。</li>
+</ol>
+<hr>
+<hr>
+<h1 id="给可重用资源配置自带菜单menu-installer-与-menu-itemtypesub-menusubmenu-sourcechildren同对象组合">给可重用资源配置自带菜单：Menu Installer 与 Menu Item（Type=Sub Menu，Submenu Source=Children）同对象组合</h1>
+<p>在可重用资源（Prefab）上加菜单的配置步骤：</p>
+<ol>
+<li>创建一个子菜单对象；</li>
+<li>在同一 GameObject 上添加两个组件：MA Menu Installer（安装器）和 MA Menu Item（菜单项，Type 设为 Sub Menu）；</li>
+<li>把 Menu Item 的 Submenu Source 设为 Children，即以该对象的子级作为菜单内容来源；</li>
+<li>在子级添加 MA Menu Item 作为具体菜单项。</li>
+</ol>
+<hr>
+<hr>
+<h1 id="menu-item-绑定参数免手写参数名旁下拉箭头自动搜索父级链上的-ma-parameters">Menu Item 绑定参数免手写：参数名旁下拉箭头自动搜索父级链上的 MA Parameters</h1>
+<p>Menu Item 绑定参数时的搜索技巧：参数名旁边有一个下拉箭头，点击它会搜索所有父级 MA Parameters 组件中的参数，从列表中直接选择即可，不用手写参数名，从而避免手写出错或与已有定义不一致。</p>
+<hr>
+<hr>
+<h1 id="ma-menu-group把组内多个菜单项装入目标菜单而不额外创建子菜单层级">MA Menu Group：把组内多个菜单项装入目标菜单而不额外创建子菜单层级</h1>
+<p>Menu Group 的作用：将 MA Menu Group 与 MA Menu Installer 放在同一 GameObject 上，可以把该组内的多个 Menu Item 安装到目标菜单，而不创建额外的子菜单层级。</p>
+<p>补充：这也是 Modular Avatar 的 Extract Menu 系统在内部采用的实现方式。</p>
+<hr>
+<hr>
+<h1 id="手动构建动画器开关的官方完整步骤bone-proxy-加-merge-animator-加-ma-parameters-加-menu-installer教学用途日常优先-object-toggle">手动构建动画器开关的官方完整步骤：Bone Proxy 加 Merge Animator 加 MA Parameters 加 Menu Installer（教学用途，日常优先 Object Toggle）</h1>
+<p>本教程为传统 Animator 方式做开关，官方定位是教学用途，实际做开关应优先使用 Object Toggle。官方原话：“You can also do this by building an animator manually, but why would you?”</p>
+<p>完整步骤（官方标题写 6 步，实际划分为 Step 1-5 + Setup 6 + Finishing Up）：</p>
+<p>Step 1：创建 GameObjects：ToggleDemo/HandRef/Cube；关键点：删除 Cube 的 Box Collider，否则会影响手部追踪。</p>
+<p>Step 2：把 Cube 挂到手上：在 HandRef 上加 MA Bone Proxy，Target 设为右手骨头，Attachment Mode 设为 As child; at root；Bone Proxy 不需要放在顶层。</p>
+<p>Step 3：创建 Animator Controller 和两个动画（CubeOff、CubeOn），添加 Any State 转换；使用 bool 参数 Cube，Transition Duration 设为 0，Can Transition to Self 关闭。</p>
+<p>Step 4：加 MA Merge Animator，并同时加一个 Animator 组件；勾选 delete attached animator 和 match avatar write defaults；Animator 组件只是为了让 Unity 允许录制动画。</p>
+<p>Step 5：加 MA Parameters（需点击 Show Prefab Developer Options 显示）→ 添加 Cube 参数 → Sync Mode 设为 Bool，勾选 Internal = true 以防止参数冲突。</p>
+<p>Setup 6：创建 Expressions Menu 资产，加 MA Menu Installer 引用该 Menu（VRC 资产方式）。</p>
+<p>Finishing Up：调整组件顺序（Menu Installer 放最上面）→ 拖到 Project 目录做成 Prefab → 拖到任何 Avatar 上都能使用。</p>
+<p>例外提醒：Cube 若保留 Box Collider 会影响手部追踪，必须删除。版本备注：菜单路径以所用版本的官方文档为准。</p>
+<hr>
+<hr>
+<h1 id="ma-parameters-的-internal-勾选项自动隔离防参数名冲突仅共享参数时取消勾选">MA Parameters 的 Internal 勾选项：自动隔离防参数名冲突，仅共享参数时取消勾选</h1>
+<p>Internal Checkbox 是手动动画器流程中最容易被忽略的选项。</p>
+<p>勾选 Internal（推荐，绝大多数情况）：Modular Avatar 自动避免参数名冲突。官方原话：“If you set the internal checkbox, modular avatar will ensure that your Cube parameter doesn’t interfere with anything else on the avatar using the same parameter name.”（勾选 internal 后，Modular Avatar 会确保你的 Cube 参数不会干扰 Avatar 上其他使用同名参数的内容。）</p>
+<p>不勾选 Internal：用户可以手动改名，使多个小组件能够共享同一参数，但代价是可能发生参数名冲突。例外：仅多个小组件需要共享同一个参数时才取消勾选并手动统一命名。</p>
+<hr>
+<hr>
+<h1 id="ma-parameters-位置约束必须放在所有-merge-animator-与-menu-installer-的同一对象或共同父级上">MA Parameters 位置约束：必须放在所有 Merge Animator 与 Menu Installer 的同一对象或共同父级上</h1>
+<p>MA Parameters 的位置约束（易错点）：它必须放在所有 Merge Animator 和 Menu Installer 的同一对象或父级上。</p>
+<p>官方原话：“Make sure that MA Parameters is on either the same object, or a parent of all your Merge Animators and Menu Installers!”</p>
+<p>违反此约束会导致这些组件找不到参数定义。</p>
+<hr>
+<hr>
+<h1 id="merge-animator-流程中额外-animator-组件的真实目的仅为允许录制动画构建时被-delete-attached-animator-自动删除">Merge Animator 流程中额外 Animator 组件的真实目的：仅为允许录制动画，构建时被 delete attached animator 自动删除</h1>
+<p>手动动画器流程要求在加 Modular Avatar 的 Merge Animator 的同时也加一个 Animator 组件，这不是功能需要，而是为了绕过 Unity 的限制——只有存在 Animator 组件时 Unity 才允许录制动画。</p>
+<p>官方原话：“Adding an Animator here is also optional; we’re just using it so that Unity allows us to record animations. By checking the delete attached animator box, Modular Avatar will delete the Animator component at build time.”</p>
+<p>结论：勾选 delete attached animator 后，这个辅助用的 Animator 组件会在构建（build）时被 Modular Avatar 自动删除，不影响最终 Avatar。</p>
+<hr>
+<hr>
+<h1 id="object-toggle-与手动-animator-两种开关做法对比默认一律用-object-toggle复杂多状态机才需要手动-animator">Object Toggle 与手动 Animator 两种开关做法对比：默认一律用 Object Toggle，复杂多状态机才需要手动 Animator</h1>
+<p>两种开关做法的对比（教程 3 Object Toggle vs 教程 6 手动 Animator）：</p>
+<ul>
+<li>难度：Object Toggle 新手友好；手动 Animator 需要 Animator 基础；</li>
+<li>步骤：Object Toggle 约 5 步；手动 Animator 标称 6 步、实际更繁琐；</li>
+<li>适用人群：Object Toggle 适合所有玩家；手动 Animator 仅适合创作者；</li>
+<li>维护成本：Object Toggle 加新开关只需加一个新 GameObject；手动 Animator 加新开关要修改 Animator 并新增 Controller。</li>
+</ul>
+<p>官方建议：默认使用 Object Toggle；对手动构建动画器的评价是官方原话 “You can also do this by building an animator manually, but why would you?”（你也可以手动构建动画器，但你为什么要这么做呢？）。</p>
+<p>边界说明：约九成玩家永远不需要学手动方式，但创作者必须理解它，因为某些复杂场景（复杂多状态机、多参数联动）必须使用 Animator。</p>
+<p>证据边界：难度评级与“90% 玩家”比例为原文编辑性表述，非官方文档数据。</p>
+<hr>
+<hr>
+<h1 id="modular-avatar-全部组件分类速查表七大类-25-组件及用途一览">Modular Avatar 全部组件分类速查表：七大类 25+ 组件及用途一览</h1>
+<p>Modular Avatar 全部组件分类速查（25+ 个，括号内为用途与原文难度星级）：</p>
+<p>核心合并类：Merge Armature（装衣服/头饰等，⭐）、Merge Animator（合并 Animator Controller，⭐⭐）、Merge Motion (Blend Tree)（合并 Blend Tree / 持续动画，⭐⭐）、Bone Proxy（把对象挂到指定骨头，⭐）。</p>
+<p>反应式类：Object Toggle（开关对象，⭐）、Shape Changer（形态键删除/缩放，⭐⭐）、Material Setter（替换材质，⭐）、Material Swap（批量替换材质，⭐）、Mesh Cutter（删除/隐藏多边形，⭐⭐）。</p>
+<p>菜单系统类：Menu Item（定义菜单项，⭐）、Menu Installer（装到主菜单，⭐）、Menu Group（不分组多菜单项，⭐）、Menu Install Target（菜单安装目标，⭐⭐）。</p>
+<p>参数类：MA Parameters（注册/重命名参数，⭐⭐）、Sync Parameter Sequence（跨平台参数顺序同步，⭐⭐⭐）、Rename Collision Tags（重命名 Contact 标签，⭐⭐）。</p>
+<p>服装专用类：Blendshape Sync（同步形态键，⭐）、PhysBone Blocker（阻止父 PhysBone 影响子，⭐）、Replace Object（替换 Avatar 上的对象，⭐⭐）、Mesh Settings（网格设置，⭐⭐）。</p>
+<p>Avatar 配置类：Floor Adjuster（调垂直位置，⭐）、Visible Head Accessory（第一人称可见，⭐）、Scale Adjuster（单独缩放某骨骼，⭐⭐）、Move Independently（编辑模式独立移动，⭐）。</p>
+<p>平台/通用类：Platform Filter（平台过滤，⭐）、Remove Vertex Color（移除顶点色，⭐）、Global Collider（全局碰撞体，⭐⭐）、World Fixed Object（世界固定对象，⭐）、World Scale Object（世界缩放，⭐）、Convert Constraints（转换 Unity → VRC 约束，⭐）、VRChat Settings（MMD World 支持开关，⭐）、MMD Layer Control（控制 MMD 层，⭐⭐）。</p>
+<p>证据边界：难度星级为原文编辑评级，非官方文档信息。</p>
+<hr>
+<hr>
+<h1 id="merge-armature-组件总览专为-skinned-mesh-服装设计三步配置与三种位置锁定模式">Merge Armature 组件总览：专为 Skinned Mesh 服装设计，三步配置与三种位置锁定模式</h1>
+<p>Merge Armature（必学组件）：把对象树合并到 Avatar 骨骼上，专为 Skinned Mesh 服装设计。</p>
+<p>何时用：装衣服/头饰/尾巴；装任何 Skinned Mesh 配件。何时不该用：不用于“放个 Cube 在手上”（这种情况用 Bone Proxy）；不用于通用 Prefab（不同 Avatar 之间不能复用同一配置）。</p>
+<p>关键功能：更新 SkinnedMeshRenderer 引用；最小化生成的骨骼数量；复用现有骨骼。</p>
+<p>配置方法（3 步）：</p>
+<ol>
+<li>组件加到源层级根对象；</li>
+<li>拖入 Avatar 对应骨骼到 Merge Target；</li>
+<li>Prefix/Suffix 通常自动设置。</li>
+</ol>
+<p>位置锁定模式（Position Lock Mode）：</p>
+<ul>
+<li>Not locked——编辑模式下不跟随（几乎不用）；</li>
+<li>Base → Target 单向——素体动、衣服跟随（默认，日常使用）；</li>
+<li>Base ↔ Target 双向——互相跟随（高级场景，如摆动素体头发）。</li>
+</ul>
+<p>Setup Outfit 自动化关联：自动查找衣服的 Hips 骨骼（名字需包含素体 Hips 名字）；处理 A-Pose/T-Pose 手臂位置转换；自动创建 Mesh Settings 组件。</p>
+<p>版本备注：嵌套合并（A→B→C 自动决定顺序）自 MA 1.7.0 起支持。</p>
+<hr>
+<hr>
+<h1 id="merge-armature-三个已知陷阱素体骨骼上的-physbone与素体完全同名的骨骼名部分骨架失效">Merge Armature 三个已知陷阱：素体骨骼上的 PhysBone、与素体完全同名的骨骼名、部分骨架失效</h1>
+<p>使用 Merge Armature 时需要提前规避的三个已知陷阱：</p>
+<ol>
+<li>不要让 PhysBone 位于素体骨骼上（例如 Hips、Chest）——Modular Avatar 合并时会尝试删除这些 PhysBone，导致不可预测的结果；</li>
+<li>避免使用与素体完全相同的骨骼名——这会触发 Unity bug；</li>
+<li>对部分骨架（只有 Head 等单骨的情况）Merge Armature 会失效——此时应改用 Bone Proxy 替代。</li>
+</ol>
+<p>例外：部分骨架场景的替代方案是 Bone Proxy。</p>
+<hr>
+<hr>
+<h1 id="merge-animator-组件总览把小组件-animator-合并到-avatar-指定层的四项关键功能与五步配置">Merge Animator 组件总览：把小组件 Animator 合并到 Avatar 指定层的四项关键功能与五步配置</h1>
+<p>Merge Animator：把小组件的 Animator 合并到 Avatar 的指定动画层。</p>
+<p>关键功能：</p>
+<ul>
+<li>路径模式（Relative 相对路径 / Absolute 绝对路径）；</li>
+<li>层级优先级（控制多个合并的先后顺序）；</li>
+<li>合并模式（Add 追加 / Replace 替换）；</li>
+<li>Write Defaults 匹配。</li>
+</ul>
+<p>配置步骤：</p>
+<ol>
+<li>组件加到 Prefab 对象上；</li>
+<li>在 Animator to merge 中拖入 Animator Controller；</li>
+<li>Layer Type 选择目标层（FX、Action 等）；</li>
+<li>（推荐）勾选 delete attached animator；</li>
+<li>（推荐）勾选 match avatar write defaults。</li>
+</ol>
+<hr>
+<hr>
+<h1 id="merge-animator-的-write-defaults-自动匹配检测-avatar-的-wd-设置并对齐混用-onoff-会出-bug">Merge Animator 的 Write Defaults 自动匹配：检测 Avatar 的 WD 设置并对齐，混用 ON/OFF 会出 bug</h1>
+<p>Merge Animator 的 Write Defaults 匹配机制：勾选 match avatar write defaults 后，组件会自动检测 Avatar 当前使用 Write Defaults ON 还是 OFF，并自动调整被合并的动画器使之匹配。</p>
+<p>原因：Write Defaults 设置混合使用会出现 bug，因此合并双方的 WD 状态必须一致，推荐交由此选项自动对齐。</p>
+<hr>
+<hr>
+<h1 id="merge-animator-层优先级排序规则数字小的先应用相同按-hierarchy-顺序vrcanimatorlayercontrol-只能引用同一-animator-内部层">Merge Animator 层优先级排序规则：数字小的先应用、相同按 Hierarchy 顺序；VRCAnimatorLayerControl 只能引用同一 Animator 内部层</h1>
+<p>Layer Priority（层优先级）规则：数字越小越先应用；数字越大越后应用（后应用的覆盖先应用的）；优先级数字相同时，按 Hierarchy 顺序处理。</p>
+<p>两条限制：</p>
+<ol>
+<li>VRCAnimatorLayerControl 状态行为只能引用同一 Animator 内部的层，无法跨 Animator 引用；</li>
+<li>Merge Animator 默认不替换 Avatar 原有的 Animator 层；若需要替换，应使用 Replace 合并模式。</li>
+</ol>
+<hr>
+<hr>
+<h1 id="ma-parameters-五种参数类型bool--int--float--animator-only--prefix-及各自适用场景">MA Parameters 五种参数类型：Bool / Int / Float / Animator Only / Prefix 及各自适用场景</h1>
+<p>MA Parameters 的参数类型一览：</p>
+<ul>
+<li>Bool：布尔型，用于开关；</li>
+<li>Int：整型，用于计数器；</li>
+<li>Float：浮点型，用于滑块；</li>
+<li>Animator Only：不加入 Expression Parameters，仅供动画器内部使用；</li>
+<li>Prefix：作为参数前缀，用于 PhysBone/Raycast 场景，配置 PhysBone 链路时使用。</li>
+</ul>
+<hr>
+<hr>
+<h1 id="ma-parameters-重命名参数change-name-to-输入新名字即可只影响组件外部引用auto-rename-自动避让占用名">MA Parameters 重命名参数：Change name to 输入新名字即可，只影响组件外部引用，Auto rename 自动避让占用名</h1>
+<p>MA Parameters 的重命名功能：在 Change name to 字段输入新名字即可完成重命名。</p>
+<p>作用范围：重命名只影响组件外部的引用。</p>
+<p>便捷选项：勾选 Auto rename 后，Modular Avatar 会自动选择一个当前未被占用的名字，避免手工起名撞车。</p>
+<hr>
+<hr>
+<h1 id="ma-parameters-默认值回退顺序与-savedsynced-语义synced-占用-vrchat-参数限额共-256-个建议用-internal-节约">MA Parameters 默认值回退顺序与 Saved/Synced 语义：Synced 占用 VRChat 参数限额共 256 个，建议用 Internal 节约</h1>
+<p>默认值规则：MA Parameters 设置的默认值在 Avatar 重置后生效；留空时回退使用 Expression Parameters 中的值，若无则为 0/false；勾选 Override Animator Defaults 可以覆盖 Animator Controller 里的默认值。</p>
+<p>Saved 与 Synced：Saved 表示参数取值在跨 Avatar 更改和重启后仍然保存；Synced 表示参数进行网络同步——注意同步会消耗 VRChat 参数限额（总共 256 个）。</p>
+<p>教学提示：参数限额很贵，建议玩家从一开始就使用 Internal 参数以节约限额。</p>
+<p>口径说明：「VRChat 总共 256 个参数限额」沿用原文表述，未区分 bits 计数口径。</p>
+<hr>
+<hr>
+<h1 id="嵌套-ma-parameters外层-saved-与默认值优先于内层内层重命名可被外层引用">嵌套 MA Parameters：外层 Saved 与默认值优先于内层，内层重命名可被外层引用</h1>
+<p>嵌套使用 MA Parameters 时的优先级规则：外层的 Saved 设置和默认值优先于内层；内层执行的参数重命名可以被外层引用。</p>
+<hr>
+<hr>
+<h1 id="object-toggle-组件基础用法根据所在对象-active-状态启用或禁用目标对象的三步配置">Object Toggle 组件基础用法：根据所在对象 Active 状态启用或禁用目标对象的三步配置</h1>
+<p>Object Toggle：根据所在对象的 Active 状态来启用/禁用其他对象，是做衣服脱穿、饰品开关的基础组件。</p>
+<p>配置步骤：</p>
+<ol>
+<li>把组件加到控制对象上；</li>
+<li>点击 + 添加目标对象；</li>
+<li>设置勾选状态：勾选 = 本对象启用时启用目标；不勾选 = 本对象启用时禁用目标。</li>
+</ol>
+<hr>
+<hr>
+<h1 id="多个-object-toggle-控制同一对象的冲突裁决hierarchy-中最后者胜出全部-inactive-则回到原状态或动画状态">多个 Object Toggle 控制同一对象的冲突裁决：Hierarchy 中最后者胜出，全部 inactive 则回到原状态或动画状态</h1>
+<p>Object Toggle 的冲突解决规则：当多个 Object Toggle 控制同一对象时，Hierarchy 中位置靠后（最后）的那个胜出；若所有相关组件都没有处于 active 状态，则目标对象维持其原始状态或动画状态。</p>
+<hr>
+<hr>
+<h1 id="object-toggle-响应带-1-帧延迟防瞬时穿模abc-链式控制逐级累积延迟">Object Toggle 响应带 1 帧延迟防瞬时穿模：A→B→C 链式控制逐级累积延迟</h1>
+<p>Object Toggle 的响应时序：控制效果在 1 帧延迟后生效，这一设计用于防止切换瞬间的瞬时穿模。</p>
+<p>链式影响：当控制链为 A→B→C 时，每经过一级就累积一帧延迟，因此长链条的末端响应会更慢。</p>
+<hr>
+<hr>
+<h1 id="shape-changer-组件四步配置delete-删多边形性能好set-设指定值适配被动画影响的形态键">Shape Changer 组件四步配置：Delete 删多边形性能好、Set 设指定值适配被动画影响的形态键</h1>
+<p>Shape Changer：根据 Active 状态修改形态键。</p>
+<p>配置步骤：</p>
+<ol>
+<li>组件加到要影响的对象上（通常是 SkinnedMeshRenderer）；</li>
+<li>在 Target Renderer 拖入要修改的 Renderer；</li>
+<li>点击 + 选择形态键；</li>
+<li>选择模式：Delete 或 Set。</li>
+</ol>
+<p>模式对比：Delete——直接删除对应多边形，性能好，适用于不会被动画使用的形态键；Set——把形态键设置为指定值，适用于会被其他动画影响的形态键。</p>
+<hr>
+<hr>
+<h1 id="shape-changer-的-threshold-阈值含义与多组件冲突裁决调低阈值影响更多顶点hierarchy-最下方胜出">Shape Changer 的 Threshold 阈值含义与多组件冲突裁决：调低阈值影响更多顶点，Hierarchy 最下方胜出</h1>
+<p>Threshold（阈值）：决定“哪些顶点算被影响”——降低阈值会影响的顶点更多，升高阈值则更少。</p>
+<p>冲突规则：多个 Shape Changer 修改同一形态键时，Hierarchy 中最下方的组件胜出。</p>
+<hr>
+<hr>
+<h1 id="bone-proxy-组件配置三步与-attachment-mode-取舍通用-prefab-用-as-child-at-rootavatar-专用用-keep-world-pose">Bone Proxy 组件配置三步与 Attachment Mode 取舍：通用 Prefab 用 As child at root，Avatar 专用用 keep world pose</h1>
+<p>Bone Proxy：把对象挂到素体的特定骨骼上。</p>
+<p>何时用：在手上挂个 Cube；在头上挂个发饰。何时不该用：挂整件衣服（应使用 Merge Armature）。</p>
+<p>配置步骤：</p>
+<ol>
+<li>组件加到要挂的对象上；</li>
+<li>Target 拖入目标骨骼；</li>
+<li>Attachment Mode 通常自动设置。</li>
+</ol>
+<p>Attachment Mode 两种模式：</p>
+<ul>
+<li>As child at root——位置/旋转归零，适合通用 Prefab（推荐）；</li>
+<li>As child keep world pose——保留世界位置，适合 Avatar 专用 Prefab。</li>
+</ul>
+<p>Match Parent Scale：启用后局部 scale 变为 (1,1,1)；关闭则保留原世界 scale；当目标骨骼自身带有缩放时，启用该选项更可靠。</p>
+<p>例外：整件 Skinned Mesh 衣服不适用本组件，应改用 Merge Armature。</p>
+<hr>
+<hr>
+<h1 id="physbone-blocker-阻止父级-physbone-影响子对象与-bone-proxy-同对象配合实现饰品刚性附着">PhysBone Blocker 阻止父级 PhysBone 影响子对象：与 Bone Proxy 同对象配合实现饰品刚性附着</h1>
+<p>PhysBone Blocker：阻止父级 PhysBone 链影响子对象。</p>
+<p>何时用：配件想刚性附着到 PhysBone 链上（如尾巴、耳朵上的装饰）。</p>
+<p>与 Bone Proxy 的配合方式：</p>
+<ol>
+<li>用 Bone Proxy 把对象挂到 PhysBone 链的某个骨骼上；</li>
+<li>加上 PhysBone Blocker 后，父级 PhysBone 不再影响这个对象；</li>
+<li>两个组件建议放在同一对象上，以确保刚性附着效果。</li>
+</ol>
+<hr>
+<hr>
+<h1 id="menu-item-三种子菜单源与三种绑定方式children--expressions-menu-asset--source-object-override">Menu Item 三种子菜单源与三种绑定方式：Children / Expressions Menu Asset / Source Object Override</h1>
+<p>MA Menu Item：在 Hierarchy 中定义菜单项，无需 VRC Expressions Menu 资产。</p>
+<p>子菜单配置：</p>
+<ul>
+<li>Submenu Source = Children——用子级对象作为菜单项；</li>
+<li>Submenu Source = Expressions Menu Asset——使用 VRC 资产作为子菜单；</li>
+<li>Source Object Override——指定其他对象作为子菜单源。</li>
+</ul>
+<p>绑定方式（三种）：</p>
+<ol>
+<li>作为另一个 Menu Item（Sub Menu 模式）的子对象；</li>
+<li>与 MA Menu Installer 放在同一对象上；</li>
+<li>作为 MA Menu Group 的子级。</li>
+</ol>
+<hr>
+<hr>
+<h1 id="menu-item-未声明参数自动创建并可控制-savedsynced多个-is-default-会产生冲突">Menu Item 未声明参数自动创建并可控制 Saved/Synced：多个 Is Default 会产生冲突</h1>
+<p>Menu Item 的自动参数创建机制：当 Menu Item 使用了未在 MA Parameters 中声明的参数名时，Modular Avatar 会自动创建该参数，并允许控制其 Saved/Synced 属性。</p>
+<p>注意事项：多个菜单项同时声明 Is Default 会产生冲突，应保证同一参数只有一个默认项。</p>
+<hr>
+<hr>
+<h1 id="menu-installer-安装规则默认装到主菜单顶层select-menu-选目标满员自动分页disable-完全禁用">Menu Installer 安装规则：默认装到主菜单顶层、Select Menu 选目标、满员自动分页、Disable 完全禁用</h1>
+<p>MA Menu Installer：把菜单项安装到 Avatar 主菜单。</p>
+<p>使用方法：</p>
+<ul>
+<li>默认安装到顶级菜单；</li>
+<li>点击 Select Menu 可以选择安装到的目标菜单；</li>
+<li>目标菜单位置满员时自动分页；</li>
+<li>勾选 Disable 可以完全禁用安装。</li>
+</ul>
+<p>Prefab 开发者选项：</p>
+<ul>
+<li>Menu to install——选择要安装的 Menu 资产；</li>
+<li>Install To——安装到其他组件所提供的菜单。</li>
+</ul>
+<hr>
+<hr>
+<h1 id="blendshape-sync-同步两个-renderer-形态键的三条硬限制不可链式仅一级传递不支持-visemeeyelook-驱动">Blendshape Sync 同步两个 Renderer 形态键的三条硬限制：不可链式、仅一级传递、不支持 Viseme/EyeLook 驱动</h1>
+<p>Blendshape Sync：把一个 Renderer 上的形态键值同步到另一个 Renderer。</p>
+<p>何时用：让衣服的形态键跟随素体身体形状变化（如胸部大小调节）；在 Avatar 内不同 Mesh 之间同步形态键。</p>
+<p>限制（三条）：</p>
+<ol>
+<li>不能链式同步，A→B→C 的传递链不成立；</li>
+<li>不支持通过多层传递，只支持一级；</li>
+<li>运行时只支持 Animator 控制的形态键，不支持 Viseme/EyeLook 等系统驱动的形态键。</li>
+</ol>
+<p>例外：Viseme/EyeLook 等系统驱动的形态键不在支持范围内。</p>
+<hr>
+<hr>
+<h1 id="floor-adjuster-垂直位置调整与两条限制vrchat-无法动态调高-avatar多个并存时不做任何调整">Floor Adjuster 垂直位置调整与两条限制：VRChat 无法动态调高 Avatar，多个并存时不做任何调整</h1>
+<p>Floor Adjuster：调整 Avatar 的垂直位置，使鞋底对齐地板，典型场景是穿鞋子时避免陷进地板。</p>
+<p>使用方法：</p>
+<ol>
+<li>新建一个 GameObject 并添加 Floor Adjuster；</li>
+<li>调整它的垂直位置对齐鞋底；</li>
+<li>建议用侧视图/等距视图辅助对齐。</li>
+</ol>
+<p>限制：</p>
+<ul>
+<li>VRChat 本身不能动态调整 Avatar 高度；</li>
+<li>当 Avatar 上同时存在多个 Floor Adjuster 时，组件不做任何调整（无效配置）；</li>
+<li>此行为未来可能改变。</li>
+</ul>
+<hr>
+<hr>
+<h1 id="platform-filter-平台过滤include-只在该平台存在exclude-在该平台移除多数-ma-组件已内置处理勿重复设置">Platform Filter 平台过滤：Include 只在该平台存在、Exclude 在该平台移除，多数 MA 组件已内置处理勿重复设置</h1>
+<p>Platform Filter：按平台启用/禁用对象。</p>
+<p>配置：</p>
+<ul>
+<li>Include 模式——对象只在指定平台上存在；</li>
+<li>Exclude 模式——对象在指定平台上被移除。</li>
+</ul>
+<p>注意：很多 Modular Avatar 组件已经自动处理了平台限制（例如 Merge Animator 只对 VRChat 生效），这种情况下不要再重复设置 Platform Filter。例外提示：额外加 Platform Filter 于已内置平台处理的组件属于重复设置。</p>
+<hr>
+<hr>
+<h1 id="visible-head-accessory-头部配件第一人称可见原理是-vrcheadchop不可用于-physbone-子级滥用会挡视线">Visible Head Accessory 头部配件第一人称可见：原理是 VRCHeadChop，不可用于 PhysBone 子级、滥用会挡视线</h1>
+<p>Visible Head Accessory：让头部子对象在第一人称视角可见。</p>
+<p>何时用：头发、配饰希望在第一人称可见，而不用照镜子确认。</p>
+<p>限制：</p>
+<ul>
+<li>不能是 PhysBone 链的子级；</li>
+<li>如果把头部全部子级都设为可见，会遮挡自己的视线。</li>
+</ul>
+<p>工作原理：利用 VRCHeadChop 让相关骨骼在第一人称保持可见；需要调整网格避免三角形穿过视角；可借助 proxy 骨骼和权重进行细化调整。</p>
+<p>例外：PhysBone 链的子级对象不适用。</p>
+<hr>
+<hr>
+<h1 id="replace-object-替换规则一对一替换双方子级保留组件引用按同类型同索引修复动画路径自动更新">Replace Object 替换规则：一对一替换、双方子级保留、组件引用按同类型同索引修复、动画路径自动更新</h1>
+<p>Replace Object：完全替换 Avatar 上的某个对象。</p>
+<p>何时用：替换 Avatar 的 PhysBones 配置；替换 Avatar 的 Body 网格。</p>
+<p>限制：一个对象只能被另一个对象替换一次（限制了多组合并的可能性）。</p>
+<p>子对象处理：替换对象的子级和原对象的子级都会保留，可以把配件装到替换对象之下。</p>
+<p>组件引用修复：Modular Avatar 会尝试把旧对象上的组件引用修复为指向新对象，匹配规则是“同类型同索引”，没有模糊匹配。</p>
+<p>对象命名：替换对象的名字可以与原对象不同，动画路径会自动更新为指向新对象。</p>
+<p>例外：一个对象只能被替换一次，不支持多组合并。</p>
+<hr>
+<hr>
+<h1 id="scale-adjuster-单独缩放单根骨骼不影响子级仅对-scale-工具生效adjust-child-positions-补偿子级位置">Scale Adjuster 单独缩放单根骨骼不影响子级：仅对 Scale 工具生效，Adjust child positions 补偿子级位置</h1>
+<p>Scale Adjuster：单独调整某根骨骼的 X/Y/Z 缩放，不影响其子骨骼。</p>
+<p>何时用：调整衣服以贴合非原设计的 Avatar；需要对 X/Y/Z 采用不同缩放比例的场合。</p>
+<p>限制：只对 Unity 的 Scale 工具生效；组合工具（Move/Rotate/Scale 三合一）仍然会像普通缩放一样影响所有子级。</p>
+<p>Adjust child positions 选项：调整子级的位置（而不是缩放）来补偿父级缩放带来的偏移。</p>
+<p>例外：使用组合变换工具时该隔离效果不生效。</p>
+<hr>
+<hr>
+<h1 id="mmd-layer-control-背景机制mmd-world-禁-fx-第-23-层ma-默认保护-merge-animator-层此组件使其可被禁用">MMD Layer Control 背景机制：MMD World 禁 FX 第 2/3 层，MA 默认保护 Merge Animator 层，此组件使其可被禁用</h1>
+<p>背景：部分 MMD World 会禁用 FX 动画器的第 2、3 层，其原本目的是禁用表情动画；Modular Avatar 默认保护 Merge Animator 添加的层，使其不受 MMD 禁层行为影响。</p>
+<p>MMD Layer Control 的用途：主动让 Merge Animator 添加的层参与 MMD World 的“禁用第 2、3 层”行为。</p>
+<p>使用方式：把组件安装到目标层本身（作为 state machine behavior）；或者使用 VRChat Settings 组件完全禁用整个 MMD World 处理机制。</p>
+<p>例外：不加此组件时，Merge Animator 的层默认被 Modular Avatar 保护、不受 MMD 禁层影响。</p>
+<p>版本备注：来源未标注具体 Modular Avatar 版本号，MMD 相关功能属较新特性，版本敏感，以所用版本文档为准。</p>
+<hr>
+<hr>
+<h1 id="mmd-layer-control-安装位置硬限制必须直接装在动画层上装到单个-state-会破坏-build">MMD Layer Control 安装位置硬限制：必须直接装在动画层上，装到单个 state 会破坏 build</h1>
+<p>MMD Layer Control 的安装位置限制：必须直接装到动画层（layer）上，不能装到单个 state 上——装到 state 会破坏 build。</p>
+<p>官方原话：“I can’t stop you from attaching them to individual states - but this will break your build (so don’t do that)”（我没法阻止你把它们挂到单个 state 上——但这会毁掉你的构建，所以别这么做。）</p>
+<p>原因：state machine behaviors 只有附加在 layer 上才有意义。</p>
+<p>版本备注：来源未标注具体 Modular Avatar 版本号，以所用版本文档为准。</p>
+<hr>
+<hr>
+<h1 id="vrchat-settings-组件唯一性约束与-mmd-world-support-总开关开启自动处理关闭完全禁用整套-mmd-机制">VRChat Settings 组件唯一性约束与 MMD World Support 总开关：开启自动处理、关闭完全禁用整套 MMD 机制</h1>
+<p>VRChat Settings 组件（MMD Layer Control 的关联组件）：</p>
+<ul>
+<li>唯一性：一个 Avatar 上只能有一个实例；</li>
+<li>位置：可以放在 Avatar 上任意 GameObject 上。</li>
+</ul>
+<p>关键设置——MMD World Support 开关：开启时，Modular Avatar 自动处理 MMD World 相关行为（包括对 Merge Animator 层的保护）；关闭时，完全禁用整套 MMD World 处理机制，不做任何保护。</p>
+<p>版本备注：来源未标注具体 Modular Avatar 版本号，该组件属较新特性，以所用版本文档为准。</p>
+<hr>
+<hr>
+<h1 id="material-setter-与-material-swap-分工对比单槽精确替换-vs-批量主题替换swap-支持-quick-swap-快速预览">Material Setter 与 Material Swap 分工对比：单槽精确替换 vs 批量主题替换，Swap 支持 Quick Swap 快速预览</h1>
+<p>Material Setter 与 Material Swap 对比：</p>
+<p>Material Setter——用法：把 Renderer 拖进去，修改指定的材质槽；适用：精确控制某个对象的材质。</p>
+<p>Material Swap——用法：把 Material 拖进去，批量替换；适用：换衣服颜色主题这类大量替换场景。</p>
+<p>Material Swap 高级功能：Quick Swap 模式可在编辑器内快速预览不同材质；支持 Same Folder / Adjacent Folders 两种素材范围；在 Inspector 中点箭头切换。</p>
+<hr>
+<hr>
+<h1 id="mesh-cutter-四种-vertex-filterby-mask--by-axis--by-bone--by-blendshape-及效率原则与禁用场景">Mesh Cutter 四种 Vertex Filter：By Mask / By Axis / By Bone / By Blendshape 及效率原则与禁用场景</h1>
+<p>Mesh Cutter：按条件删除或隐藏多边形。</p>
+<p>四种 Vertex Filter：</p>
+<ul>
+<li>By Mask——用蒙版纹理指定区域，适合复杂形状；</li>
+<li>By Axis——选取平面一侧，适合上下左右分割；</li>
+<li>By Bone——按骨骼权重选取，适合身体/手部分割；</li>
+<li>By Blendshape——选取形态键激活时会移动的顶点，适合做表情时删除。</li>
+</ul>
+<p>效率提示：始终处于显示状态的部分，直接删除多边形以节省性能；有时会隐藏的部分，用隐藏方式处理（可能附加 constraint，占用性能）。</p>
+<p>何时不该用：对象完全被其他网格盖住时，应改用 Object Toggle。</p>
+<hr>
+<hr>
+<h1 id="global-collider-全局碰撞体上限-6-个超出覆盖食指-collidermanual-remap-可手动指定占用项">Global Collider 全局碰撞体：上限 6 个超出覆盖食指 Collider，Manual Remap 可手动指定占用项</h1>
+<p>Global Collider：让你的对象能够与其他 Avatar 的 PhysBone 互动。</p>
+<p>何时用：配件想跟别人的头发互动；武器想被 PhysBone 抓住；把手部碰撞体移到嘴里模拟咬合。</p>
+<p>限制：VRChat 全局碰撞体最多 6 个；超过 6 个时会覆盖食指的 Collider，因此要慎用。</p>
+<p>Manual Remap：可以手动指定占用哪一个 Collider；注意 Head/Torso/Feet 只是 contact sender（接触发送器），不算物理碰撞。</p>
+<p>例外：超过 6 个时食指 Collider 会被覆盖，影响指物交互。</p>
+<hr>
+<hr>
+<h1 id="world-fixed-object-世界固定与-world-scale-object-强制-scale111后者编辑器不预览进游戏才生效">World Fixed Object 世界固定与 World Scale Object 强制 scale=(1,1,1)：后者编辑器不预览进游戏才生效</h1>
+<p>两个世界相关组件对比：</p>
+<p>World Fixed Object——用途：让对象跟随世界坐标、不跟随 Avatar 移动；适用：浮空剑、悬浮装饰等。</p>
+<p>World Scale Object——用途：强制对象 scale 为 (1,1,1)，不受 Avatar 缩放影响；适用：复杂 constraint 道具。</p>
+<p>注意事项：World Scale Object 的效果在编辑器中不预览，进入游戏后才生效。例外提醒：World Scale Object 的效果无法在编辑器预览，验证需实测。</p>
+<hr>
+<hr>
+<h1 id="sync-parameter-sequence-五步流程固定-pc-与-android-参数顺序一致override-avatar-无需添加本组件">Sync Parameter Sequence 五步流程：固定 PC 与 Android 参数顺序一致，Override Avatar 无需添加本组件</h1>
+<p>Sync Parameter Sequence（高级组件）：确保 PC 和 Android 版本的 Avatar 共享一致的参数顺序。</p>
+<p>何时用：同一 Avatar 有多个平台版本；需要跨平台同步参数。</p>
+<p>使用方法：</p>
+<ol>
+<li>把组件加到 Avatar 的任意对象上；</li>
+<li>选择 primary platform（即包含所有参数的版本）；</li>
+<li>先在 primary 平台 Build &#x26; Upload；</li>
+<li>再在其他平台 Build &#x26; Upload；</li>
+<li>Modular Avatar 自动同步参数顺序。</li>
+</ol>
+<p>与 VRChat per-platform overrides 的关系：只在主 Avatar 上添加 Sync Parameter Sequence；Override Avatar 不需要添加，它会自动从主 Avatar 同步缺失的参数。</p>
+<p>版本备注：来源未标注具体 Modular Avatar 版本号，该组件属较新特性，以所用版本文档为准。</p>
+<hr> </div> <p class="kb-source-note" data-astro-cid-lvjzyg5v>
+本文由 VRChat 开发知识库自动整理（社区整理  · 可信度 medium ），
+          遇到与手写教程冲突的地方，以官方文档为最高优先级。
+</p> <section class="comments" id="comments" data-astro-cid-lvjzyg5v> <h2 class="comments__title" data-astro-cid-lvjzyg5v>✦ 旅人留言（0）</h2> <p class="comments__empty" id="commentsEmpty" data-astro-cid-lvjzyg5v>
+还没有旅人留言 —— 有疑问就写在下面，站长都会回复。
+</p> <form class="comment-form" id="commentForm" data-target="kb-avatar-modular-avatar" data-astro-cid-lvjzyg5v> <p class="comment-form__title" data-astro-cid-lvjzyg5v>写下你的留言</p> <input id="cAuthor" maxlength="20" placeholder="昵称（留空则为「旅人」）" data-astro-cid-lvjzyg5v> <textarea id="cBody" maxlength="1000" required placeholder="想问的问题、想说的感谢都可以（最多 1000 字）" data-astro-cid-lvjzyg5v></textarea> <div class="comment-form__actions" data-astro-cid-lvjzyg5v> <button class="btn btn--primary" type="submit" data-astro-cid-lvjzyg5v>发布留言</button> <span class="form-hint" data-astro-cid-lvjzyg5v>留言保存在本站，站长在写作台里能看到</span> <span class="form-msg" id="cMsg" data-astro-cid-lvjzyg5v></span> </div> </form> </section> <nav class="station-nav" aria-label="站间导航" data-astro-cid-lvjzyg5v> <a href="/STELLASTOPVRC/posts/kb-avatar-optimization-guide/" data-astro-cid-lvjzyg5v> <span class="dir" data-astro-cid-lvjzyg5v>← 上一站 · 更新的星光</span> <span class="to" data-astro-cid-lvjzyg5v>Avatar 最佳化实操指南</span> </a> <a href="/STELLASTOPVRC/posts/kb-avatar-physbones/" data-astro-cid-lvjzyg5v> <span class="dir" data-astro-cid-lvjzyg5v>下一站 · 更早的星光 →</span> <span class="to" data-astro-cid-lvjzyg5v>VRCPhysBone 组件参考</span> </a> </nav> </div> <aside class="toc" id="toc" hidden> <p class="toc__title">✦ 本页星图</p> <nav id="tocNav" aria-label="文章目录"></nav> </aside> <script type="module">const i=document.querySelector(".prose"),d=document.getElementById("toc"),u=document.getElementById("tocNav"),l=[];if(i&&d&&u){const c=[...i.querySelectorAll("h1, h2, h3")];if(c.length>=3){d.hidden=!1,c.forEach((o,e)=>{o.id||(o.id=`sec-${e}`);const n=document.createElement("a");n.href=`#${o.id}`;const s=(o.textContent??"").replace(/\s+/g," ").trim(),r=s.search(/[：:]/),a=r>=4?s.slice(0,r):s;n.textContent=a.length>40?`${a.slice(0,40)}…`:a,n.title=s,u.appendChild(n),l.push({a:n,h:o})});const t=()=>{let o=l[0];for(const e of l)e.h.getBoundingClientRect().top<=130&&(o=e);for(const e of l)e.a.classList.toggle("is-active",e===o)};addEventListener("scroll",t,{passive:!0}),t()}}document.querySelectorAll(".prose pre").forEach(c=>{const t=document.createElement("button");t.className="code-copy",t.type="button",t.textContent="复制",t.addEventListener("click",async()=>{const o=c.querySelector("code")?.innerText??c.innerText;try{await navigator.clipboard.writeText(o)}catch{const e=document.createElement("textarea");e.value=o,document.body.appendChild(e),e.select(),document.execCommand("copy"),e.remove()}t.textContent="已复制 ✓",t.classList.add("is-ok"),setTimeout(()=>{t.textContent="复制",t.classList.remove("is-ok")},1500)}),c.appendChild(t)});</script> </article>  </main> <footer class="site-footer"> <div class="wrap"> <p class="star-line" aria-hidden="true"> <svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> <svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> </p> <p>星之驿站 StellaStop —— 在虚拟宇宙中，为你保留一座驿站</p> <p class="site-footer__disclaimer">
+该网页目前是测试阶段，仅用于测试，所有内容仅供参考；内容全部为引用互联网当中的信息。
+</p> <p>© 2026 星之驿站 · 由 <a href="https://astro.build">Astro</a> 与星光驱动</p> <p> <a data-desk-login hidden title="写作台：登录 / 注册">登录 / 注册</a> ·
+<a href="/STELLASTOPVRC/announcements/">官方公告</a> ·
+<a href="/STELLASTOPVRC/ai/">问星 AI</a> ·
+<a href="/STELLASTOPVRC/feedback/">旅人留言板</a> </p> </div> </footer> <button class="to-top" id="toTop" aria-label="回到顶部"> <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"> <path d="M12 20V5"></path> <path d="M5.5 11.5 12 5l6.5 6.5"></path> </svg> </button> <script type="module">const e=document.getElementById("toTop");if(e){const t=()=>e.classList.toggle("is-visible",scrollY>480);addEventListener("scroll",t,{passive:!0}),t(),e.addEventListener("click",()=>{const o=matchMedia("(prefers-reduced-motion: reduce)").matches;scrollTo({top:0,behavior:o?"auto":"smooth"})})}</script> <script>(function(){const deskConfigured = "";
+
+      /* 写作台探测（页面尾部执行，DOM 已就绪）：
+         1. 计算写作台地址：站点配置 deskUrl（公网部署时填）> 本机默认 localhost:4322 > 同主机 4322
+         2. 探测 /api/gate/status —— 在线才点亮「登录 / 注册」入口，并复用给验证门横幅
+         3. 不在线则保持隐藏，绝不会把访客拽进内网地址；同时给出一次性「镜像模式」提示 */
+      (function () {
+        var host = location.hostname;
+        var isLocal = host === 'localhost' || host === '127.0.0.1' || host === '[::1]';
+        var desk = deskConfigured ||
+          (isLocal ? 'http://localhost:4322' : location.protocol + '//' + host + ':4322');
+        window.STELLA_DESK = desk;
+
+        function revealLogin() {
+          document.querySelectorAll('[data-desk-login]').forEach(function (a) {
+            a.href = desk + '/admin';
+            a.removeAttribute('hidden');
+          });
+        }
+        function showBanner(css, html, shiftHeader) {
+          var bar = document.createElement('div');
+          bar.style.cssText = css;
+          bar.innerHTML = html;
+          document.body.prepend(bar);
+          if (shiftHeader) {
+            var header = document.querySelector('.site-header');
+            if (header) header.style.marginTop = '42px';
+          }
+        }
+        function hintMirrorMode() {
+          try {
+            if (sessionStorage.getItem('stella-desk-hint')) return;
+            sessionStorage.setItem('stella-desk-hint', '1');
+          } catch (e) { /* 无痕模式等：忽略 */ }
+          var tip = document.createElement('div');
+          tip.style.cssText = 'position:fixed;left:14px;bottom:14px;z-index:9998;max-width:min(92vw,430px);padding:.65rem .9rem;border-radius:12px;background:rgba(18,20,44,.92);border:1px solid rgba(150,142,255,.35);color:#e8e6ff;font-size:.82rem;line-height:1.6;font-family:system-ui,sans-serif;box-shadow:0 8px 30px rgba(0,0,0,.35)';
+          tip.innerHTML = 'ℹ️ 静态镜像模式：登录 / 评论 / AI 等互动功能需要站长写作台在线，当前不可用。' +
+            '<span id="stellaDeskHintClose" style="float:right;cursor:pointer;opacity:.75;font-weight:700;margin-left:.6rem" title="关闭">×</span>';
+          document.body.appendChild(tip);
+          var close = function () { tip.remove(); };
+          tip.querySelector('#stellaDeskHintClose').addEventListener('click', close);
+          setTimeout(close, 9000);
+        }
+
+        try {
+          var ctrl = new AbortController();
+          var timer = setTimeout(function () { ctrl.abort(); }, 2500);
+          fetch(desk + '/api/gate/status', { credentials: 'include', signal: ctrl.signal })
+            .then(function (r) { return r.ok ? r.json() : null; })
+            .then(function (d) {
+              clearTimeout(timer);
+              if (!d) throw new Error('desk-offline');
+              window.STELLA_DESK_OK = true;
+              revealLogin();
+              if (d.regionBlocked) {
+                showBanner(
+                  'position:fixed;top:0;left:0;right:0;z-index:9999;padding:1.2rem;text-align:center;background:#1a0a0a;color:#ff9ed2;font-size:.95rem;border-bottom:2px solid #ff4d6d;font-family:system-ui,sans-serif',
+                  '⛔ 你所在的地区（' + (d.regionCountry || '未知') + '）暂不开放访问。',
+                  false
+                );
+                return;
+              }
+              if (d.enabled && !d.passed) {
+                showBanner(
+                  'position:fixed;top:0;left:0;right:0;z-index:9999;padding:0.7rem;text-align:center;background:linear-gradient(94deg,rgba(143,127,247,.25),rgba(98,200,245,.18));border-bottom:1px solid rgba(150,142,255,.3);color:#f0efff;font-size:.88rem;font-family:system-ui,sans-serif',
+                  '🔒 本站启用了安全验证 —— <a href="' + desk + '/gate?next=' + encodeURIComponent(location.href) + '" style="color:#ffd98e;font-weight:700;text-decoration:underline">点击完成验证</a>，通过后即可使用全部功能（30 天免验）。',
+                  true
+                );
+              }
+            })
+            .catch(function () {
+              clearTimeout(timer);
+              window.STELLA_DESK_OK = false;
+              hintMirrorMode();
+            });
+        } catch (e) { /* 忽略 */ }
+      })();
+    })();</script> </body> </html> <script type="module">const m=document.getElementById("commentForm"),s=document.getElementById("cMsg"),u=`${location.protocol}//${location.hostname}:4322/api/message`;function r(e,t=!1){s&&(s.textContent=e,s.classList.toggle("is-err",t),s.classList.toggle("is-ok",!t))}function y(){const e=new Date,t=n=>String(n).padStart(2,"0");return`${e.getFullYear()}-${t(e.getMonth()+1)}-${t(e.getDate())}`}function f(e){let t=7;for(const n of e)t=(t*31+n.charCodeAt(0))%360;return t}function g(e,t){const n=document.createElement("li");n.className="comment",n.innerHTML=`
+      <span class="comment__avatar"></span>
+      <div class="comment__bubble">
+        <div class="comment__head">
+          <span class="comment__name"></span>
+          <time class="comment__date">${y()}</time>
+        </div>
+        <p class="comment__body"></p>
+      </div>`;const o=n.querySelector(".comment__avatar");return o.style.setProperty("--h",String(f(e))),o.textContent=e.slice(0,1),n.querySelector(".comment__name").textContent=e,n.querySelector(".comment__body").textContent=t,n}m?.addEventListener("submit",async e=>{e.preventDefault();const t=document.getElementById("cBody").value.trim();if(!t)return r("留言内容不能为空哦",!0);const n=document.getElementById("cAuthor").value.trim()||"旅人",o=m.querySelector("button");o&&(o.disabled=!0);try{const c=await fetch(u,{credentials:"include",method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({target:m.dataset.target,kind:"comment",author:n,body:t})}),d=await c.json().catch(()=>({}));if(!c.ok)throw new Error(d.error||`发送失败（${c.status}）`);const l=document.querySelector(".comment-list");l&&l.appendChild(g(n,t)),document.getElementById("commentsEmpty")?.remove(),document.getElementById("cBody").value="",r("留言已发布，感谢支持 ✦");const a=document.querySelector(".comments__title"),i=a?.textContent?.match(/（(\d+)）/);a&&i&&(a.textContent=a.textContent.replace(/（\d+）/,`（${Number(i[1])+1}）`))}catch(c){r(c instanceof TypeError?"写作台没在运行，暂时收不到留言 —— 双击「启动博客.bat」就好":c.message,!0)}finally{o&&(o.disabled=!1)}});</script> 

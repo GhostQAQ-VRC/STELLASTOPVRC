@@ -1,0 +1,822 @@
+<!DOCTYPE html><html lang="zh-CN"> <head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="generator" content="Astro v5.18.2"><meta name="description" content="Meshia Mesh Simplification 是一套基于 Unity Job System + Burst Compiler + Unity Collections 的高性能、异步网格轻量化（mesh decim"><meta name="theme-color" content="#070a1c"><meta property="og:title" content="Meshia Mesh Simplification · 星之驿站 StellaStop"><meta property="og:description" content="Meshia Mesh Simplification 是一套基于 Unity Job System + Burst Compiler + Unity Collections 的高性能、异步网格轻量化（mesh decim"><meta property="og:type" content="website"><meta name="twitter:card" content="summary"><link rel="icon" type="image/svg+xml" href="/STELLASTOPVRC/favicon.svg"><script>
+      // 在渲染前恢复主题与特效档位，避免闪一下默认状态
+      try {
+        document.documentElement.dataset.theme =
+          localStorage.getItem('stella-theme') || 'nebula';
+        document.documentElement.dataset.fx =
+          localStorage.getItem('stella-fx') || 'standard';
+      } catch {
+        /* 隐私模式读不到就算了 */
+      }
+    </script><link rel="stylesheet" href="/STELLASTOPVRC/custom-vars.css"><title>Meshia Mesh Simplification · 星之驿站 StellaStop</title><link rel="stylesheet" href="/STELLASTOPVRC/_astro/about.Bgh6wcGl.css">
+<style>.post-head__meta[data-astro-cid-lvjzyg5v]{color:var(--ink-faint);font-family:var(--font-mono);font-size:.82rem}.post-head[data-astro-cid-lvjzyg5v] .chip-row[data-astro-cid-lvjzyg5v]{margin-top:1rem}.kb-source-note[data-astro-cid-lvjzyg5v]{max-width:760px;margin:2.2rem auto 0;font-size:.82rem;color:var(--ink-faint);border-top:1px dashed var(--line);padding-top:1rem}
+</style></head> <body> <div class="site-notice" id="siteNotice"> <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> <span class="site-notice__text">欢迎来到星之驿站！</span> <button class="site-notice__close" id="noticeClose" type="button" aria-label="关闭公告">
+×
+</button> </div> <a class="skip-link" href="#main">跳到主要内容</a> <canvas id="starfield" aria-hidden="true" data-astro-cid-ra7sfcwn></canvas> <div class="fx-aurora fx-aurora--a" aria-hidden="true" data-astro-cid-ra7sfcwn></div> <div class="fx-aurora fx-aurora--b" aria-hidden="true" data-astro-cid-ra7sfcwn></div>  <script type="module">const u=document.getElementById("starfield");if(u){let F=function(){const n=Math.random();return n<.1?"gold":n<.42?"blue":"white"},v=function(){const n=Math.min(window.devicePixelRatio||1,2);s=window.innerWidth,d=window.innerHeight,u.width=s*n,u.height=d*n,u.style.width=`${s}px`,u.style.height=`${d}px`,t.setTransform(n,0,0,n,0,0);const e=Math.min(190,Math.round(s*d/8500));l=Array.from({length:e},()=>({x:Math.random()*s,y:Math.random()*d,r:r(.4,1.7),base:r(.25,.8),amp:r(.12,.4),speed:r(6e-4,.0022),phase:r(0,Math.PI*2),c:F()})),C=Array.from({length:26},()=>({x:Math.random()*s,y:Math.random()*d,r:r(.9,2.4),vx:r(-.006,.006),vy:r(-.02,-.006),base:r(.2,.5),speed:r(8e-4,.002),phase:r(0,Math.PI*2),c:Math.random()<.5?"gold":"violet"})),c==="off"&&m(0,!0)},D=function(n){const e=Math.random()<.5?1:-1,o=r(Math.PI/7,Math.PI/5),a=r(.45,.75);y.push({x:r(s*.15,s*.85),y:r(-20,d*.3),vx:Math.cos(o)*a*e,vy:Math.sin(o)*a,born:n,life:r(750,1050),len:r(100,170)})},S=function(n){y=y.filter(e=>n-e.born<e.life);for(const e of y){const o=(n-e.born)/e.life,a=e.x+e.vx*(n-e.born),i=e.y+e.vy*(n-e.born),f=o<.15?o/.15:o>.7?(1-o)/.3:1,h=Math.hypot(e.vx,e.vy),x=e.vx/h,g=e.vy/h,b=t.createLinearGradient(a,i,a-x*e.len,i-g*e.len);b.addColorStop(0,`rgba(236,242,255,${(.85*f).toFixed(3)})`),b.addColorStop(1,"rgba(236,242,255,0)"),t.strokeStyle=b,t.lineWidth=1.6,t.lineCap="round",t.beginPath(),t.moveTo(a,i),t.lineTo(a-x*e.len,i-g*e.len),t.stroke()}},B=function(){let o=0;t.lineWidth=.7;for(let a=0;a<l.length&&o<26;a++)for(let i=a+1;i<l.length&&o<26;i++){const f=l[a].x-l[i].x,h=l[a].y-l[i].y,x=f*f+h*h;if(x<16900){const g=(1-Math.sqrt(x)/130)*.17;t.strokeStyle=`rgba(178,170,255,${g.toFixed(3)})`,t.beginPath(),t.moveTo(l[a].x,l[a].y),t.lineTo(l[i].x,l[i].y),t.stroke(),o++}}},X=function(n){for(const e of C){e.x+=e.vx*16,e.y+=e.vy*16,e.y<-12&&(e.y=d+10),e.x<-12&&(e.x=s+10),e.x>s+12&&(e.x=-10);const o=Math.max(.05,e.base+.25*Math.sin(n*e.speed+e.phase)),[a,i,f]=A[e.c];t.beginPath(),t.arc(e.x,e.y,e.r,0,7),t.shadowBlur=9,t.shadowColor=`rgba(${a},${i},${f},0.9)`,t.fillStyle=`rgba(${a},${i},${f},${o.toFixed(3)})`,t.fill()}t.shadowBlur=0},m=function(n,e=!1){t.clearRect(0,0,s,d);for(const o of l){const a=c==="off"?o.base:Math.max(.05,o.base+o.amp*Math.sin(n*o.speed+o.phase)),[i,f,h]=A[o.c];t.beginPath(),t.arc(o.x,o.y,o.r,0,7),o.r>1.25?(t.shadowBlur=7,t.shadowColor=`rgba(${i},${f},${h},0.85)`):t.shadowBlur=0,t.fillStyle=`rgba(${i},${f},${h},${a.toFixed(3)})`,t.fill()}if(t.shadowBlur=0,c!=="off"&&!e){c==="fancy"&&(B(),X(n));const o=c==="fancy"?r(2600,6e3):r(4200,9500);n>P&&(D(n),P=n+o),S(n)}},$=function(n){m(n),M=requestAnimationFrame($)},p=function(){if(c==="off"){m(0,!0);return}cancelAnimationFrame(M),M=requestAnimationFrame($)},w=function(){cancelAnimationFrame(M),t.clearRect(0,0,s,d),m(0,!0)};const t=u.getContext("2d"),k=matchMedia("(prefers-reduced-motion: reduce)").matches,A={white:[240,240,255],blue:[150,215,250],gold:[255,218,150],violet:[178,170,255]};let s=0,d=0,l=[],C=[],y=[],P=2500,M=0,c=document.documentElement.dataset.fx||"standard";k&&(c="off");const r=(n,e)=>n+Math.random()*(e-n);v(),addEventListener("resize",v),document.addEventListener("stella-fx-change",n=>{c=n.detail,c==="off"?w():p()}),c==="off"?m(0,!0):(p(),document.addEventListener("visibilitychange",()=>{document.hidden?w():p()}))}</script> <header class="site-header"> <div class="wrap site-header__inner"> <a class="logo" href="/STELLASTOPVRC/"> <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> <span>星之驿站</span> <span class="logo__romaji">StellaStop</span> </a> <div class="header-right"> <nav class="site-nav" aria-label="站内导航"> <a href="/STELLASTOPVRC/"> 首页 </a><a href="/STELLASTOPVRC/start/"> 新手 </a><a href="/STELLASTOPVRC/posts/"> 教程 </a><a href="/STELLASTOPVRC/videos/"> 视频 </a><a href="/STELLASTOPVRC/resources/"> 资源 </a><a href="/STELLASTOPVRC/booth/"> Booth </a><a href="/STELLASTOPVRC/announcements/"> 公告 </a><a href="/STELLASTOPVRC/ai/"> 问星 </a><a href="/STELLASTOPVRC/changelog/"> 更新日志 </a><a href="/STELLASTOPVRC/about/"> 关于 </a> </nav> <a class="login-link" data-desk-login hidden title="写作台：登录 / 注册后可发教程、传资源">
+登录 / 注册
+</a> <div class="theme-switch"> <button class="theme-switch__btn" id="themeBtn" type="button" aria-haspopup="listbox" aria-expanded="false" aria-label="切换主题配色" title="切换主题配色"> <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"> <path d="M12 3a9 9 0 1 0 9 9c0-1.2-1-2-2.2-2H17a2 2 0 0 1-2-2V6.2C15 5 14.2 4 13 4.4A9 9 0 0 0 12 3Z"></path> <circle cx="7.5" cy="11.5" r="1" fill="currentColor" stroke="none"></circle> <circle cx="10" cy="7.5" r="1" fill="currentColor" stroke="none"></circle> <circle cx="15" cy="7" r="1" fill="currentColor" stroke="none"></circle> </svg> </button> <div class="theme-pop" id="themePop" role="listbox" aria-label="选择主题" hidden> <button class="theme-opt" type="button" role="option" data-theme-value="nebula" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#8f7ff7"></span><span class="dot" style="background:#62c8f5"></span><span class="dot" style="background:#ffd98e"></span> </span> <span class="theme-opt__name">星云 · 蓝紫</span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt" type="button" role="option" data-theme-value="sakura" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#ff8fc7"></span><span class="dot" style="background:#c79bff"></span><span class="dot" style="background:#ffd08e"></span> </span> <span class="theme-opt__name">樱语 · 粉紫</span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt" type="button" role="option" data-theme-value="miku" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#2ed3c2"></span><span class="dot" style="background:#6ea8ff"></span><span class="dot" style="background:#ffe08e"></span> </span> <span class="theme-opt__name">葱色 · 青绿</span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt" type="button" role="option" data-theme-value="ember" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#ffb35c"></span><span class="dot" style="background:#ff7e6b"></span><span class="dot" style="background:#ffd98e"></span> </span> <span class="theme-opt__name">暮金 · 暖橙</span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt" type="button" role="option" data-theme-value="dawn" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#6a5ce8"></span><span class="dot" style="background:#e0568f"></span><span class="dot" style="background:#b8821e"></span> </span> <span class="theme-opt__name">晨星 · 浅色</span> <span class="theme-opt__mark">✦</span> </button> </div> </div> <script type="module">const a=document.getElementById("themeBtn"),n=document.getElementById("themePop");function s(c){document.documentElement.dataset.theme=c;try{localStorage.setItem("stella-theme",c)}catch{}const e=getComputedStyle(document.documentElement).getPropertyValue("--bg-deep").trim();document.querySelector('meta[name="theme-color"]')?.setAttribute("content",e||"#070a1c"),document.querySelectorAll(".theme-opt").forEach(t=>{const d=t.dataset.themeValue===c;t.classList.toggle("is-active",d),t.setAttribute("aria-selected",String(d))})}if(a&&n){const c=document.documentElement.dataset.theme||"nebula";document.querySelectorAll(".theme-opt").forEach(e=>{const t=e.dataset.themeValue===c;e.classList.toggle("is-active",t),e.setAttribute("aria-selected",String(t))}),a.addEventListener("click",e=>{e.stopPropagation();const t=n.hidden;n.hidden=!t,a.setAttribute("aria-expanded",String(t))}),document.addEventListener("click",e=>{!n.hidden&&!e.target.closest(".theme-switch")&&(n.hidden=!0,a.setAttribute("aria-expanded","false"))}),document.addEventListener("keydown",e=>{e.key==="Escape"&&!n.hidden&&(n.hidden=!0,a.setAttribute("aria-expanded","false"),a.focus())}),n.addEventListener("click",e=>{const t=e.target.closest(".theme-opt");t&&(s(t.dataset.themeValue??"nebula"),n.hidden=!0,a.setAttribute("aria-expanded","false"))})}</script> <div class="theme-switch fx-switch"> <button class="theme-switch__btn" id="fxBtn" type="button" aria-haspopup="listbox" aria-expanded="false" aria-label="背景特效设置" title="背景特效设置"> <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"> <path d="M5 3v4M3 5h4M6.5 17.5v3M5 19h3"></path> <path d="M14.5 4.5 16 9l4.5 1.5L16 12l-1.5 4.5L13 12l-4.5-1.5L13 9l1.5-4.5Z"></path> </svg> </button> <div class="theme-pop" id="fxPop" role="listbox" aria-label="背景特效" hidden> <button class="theme-opt fx-opt" type="button" role="option" data-fx-value="off" aria-selected="false"> <span class="fx-opt__body"> <span class="fx-opt__name">关闭特效</span> <span class="fx-opt__hint">最省电</span> </span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt fx-opt" type="button" role="option" data-fx-value="standard" aria-selected="false"> <span class="fx-opt__body"> <span class="fx-opt__name">标准</span> <span class="fx-opt__hint">闪烁星空 + 流星</span> </span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt fx-opt" type="button" role="option" data-fx-value="fancy" aria-selected="false"> <span class="fx-opt__body"> <span class="fx-opt__name">华丽</span> <span class="fx-opt__hint">追加极光 / 星座 / 光尘</span> </span> <span class="theme-opt__mark">✦</span> </button> </div> </div> <script type="module">const n=document.getElementById("fxBtn"),a=document.getElementById("fxPop");function s(d){document.documentElement.dataset.fx=d;try{localStorage.setItem("stella-fx",d)}catch{}document.querySelectorAll("#fxPop .fx-opt").forEach(t=>{const e=t.dataset.fxValue===d;t.classList.toggle("is-active",e),t.setAttribute("aria-selected",String(e))}),document.dispatchEvent(new CustomEvent("stella-fx-change",{detail:d}))}if(n&&a){const d=document.documentElement.dataset.fx||"standard";document.querySelectorAll("#fxPop .fx-opt").forEach(t=>{const e=t.dataset.fxValue===d;t.classList.toggle("is-active",e),t.setAttribute("aria-selected",String(e))}),n.addEventListener("click",t=>{t.stopPropagation();const e=a.hidden;a.hidden=!e,n.setAttribute("aria-expanded",String(e))}),document.addEventListener("click",t=>{!a.hidden&&!t.target.closest(".fx-switch")&&(a.hidden=!0,n.setAttribute("aria-expanded","false"))}),document.addEventListener("keydown",t=>{t.key==="Escape"&&!a.hidden&&(a.hidden=!0,n.setAttribute("aria-expanded","false"),n.focus())}),a.addEventListener("click",t=>{const e=t.target.closest(".fx-opt");e&&(s(e.dataset.fxValue??"standard"),a.hidden=!0,n.setAttribute("aria-expanded","false"))})}</script> </div> </div> </header> <main id="main">  <article class="wrap post-layout" data-astro-cid-lvjzyg5v> <div class="post-main page-fade" data-astro-cid-lvjzyg5v> <header class="post-head" data-astro-cid-lvjzyg5v> <a class="crumb" href="/STELLASTOPVRC/posts/" data-astro-cid-lvjzyg5v>← 返回教程档案</a> <div class="post-head__meta" style="--accent:var(--ink-dim)" data-astro-cid-lvjzyg5v> <span class="badge" data-cat="Avatar 虚拟形象" data-astro-cid-lvjzyg5v>Avatar 虚拟形象</span> <time datetime="2026-06-20" data-astro-cid-lvjzyg5v>2026-06-20</time> <span class="post-head__reading" data-astro-cid-lvjzyg5v>⏱ 约 38 分钟</span>  </div> <h1 class="post-head__title" data-astro-cid-lvjzyg5v>Meshia Mesh Simplification</h1> <p class="post-head__lead" data-astro-cid-lvjzyg5v>Meshia Mesh Simplification 是一套基于 Unity Job System + Burst Compiler + Unity Collections 的高性能、异步网格轻量化（mesh decim</p> <div class="chip-row" data-astro-cid-lvjzyg5v> <a class="chip" href="/STELLASTOPVRC/posts/?tag=%E7%9F%A5%E8%AF%86%E5%BA%93" data-astro-cid-lvjzyg5v> 知识库 </a><a class="chip" href="/STELLASTOPVRC/posts/?tag=avatar" data-astro-cid-lvjzyg5v> avatar </a> </div> </header> <div class="prose" data-astro-cid-lvjzyg5v> <h1 id="meshia-mesh-simplification">Meshia Mesh Simplification</h1>
+<blockquote>
+<p>来源: RamType0/Meshia.MeshSimplification (GitHub) + 官方文档站
+置信度: High
+包名: <code>com.ramtype0.meshia.mesh-simplification</code> | Unity: 2022.3+ | VRChat SDK: 2022.1.1+</p>
+</blockquote>
+<hr>
+<h2 id="0-速查表">0. 速查表</h2>
+<table>
+<thead>
+<tr>
+<th>用户场景</th>
+<th>推荐入口</th>
+<th>关键参数</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>想自动让整个 Avatar 面数降到目标 Performance Rank</td>
+<td><code>MeshiaCascadingAvatarMeshSimplifier</code></td>
+<td>Target Performance Rank + <code>Preserve Border Edges=true</code></td>
+</tr>
+<tr>
+<td>想单独控制某个 Mesh 的面数（保形状/纹理）</td>
+<td><code>MeshiaMeshSimplifier</code></td>
+<td><code>UseBarycentricCoordinateInterpolation=true</code>（防纹理扭曲）</td>
+</tr>
+<tr>
+<td>想在 C# 代码中生成多 LOD</td>
+<td><code>MeshSimplifier</code> Stateful API + <code>ScheduleSimplify</code> 重复调用</td>
+<td>Allocator.Persistent + <code>MeshSimplificationTarget.AbsoluteTriangleCount</code></td>
+</tr>
+<tr>
+<td>想替换已废弃的 <code>lilNDMFMeshSimplifier</code></td>
+<td>直接迁移到 Meshia</td>
+<td>旧 <code>lilNDMF</code> README 已明确声明废弃</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="1-是什么--不是什么">1. 是什么 / 不是什么</h2>
+<h3 id="是什么">是什么</h3>
+<p><strong>Meshia Mesh Simplification</strong> 是一套基于 <strong>Unity Job System + Burst Compiler + Unity Collections</strong> 的高性能、异步网格轻量化（mesh decimation）工具库，专为 <strong>Unity / VRChat</strong> 设计。</p>
+<ul>
+<li><strong>核心定位</strong>: Avatar/World 网格面数（polygon / triangle count）减少</li>
+<li><strong>运行时机</strong>: Editor（实时预览 + NDMF 构建时）+ Runtime（C# API）</li>
+<li><strong>核心优势</strong>: Burst 编译 + 异步 + Job 化 → 处理速度远超传统同步简化器</li>
+<li><strong>Avatar 特有能力</strong>: <strong>保留 Blend Shape</strong>（表情系统）、按骨保留 Border Edges（避免指尖破洞）</li>
+</ul>
+<h3 id="不是什么">不是什么</h3>
+<ul>
+<li>❌ 不是 Atlas/Texture 合并工具（→ 用 TexTransTool）</li>
+<li>❌ 不是 Skinned Mesh 合并工具（→ 用 AvatarOptimizer / AAO）</li>
+<li>❌ 不是动画/PhysBone 优化工具（→ 用 AAO MergePhysBone / MergeBone）</li>
+<li>❌ 不是材质球合并工具（→ 用 TexTransTool）</li>
+</ul>
+<h3 id="在-avatar-优化工具链中的位置">在 Avatar 优化工具链中的位置</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>[原始 Avatar 模型]</span></span>
+<span class="line"><span>    ↓</span></span>
+<span class="line"><span>1. AAO Trace And Optimize        ← 合并 Skinned Mesh、删未用物件</span></span>
+<span class="line"><span>2. TexTransTool                  ← 合并贴图 Atlas</span></span>
+<span class="line"><span>3. Meshia Mesh Simplifier        ← 单独 Mesh 减面（细节控制）</span></span>
+<span class="line"><span>   OR</span></span>
+<span class="line"><span>   Meshia Cascading ...          ← 自动按目标 Performance Rank 分配面数</span></span>
+<span class="line"><span>4. AAO Remove Mesh By BlendShape ← 删隐藏面</span></span>
+<span class="line"><span>5. AAO Merge PhysBone            ← 合并 PhysBone</span></span></code></pre>
+<hr>
+<h2 id="2-三个核心组件">2. 三个核心组件</h2>
+<p>Meshia 提供 <strong>三个不同抽象层级</strong> 的入口：</p>
+<table>
+<thead>
+<tr>
+<th>组件</th>
+<th>形态</th>
+<th>适用人群</th>
+<th>安装依赖</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong><code>MeshSimplifier</code></strong> (C# Struct)</td>
+<td>编程 API</td>
+<td>UdonSharp/工具开发者</td>
+<td>仅 Burst + Collections + Mathematics</td>
+</tr>
+<tr>
+<td><strong><code>MeshiaMeshSimplifier</code></strong> (MonoBehaviour)</td>
+<td>NDMF 组件</td>
+<td>Avatar 改模玩家</td>
+<td>NDMF (≥ 1.5.0)</td>
+</tr>
+<tr>
+<td><strong><code>MeshiaCascadingAvatarMeshSimplifier</code></strong> (MonoBehaviour)</td>
+<td>NDMF 组件（Avatar 级）</td>
+<td>Avatar 改模玩家</td>
+<td>Modular Avatar</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="3-架构原理fact来源-官方-readme--api-docs">3. 架构原理（<strong>FACT</strong>，来源: 官方 README + API docs）</h2>
+<h3 id="31-计算流水线">3.1 计算流水线</h3>
+<p>Meshia 不同于传统的同步简化器，它把整个流程拆成 <strong>4 个可调度的 Job</strong>：</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>Mesh.MeshData</span></span>
+<span class="line"><span>    │</span></span>
+<span class="line"><span>    ▼ ScheduleLoadMeshData    ← Job 1: 读 mesh 数据到 NativeContainer</span></span>
+<span class="line"><span>    │</span></span>
+<span class="line"><span>MeshSimplifier 内部 Native 数据</span></span>
+<span class="line"><span>    │</span></span>
+<span class="line"><span>    ▼ ScheduleSimplify        ← Job 2: 执行 quadric 简化算法（可重复调用，多 LOD）</span></span>
+<span class="line"><span>    │</span></span>
+<span class="line"><span>简化后的中间数据</span></span>
+<span class="line"><span>    │</span></span>
+<span class="line"><span>    ▼ ScheduleWriteMeshData   ← Job 3: 写回 Mesh.MeshData</span></span>
+<span class="line"><span>    │</span></span>
+<span class="line"><span>简化后的 Mesh（保留 BlendShape）</span></span></code></pre>
+<p><strong>关键设计</strong>:</p>
+<ul>
+<li><strong>Job System</strong>: 所有计算跑在 Worker Thread，不阻塞主线程</li>
+<li><strong>Burst</strong>: SIMD + IL2CPP 编译后的本地代码，速度比纯 C# 快 5-20×</li>
+<li><strong>NativeContainer</strong>: 使用 <code>NativeList&#x3C;T></code> / <code>UnsafeList&#x3C;T></code> 等非托管内存，避免 GC</li>
+<li><strong>BlendShape 保护</strong>: 通过 <code>BlendShapeData.GetMeshBlendShapes</code> 单独处理，不被简化破坏</li>
+</ul>
+<h3 id="32-核心算法推断--已验证">3.2 核心算法（<strong>推断 + 已验证</strong>）</h3>
+<p>基于 API 文档（<code>MeshSimplificationTarget.ScaledTotalError</code> / <code>AbsoluteTotalError</code> 等）和 UnityMeshSimplifier 上游实现，Meshia 使用 <strong>Quadric Error Metrics (QEM)</strong> 算法：</p>
+<ul>
+<li>每个顶点计算一个 4×4 误差矩阵</li>
+<li>合并边时选择误差最小的 pair</li>
+<li><code>Agressiveness</code> 因子控制每次迭代的合并激进程度（来源: 上游 UnityMeshSimplifier）</li>
+</ul>
+<blockquote>
+<p>注：Meshia 的 <code>MeshSimplifierOptions</code> 未暴露 <code>Agressiveness</code>，可能使用默认值 7.0（来自上游）</p>
+</blockquote>
+<hr>
+<h2 id="4-c-api-完整参考fact来源-api-docs-indexjson">4. C# API 完整参考（<strong>FACT</strong>，来源: API docs index.json）</h2>
+<h3 id="41-meshsimplifier-静态-api无状态">4.1 <code>MeshSimplifier</code> 静态 API（无状态）</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="csharp"><code><span class="line"><span style="color:#F97583">using</span><span style="color:#B392F0"> Meshia</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">MeshSimplification</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// 同步版本（阻塞当前线程）</span></span>
+<span class="line"><span style="color:#E1E4E8">MeshSimplifier.</span><span style="color:#B392F0">Simplify</span><span style="color:#E1E4E8">(</span></span>
+<span class="line"><span style="color:#E1E4E8">    Mesh originalMesh,                              </span><span style="color:#6A737D">// 源 mesh</span></span>
+<span class="line"><span style="color:#E1E4E8">    MeshSimplificationTarget target,                </span><span style="color:#6A737D">// 目标规格</span></span>
+<span class="line"><span style="color:#E1E4E8">    MeshSimplifierOptions options,                  </span><span style="color:#6A737D">// 选项</span></span>
+<span class="line"><span style="color:#E1E4E8">    Mesh destination                                </span><span style="color:#6A737D">// 输出 mesh</span></span>
+<span class="line"><span style="color:#E1E4E8">);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// 异步版本（Task，可取消）</span></span>
+<span class="line"><span style="color:#F97583">await</span><span style="color:#E1E4E8"> MeshSimplifier.</span><span style="color:#B392F0">SimplifyAsync</span><span style="color:#E1E4E8">(</span></span>
+<span class="line"><span style="color:#E1E4E8">    Mesh originalMesh,</span></span>
+<span class="line"><span style="color:#E1E4E8">    MeshSimplificationTarget target,</span></span>
+<span class="line"><span style="color:#E1E4E8">    MeshSimplifierOptions options,</span></span>
+<span class="line"><span style="color:#E1E4E8">    Mesh destination,</span></span>
+<span class="line"><span style="color:#E1E4E8">    CancellationToken cancellationToken </span><span style="color:#F97583">=</span><span style="color:#F97583"> default</span></span>
+<span class="line"><span style="color:#E1E4E8">);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// 批量版本（一次处理多个 mesh）</span></span>
+<span class="line"><span style="color:#E1E4E8">MeshSimplifier.</span><span style="color:#B392F0">SimplifyBatch</span><span style="color:#E1E4E8">(</span></span>
+<span class="line"><span style="color:#E1E4E8">    IReadOnlyList</span><span style="color:#F97583">&#x3C;</span><span style="color:#E1E4E8">(Mesh, MeshSimplificationTarget, MeshSimplifierOptions, Mesh)</span><span style="color:#F97583">></span><span style="color:#E1E4E8"> parameters</span></span>
+<span class="line"><span style="color:#E1E4E8">);</span></span></code></pre>
+<h3 id="42-meshsimplifier-实例-api有状态生成多-lod">4.2 <code>MeshSimplifier</code> 实例 API（有状态，生成多 LOD）</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="csharp"><code><span class="line"><span style="color:#F97583">using</span><span style="color:#B392F0"> Meshia</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">MeshSimplification</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">using</span><span style="color:#B392F0"> Unity</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">Collections</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Allocator 选择规则:</span></span>
+<span class="line"><span style="color:#6A737D">//   - 多帧异步处理 → Allocator.Persistent</span></span>
+<span class="line"><span style="color:#6A737D">//   - 单帧完成     → Allocator.TempJob（不能用 Allocator.Temp）</span></span>
+<span class="line"><span style="color:#F97583">using</span><span style="color:#F97583"> var</span><span style="color:#B392F0"> simplifier</span><span style="color:#F97583"> =</span><span style="color:#F97583"> new</span><span style="color:#B392F0"> MeshSimplifier</span><span style="color:#E1E4E8">(Allocator.Persistent);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Job 1: 加载 mesh 数据</span></span>
+<span class="line"><span style="color:#B392F0">JobHandle</span><span style="color:#B392F0"> loadHandle</span><span style="color:#F97583"> =</span><span style="color:#E1E4E8"> simplifier.</span><span style="color:#B392F0">ScheduleLoadMeshData</span><span style="color:#E1E4E8">(</span></span>
+<span class="line"><span style="color:#E1E4E8">    mesh.MeshData,</span></span>
+<span class="line"><span style="color:#E1E4E8">    MeshSimplifierOptions.Default</span></span>
+<span class="line"><span style="color:#E1E4E8">);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Job 2: 简化（可重复调用 → 同一 mesh 的多 LOD）</span></span>
+<span class="line"><span style="color:#B392F0">JobHandle</span><span style="color:#B392F0"> simplifyHandle</span><span style="color:#F97583"> =</span><span style="color:#E1E4E8"> simplifier.</span><span style="color:#B392F0">ScheduleSimplify</span><span style="color:#E1E4E8">(</span></span>
+<span class="line"><span style="color:#E1E4E8">    mesh.MeshData,</span></span>
+<span class="line"><span style="color:#E1E4E8">    blendShapes,                                     </span><span style="color:#6A737D">// NativeList&#x3C;BlendShapeData></span></span>
+<span class="line"><span style="color:#F97583">    new</span><span style="color:#B392F0"> MeshSimplificationTarget</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#E1E4E8">        Kind </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> MeshSimplificationTargetKind.AbsoluteTriangleCount,</span></span>
+<span class="line"><span style="color:#E1E4E8">        Value </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> 5000f</span></span>
+<span class="line"><span style="color:#E1E4E8">    },</span></span>
+<span class="line"><span style="color:#E1E4E8">    loadHandle                                       </span><span style="color:#6A737D">// 依赖 Job 1</span></span>
+<span class="line"><span style="color:#E1E4E8">);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Job 3: 写回</span></span>
+<span class="line"><span style="color:#B392F0">JobHandle</span><span style="color:#B392F0"> writeHandle</span><span style="color:#F97583"> =</span><span style="color:#E1E4E8"> simplifier.</span><span style="color:#B392F0">ScheduleWriteMeshData</span><span style="color:#E1E4E8">(</span></span>
+<span class="line"><span style="color:#E1E4E8">    mesh.MeshData,</span></span>
+<span class="line"><span style="color:#E1E4E8">    blendShapes,</span></span>
+<span class="line"><span style="color:#E1E4E8">    destinationMesh.MeshData,</span></span>
+<span class="line"><span style="color:#E1E4E8">    destinationBlendShapes,</span></span>
+<span class="line"><span style="color:#E1E4E8">    simplifyHandle                                   </span><span style="color:#6A737D">// 依赖 Job 2</span></span>
+<span class="line"><span style="color:#E1E4E8">);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">writeHandle.</span><span style="color:#B392F0">Complete</span><span style="color:#E1E4E8">();  </span><span style="color:#6A737D">// 阻塞等待所有 Job 完成</span></span></code></pre>
+<p><strong>多 LOD 模式</strong>: 重复 4-5 步骤（ScheduleSimplify + ScheduleWriteMeshData）可对同一 mesh 生成多份简化结果</p>
+<h3 id="43-meshsimplificationtarget--目标规格">4.3 <code>MeshSimplificationTarget</code> — 目标规格</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="csharp"><code><span class="line"><span style="color:#F97583">public</span><span style="color:#F97583"> struct</span><span style="color:#B392F0"> MeshSimplificationTarget</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#F97583">    public</span><span style="color:#B392F0"> MeshSimplificationTargetKind</span><span style="color:#B392F0"> Kind</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">    public</span><span style="color:#F97583"> float</span><span style="color:#B392F0"> Value</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">public</span><span style="color:#F97583"> enum</span><span style="color:#B392F0"> MeshSimplificationTargetKind</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#B392F0">    RelativeVertexCount</span><span style="color:#F97583">   =</span><span style="color:#79B8FF"> 0</span><span style="color:#E1E4E8">,  </span><span style="color:#6A737D">// 相对原 mesh 的顶点比例（0.0~1.0）</span></span>
+<span class="line"><span style="color:#B392F0">    AbsoluteVertexCount</span><span style="color:#F97583">   =</span><span style="color:#79B8FF"> 1</span><span style="color:#E1E4E8">,  </span><span style="color:#6A737D">// 绝对目标顶点数</span></span>
+<span class="line"><span style="color:#B392F0">    ScaledTotalError</span><span style="color:#F97583">      =</span><span style="color:#79B8FF"> 2</span><span style="color:#E1E4E8">,  </span><span style="color:#6A737D">// 总误差上限，按 bbox + 顶点数缩放</span></span>
+<span class="line"><span style="color:#B392F0">    AbsoluteTotalError</span><span style="color:#F97583">    =</span><span style="color:#79B8FF"> 3</span><span style="color:#E1E4E8">,  </span><span style="color:#6A737D">// 绝对总误差上限</span></span>
+<span class="line"><span style="color:#B392F0">    RelativeTriangleCount</span><span style="color:#F97583"> =</span><span style="color:#79B8FF"> 4</span><span style="color:#E1E4E8">,  </span><span style="color:#6A737D">// 相对原 mesh 的三角面比例（0.0~1.0，**最常用**）</span></span>
+<span class="line"><span style="color:#B392F0">    AbsoluteTriangleCount</span><span style="color:#F97583"> =</span><span style="color:#79B8FF"> 5</span><span style="color:#E1E4E8">,  </span><span style="color:#6A737D">// 绝对目标三角面数</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<p><strong>实践推荐</strong>:</p>
+<ul>
+<li>Avatar Cascading 模式 → <code>RelativeTriangleCount</code> (0~1)</li>
+<li>精确控制 LOD 数 → <code>AbsoluteTriangleCount</code></li>
+<li>自动视觉质量保真 → <code>ScaledTotalError</code> / <code>AbsoluteTotalError</code></li>
+</ul>
+<h3 id="44-meshsimplifieroptions--算法选项关键">4.4 <code>MeshSimplifierOptions</code> — 算法选项（<strong>关键</strong>）</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="csharp"><code><span class="line"><span style="color:#E1E4E8">[</span><span style="color:#B392F0">Serializable</span><span style="color:#E1E4E8">]</span></span>
+<span class="line"><span style="color:#F97583">public</span><span style="color:#F97583"> struct</span><span style="color:#B392F0"> MeshSimplifierOptions</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#F97583">    public</span><span style="color:#F97583"> bool</span><span style="color:#B392F0"> EnableSmartLink</span><span style="color:#E1E4E8">;                       </span><span style="color:#6A737D">// 默认 true：合并相近顶点（推荐）</span></span>
+<span class="line"><span style="color:#E1E4E8">    [</span><span style="color:#B392F0">Range</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">0</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">1</span><span style="color:#E1E4E8">)] </span><span style="color:#F97583">public</span><span style="color:#F97583"> float</span><span style="color:#B392F0"> MinNormalDot</span><span style="color:#E1E4E8">;          </span><span style="color:#6A737D">// 法线过滤阈值</span></span>
+<span class="line"><span style="color:#F97583">    public</span><span style="color:#F97583"> bool</span><span style="color:#B392F0"> PreserveBorderEdges</span><span style="color:#E1E4E8">;                   </span><span style="color:#6A737D">// **防止破洞**（指尖/边缘）</span></span>
+<span class="line"><span style="color:#F97583">    public</span><span style="color:#F97583"> bool</span><span style="color:#B392F0"> PreserveSurfaceCurvature</span><span style="color:#E1E4E8">;             </span><span style="color:#6A737D">// 曲面感知（更慢但更准）</span></span>
+<span class="line"><span style="color:#F97583">    public</span><span style="color:#F97583"> bool</span><span style="color:#B392F0"> UseBarycentricCoordinateInterpolation</span><span style="color:#E1E4E8">; </span><span style="color:#6A737D">// **防止纹理扭曲**</span></span>
+<span class="line"><span style="color:#F97583">    public</span><span style="color:#F97583"> float</span><span style="color:#B392F0"> VertexLinkColorDistance</span><span style="color:#E1E4E8">;              </span><span style="color:#6A737D">// SmartLink 颜色距离阈值</span></span>
+<span class="line"><span style="color:#F97583">    public</span><span style="color:#F97583"> float</span><span style="color:#B392F0"> VertexLinkDistance</span><span style="color:#E1E4E8">;                   </span><span style="color:#6A737D">// SmartLink 位置距离阈值</span></span>
+<span class="line"><span style="color:#E1E4E8">    [</span><span style="color:#B392F0">Range</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">0</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">1</span><span style="color:#E1E4E8">)] </span><span style="color:#F97583">public</span><span style="color:#F97583"> float</span><span style="color:#B392F0"> VertexLinkMinNormalDot</span><span style="color:#E1E4E8">;</span><span style="color:#6A737D">// SmartLink 法线阈值</span></span>
+<span class="line"><span style="color:#F97583">    public</span><span style="color:#F97583"> float</span><span style="color:#B392F0"> VertexLinkUvDistance</span><span style="color:#E1E4E8">;                 </span><span style="color:#6A737D">// SmartLink UV 距离阈值</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span></span>
+<span class="line"><span style="color:#F97583">    public</span><span style="color:#F97583"> static</span><span style="color:#B392F0"> MeshSimplifierOptions</span><span style="color:#B392F0"> Default</span><span style="color:#E1E4E8"> { </span><span style="color:#F97583">get</span><span style="color:#E1E4E8">; }</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<p><strong>关键选项实战选择</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>场景</th>
+<th>推荐配置</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>默认（一般 Avatar）</td>
+<td><code>MeshSimplifierOptions.Default</code></td>
+</tr>
+<tr>
+<td>指尖/边缘出现破洞</td>
+<td><code>PreserveBorderEdges = true</code></td>
+</tr>
+<tr>
+<td>UV 接缝处纹理错位</td>
+<td><code>UseBarycentricCoordinateInterpolation = true</code></td>
+</tr>
+<tr>
+<td>曲面/球面/曲面 Avatar 失真严重</td>
+<td><code>PreserveSurfaceCurvature = true</code>（计算成本↑）</td>
+</tr>
+<tr>
+<td>同一位置顶点被分成两份</td>
+<td><code>EnableSmartLink = true</code> + 调高 <code>VertexLinkDistance</code></td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>⚠️ <strong>lilNDMFMeshSimplifier 时代没有 PreserveBorderEdges 等选项</strong>，这是 Meshia 相比 lilNDMF 的核心进步</p>
+</blockquote>
+<h3 id="45-blendshape-处理关键能力">4.5 BlendShape 处理（<strong>关键能力</strong>）</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="csharp"><code><span class="line"><span style="color:#F97583">using</span><span style="color:#B392F0"> Meshia</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">MeshSimplification</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">using</span><span style="color:#B392F0"> Unity</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">Collections</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// 读取 mesh 的 BlendShapes</span></span>
+<span class="line"><span style="color:#B392F0">NativeList</span><span style="color:#E1E4E8">&#x3C;</span><span style="color:#B392F0">BlendShapeData</span><span style="color:#E1E4E8">> </span><span style="color:#B392F0">blendShapes</span><span style="color:#F97583"> =</span><span style="color:#E1E4E8"> BlendShapeData.</span><span style="color:#B392F0">GetMeshBlendShapes</span><span style="color:#E1E4E8">(</span></span>
+<span class="line"><span style="color:#E1E4E8">    mesh,</span></span>
+<span class="line"><span style="color:#E1E4E8">    Allocator.Persistent  </span><span style="color:#6A737D">// 或 TempJob</span></span>
+<span class="line"><span style="color:#E1E4E8">);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// ... 传给 ScheduleSimplify / ScheduleWriteMeshData ...</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// 简化完成后写回</span></span>
+<span class="line"><span style="color:#E1E4E8">BlendShapeData.</span><span style="color:#B392F0">SetBlendShapes</span><span style="color:#E1E4E8">(destinationMesh, blendShapes.</span><span style="color:#B392F0">AsReadOnlySpan</span><span style="color:#E1E4E8">());</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">blendShapes.</span><span style="color:#B392F0">Dispose</span><span style="color:#E1E4E8">();</span></span></code></pre>
+<p><strong>重要性</strong>: 大多数传统简化器会<strong>破坏 BlendShape</strong>，导致 Avatar 表情失效。Meshia 通过单独处理 BlendShape 数据保证表情系统正常（<strong>FACT</strong>，来源: API docs 中 <code>BlendShapeData</code> / <code>BlendShapeFrameData</code> 独立结构）</p>
+<hr>
+<h2 id="5-ndmf-组件使用fact来源-docsenvrchat">5. NDMF 组件使用（<strong>FACT</strong>，来源: docs/en/vrchat/*）</h2>
+<h3 id="51-安装前置">5.1 安装前置</h3>
+<table>
+<thead>
+<tr>
+<th>用途</th>
+<th>必须依赖</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Avatar 改模（使用两个组件）</td>
+<td><strong>Modular Avatar</strong></td>
+</tr>
+<tr>
+<td>World 改模（仅 MeshiaMeshSimplifier）</td>
+<td><strong>NDMF</strong> (≥ 1.5.0)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="52-meshiameshsimplifier单-mesh-控制">5.2 <code>MeshiaMeshSimplifier</code>（单 Mesh 控制）</h3>
+<blockquote>
+<p>官方原文: “Attach <code>MeshiaMeshSimplifier</code> to your models. You can preview the result in EditMode.”</p>
+</blockquote>
+<p><strong>使用步骤</strong>:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>1. 选择目标 GameObject（带 MeshFilter / SkinnedMeshRenderer）</span></span>
+<span class="line"><span>2. Add Component → MeshiaMeshSimplifier</span></span>
+<span class="line"><span>3. 在 Inspector 中调整参数：</span></span>
+<span class="line"><span>   - Target: 选择 MeshSimplificationTargetKind + Value</span></span>
+<span class="line"><span>   - Options: MeshSimplifierOptions 字段</span></span>
+<span class="line"><span>4. EditMode 下实时预览效果</span></span></code></pre>
+<p><strong>适用场景</strong>: 需要精细控制某个特定 mesh 的面数（如手部、装饰品）</p>
+<h3 id="53-meshiacascadingavatarmeshsimplifieravatar-级级联">5.3 <code>MeshiaCascadingAvatarMeshSimplifier</code>（Avatar 级级联）</h3>
+<blockquote>
+<p>官方原文: “Create a Meshia Cascading Avatar Mesh Simplifier GameObject directly under the target avatar. Select the target performance rank. Adjust the polygon count distribution, options, etc. while checking the appearance.”</p>
+</blockquote>
+<p><strong>使用步骤</strong>:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>1. 在 Avatar 根节点下创建空 GameObject</span></span>
+<span class="line"><span>2. Add Component → MeshiaCascadingAvatarMeshSimplifier</span></span>
+<span class="line"><span>3. 选择目标 Performance Rank（Excellent / Good / Medium / Poor）</span></span>
+<span class="line"><span>4. 检查预览，调整每个 Mesh 的面数分配</span></span>
+<span class="line"><span>5. 启用关键选项（见下）</span></span></code></pre>
+<p><strong>与单 Mesh 组件的区别</strong>:</p>
+<ul>
+<li>自动发现 Avatar 下所有 Mesh</li>
+<li>按目标 Rank 自动分配面数预算</li>
+<li>支持单个 Mesh 锁定（不简化）</li>
+<li>支持 <code>Enable Auto Adjust</code> 批量调整（来源: Kuriko 笔记）</li>
+</ul>
+<h3 id="54-三个关键选项fact来源-官方文档-tip">5.4 三个关键选项（<strong>FACT</strong>，来源: 官方文档 “Tip”）</h3>
+<blockquote>
+<p>官方强调：“There is a particularly important option.”</p>
+</blockquote>
+<h4 id="preserve-border-edges保留边界边">Preserve Border Edges（保留边界边）</h4>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>场景: 指尖、衣物边缘出现破洞（三角面被合并导致开口）</span></span>
+<span class="line"><span>解决: 启用 Preserve Border Edges = true</span></span>
+<span class="line"><span>原理: 标记 mesh 边界为不可合并边</span></span></code></pre>
+<p><strong>对比图</strong>（来源: 官方文档截图描述）:</p>
+<ul>
+<li>Disabled: 指尖有可见孔洞</li>
+<li>Enabled: 指尖完整保留</li>
+</ul>
+<h4 id="其他两个常用修复">其他两个常用修复</h4>
+<table>
+<thead>
+<tr>
+<th>问题</th>
+<th>解决选项</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>纹理 UV 接缝错位</td>
+<td><code>UseBarycentricCoordinateInterpolation = true</code></td>
+</tr>
+<tr>
+<td>曲面失真（球/管状结构）</td>
+<td><code>PreserveSurfaceCurvature = true</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="55-v31-新功能">5.5 v3.1 新功能</h3>
+<blockquote>
+<p>来源: GitHub Releases 3.1.0</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>变更</th>
+<th>意义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Configure preserve border edges per bone</strong> (#25)</td>
+<td>按骨配置 Border Edges 保留（之前是全局开关）</td>
+</tr>
+<tr>
+<td><strong>Toggle <code>MeshiaMeshSimplifier.enabled</code></strong> (#28)</td>
+<td>不移除组件的情况下禁用</td>
+</tr>
+<tr>
+<td>Fix: 无有效合并候选时异常 (#32)</td>
+<td>稳定性修复</td>
+</tr>
+<tr>
+<td>Fix: <code>MeshiaCascadingAvatarMeshSimplifier</code> 在目标 mesh 被其他 NDMF 工具销毁时异常 (#33)</td>
+<td><strong>关键</strong>：与 NDMF 工具链集成稳定性</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="6-与其他减面工具对比">6. 与其他减面工具对比</h2>
+<h3 id="61-综合对比表">6.1 综合对比表</h3>
+<table>
+<thead>
+<tr>
+<th>工具</th>
+<th>算法来源</th>
+<th>性能</th>
+<th>BlendShape</th>
+<th>边界保护</th>
+<th>异步</th>
+<th>价格</th>
+<th>状态</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Meshia Mesh Simplification</strong></td>
+<td>QEM + Burst</td>
+<td>⭐⭐⭐⭐⭐</td>
+<td>✅ 完整</td>
+<td>✅ 可配置</td>
+<td>✅</td>
+<td>免费</td>
+<td>✅ 活跃</td>
+</tr>
+<tr>
+<td><strong>lilNDMFMeshSimplifier</strong></td>
+<td>上游 UnityMeshSimplifier</td>
+<td>⭐⭐⭐</td>
+<td>⚠️ 部分</td>
+<td>❌</td>
+<td>❌</td>
+<td>免费</td>
+<td>❌ <strong>已废弃</strong></td>
+</tr>
+<tr>
+<td><strong>Mantis LOD Editor</strong></td>
+<td>商业</td>
+<td>⭐⭐⭐⭐</td>
+<td>⚠️ 部分</td>
+<td>✅</td>
+<td>❌</td>
+<td><strong>$50</strong></td>
+<td>✅ 活跃</td>
+</tr>
+<tr>
+<td><strong>Overall NDMF Mesh Simplifier</strong> (Tliks)</td>
+<td>封装 Meshia</td>
+<td>⭐⭐⭐⭐⭐</td>
+<td>✅</td>
+<td>继承 Meshia</td>
+<td>✅</td>
+<td>免费</td>
+<td>✅ 活跃（0.1.2）</td>
+</tr>
+</tbody>
+</table>
+<h3 id="62-关键演进史">6.2 关键演进史</h3>
+<p><strong>lilNDMFMeshSimplifier 已被官方废弃</strong>（来源: GitHub README）:</p>
+<blockquote>
+<h1 id="this-project-is-discontinued-and-is-no-longer-maintained">This project is discontinued and is no longer maintained.</h1>
+<h1 id="please-use-meshia-mesh-simplification-instead">Please use Meshia Mesh Simplification instead.</h1>
+</blockquote>
+<p><strong>迁移路径</strong>:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>lilNDMFMeshSimplifier → Meshia Mesh Simplification</span></span>
+<span class="line"><span>  ↓</span></span>
+<span class="line"><span>- 删除 lilNDMFMeshSimplifier VPM (lilxyzw)</span></span>
+<span class="line"><span>- 安装 Meshia VPM (RamType0)</span></span>
+<span class="line"><span>- 重新配置 MeshiaMeshSimplifier 组件</span></span>
+<span class="line"><span>- 启用 PreserveBorderEdges + UseBarycentricCoordinateInterpolation</span></span>
+<span class="line"><span>  （旧 lilNDMF 没有这些选项，是默认行为差异）</span></span></code></pre>
+<h3 id="63-选择决策树">6.3 选择决策树</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>想减面？</span></span>
+<span class="line"><span>├─ 只需基础质量</span></span>
+<span class="line"><span>│   └─ 用 MeshiaMeshSimplifier + Default 选项</span></span>
+<span class="line"><span>│</span></span>
+<span class="line"><span>├─ 自动按目标 Performance Rank 分配</span></span>
+<span class="line"><span>│   └─ 用 MeshiaCascadingAvatarMeshSimplifier</span></span>
+<span class="line"><span>│</span></span>
+<span class="line"><span>├─ 指尖/边缘破洞</span></span>
+<span class="line"><span>│   └─ Enable Preserve Border Edges</span></span>
+<span class="line"><span>│</span></span>
+<span class="line"><span>├─ UV/纹理扭曲</span></span>
+<span class="line"><span>│   └─ Enable UseBarycentricCoordinateInterpolation</span></span>
+<span class="line"><span>│</span></span>
+<span class="line"><span>├─ 多 LOD 生成（运行时）</span></span>
+<span class="line"><span>│   └─ 用 MeshSimplifier Stateful API + 重复 ScheduleSimplify</span></span>
+<span class="line"><span>│</span></span>
+<span class="line"><span>└─ 想要 Mantis 质量但没钱</span></span>
+<span class="line"><span>    └─ 用 Meshia + PreserveSurfaceCurvature=true（慢但更接近商业质量）</span></span></code></pre>
+<hr>
+<h2 id="7-最佳实践与陷阱">7. 最佳实践与陷阱</h2>
+<h3 id="71-do">7.1 DO ✅</h3>
+<ol>
+<li><strong>在 EditMode 预览后再 Build</strong>: Meshia 提供实时预览，不要盲 Build</li>
+<li><strong>Cascading 模式优先于逐 Mesh 模式</strong>: 对 Avatar 整体优化更高效</li>
+<li><strong>启用 PreserveBorderEdges</strong>: 几乎是无副作用的”安全选项”</li>
+<li><strong>多 LOD 重复调用 ScheduleSimplify</strong>: 比单次大压缩更灵活（保留更多 LOD 切换控制）</li>
+<li><strong>搭配 AAO Trace And Optimize 先合并 Skinned Mesh</strong>: 减少 Mesh 数量后再简化效果更好</li>
+</ol>
+<h3 id="72-dont">7.2 DON’T ❌</h3>
+<ol>
+<li><strong>不要对表情 Mesh (Face) 做大幅减面</strong>: 即使有 BlendShape 保护，过度简化也会失真</li>
+<li><strong>不要在 Build 后修改目标</strong>: EditMode 预览是离线的，Build 触发重新计算</li>
+<li><strong>不要混用 lilNDMF + Meshia</strong>: 同类工具重复执行，浪费 NDMF 构建时间</li>
+<li><strong>不要对 PhysBone 末端的 Mesh 设过低保真</strong>: 会让动态效果看起来像棱角分明</li>
+<li><strong>不要忽视 TargetKind 选错</strong>: <code>AbsoluteVertexCount</code> 不考虑当前 mesh 大小，可能破坏小部件</li>
+</ol>
+<h3 id="73-性能对比直觉推断无硬数据">7.3 性能对比直觉（<strong>推断</strong>，无硬数据）</h3>
+<blockquote>
+<p>⚠️ 以下为基于架构分析的定性比较，非实测 benchmark</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>操作</th>
+<th>Meshia (Burst+Job)</th>
+<th>传统同步简化器</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>单 mesh 简化 (中等 10k 面)</td>
+<td>数十 ms（异步，不卡 UI）</td>
+<td>数百 ms（卡 UI）</td>
+</tr>
+<tr>
+<td>批量 50 mesh</td>
+<td>1-2 秒（分帧调度）</td>
+<td>5-10 秒（主线程阻塞）</td>
+</tr>
+<tr>
+<td>多 LOD (3 档)</td>
+<td>复用已加载数据，仅重复 Simplify</td>
+<td>每次重新加载</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="8-与其他-ndmf-工具的协同">8. 与其他 NDMF 工具的协同</h2>
+<h3 id="81-执行顺序fact基于-ndmf-管线--31-修复-33">8.1 执行顺序（<strong>FACT</strong>，基于 NDMF 管线 + 3.1 修复 #33）</h3>
+<blockquote>
+<p>⚠️ 3.1.0 修复 #33 后，MeshiaCascadingAvatarMeshSimplifier 不再因其他工具销毁目标 mesh 而抛异常，但仍建议放在最后以获得最优结果</p>
+</blockquote>
+<p><strong>推荐顺序</strong>:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>1. Modular Avatar 组件（添加服装/物体）</span></span>
+<span class="line"><span>2. lilAvatarUtils / 分析工具（只读）</span></span>
+<span class="line"><span>3. AAO Merge Skinned Mesh（合并 SMR）</span></span>
+<span class="line"><span>4. TexTransTool（合并贴图）</span></span>
+<span class="line"><span>5. AAO Trace And Optimize（自动优化）</span></span>
+<span class="line"><span>6. AAO Remove Mesh By BlendShape（删除隐藏面） ← 新增</span></span>
+<span class="line"><span>7. Meshia Mesh Simplifier（减面） ← **最后**</span></span></code></pre>
+<h3 id="82-与-avataroptimizer-aao-互补">8.2 与 AvatarOptimizer (AAO) 互补</h3>
+<table>
+<thead>
+<tr>
+<th>工具</th>
+<th>解决什么问题</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>AAO Merge Skinned Mesh</td>
+<td>减少 Material Slot / Draw Call</td>
+</tr>
+<tr>
+<td>AAO Remove Mesh By BlendShape</td>
+<td>删掉被 BlendShape 隐藏的面（0 成本）</td>
+</tr>
+<tr>
+<td><strong>Meshia</strong></td>
+<td><strong>简化剩余 Mesh 的多边形数（智能减面）</strong></td>
+</tr>
+</tbody>
+</table>
+<p>三者配合：</p>
+<ul>
+<li>AAO 先合并 SMR → mesh 数量变少</li>
+<li>AAO Remove Mesh → 部分面被剔除</li>
+<li>Meshia 处理剩余 mesh → 在更小基础上减面</li>
+</ul>
+<hr>
+<h2 id="9-vpm-安装">9. VPM 安装</h2>
+<h3 id="91-vpm-repository">9.1 VPM Repository</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>https://ramtype0.github.io/VpmRepository/index.json</span></span></code></pre>
+<h3 id="92-vpm-链接速查">9.2 VPM 链接速查</h3>
+<table>
+<thead>
+<tr>
+<th>工具</th>
+<th>VPM 仓库</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Meshia Mesh Simplification</strong></td>
+<td><code>https://ramtype0.github.io/VpmRepository/index.json</code></td>
+</tr>
+<tr>
+<td>lilNDMFMeshSimplifier（已废弃）</td>
+<td><code>https://lilxyzw.github.io/vpm-repos/redirect.html</code></td>
+</tr>
+<tr>
+<td>Overall NDMF Mesh Simplifier</td>
+<td>（依赖 Meshia 2.1.0+，单独仓库）</td>
+</tr>
+</tbody>
+</table>
+<h3 id="93-直接-upm备选">9.3 直接 UPM（备选）</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="json"><code><span class="line"><span style="color:#E1E4E8">{</span></span>
+<span class="line"><span style="color:#79B8FF">  "dependencies"</span><span style="color:#E1E4E8">: {</span></span>
+<span class="line"><span style="color:#79B8FF">    "com.ramtype0.meshia.mesh-simplification"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"3.2.0"</span></span>
+<span class="line"><span style="color:#E1E4E8">  }</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<h3 id="94-依赖项">9.4 依赖项</h3>
+<p><strong>直接依赖</strong>:</p>
+<ul>
+<li><code>com.unity.burst</code> ≥ 1.8.21</li>
+<li><code>com.unity.collections</code> ≥ 2.5.7</li>
+<li><code>com.unity.mathematics</code> ≥ 1.3.2</li>
+</ul>
+<p><strong>VPM 依赖</strong>:</p>
+<ul>
+<li><code>com.anatawa12.custom-localization-for-editor-extension</code> ≥ 1.2.1</li>
+</ul>
+<hr>
+<h2 id="10-局限性与未解决问题">10. 局限性与未解决问题</h2>
+<h3 id="101-已知问题">10.1 已知问题</h3>
+<ul>
+<li><strong>v3.1 修复记录</strong>:
+<ul>
+<li>无有效合并候选时异常 (#32)</li>
+<li>目标 mesh 被其他 NDMF 工具销毁时异常 (#33)</li>
+<li><strong>保留边界边配置从全局改为按骨</strong> (#25，旧版本可能需要迁移配置）</li>
+</ul>
+</li>
+</ul>
+<h3 id="102-未覆盖场景">10.2 未覆盖场景</h3>
+<table>
+<thead>
+<tr>
+<th>场景</th>
+<th>状态</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Quest 移动端特殊处理</td>
+<td>未优化（任何 mesh 减面工具对 Quest 都有效）</td>
+</tr>
+<tr>
+<td>与 VRCFury 协同</td>
+<td>NDMF 工具通用问题，需关注执行顺序</td>
+</tr>
+<tr>
+<td>Shader 顶点依赖（VertexID-based）</td>
+<td>未文档化，可能破坏自定义 shader</td>
+</tr>
+<tr>
+<td>实时 LOD 切换</td>
+<td>需用 Stateful API 自行实现</td>
+</tr>
+</tbody>
+</table>
+<h3 id="103-验证方法">10.3 验证方法</h3>
+<blockquote>
+<p>由于 UdonSharp Agent 不直接跑 Unity，构建/效果验证需用户本地完成。建议流程：</p>
+<ol>
+<li>复制 Avatar → 应用 Meshia → 比较 SDK Performance Rank</li>
+<li>在客户端查看模型外观是否破洞</li>
+<li>用 lilAvatarUtils 对比性能数据</li>
+</ol>
+</blockquote>
+<hr>
+<h2 id="11-相关文档">11. 相关文档</h2>
+<h3 id="知识库内链">知识库内链</h3>
+<ul>
+<li><code>memory/avatar/ndmf-tools.md</code> — NDMF 生态体系总览</li>
+<li><code>memory/avatar/optimization-guide.md</code> — 减面章节</li>
+<li><code>memory/avatar/optimization-guide.md#polygons面数减面</code> — 减面工具对比表</li>
+<li><code>memory/avatar/performance-rank.md</code> — 性能等级标准</li>
+</ul>
+<h3 id="外部权威">外部权威</h3>
+<ul>
+<li>GitHub: <a href="https://github.com/RamType0/Meshia.MeshSimplification">https://github.com/RamType0/Meshia.MeshSimplification</a></li>
+<li>官方文档站: <a href="https://ramtype0.github.io/Meshia.MeshSimplification/">https://ramtype0.github.io/Meshia.MeshSimplification/</a></li>
+<li>API Reference: <a href="https://ramtype0.github.io/Meshia.MeshSimplification/api/Meshia.MeshSimplification.html">https://ramtype0.github.io/Meshia.MeshSimplification/api/Meshia.MeshSimplification.html</a></li>
+<li>上游算法参考: <a href="https://github.com/Whinarn/UnityMeshSimplifier">https://github.com/Whinarn/UnityMeshSimplifier</a></li>
+<li>已废弃工具: <a href="https://github.com/lilxyzw/lilNDMFMeshSimplifier">https://github.com/lilxyzw/lilNDMFMeshSimplifier</a></li>
+</ul>
+<hr>
+<h2 id="12-关键事实卡片quick-reference">12. 关键事实卡片（Quick Reference）</h2>
+<blockquote>
+<p>用于教学/快速问答时复制粘贴</p>
+</blockquote>
+<p><strong>Meshia 是什么？</strong></p>
+<blockquote>
+<p>基于 Unity Burst + Job System 的高速异步网格简化库，专为 VRChat Avatar/World 设计，2025-2026 年最活跃的 NDMF 减面工具，已取代 lilNDMFMeshSimplifier。</p>
+</blockquote>
+<p><strong>Meshia 怎么用？</strong></p>
+<blockquote>
+<p>Avatar 改模装 Modular Avatar → 装 Meshia → 加 <code>MeshiaCascadingAvatarMeshSimplifier</code> 到 Avatar 根节点 → 选目标 Performance Rank → 启用 <code>Preserve Border Edges</code>。</p>
+</blockquote>
+<p><strong>为什么要用 Meshia 而不是 lilNDMF？</strong></p>
+<blockquote>
+<p>lilNDMFMeshSimplifier 已于 2024-2025 年被官方废弃。Meshia 提供 Burst 加速、BlendShape 完整保留、<code>PreserveBorderEdges</code>（防破洞）、<code>UseBarycentricCoordinateInterpolation</code>（防纹理扭曲）等更多能力。</p>
+</blockquote>
+<p><strong>什么时候不用 Meshia？</strong></p>
+<blockquote>
+<ul>
+<li>想保留 Mantis 商业级曲面质量且愿付费</li>
+<li>只想删被 BlendShape 隐藏的面（→ 用 AAO Remove Mesh By BlendShape，零成本）</li>
+<li>mesh 已经是低保真，没什么可简化的</li>
+</ul>
+</blockquote> </div> <p class="kb-source-note" data-astro-cid-lvjzyg5v>
+本文由 VRChat 开发知识库自动整理（社区整理  · 可信度 Medium  · 最后校对 2026-06-20），
+          遇到与手写教程冲突的地方，以官方文档为最高优先级。
+</p> <section class="comments" id="comments" data-astro-cid-lvjzyg5v> <h2 class="comments__title" data-astro-cid-lvjzyg5v>✦ 旅人留言（0）</h2> <p class="comments__empty" id="commentsEmpty" data-astro-cid-lvjzyg5v>
+还没有旅人留言 —— 有疑问就写在下面，站长都会回复。
+</p> <form class="comment-form" id="commentForm" data-target="kb-avatar-meshia-mesh-simplification" data-astro-cid-lvjzyg5v> <p class="comment-form__title" data-astro-cid-lvjzyg5v>写下你的留言</p> <input id="cAuthor" maxlength="20" placeholder="昵称（留空则为「旅人」）" data-astro-cid-lvjzyg5v> <textarea id="cBody" maxlength="1000" required placeholder="想问的问题、想说的感谢都可以（最多 1000 字）" data-astro-cid-lvjzyg5v></textarea> <div class="comment-form__actions" data-astro-cid-lvjzyg5v> <button class="btn btn--primary" type="submit" data-astro-cid-lvjzyg5v>发布留言</button> <span class="form-hint" data-astro-cid-lvjzyg5v>留言保存在本站，站长在写作台里能看到</span> <span class="form-msg" id="cMsg" data-astro-cid-lvjzyg5v></span> </div> </form> </section> <nav class="station-nav" aria-label="站间导航" data-astro-cid-lvjzyg5v> <a href="/STELLASTOPVRC/posts/kb-avatar-ma-component-cards/" data-astro-cid-lvjzyg5v> <span class="dir" data-astro-cid-lvjzyg5v>← 上一站 · 更新的星光</span> <span class="to" data-astro-cid-lvjzyg5v>Modular Avatar 组件教学卡（27 个完整版）</span> </a> <a href="/STELLASTOPVRC/posts/kb-avatar-ma2bt/" data-astro-cid-lvjzyg5v> <span class="dir" data-astro-cid-lvjzyg5v>下一站 · 更早的星光 →</span> <span class="to" data-astro-cid-lvjzyg5v>MA2BT (Modular Avatar to BlendTree)</span> </a> </nav> </div> <aside class="toc" id="toc" hidden> <p class="toc__title">✦ 本页星图</p> <nav id="tocNav" aria-label="文章目录"></nav> </aside> <script type="module">const i=document.querySelector(".prose"),d=document.getElementById("toc"),u=document.getElementById("tocNav"),l=[];if(i&&d&&u){const c=[...i.querySelectorAll("h1, h2, h3")];if(c.length>=3){d.hidden=!1,c.forEach((o,e)=>{o.id||(o.id=`sec-${e}`);const n=document.createElement("a");n.href=`#${o.id}`;const s=(o.textContent??"").replace(/\s+/g," ").trim(),r=s.search(/[：:]/),a=r>=4?s.slice(0,r):s;n.textContent=a.length>40?`${a.slice(0,40)}…`:a,n.title=s,u.appendChild(n),l.push({a:n,h:o})});const t=()=>{let o=l[0];for(const e of l)e.h.getBoundingClientRect().top<=130&&(o=e);for(const e of l)e.a.classList.toggle("is-active",e===o)};addEventListener("scroll",t,{passive:!0}),t()}}document.querySelectorAll(".prose pre").forEach(c=>{const t=document.createElement("button");t.className="code-copy",t.type="button",t.textContent="复制",t.addEventListener("click",async()=>{const o=c.querySelector("code")?.innerText??c.innerText;try{await navigator.clipboard.writeText(o)}catch{const e=document.createElement("textarea");e.value=o,document.body.appendChild(e),e.select(),document.execCommand("copy"),e.remove()}t.textContent="已复制 ✓",t.classList.add("is-ok"),setTimeout(()=>{t.textContent="复制",t.classList.remove("is-ok")},1500)}),c.appendChild(t)});</script> </article>  </main> <footer class="site-footer"> <div class="wrap"> <p class="star-line" aria-hidden="true"> <svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> <svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> </p> <p>星之驿站 StellaStop —— 在虚拟宇宙中，为你保留一座驿站</p> <p class="site-footer__disclaimer">
+该网页目前是测试阶段，仅用于测试，所有内容仅供参考；内容全部为引用互联网当中的信息。
+</p> <p>© 2026 星之驿站 · 由 <a href="https://astro.build">Astro</a> 与星光驱动</p> <p> <a data-desk-login hidden title="写作台：登录 / 注册">登录 / 注册</a> ·
+<a href="/STELLASTOPVRC/announcements/">官方公告</a> ·
+<a href="/STELLASTOPVRC/ai/">问星 AI</a> ·
+<a href="/STELLASTOPVRC/feedback/">旅人留言板</a> </p> </div> </footer> <button class="to-top" id="toTop" aria-label="回到顶部"> <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"> <path d="M12 20V5"></path> <path d="M5.5 11.5 12 5l6.5 6.5"></path> </svg> </button> <script type="module">const e=document.getElementById("toTop");if(e){const t=()=>e.classList.toggle("is-visible",scrollY>480);addEventListener("scroll",t,{passive:!0}),t(),e.addEventListener("click",()=>{const o=matchMedia("(prefers-reduced-motion: reduce)").matches;scrollTo({top:0,behavior:o?"auto":"smooth"})})}</script> <script>(function(){const deskConfigured = "";
+
+      /* 写作台探测（页面尾部执行，DOM 已就绪）：
+         1. 计算写作台地址：站点配置 deskUrl（公网部署时填）> 本机默认 localhost:4322 > 同主机 4322
+         2. 探测 /api/gate/status —— 在线才点亮「登录 / 注册」入口，并复用给验证门横幅
+         3. 不在线则保持隐藏，绝不会把访客拽进内网地址；同时给出一次性「镜像模式」提示 */
+      (function () {
+        var host = location.hostname;
+        var isLocal = host === 'localhost' || host === '127.0.0.1' || host === '[::1]';
+        var desk = deskConfigured ||
+          (isLocal ? 'http://localhost:4322' : location.protocol + '//' + host + ':4322');
+        window.STELLA_DESK = desk;
+
+        function revealLogin() {
+          document.querySelectorAll('[data-desk-login]').forEach(function (a) {
+            a.href = desk + '/admin';
+            a.removeAttribute('hidden');
+          });
+        }
+        function showBanner(css, html, shiftHeader) {
+          var bar = document.createElement('div');
+          bar.style.cssText = css;
+          bar.innerHTML = html;
+          document.body.prepend(bar);
+          if (shiftHeader) {
+            var header = document.querySelector('.site-header');
+            if (header) header.style.marginTop = '42px';
+          }
+        }
+        function hintMirrorMode() {
+          try {
+            if (sessionStorage.getItem('stella-desk-hint')) return;
+            sessionStorage.setItem('stella-desk-hint', '1');
+          } catch (e) { /* 无痕模式等：忽略 */ }
+          var tip = document.createElement('div');
+          tip.style.cssText = 'position:fixed;left:14px;bottom:14px;z-index:9998;max-width:min(92vw,430px);padding:.65rem .9rem;border-radius:12px;background:rgba(18,20,44,.92);border:1px solid rgba(150,142,255,.35);color:#e8e6ff;font-size:.82rem;line-height:1.6;font-family:system-ui,sans-serif;box-shadow:0 8px 30px rgba(0,0,0,.35)';
+          tip.innerHTML = 'ℹ️ 静态镜像模式：登录 / 评论 / AI 等互动功能需要站长写作台在线，当前不可用。' +
+            '<span id="stellaDeskHintClose" style="float:right;cursor:pointer;opacity:.75;font-weight:700;margin-left:.6rem" title="关闭">×</span>';
+          document.body.appendChild(tip);
+          var close = function () { tip.remove(); };
+          tip.querySelector('#stellaDeskHintClose').addEventListener('click', close);
+          setTimeout(close, 9000);
+        }
+
+        try {
+          var ctrl = new AbortController();
+          var timer = setTimeout(function () { ctrl.abort(); }, 2500);
+          fetch(desk + '/api/gate/status', { credentials: 'include', signal: ctrl.signal })
+            .then(function (r) { return r.ok ? r.json() : null; })
+            .then(function (d) {
+              clearTimeout(timer);
+              if (!d) throw new Error('desk-offline');
+              window.STELLA_DESK_OK = true;
+              revealLogin();
+              if (d.regionBlocked) {
+                showBanner(
+                  'position:fixed;top:0;left:0;right:0;z-index:9999;padding:1.2rem;text-align:center;background:#1a0a0a;color:#ff9ed2;font-size:.95rem;border-bottom:2px solid #ff4d6d;font-family:system-ui,sans-serif',
+                  '⛔ 你所在的地区（' + (d.regionCountry || '未知') + '）暂不开放访问。',
+                  false
+                );
+                return;
+              }
+              if (d.enabled && !d.passed) {
+                showBanner(
+                  'position:fixed;top:0;left:0;right:0;z-index:9999;padding:0.7rem;text-align:center;background:linear-gradient(94deg,rgba(143,127,247,.25),rgba(98,200,245,.18));border-bottom:1px solid rgba(150,142,255,.3);color:#f0efff;font-size:.88rem;font-family:system-ui,sans-serif',
+                  '🔒 本站启用了安全验证 —— <a href="' + desk + '/gate?next=' + encodeURIComponent(location.href) + '" style="color:#ffd98e;font-weight:700;text-decoration:underline">点击完成验证</a>，通过后即可使用全部功能（30 天免验）。',
+                  true
+                );
+              }
+            })
+            .catch(function () {
+              clearTimeout(timer);
+              window.STELLA_DESK_OK = false;
+              hintMirrorMode();
+            });
+        } catch (e) { /* 忽略 */ }
+      })();
+    })();</script> </body> </html> <script type="module">const m=document.getElementById("commentForm"),s=document.getElementById("cMsg"),u=`${location.protocol}//${location.hostname}:4322/api/message`;function r(e,t=!1){s&&(s.textContent=e,s.classList.toggle("is-err",t),s.classList.toggle("is-ok",!t))}function y(){const e=new Date,t=n=>String(n).padStart(2,"0");return`${e.getFullYear()}-${t(e.getMonth()+1)}-${t(e.getDate())}`}function f(e){let t=7;for(const n of e)t=(t*31+n.charCodeAt(0))%360;return t}function g(e,t){const n=document.createElement("li");n.className="comment",n.innerHTML=`
+      <span class="comment__avatar"></span>
+      <div class="comment__bubble">
+        <div class="comment__head">
+          <span class="comment__name"></span>
+          <time class="comment__date">${y()}</time>
+        </div>
+        <p class="comment__body"></p>
+      </div>`;const o=n.querySelector(".comment__avatar");return o.style.setProperty("--h",String(f(e))),o.textContent=e.slice(0,1),n.querySelector(".comment__name").textContent=e,n.querySelector(".comment__body").textContent=t,n}m?.addEventListener("submit",async e=>{e.preventDefault();const t=document.getElementById("cBody").value.trim();if(!t)return r("留言内容不能为空哦",!0);const n=document.getElementById("cAuthor").value.trim()||"旅人",o=m.querySelector("button");o&&(o.disabled=!0);try{const c=await fetch(u,{credentials:"include",method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({target:m.dataset.target,kind:"comment",author:n,body:t})}),d=await c.json().catch(()=>({}));if(!c.ok)throw new Error(d.error||`发送失败（${c.status}）`);const l=document.querySelector(".comment-list");l&&l.appendChild(g(n,t)),document.getElementById("commentsEmpty")?.remove(),document.getElementById("cBody").value="",r("留言已发布，感谢支持 ✦");const a=document.querySelector(".comments__title"),i=a?.textContent?.match(/（(\d+)）/);a&&i&&(a.textContent=a.textContent.replace(/（\d+）/,`（${Number(i[1])+1}）`))}catch(c){r(c instanceof TypeError?"写作台没在运行，暂时收不到留言 —— 双击「启动博客.bat」就好":c.message,!0)}finally{o&&(o.disabled=!1)}});</script> 

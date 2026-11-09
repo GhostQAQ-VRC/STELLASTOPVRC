@@ -1,0 +1,1390 @@
+<!DOCTYPE html><html lang="zh-CN"> <head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="generator" content="Astro v5.18.2"><meta name="description" content="结论：VRCFury 并未过时，截至 2026 年 5 月仍在活跃维护，不应将其标记为“已过时”。"><meta name="theme-color" content="#070a1c"><meta property="og:title" content="VRCFury 完整参考 — Non-Destructive Avatar 工具与优化系统 · 星之驿站 StellaStop"><meta property="og:description" content="结论：VRCFury 并未过时，截至 2026 年 5 月仍在活跃维护，不应将其标记为“已过时”。"><meta property="og:type" content="website"><meta name="twitter:card" content="summary"><link rel="icon" type="image/svg+xml" href="/STELLASTOPVRC/favicon.svg"><script>
+      // 在渲染前恢复主题与特效档位，避免闪一下默认状态
+      try {
+        document.documentElement.dataset.theme =
+          localStorage.getItem('stella-theme') || 'nebula';
+        document.documentElement.dataset.fx =
+          localStorage.getItem('stella-fx') || 'standard';
+      } catch {
+        /* 隐私模式读不到就算了 */
+      }
+    </script><link rel="stylesheet" href="/STELLASTOPVRC/custom-vars.css"><title>VRCFury 完整参考 — Non-Destructive Avatar 工具与优化系统 · 星之驿站 StellaStop</title><link rel="stylesheet" href="/STELLASTOPVRC/_astro/about.Bgh6wcGl.css">
+<style>.post-head__meta[data-astro-cid-lvjzyg5v]{color:var(--ink-faint);font-family:var(--font-mono);font-size:.82rem}.post-head[data-astro-cid-lvjzyg5v] .chip-row[data-astro-cid-lvjzyg5v]{margin-top:1rem}.kb-source-note[data-astro-cid-lvjzyg5v]{max-width:760px;margin:2.2rem auto 0;font-size:.82rem;color:var(--ink-faint);border-top:1px dashed var(--line);padding-top:1rem}
+</style></head> <body> <div class="site-notice" id="siteNotice"> <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> <span class="site-notice__text">欢迎来到星之驿站！</span> <button class="site-notice__close" id="noticeClose" type="button" aria-label="关闭公告">
+×
+</button> </div> <a class="skip-link" href="#main">跳到主要内容</a> <canvas id="starfield" aria-hidden="true" data-astro-cid-ra7sfcwn></canvas> <div class="fx-aurora fx-aurora--a" aria-hidden="true" data-astro-cid-ra7sfcwn></div> <div class="fx-aurora fx-aurora--b" aria-hidden="true" data-astro-cid-ra7sfcwn></div>  <script type="module">const u=document.getElementById("starfield");if(u){let F=function(){const n=Math.random();return n<.1?"gold":n<.42?"blue":"white"},v=function(){const n=Math.min(window.devicePixelRatio||1,2);s=window.innerWidth,d=window.innerHeight,u.width=s*n,u.height=d*n,u.style.width=`${s}px`,u.style.height=`${d}px`,t.setTransform(n,0,0,n,0,0);const e=Math.min(190,Math.round(s*d/8500));l=Array.from({length:e},()=>({x:Math.random()*s,y:Math.random()*d,r:r(.4,1.7),base:r(.25,.8),amp:r(.12,.4),speed:r(6e-4,.0022),phase:r(0,Math.PI*2),c:F()})),C=Array.from({length:26},()=>({x:Math.random()*s,y:Math.random()*d,r:r(.9,2.4),vx:r(-.006,.006),vy:r(-.02,-.006),base:r(.2,.5),speed:r(8e-4,.002),phase:r(0,Math.PI*2),c:Math.random()<.5?"gold":"violet"})),c==="off"&&m(0,!0)},D=function(n){const e=Math.random()<.5?1:-1,o=r(Math.PI/7,Math.PI/5),a=r(.45,.75);y.push({x:r(s*.15,s*.85),y:r(-20,d*.3),vx:Math.cos(o)*a*e,vy:Math.sin(o)*a,born:n,life:r(750,1050),len:r(100,170)})},S=function(n){y=y.filter(e=>n-e.born<e.life);for(const e of y){const o=(n-e.born)/e.life,a=e.x+e.vx*(n-e.born),i=e.y+e.vy*(n-e.born),f=o<.15?o/.15:o>.7?(1-o)/.3:1,h=Math.hypot(e.vx,e.vy),x=e.vx/h,g=e.vy/h,b=t.createLinearGradient(a,i,a-x*e.len,i-g*e.len);b.addColorStop(0,`rgba(236,242,255,${(.85*f).toFixed(3)})`),b.addColorStop(1,"rgba(236,242,255,0)"),t.strokeStyle=b,t.lineWidth=1.6,t.lineCap="round",t.beginPath(),t.moveTo(a,i),t.lineTo(a-x*e.len,i-g*e.len),t.stroke()}},B=function(){let o=0;t.lineWidth=.7;for(let a=0;a<l.length&&o<26;a++)for(let i=a+1;i<l.length&&o<26;i++){const f=l[a].x-l[i].x,h=l[a].y-l[i].y,x=f*f+h*h;if(x<16900){const g=(1-Math.sqrt(x)/130)*.17;t.strokeStyle=`rgba(178,170,255,${g.toFixed(3)})`,t.beginPath(),t.moveTo(l[a].x,l[a].y),t.lineTo(l[i].x,l[i].y),t.stroke(),o++}}},X=function(n){for(const e of C){e.x+=e.vx*16,e.y+=e.vy*16,e.y<-12&&(e.y=d+10),e.x<-12&&(e.x=s+10),e.x>s+12&&(e.x=-10);const o=Math.max(.05,e.base+.25*Math.sin(n*e.speed+e.phase)),[a,i,f]=A[e.c];t.beginPath(),t.arc(e.x,e.y,e.r,0,7),t.shadowBlur=9,t.shadowColor=`rgba(${a},${i},${f},0.9)`,t.fillStyle=`rgba(${a},${i},${f},${o.toFixed(3)})`,t.fill()}t.shadowBlur=0},m=function(n,e=!1){t.clearRect(0,0,s,d);for(const o of l){const a=c==="off"?o.base:Math.max(.05,o.base+o.amp*Math.sin(n*o.speed+o.phase)),[i,f,h]=A[o.c];t.beginPath(),t.arc(o.x,o.y,o.r,0,7),o.r>1.25?(t.shadowBlur=7,t.shadowColor=`rgba(${i},${f},${h},0.85)`):t.shadowBlur=0,t.fillStyle=`rgba(${i},${f},${h},${a.toFixed(3)})`,t.fill()}if(t.shadowBlur=0,c!=="off"&&!e){c==="fancy"&&(B(),X(n));const o=c==="fancy"?r(2600,6e3):r(4200,9500);n>P&&(D(n),P=n+o),S(n)}},$=function(n){m(n),M=requestAnimationFrame($)},p=function(){if(c==="off"){m(0,!0);return}cancelAnimationFrame(M),M=requestAnimationFrame($)},w=function(){cancelAnimationFrame(M),t.clearRect(0,0,s,d),m(0,!0)};const t=u.getContext("2d"),k=matchMedia("(prefers-reduced-motion: reduce)").matches,A={white:[240,240,255],blue:[150,215,250],gold:[255,218,150],violet:[178,170,255]};let s=0,d=0,l=[],C=[],y=[],P=2500,M=0,c=document.documentElement.dataset.fx||"standard";k&&(c="off");const r=(n,e)=>n+Math.random()*(e-n);v(),addEventListener("resize",v),document.addEventListener("stella-fx-change",n=>{c=n.detail,c==="off"?w():p()}),c==="off"?m(0,!0):(p(),document.addEventListener("visibilitychange",()=>{document.hidden?w():p()}))}</script> <header class="site-header"> <div class="wrap site-header__inner"> <a class="logo" href="/STELLASTOPVRC/"> <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> <span>星之驿站</span> <span class="logo__romaji">StellaStop</span> </a> <div class="header-right"> <nav class="site-nav" aria-label="站内导航"> <a href="/STELLASTOPVRC/"> 首页 </a><a href="/STELLASTOPVRC/start/"> 新手 </a><a href="/STELLASTOPVRC/posts/"> 教程 </a><a href="/STELLASTOPVRC/videos/"> 视频 </a><a href="/STELLASTOPVRC/resources/"> 资源 </a><a href="/STELLASTOPVRC/booth/"> Booth </a><a href="/STELLASTOPVRC/announcements/"> 公告 </a><a href="/STELLASTOPVRC/ai/"> 问星 </a><a href="/STELLASTOPVRC/changelog/"> 更新日志 </a><a href="/STELLASTOPVRC/about/"> 关于 </a> </nav> <a class="login-link" data-desk-login hidden title="写作台：登录 / 注册后可发教程、传资源">
+登录 / 注册
+</a> <div class="theme-switch"> <button class="theme-switch__btn" id="themeBtn" type="button" aria-haspopup="listbox" aria-expanded="false" aria-label="切换主题配色" title="切换主题配色"> <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"> <path d="M12 3a9 9 0 1 0 9 9c0-1.2-1-2-2.2-2H17a2 2 0 0 1-2-2V6.2C15 5 14.2 4 13 4.4A9 9 0 0 0 12 3Z"></path> <circle cx="7.5" cy="11.5" r="1" fill="currentColor" stroke="none"></circle> <circle cx="10" cy="7.5" r="1" fill="currentColor" stroke="none"></circle> <circle cx="15" cy="7" r="1" fill="currentColor" stroke="none"></circle> </svg> </button> <div class="theme-pop" id="themePop" role="listbox" aria-label="选择主题" hidden> <button class="theme-opt" type="button" role="option" data-theme-value="nebula" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#8f7ff7"></span><span class="dot" style="background:#62c8f5"></span><span class="dot" style="background:#ffd98e"></span> </span> <span class="theme-opt__name">星云 · 蓝紫</span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt" type="button" role="option" data-theme-value="sakura" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#ff8fc7"></span><span class="dot" style="background:#c79bff"></span><span class="dot" style="background:#ffd08e"></span> </span> <span class="theme-opt__name">樱语 · 粉紫</span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt" type="button" role="option" data-theme-value="miku" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#2ed3c2"></span><span class="dot" style="background:#6ea8ff"></span><span class="dot" style="background:#ffe08e"></span> </span> <span class="theme-opt__name">葱色 · 青绿</span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt" type="button" role="option" data-theme-value="ember" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#ffb35c"></span><span class="dot" style="background:#ff7e6b"></span><span class="dot" style="background:#ffd98e"></span> </span> <span class="theme-opt__name">暮金 · 暖橙</span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt" type="button" role="option" data-theme-value="dawn" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#6a5ce8"></span><span class="dot" style="background:#e0568f"></span><span class="dot" style="background:#b8821e"></span> </span> <span class="theme-opt__name">晨星 · 浅色</span> <span class="theme-opt__mark">✦</span> </button> </div> </div> <script type="module">const a=document.getElementById("themeBtn"),n=document.getElementById("themePop");function s(c){document.documentElement.dataset.theme=c;try{localStorage.setItem("stella-theme",c)}catch{}const e=getComputedStyle(document.documentElement).getPropertyValue("--bg-deep").trim();document.querySelector('meta[name="theme-color"]')?.setAttribute("content",e||"#070a1c"),document.querySelectorAll(".theme-opt").forEach(t=>{const d=t.dataset.themeValue===c;t.classList.toggle("is-active",d),t.setAttribute("aria-selected",String(d))})}if(a&&n){const c=document.documentElement.dataset.theme||"nebula";document.querySelectorAll(".theme-opt").forEach(e=>{const t=e.dataset.themeValue===c;e.classList.toggle("is-active",t),e.setAttribute("aria-selected",String(t))}),a.addEventListener("click",e=>{e.stopPropagation();const t=n.hidden;n.hidden=!t,a.setAttribute("aria-expanded",String(t))}),document.addEventListener("click",e=>{!n.hidden&&!e.target.closest(".theme-switch")&&(n.hidden=!0,a.setAttribute("aria-expanded","false"))}),document.addEventListener("keydown",e=>{e.key==="Escape"&&!n.hidden&&(n.hidden=!0,a.setAttribute("aria-expanded","false"),a.focus())}),n.addEventListener("click",e=>{const t=e.target.closest(".theme-opt");t&&(s(t.dataset.themeValue??"nebula"),n.hidden=!0,a.setAttribute("aria-expanded","false"))})}</script> <div class="theme-switch fx-switch"> <button class="theme-switch__btn" id="fxBtn" type="button" aria-haspopup="listbox" aria-expanded="false" aria-label="背景特效设置" title="背景特效设置"> <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"> <path d="M5 3v4M3 5h4M6.5 17.5v3M5 19h3"></path> <path d="M14.5 4.5 16 9l4.5 1.5L16 12l-1.5 4.5L13 12l-4.5-1.5L13 9l1.5-4.5Z"></path> </svg> </button> <div class="theme-pop" id="fxPop" role="listbox" aria-label="背景特效" hidden> <button class="theme-opt fx-opt" type="button" role="option" data-fx-value="off" aria-selected="false"> <span class="fx-opt__body"> <span class="fx-opt__name">关闭特效</span> <span class="fx-opt__hint">最省电</span> </span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt fx-opt" type="button" role="option" data-fx-value="standard" aria-selected="false"> <span class="fx-opt__body"> <span class="fx-opt__name">标准</span> <span class="fx-opt__hint">闪烁星空 + 流星</span> </span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt fx-opt" type="button" role="option" data-fx-value="fancy" aria-selected="false"> <span class="fx-opt__body"> <span class="fx-opt__name">华丽</span> <span class="fx-opt__hint">追加极光 / 星座 / 光尘</span> </span> <span class="theme-opt__mark">✦</span> </button> </div> </div> <script type="module">const n=document.getElementById("fxBtn"),a=document.getElementById("fxPop");function s(d){document.documentElement.dataset.fx=d;try{localStorage.setItem("stella-fx",d)}catch{}document.querySelectorAll("#fxPop .fx-opt").forEach(t=>{const e=t.dataset.fxValue===d;t.classList.toggle("is-active",e),t.setAttribute("aria-selected",String(e))}),document.dispatchEvent(new CustomEvent("stella-fx-change",{detail:d}))}if(n&&a){const d=document.documentElement.dataset.fx||"standard";document.querySelectorAll("#fxPop .fx-opt").forEach(t=>{const e=t.dataset.fxValue===d;t.classList.toggle("is-active",e),t.setAttribute("aria-selected",String(e))}),n.addEventListener("click",t=>{t.stopPropagation();const e=a.hidden;a.hidden=!e,n.setAttribute("aria-expanded",String(e))}),document.addEventListener("click",t=>{!a.hidden&&!t.target.closest(".fx-switch")&&(a.hidden=!0,n.setAttribute("aria-expanded","false"))}),document.addEventListener("keydown",t=>{t.key==="Escape"&&!a.hidden&&(a.hidden=!0,n.setAttribute("aria-expanded","false"),n.focus())}),a.addEventListener("click",t=>{const e=t.target.closest(".fx-opt");e&&(s(e.dataset.fxValue??"standard"),a.hidden=!0,n.setAttribute("aria-expanded","false"))})}</script> </div> </div> </header> <main id="main">  <article class="wrap post-layout" data-astro-cid-lvjzyg5v> <div class="post-main page-fade" data-astro-cid-lvjzyg5v> <header class="post-head" data-astro-cid-lvjzyg5v> <a class="crumb" href="/STELLASTOPVRC/posts/" data-astro-cid-lvjzyg5v>← 返回教程档案</a> <div class="post-head__meta" style="--accent:var(--ink-dim)" data-astro-cid-lvjzyg5v> <span class="badge" data-cat="Avatar 虚拟形象" data-astro-cid-lvjzyg5v>Avatar 虚拟形象</span> <time datetime="2026-11-09" data-astro-cid-lvjzyg5v>2026-11-09</time> <span class="post-head__reading" data-astro-cid-lvjzyg5v>⏱ 约 109 分钟</span>  </div> <h1 class="post-head__title" data-astro-cid-lvjzyg5v>VRCFury 完整参考 — Non-Destructive Avatar 工具与优化系统</h1> <p class="post-head__lead" data-astro-cid-lvjzyg5v>结论：VRCFury 并未过时，截至 2026 年 5 月仍在活跃维护，不应将其标记为“已过时”。</p> <div class="chip-row" data-astro-cid-lvjzyg5v> <a class="chip" href="/STELLASTOPVRC/posts/?tag=%E7%9F%A5%E8%AF%86%E5%BA%93" data-astro-cid-lvjzyg5v> 知识库 </a><a class="chip" href="/STELLASTOPVRC/posts/?tag=avatar" data-astro-cid-lvjzyg5v> avatar </a> </div> </header> <div class="prose" data-astro-cid-lvjzyg5v> <hr>
+<h1 id="vrcfury-维护状态修正并非过时工具社区推荐-modular-avatar-的真实原因">VRCFury 维护状态修正：并非过时工具，社区推荐 Modular Avatar 的真实原因</h1>
+<p>结论：VRCFury 并未过时，截至 2026 年 5 月仍在活跃维护，不应将其标记为“已过时”。</p>
+<p>可核实事实：维护状态活跃，GitHub 最后提交为 2026-05-02（提交信息 disable lv hook for now）；代码规模 C# 约 98.9% 加 HLSL 约 1.1%；官方下载页 vrcfury.com 仍正常提供下载；核心定位为 Non-Destructive Tools for VRChat Avatars（面向 VRChat Avatar 的非破坏性工具）。</p>
+<p>正确表述：VRCFury 不是过时，而是由于与 Modular Avatar 功能重叠、两者共存有冲突、VPM 安装路径直到 2026 年才正式上线等原因，社区才在大多数场景下推荐 Modular Avatar。判断一个工具是否过时应看仓库维护活动与官方分发渠道是否存活，而不是看社区推荐度。</p>
+<p>溯源：VRCFury 官方文档（v1.1341.0+ (2026-06-16)）；证据级 official。</p>
+<hr>
+<hr>
+<h1 id="vrcfury-项目概览vcc-一键安装方式官方仓库与非破坏性核心哲学">VRCFury 项目概览：VCC 一键安装方式、官方仓库与非破坏性核心哲学</h1>
+<p>VRCFury 是面向 VRChat Avatar 的非破坏性（Non-Destructive）工具集，官方推荐通过 VCC 一键安装。</p>
+<p>关键属性：仓库 <a href="https://github.com/VRCFury/VRCFury%EF%BC%9B%E5%AE%98%E7%BD%91">https://github.com/VRCFury/VRCFury；官网</a> <a href="https://vrcfury.com%EF%BC%9B%E6%96%87%E6%A1%A3%E4%BB%93%E5%BA%93">https://vrcfury.com；文档仓库</a> <a href="https://github.com/VRCFury/vrcfury.com%EF%BC%9B%E4%B8%8B%E8%BD%BD%E6%96%B9%E5%BC%8F%E4%B8%BA">https://github.com/VRCFury/vrcfury.com；下载方式为</a> VCC 一键安装（官方推荐，仓库地址 <a href="https://vcc.vrcfury.com%EF%BC%89%EF%BC%8C%E5%90%8C%E6%97%B6%E5%85%BC%E5%AE%B9%E6%97%A7">https://vcc.vrcfury.com），同时兼容旧</a> .unitypackage 导入；文档位置在 vrcfury.com 主页与 Discord 社区；维护状态活跃（2026-05-02 最后提交）；代码规模 C# 98.9% 加 HLSL 1.1%。</p>
+<p>核心哲学：Non-Destructive 非破坏性——上传前复制，原始文件永不修改；Play Mode 触发安装；Auto-Fix 容错。</p>
+<p>Write Defaults 兼容性：WD ON 与 WD OFF 两种状态均支持，无需为了使用 VRCFury 而强制更改项目的 WD 设置。</p>
+<p>溯源：VRCFury 官方文档（v1.1341.0+ (2026-06-16)）；证据级 official。</p>
+<hr>
+<hr>
+<h1 id="vrcfury-工具通用安装触发流程gesture-manager-emulator-进-play-mode-五步安装法">VRCFury 工具通用安装触发流程：Gesture Manager Emulator 进 Play Mode 五步安装法</h1>
+<p>任何 VRCFury 驱动的非破坏性工具（GoGo Loco、SPS、VRCFury Toggle、Full Controller 等）都遵循同一套安装触发流程：导入资源包后必须在 Unity Play Mode 中完成安装，而不是像传统 Unity Asset 那样拖入场景后直接使用。</p>
+<p>五步通用工作流：</p>
+<ol>
+<li>导入资源包：将工具的 .unitypackage 拖入 Unity 项目。</li>
+<li>拖入预设体：将工具的 Prefab（如 GoGo Loco 预设体、SPS 工具预设等）拖入 Avatar 子集。</li>
+<li>打开触发器：菜单 Tools > Gesture Manager Emulator 打开 Inspector 窗口。</li>
+<li>Enter Play-Mode：点击 Inspector 窗口中的 Enter Play-Mode 按钮。</li>
+<li>完成安装：VRCFury 在 Play Mode 中执行非破坏性安装，完成后 Avatar 即配置完毕。</li>
+</ol>
+<p>与传统 Unity Asset 流程的差异：传统资产导入并拖入场景后即可直接使用；VRCFury 工具则必须额外执行 Enter Play-Mode 触发安装，期间可能弹出 Auto-Fix 兼容性确认窗口，点击确认即可。</p>
+<p>前置条件：必须先通过 VCC（Manage Your Project）安装 Gesture Manager 插件与 VRCFury 自身，缺一不可。</p>
+<p>适用性已验证：GoGo Loco 1.8.3、SPS、VRCFury Toggle、VRCFury Full Controller 均遵循此流程。</p>
+<p>溯源：VRCFury 官方文档（v1.1341.0+ (2026-06-16)）；证据级 official。</p>
+<hr>
+<hr>
+<h1 id="vrcfury-三大设计原则非破坏性play-mode-触发auto-fix-容错及与传统流程对比">VRCFury 三大设计原则：非破坏性、Play Mode 触发、Auto-Fix 容错及与传统流程对比</h1>
+<p>VRCFury 的全部行为可以用三大设计原则解释，排查问题时应先对照这三条：</p>
+<ol>
+<li>Non-Destructive（非破坏性）：原始 Avatar 资产不被修改。实现方式是在 Play Mode 中以临时数据形式生成配置，上传前才复制应用。</li>
+<li>Play Mode 触发：仅在 Play Mode 中执行安装。实现方式是利用 Unity Play Mode 的运行时 API 访问 Avatar 3.0 系统。</li>
+<li>Auto-Fix 容错：自动修复配置问题。配置过程中检测到冲突时弹出 Auto-Fix 弹窗一键修复。</li>
+</ol>
+<p>与传统 Unity Asset 模式的逐项对比：修改时机——传统在 Edit Mode 直接修改资产，VRCFury 在 Play Mode 临时生成；原始资产——传统被直接改动，VRCFury 不修改（上传前复制）；配置位置——传统持久化在场景里，VRCFury 持久化在 Avatar 内（Play Mode 结束后仍保留）；可回滚性——传统回滚困难需手动撤销，VRCFury 删除 Prefab 即可整体回滚。</p>
+<p>溯源：VRCFury 官方文档（v1.1341.0+ (2026-06-16)）；证据级 official。</p>
+<hr>
+<hr>
+<h1 id="vrcfury-为何必须在-play-mode-中安装运行时-api-访问与临时数据生成原理工程推断">VRCFury 为何必须在 Play Mode 中安装：运行时 API 访问与临时数据生成原理（工程推断）</h1>
+<p>【工程推断，非官方明确说明】VRCFury 选择只在 Play Mode 中执行非破坏性安装，原因有三：</p>
+<ol>
+<li>运行时 API 访问：只有 Play Mode 中才能访问 Avatar 3.0 的运行时数据（Animator Runtime Controller、PlayableGraph 等），Edit Mode 下这些对象不可用。</li>
+<li>临时数据生成：Play Mode 中生成的配置以临时数据形式存在、不写入磁盘，天然保证原始资产不被修改。</li>
+<li>Edit Mode 限制：如果在 Edit Mode 中直接修改 Animator Controller 等资产文件，会破坏原始资产，直接违反 Non-Destructive 原则。</li>
+</ol>
+<p>因此“必须进 Play Mode 才生效”不是缺陷或多余步骤，而是非破坏性架构的必然代价：想要不改原始文件，就只能借助运行时临时数据完成装配。</p>
+<p>溯源：工程推断（多案例交叉验证）（v1.1341.0+ (2026-06-16)）；证据级 inferred。</p>
+<hr>
+<hr>
+<h1 id="vrcfury-auto-fix-容错机制兼容性弹窗触发场景与一键自动修复方式">VRCFury Auto-Fix 容错机制：兼容性弹窗触发场景与一键自动修复方式</h1>
+<p>VRCFury 在配置过程中检测到问题时会弹出兼容性提示窗口，点击窗口左下角的 Auto-Fix 按钮即可自动修复，一般无需手动干预。</p>
+<p>常见触发场景有三类：Animator Controller 冲突、Parameter 名称冲突、VRCFury 组件版本不兼容。</p>
+<p>处理方式：看到兼容性提示窗口后直接点左下角 Auto-Fix，等待自动修复完成即可。遇到 Auto-Fix 弹窗属于正常安装流程的一部分，不代表安装失败，不需要回滚重装或手工修改控制器。</p>
+<p>溯源：VRCFury 官方文档（v1.1341.0+ (2026-06-16)）；证据级 official。</p>
+<hr>
+<hr>
+<h1 id="vrcfury-配置持久化规则退出-play-mode-后配置保留重开项目无需重复触发">VRCFury 配置持久化规则：退出 Play Mode 后配置保留、重开项目无需重复触发</h1>
+<p>VRCFury 在 Play Mode 中完成的安装是一次性的持久配置：退出 Play Mode 后配置仍保留在 Avatar 上，以 VRCFury 生成的非破坏性形式存储。</p>
+<p>由此得到两条使用规则：其一，重新打开项目时不需要也不应该期待 Play Mode 自动触发——只有在首次配置或修改预设体（Prefab）之后才需要再次进入 Play Mode 触发安装；其二，想撤销整套配置时删除对应的 Prefab 即可，无需手动清理场景或控制器。</p>
+<p>溯源：VRCFury 官方文档（v1.1341.0+ (2026-06-16)）；证据级 official。</p>
+<hr>
+<hr>
+<h1 id="vrcfury-主要组件清单togglegesturesfull-controllerarmature-linkglobal-collider-与-ma-对应关系">VRCFury 主要组件清单：Toggle、Gestures、Full Controller、Armature Link、Global Collider 与 MA 对应关系</h1>
+<p>VRCFury 主要组件及其与 Modular Avatar（MA）的对应关系如下：</p>
+<ul>
+<li>Toggle：菜单开关/按钮/滑块，可控制 GameObject、BlendShape、Material 与动画；对应 MA Toggle，但 VRCFury 功能更丰富（Transition State、Exclusive Tags、Slider Wheel）。</li>
+<li>Gestures：手势动画自动化；MA 无直接对应需手动搭建，是 VRCFury 的优势项。</li>
+<li>Full Controller：合并完整 Controller 加 Menu 加 Parameters；对应 MA MenuInstaller，对 Prefab 制作者友好。</li>
+<li>Armature Link：服装/道具骨骼绑定；对应 MA Merge Armature，能力类似。</li>
+<li>Global Collider：全局 PhysBone Collider 与 Contact Sender；MA 需手动配置，VRCFury 一键更方便。</li>
+</ul>
+<p>选型参考：Toggle、Full Controller、Armature Link 属于 MA 已覆盖或部分覆盖的功能，两者二选一即可；Gestures 与 Global Collider 是 VRCFury 明显更省事的场景。</p>
+<p>溯源：VRCFury 官方文档（v1.1341.0+ (2026-06-16)）；证据级 official。</p>
+<hr>
+<hr>
+<h1 id="vrcfury-优化组件清单parameter-compressordirect-tree-optimizerblendshape-optimizerfix-write-defaults">VRCFury 优化组件清单：Parameter Compressor、Direct Tree Optimizer、Blendshape Optimizer、Fix Write Defaults</h1>
+<p>VRCFury 内置四个优化组件，覆盖同步参数、Animator 层数、VRAM、Write Defaults 四个性能维度：</p>
+<ul>
+<li>Parameter Compressor（⭐ 核心优化）：压缩同步参数。原理是将所有菜单控制的 Float/Int 参数压入 16 bit；实测效果为同步占用从 253 bit 降到 125 bit。</li>
+<li>Direct Tree Optimizer（⭐ 核心优化）：减少 Animator 层数。原理是将非冲突层合并为单个 Direct Blend Tree 层；效果是显著减少 frametime。</li>
+<li>Blendshape Optimizer（⭐ 核心优化）：减少 VRAM 占用。原理是烘焙所有非动画 BlendShape 到 Mesh；效果是零成本减少 VRAM。</li>
+<li>Fix Write Defaults：修复 WD 冲突。原理是自动检测并对齐所有动画状态的 WD 设置；效果是消除 WD 混合导致的 bug。</li>
+</ul>
+<p>排查 Avatar 性能等级过高或 frametime 异常时，优先检查这四个组件是否已启用。</p>
+<p>溯源：VRCFury 官方文档（v1.1341.0+ (2026-06-16)）；证据级 official。</p>
+<hr>
+<hr>
+<h1 id="vrcfury-功能组件清单mmd-兼容斗鸡眼修复pin-密码锁等-21-个功能组件速查">VRCFury 功能组件清单：MMD 兼容、斗鸡眼修复、PIN 密码锁等 21 个功能组件速查</h1>
+<p>VRCFury 提供 21 个功能组件，按用途分类速查：</p>
+<p>口型与表情：Advanced Visemes（用 VRCFury Action 作口型，支持骨骼变换替代 BlendShape）、Blink Controller（自定义眨眼控制，避免双击手势时的双重眨眼）、Cross-Eye Fix（通过旋转约束消除眼球 Roll，修复斗鸡眼）。</p>
+<p>上传处理：Apply During Upload（上传时执行指定 Action，例如编辑器显示某 BlendShape 但上传时关闭）、Delete During Upload（上传时删除指定对象及其子对象）。</p>
+<p>光照与渲染：Anchor Override Fix（确保所有 Mesh 使用同一 Anchor Override，统一环境光照）、Bounding Box Fix（确保所有 Mesh 有足够大的 Bounding Box，避免 VR 视角下消失）、Show In First Person（第一人称视角可见，通过 Constraint 实现）、Gizmo（仅编辑器可见的标记，不影响游戏）。</p>
+<p>服装与道具：Blendshape Link（服装 BlendShape 自动链接到身体 BlendShape）、Droppable（添加丢弃功能，基于 World Constraint）。</p>
+<p>菜单定制：Move Menu Item（移动菜单项路径）、Override Menu Icon（覆盖菜单图标）、Override Menu Settings（修改 VRCFury 默认 Next 菜单项）。</p>
+<p>交互与控制：Security Pin Number（4-10 位数字 PIN 安全密码锁）、Security Restricted（需要 PIN 码才能启用的对象）、Toes Puppet（脚趾控制滑块）、When-Talking State（说话时激活指定 Action）、Senky Gesture Driver（Senky 风格特定手势布局）、Remove Hand Gestures（移除非 VRCFury Controller 中的手势功能）。</p>
+<p>世界兼容：MMD Compatibility（MMD 世界兼容：保持 BlendShape、避免干扰层、禁用手势动画）。</p>
+<p>溯源：VRCFury 官方文档（v1.1341.0+ (2026-06-16)）；证据级 official。</p>
+<hr>
+<hr>
+<h1 id="sps-super-plug-shader-简介与核心优势免费开源-dpstps-替代变形系统兼容-shader-与-socket-数量限制">SPS (Super Plug Shader) 简介与核心优势：免费开源 DPS/TPS 替代变形系统、兼容 Shader 与 Socket 数量限制</h1>
+<p>SPS（Super Plug Shader）是 VRCFury 提供的免费变形 Shader 系统，定位为 DPS/TPS 的替代品。</p>
+<p>基本属性：类型为免费变形 Shader；兼容 Poiyomi Toon/Pro 7/8+、lilToon、UTS、Mochie、XSToon、Silent、Standard 等主流 Shader；支持 Rigged 与 Un-rigged Mesh、BlendShape 动画、Avatar Scaling；向后兼容所有 TPS 和 DPS 系统；数量限制为最多 2 Socket 加无限 Plug，附近有 Point Light 时 Socket 上限降至 1。</p>
+<p>核心优势：完全开源免费（VRCFury 仓库以 HLSL 实现，可自由使用）；消除了 DPS/TPS 常见的拉伸形变问题；深度感知 Blendshape 使形变过程中仍可动画化 Blendshape；官方处于活跃迭代状态（active development, often several updates per week，每周常有多次更新）。</p>
+<p>溯源：VRCFury 官方文档（v1.1341.0+ (2026-06-16)）；证据级 official。</p>
+<hr>
+<hr>
+<h1 id="sps-plug-设置流程create-plug-创建骨骼mesh-renderer-绑定规则与直线展开基准约束">SPS Plug 设置流程：Create Plug 创建、骨骼/Mesh Renderer 绑定规则与直线展开基准约束</h1>
+<p>SPS Plug 代表形变的主动方，通过菜单 Tools > VRCFury > SPS > Create Plug 创建，设置要点是绑定对象、基部位置与伸展方向。</p>
+<p>设置步骤：第一步走菜单路径 Tools > VRCFury > SPS > Create Plug 创建；第二步绑定网格——有骨骼的网格将 Plug 拖到形变区域底部的骨骼子集上，无骨骼的网格将 Plug 拖到形变区域的 Mesh Renderer 上；第三步将 Plug 定位到形变区域的底部/基部；第四步旋转 Plug 使其弯曲端对齐形变区域尖端所指的方向。</p>
+<p>关键约束：Plug 在编辑器中必须保持完全伸直（fully extended）状态，这是形变的基准方向；编辑器里弯曲摆放会导致形变基准错误。</p>
+<p>例外（静态弯曲）：若需要 Avatar 静止时 Plug 呈弯曲或不展开的外观，不要直接弯折 Plug，而是在 Plug 组件的 Post-Bake Actions 字段添加动画来实现。</p>
+<p>溯源：VRCFury 官方文档（v1.1341.0+ (2026-06-16)）；证据级 official。</p>
+<hr>
+<hr>
+<h1 id="sps-socket-设置流程create-socket-创建箭头朝内定向与双灯-very-poor-性能警告">SPS Socket 设置流程：Create Socket 创建、箭头朝内定向与双灯 Very Poor 性能警告</h1>
+<p>SPS Socket 代表承接形变的被动方，通过菜单 Tools > VRCFury > SPS > Create Socket 创建，设置要点是目标骨骼、接触点位置与箭头朝向。</p>
+<p>设置步骤：第一步走菜单路径 Tools > VRCFury > SPS > Create Socket 创建；第二步将 Socket 拖到目标骨骼上；第三步定位到预期接触点；第四步旋转使箭头指向内部空间（朝向身体内部）。</p>
+<p>性能警告：单个 Socket 包含 2 个 lights 时，Avatar 性能等级会直接降为 Very Poor——即使禁用的灯不消耗实际渲染性能也一样触发评级惩罚，因此每个 Socket 应只保留 1 组灯。</p>
+<p>关联限制：Socket 附近存在 Point Light 时，SPS 的 Socket 数量上限会从 2 降到 1。</p>
+<p>溯源：VRCFury 官方文档（v1.1341.0+ (2026-06-16)）；证据级 official。</p>
+<hr>
+<hr>
+<h1 id="vrcfury-sps-不要与-constraints-混用重复-socket-失效与触点抖动风险及正确做法">VRCFury SPS 不要与 Constraints 混用：重复 socket 失效与触点抖动风险及正确做法</h1>
+<p>结论：VRCFury 官方专题文档明确警告「DON’T MIX SPS WITH CONSTRAINTS」——SPS 的 Socket 必须直接放在目标骨骼上，不要通过 Constraints 来切换或承载。</p>
+<p>混用的具体危害有四点：</p>
+<ol>
+<li>OGB 无法检测重复 socket 的触点激活（当多个 socket 共享同一参数名时）。</li>
+<li>重复 socket 不能单独动画化。</li>
+<li>重复 socket 会阻止所有 SPS 菜单功能，包括 Auto mode、Dual mode 等。</li>
+<li>Constraints 由于 VRChat bug 会给 contacts 带来大量抖动，导致深度动画和 haptics 异常；此外 Parent constraints 性能略低于直接挂在父级。</li>
+</ol>
+<p>正确做法：把 Socket 组件直接放在目标骨骼上，不引入任何 Constraint 中间层。</p>
+<p>溯源：VRCFury 官方文档（官方快照验证日期 2026-07-04）；证据级 official。</p>
+<hr>
+<hr>
+<h1 id="从-dpstps-迁移到-vrcfury-sps两条升级工具路径手动升级步骤与平台级限制">从 DPS/TPS 迁移到 VRCFury SPS：两条升级工具路径、手动升级步骤与平台级限制</h1>
+<p>结论：从 DPS/TPS 迁移到 VRCFury SPS 有两条官方工具路径，按范围选择：</p>
+<table>
+<thead>
+<tr>
+<th>工具路径</th>
+<th>用途</th>
+<th>适用场景</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Tools > VRCFury > SPS > Upgrade DPS to SPS</td>
+<td>升级整个 Avatar</td>
+<td>整体从 DPS 迁移到 SPS</td>
+</tr>
+<tr>
+<td>Tools > VRCFury > SPS > Upgrade Legacy Haptics</td>
+<td>升级单个对象</td>
+<td>为单个 plug/socket 添加 contacts</td>
+</tr>
+</tbody>
+</table>
+<p>手动 DPS 升级步骤（不用自动工具时）：</p>
+<ol>
+<li>删除所有 DPS Tip lights（通常在名为 Physics 的子对象里）。</li>
+<li>把 plug 材质的 shader 从 Raliv/Penetrator 改为 Standard 或其他目标 shader。</li>
+<li>删除任何现有的 SPS Plug 组件（若之前运行过 Haptic Upgrader，这些组件常在 mesh renderer 同级）。</li>
+</ol>
+<p>手动 TPS 升级步骤：在 Poiyomi material 面板禁用 Penetrator 复选框。</p>
+<p>已知迁移副作用：之前用 Fluff’s Toolbox DPS Setup 或 Universal DPS Attachment System 的 Avatar，菜单 toggles 可能会自动移动到新 SPS 文件夹。</p>
+<p>平台级限制：存储在 World 中的 plug/socket 无法触发深度动画（没有 contacts），无解决方案；只能让其他玩家安装 VRCFury 并升级其 DPS 来解决。</p>
+<p>溯源：VRCFury 官方文档（官方快照验证日期 2026-07-04）；证据级 official。</p>
+<hr>
+<hr>
+<h1 id="vrcfury-sps-编辑器测试流程gesture-manager-八步操作与仅编辑器出现的形变-bug">VRCFury SPS 编辑器测试流程：Gesture Manager 八步操作与仅编辑器出现的形变 Bug</h1>
+<p>结论：在 Unity 编辑器测试 SPS 的标准流程共 8 步，依赖 Gesture Manager 插件模拟游戏内行为：</p>
+<ol>
+<li>安装 Gesture Manager 插件（VCC → Manage Your Project）。</li>
+<li>创建测试用 Socket 对象（无需绑定至 Avatar）。</li>
+<li>若使用未升级的 DPS 插件，通过 Tools > VRCFury > SPS > Upgrade Legacy Haptics 添加触点。</li>
+<li>确认 Unity 编辑器顶部 3D 视图的场景照明按钮（灯泡图标）处于启用状态。</li>
+<li>进入 Play Mode。</li>
+<li>选择场景中的 Gesture Manager 对象（若无，通过 Tools > Gesture Manager Emulator 生成）。</li>
+<li>在 Gesture Manager 的 SPS 子菜单中启用目标 Socket。</li>
+<li>移动测试对象，观察形变。</li>
+</ol>
+<p>已知编辑器 Bug：Socket 禁用后 Plug 仍可能持续形变（偶现）。注意：此问题不影响游戏内效果，仅在编辑器出现，不必当作配置错误排查。</p>
+<p>溯源：VRCFury 官方文档（官方快照验证日期 2026-07-04）；证据级 official。</p>
+<hr>
+<hr>
+<h1 id="vrcfury-sps-菜单位置自定义sps-options-组件与-menu-path-设置">VRCFury SPS 菜单位置自定义：SPS Options 组件与 Menu Path 设置</h1>
+<p>结论：SPS 的游戏内开关菜单位置由 SPS Options 组件控制。</p>
+<p>背景：每个 SPS Socket 会自动生成游戏内菜单开关（启用/禁用），无需手动建菜单。</p>
+<p>自定义步骤：</p>
+<ol>
+<li>选择 Avatar 根对象（含 VRC Avatar Descriptor 的节点）。</li>
+<li>在 Inspector 底部 → Add Component → 搜索并添加 SPS Options 组件。</li>
+<li>在 Menu Path 输入框填写目标路径（默认值：SPS）。</li>
+</ol>
+<p>子菜单示例：填 Props/SPS 即把菜单置于 Props 分类下。</p>
+<p>溯源：VRCFury 官方文档（官方快照验证日期 2026-07-04）；证据级 official。</p>
+<hr>
+<hr>
+<h1 id="vrcfury-sps-plug-缩放与动画限制允许禁止操作清单animated-toggle-条件与加长技巧">VRCFury SPS Plug 缩放与动画限制：允许/禁止操作清单、Animated Toggle 条件与加长技巧</h1>
+<p>结论：SPS Plug 的缩放与动画有一组明确的允许/禁止边界，核心判据是「不能破坏长度语义」。</p>
+<p>允许的操作：</p>
+<ul>
+<li>对 Plug 的父级对象进行均匀缩放动画。</li>
+<li>对 Plug 渲染器的 Blendshape 制作动画，前提：Blendshape 名称已加入 Plug 组件的 Animatable Blendshapes 列表，且不改变 Plug 长度。</li>
+<li>在编辑器默认姿态下自由调整位置/旋转/缩放（不影响动画）。</li>
+</ul>
+<p>禁止的操作：</p>
+<ul>
+<li>对 Plug 渲染器骨骼的位置/旋转/非均匀缩放制作动画（除非骨骼是 Plug 的父级）。</li>
+<li>使用影响 Plug 长度的 Blendshape。</li>
+</ul>
+<p>生效条件：上述限制仅在 Plug 的 Animated Toggle 启用时生效；关闭 Animated Toggle 后可完全自由控制 Plug 的形变与动画。</p>
+<p>加长技巧（不加周长）：①动画中均匀放大整个 Plug 网格；②创建专用 Blendshape 缩小半径以抵消周长增加；③确保该 Blendshape 仅影响径向尺寸、不改变长度。</p>
+<p>溯源：VRCFury 官方文档（官方快照验证日期 2026-07-04）；证据级 official。</p>
+<hr>
+<hr>
+<h1 id="vrcfury-parameter-compressor-参数压缩器指针式浮点同步把菜单-floatint-参数压进-16-bit">VRCFury Parameter Compressor 参数压缩器：指针式浮点同步把菜单 Float/Int 参数压进 16 bit</h1>
+<p>结论：VRCFury Parameter Compressor（参数压缩器）用「指针式浮点同步」技术，把所有菜单控制的 Float 和 Int 同步参数压缩进 16 bit 总同步量，解决 256 bit Expression Parameter 预算不够的问题。</p>
+<p>效果对比：传统方式 10 个色相滑块 = 10 × 8 bit = 80 bit；压缩后同样 10 个滑块只需 16 bit（指针 + 数据），节省 64 bit。</p>
+<p>技术实现六要素：</p>
+<ol>
+<li>本地化：所有 Radial Puppet 的 Float 参数变为本地参数（不同步）。</li>
+<li>指针 + 数据：用 1 个 Int（指针，8 bit）+ 1 个 Float（数据，8 bit）= 16 bit 同步。</li>
+<li>Copy Driver：通过 VRC Avatar Parameter Driver 在数据字段和实际参数之间复制。</li>
+<li>变更检测：用 Blend Tree 数学运算检测哪个参数发生了变化。</li>
+<li>优先级发送：变化的参数优先通过指针发送。</li>
+<li>远程平滑：远端 Avatar 上参数经过平滑处理（因 Copy Driver 丢失了 IK 同步）。</li>
+</ol>
+<p>排除规则：非菜单控制参数（可能由 OSC 驱动，如面部追踪）、Two/Four Axis Puppet 参数（尾巴耳朵实时控制）不参与压缩；Parameter Driver 驱动的参数可配置排除，避免与自动驱动冲突。</p>
+<p>溯源：VRCFury 官方文档（官方快照验证日期 2026-07-04）；证据级 official。</p>
+<hr>
+<hr>
+<h1 id="vrcfury-工具冲突规则ma-sync-parameter-sequence-不可共存d4rkavataroptimizer-注意先后顺序">VRCFury 工具冲突规则：MA Sync Parameter Sequence 不可共存，d4rkAvatarOptimizer 注意先后顺序</h1>
+<p>结论：VRCFury 与两类常用工具存在明确的兼容性结论——与 MA Sync Parameter Sequence 互斥、不可共存；与 d4rkAvatarOptimizer 可共存，但有执行顺序上的注意事项。</p>
+<p>冲突明细：</p>
+<ol>
+<li>MA Sync Parameter Sequence（Modular Avatar 的同步参数序列功能）：判定为不可共存。原因在于它与 VRCFury 都会对动画参数槽位进行重排，两套重排流程叠加后无法保证槽位布局正确，FX 参数可能出现错乱。</li>
+<li>d4rkAvatarOptimizer（网格优化类插件）：判定为需注意而非禁止。执行顺序上 VRCFury 在 d4rkAvatarOptimizer 之后运行，VRCFury 注入或修改的内容发生在 d4rk 完成优化之后，因此可能影响 d4rk 的优化效果。</li>
+</ol>
+<p>实践含义：项目中若已使用 MA Sync Parameter Sequence 管理 FX 参数顺序，应在它与 VRCFury 之间二选一；同时使用 d4rkAvatarOptimizer 时，应在最终上传前完整测试，确认 VRCFury 的后置处理没有破坏 d4rk 已完成的优化。</p>
+<p>溯源：VRCFury 官方文档（版本未标注，工具持续更新）；证据级 official。</p>
+<hr>
+<hr>
+<h1 id="vrcfury-direct-tree-optimizer-原理把大量-toggle-动画层合并成单个-direct-blend-tree-层减负">VRCFury Direct Tree Optimizer 原理：把大量 Toggle 动画层合并成单个 Direct Blend Tree 层减负</h1>
+<p>结论：VRCFury 的 Direct Tree Optimizer 是减少 FX 动画层数的核心手段——它把所有非冲突的 Animator 层转换为一个 Direct Blend Tree 层，让几十个 Toggle 从各自独占一层变成在同一层内并行处理。</p>
+<p>背景原理：VRChat Avatar 的 FX Controller 通常包含大量极简单的 Toggle 层，每层只有 ON/OFF 两个状态。但每个 Animator 层都带有固定计算开销：层权重计算、状态机更新等，层数越多总开销越大，与层内实际内容复杂度关系不大。</p>
+<p>转换效果可用官方示例直观表达：
+优化前：50 个 Toggle = 50 个 Animator 层（每层独立计算）；
+优化后：50 个 Toggle = 1 个 Direct Blend Tree 层（并行计算）。</p>
+<p>也就是说，Toggle 数量增长不再带来层数线性增长：无论有多少个符合条件的 Toggle，最终都汇入同一个 Direct Blend Tree，由各自的 Float 权重参数并行驱动。这直接降低了 Animator 的运行时评估开销，是拥有几十上百个开关的大型 Avatar 保持性能的关键优化之一。</p>
+<p>溯源：VRCFury 官方文档（版本未标注，工具持续更新）；证据级 official。</p>
+<hr>
+<hr>
+<h1 id="vrcfury-direct-blend-tree-技术要素direct-混合类型常量-weight-1bool-转-float强制-write-defaults-on">VRCFury Direct Blend Tree 技术要素：Direct 混合类型、常量 Weight 1、Bool 转 Float、强制 Write Defaults ON</h1>
+<p>结论：Direct Tree 优化生成的不是普通的动画层堆叠，而是具有固定技术结构的 Direct Blend Tree；理解这五项要素有助于排查优化后的动画异常。</p>
+<p>五项技术要素：</p>
+<ol>
+<li>Blend Type：Direct——每个子项（子 Blend Tree）由一个独立的 Float 参数控制其权重，而非依赖时间轴或单一参数插值。</li>
+<li>Weight 参数：常量 1——该层总权重固定写 1，不作为同步参数，不占用同步带宽。</li>
+<li>Toggle 参数：原本按 Bool 同步的 Toggle 参数会被自动转换为 Float 参数，同步成本仅 1 bit。</li>
+<li>Write Defaults：必须 ON——硬性要求，WD 关闭时 Blend Tree 行为会异常。</li>
+<li>动画结构：每个 Toggle 表现为 Direct Tree 下的一棵子 Blend Tree，子树内含 Off 动画与 On 动画两个状态，分别对应该功能的关与开。</li>
+</ol>
+<p>排查提示：如果优化后出现动画不复位、状态残留等异常，首先检查相关状态的 Write Defaults 是否被外部工具改成 OFF；VRCFury 自带的 Fix Write Defaults 功能也会把 Direct BlendTree 的 WD 对齐为 On。</p>
+<p>溯源：VRCFury 官方文档（版本未标注，工具持续更新）；证据级 official。</p>
+<hr>
+<hr>
+<h1 id="direct-tree-优化适用范围togglesgesturessps-等五类组件自动应用animator-层须满足无-behaviour-双状态互转等五条件">Direct Tree 优化适用范围：Toggles/Gestures/SPS 等五类组件自动应用，Animator 层须满足无 Behaviour 双状态互转等五条件</h1>
+<p>结论：Direct Tree 优化是自动进行的，但只作用于满足严格条件的动画层；掌握适用范围就能预判哪些内容会被减层、哪些不会。</p>
+<p>自动应用的组件范围：以下五类 VRCFury 组件生成的动画层会自动套用 Direct Tree 优化，无需额外设置——</p>
+<ol>
+<li>Toggles（开关）；</li>
+<li>Gestures（手势）；</li>
+<li>Full Controllers（完整控制器）；</li>
+<li>SPS；</li>
+<li>Advanced Visemes（高级口型）。</li>
+</ol>
+<p>层级别准入条件：一个 Animator 层必须同时满足以下全部条件，才会被转换为 Direct Blend Tree——</p>
+<ol>
+<li>无 State Behaviour：层内 State 上没有挂任何 Animator Behaviour（脚本类组件）；</li>
+<li>仅两状态：恰好两个 State，对应 ON/OFF；</li>
+<li>互相转换：两个 State 的 Transition 互相指向对方（A→B 与 B→A 同时存在）；</li>
+<li>条件对称：一个 State 的转换条件是另一个的逆（如参数为真 / 参数为假）；</li>
+<li>无冲突属性：该层动画化的属性不与其他层的动画重叠。</li>
+</ol>
+<p>排查指引：若某个 Toggle 没有被并入 Direct Tree，逐条对照上述五条件检查——常见原因包括层内挂了 State Behaviour、State 数量超过两个、Transition 未形成互指、或与其他层动画化了相同属性。</p>
+<p>溯源：VRCFury 官方文档（版本未标注，工具持续更新）；证据级 official。</p>
+<hr>
+<hr>
+<h1 id="vrcfury-blendshape-optimizer上传时自动烘焙非动画-blendshape-进基础-mesh-节省-vram">VRCFury Blendshape Optimizer：上传时自动烘焙非动画 BlendShape 进基础 Mesh 节省 VRAM</h1>
+<p>结论：Blendshape Optimizer 用于减少 Avatar 的 VRAM 占用——它自动找出所有从未被动画使用的 BlendShape，把它们的效果直接烘进 Mesh 的基础形状，这些 BlendShape 随即不再占用显存。</p>
+<p>为什么要这样做：Avatar Mesh 通常带大量 BlendShape——面部表情、身体微调、体型预设等，其中相当一部分在任何动画里都没有被用到（典型如模型师调体型用的预设滑块）。每个 BlendShape 都要存储一套顶点偏移数据，即使永远不用也持续占用 VRAM。</p>
+<p>官方给出的量化示意：优化前 Body Mesh 有 80 个 BlendShape，其中 50 个从未被动画化；优化后 Body Mesh 只剩 30 个 BlendShape，另外 50 个已被烘焙进基础形状，省下了这 50 组顶点偏移数据的显存。</p>
+<p>四个关键特性：</p>
+<ol>
+<li>零配置：无需任何设置，自动检测可烘焙项；</li>
+<li>非破坏性：只在上传构建时处理，工程中的原始 Mesh 文件不会被修改；</li>
+<li>安全性：只烘焙确认未被任何动画引用的 BlendShape，被动画用到的绝不触碰；</li>
+<li>MMD 兼容：需要保留 MMD 表情时，配合 MMD Compatibility 组件即可把 MMD 相关 BlendShape 保留下来不被烘焙。</li>
+</ol>
+<p>溯源：VRCFury 官方文档（版本未标注，工具持续更新）；证据级 official。</p>
+<hr>
+<hr>
+<h1 id="vrcfury-fix-write-defaults自动修复-additivedirecttree-wd-offwd-混用与-missing-animation-四类问题含四种工作模式">VRCFury Fix Write Defaults：自动修复 Additive/DirectTree WD Off、WD 混用与 Missing Animation 四类问题（含四种工作模式）</h1>
+<p>结论：Write Defaults（WD）设置错误是 Unity/VRChat 模型动画异常的高发原因，VRCFury 的 Fix Write Defaults 组件会自动检测全模型的 WD 状态并按所选模式统一对齐。</p>
+<p>四类典型问题与对应处理：</p>
+<ol>
+<li>Additive 层 WD 为 Off：后果是 BlendShape 数值被放大 3 倍、无关的 Transform 会持续移动；VRCFury 把这些状态自动标记为 WD On。</li>
+<li>Direct BlendTree 中 WD 为 Off：后果是与该树无关的动画出现断裂；同样自动标记为 WD On。</li>
+<li>WD On 与 WD Off 混合使用：后果最严重，Unity 会破坏所有动画；VRCFury 检测到混用后自动把状态对齐到一致方向。</li>
+<li>Missing Animation（状态缺少动画剪辑）：在 WD Off 场景下会导致 Transform 断裂；VRCFury 用一段空的 1 秒 Clip 替换补位。</li>
+</ol>
+<p>四种工作模式：</p>
+<ul>
+<li>Auto：自动选择需要改动最少的方向（整体 On 或整体 Off）；</li>
+<li>Force On：强制所有状态 WD On；</li>
+<li>Force Off：强制所有状态 WD Off；</li>
+<li>Disabled：不做任何修改。</li>
+</ul>
+<p>使用提示：不确定模型 WD 状况时保持 Auto 即可获得安全的自动对齐；由于 Direct Tree 优化要求 WD 必须为 ON，该组件与 Direct Tree 优化是配套关系。</p>
+<p>溯源：VRCFury 官方文档（版本未标注，工具持续更新）；证据级 official。</p>
+<hr>
+<hr>
+<h1 id="vrcfury-actions-全量清单togglegesturesps-组件共用的-16-种执行动作及用途">VRCFury Actions 全量清单：Toggle/Gesture/SPS 组件共用的 16 种执行动作及用途</h1>
+<p>结论：VRCFury 把“具体执行什么操作”抽象成了统一的 Action 体系——无论是 Toggle、Gesture 还是 SPS 组件，都从同一份 Action 清单中选择动作；掌握这份清单即掌握了三类组件的能力边界。</p>
+<p>16 种 Action 及用途：</p>
+<ol>
+<li>Object Toggle——开启/关闭 GameObject，最常用的显示隐藏开关；</li>
+<li>BlendShape——把某个 BlendShape 动画化到指定数值；</li>
+<li>Animation Clip——直接播放预制动画片段，资源路径由 VRCFury 自动重写；</li>
+<li>Poiyomi Flipbook Frame——动画化 Poiyomi 材质 Flipbook 的当前帧；</li>
+<li>Poiyomi UV Tile——控制 Poiyomi UV Tile Discard 的开与关；</li>
+<li>SCSS Shader Inventory——切换 SCSS Shader 的库存档位；</li>
+<li>Material Property——动画化任意材质属性，支持 Apply to all renderers 与 Shader Locking 联动；</li>
+<li>Scale——以乘数模式缩放对象；</li>
+<li>Material Swap——把材质替换为另一组材质；</li>
+<li>Enable SPS——启用/禁用 SPS Plug 变形，通过 VRCFury | Toggle 组件配置；</li>
+<li>Set an FX Float——把某个 FX 参数驱动到指定数值；</li>
+<li>Disable Blinking——禁用眨眼与眼球追踪；</li>
+<li>Disable Visemes——禁用口型/嘴唇同步；</li>
+<li>Reset Physbone——把 PhysBone 重置回静止位置；</li>
+<li>Flipbook Builder——生成翻页式动画，每一页对应一个关键帧；</li>
+<li>Smooth Loop Builder——生成平滑循环动画，适合呼吸、漂浮等循环效果。</li>
+</ol>
+<p>溯源：VRCFury 官方文档（版本未标注，工具持续更新）；证据级 official。</p>
+<hr>
+<hr>
+<h1 id="vrcfury-material-property-action-字段定义renderer-引用property-属性名value-目标值与-apply-to-all-renderers">VRCFury Material Property Action 字段定义：Renderer 引用、Property 属性名、Value 目标值与 Apply to all renderers</h1>
+<p>结论：Material Property 是 VRCFury 中最通用的材质动画 Action，它按“哪个渲染器、哪个属性、动画到什么值、是否波及全身”四个字段定义一次材质属性的动画驱动。</p>
+<p>完整字段说明（依据 VRCFury 官方文档 43-actions.mdx，2026-07-04 验证）：</p>
+<ol>
+<li>Renderer 引用：指定目标 Renderer，可以是普通 Mesh 或 Skinned Mesh；</li>
+<li>Property 字段：填写 Shader 内部的属性名，例如 _MainTexHSVG、Hue Shift；注意这里需要的是 Shader 层面的属性名，不同 Shader 的同名功能属性名可能不同；</li>
+<li>Value 字段：该属性将被动画化到的目标值；</li>
+<li>Apply to all renderers：布尔开关，勾选后这次属性修改会应用整个 Avatar 的所有 Renderer，典型用途是 AudioLink 反应、灯光开关这类本应全局生效的 Avatar 级控制。</li>
+</ol>
+<p>补充联动：在 Actions 总览中，Material Property 标注支持 Apply to all renderers / Shader Locking 联动；Shader Locking 的具体机制不在当前文档片段内。</p>
+<p>推导用法示意（非官方原文示例）：为换色类 Toggle 配置 Material Property 时，Renderer 选目标 Skinned Mesh，Property 填色相属性名（如 _MainTexHSVG），Value 设为目标偏移值，即可不新建动画文件而完成材质属性动画。</p>
+<p>溯源：VRCFury 官方文档（官方文档快照，验证日期 2026-07-04）；证据级 official。</p>
+<hr>
+<hr>
+<h1 id="vrcfury-material-property-action-动画材质属性右键复制属性名shader-支持锁定时必须标记为-animated">VRCFury Material Property Action 动画材质属性：右键复制属性名，Shader 支持锁定时必须标记为 Animated</h1>
+<p>VRCFury 的 Material Property Action（动画材质属性）用于把指定 Renderer 上的某个 Material Property 动画到定义的数值，常用于 Hue Shift 换色、灯光与 AudioLink 调整等材质级效果。
+属性名获取：在多数 Shader 中可直接右键滑条或数值复制其属性名；Poiyomi 必须用 Copy Animated Property Name，不能用普通 Copy Property Name。
+关键规则（VRCFury 官方建议）：如果你的 Shader 支持 Locking（锁定），务必把被动画的 Material Property 标记为 Animated（动画态），否则动画不会按预期生效。</p>
+<p>溯源：VRCFury 官方文档（官方文档未标注具体版本（持续更新））；证据级 official。</p>
+<hr>
+<hr>
+<h1 id="vrcfury-apply-to-all-renderers-开关决策avatar-级开关audiolink灯光开启单-mesh-单材质关闭">VRCFury Apply to all renderers 开关决策：Avatar 级开关（AudioLink/灯光）开启，单 mesh 单材质关闭</h1>
+<p>结论：Apply to all renderers 仅当材质属性需要作用于 Avatar 上所有 Renderer 时才开启；VRCFury 官方给出的典型场景是 AudioLink、灯光修改这类 Avatar 级开关。
+场景决策表：</p>
+<table>
+<thead>
+<tr>
+<th>场景</th>
+<th>Apply to all renderers</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>单一 mesh 单一材质（如 Hue Shift 只有单个材质）</td>
+<td>关闭</td>
+</tr>
+<tr>
+<td>AudioLink / 灯光等 Avatar 级开关</td>
+<td>开启</td>
+</tr>
+<tr>
+<td>同一 mesh 多个相同材质（如 Hue Shift 多材质）</td>
+<td>该开关解决不了，需用 Shader 的 Renaming 功能（如 Poiyomi Rename Animated）重命名属性绕过</td>
+</tr>
+<tr>
+<td>原因：该选项会把属性改动应用到 Avatar 上全部 Renderer，因此只适合全局性修改；局部修改保持默认关闭，避免影响其他 Renderer 的材质。</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>溯源：VRCFury 官方文档（官方文档未标注具体版本（持续更新））；证据级 official。</p>
+<hr>
+<hr>
+<h1 id="vrcfury-材质属性动画的-unity-整-renderer-限制多材质同名属性冲突用-shader-renamingpoiyomi-rename-animated绕过">VRCFury 材质属性动画的 Unity 整 Renderer 限制：多材质同名属性冲突用 Shader Renaming（Poiyomi Rename Animated）绕过</h1>
+<p>结论：Material Property 的动画会作用于整个 Renderer 的全部材质，这是 Unity 层面的限制，VRCFury 无法通过自身设置规避。
+影响：同一 Renderer 上挂多个材质且它们暴露同名可动画属性时（典型：一个 mesh 多材质的 Hue Shift），属性会被同时修改，无法只改其中一个材质。
+Workaround：使用 Shader 自带的 Renaming（重命名）功能给属性改名，让各材质的同名属性错开，例如 Poiyomi 的 Rename Animated（参考 <a href="https://www.poiyomi.com/general/locking#rename-animated">https://www.poiyomi.com/general/locking#rename-animated</a> ）。</p>
+<p>溯源：VRCFury 官方文档（官方文档未标注具体版本（持续更新））；证据级 official。</p>
+<hr>
+<hr>
+<h1 id="vrcfury-配合-poiyomililtoon-的属性名配置要点copy-animated-property-name-与-_maintexhsvg-默认值-bug">VRCFury 配合 Poiyomi/LilToon 的属性名配置要点：Copy Animated Property Name 与 _MainTexHSVG 默认值 Bug</h1>
+<p>Poiyomi 要点：填写 VRCFury Material Property Action 的 Property 字段时，必须在 Poiyomi 里右键选择 Copy Animated Property Name（不能 Copy Property Name），否则拿到的不是可动画属性名；当一个 mesh 有多个 Poiyomi 材质发生冲突时，改用 Renamed (when locked) 模式，并把 Apply to all renderers 保持关闭。
+LilToon 要点：用 _MainTexHSVG 等 Vector4 属性做 HSV 变色时，注意 _MainTexHSVG 存在默认值 Bug（详情见知识库 shader/liltoon/color-settings.md 第 1.5.3 节）。</p>
+<p>溯源：社区实测（经官方文档/知识库参考页转引）（官方文档未标注具体版本（持续更新））；证据级 community-tested。</p>
+<hr>
+<hr>
+<h1 id="vrcfury-material-property-action-七步配置流程选-renderer填属性值设-apply-范围lock-测试模拟器验证">VRCFury Material Property Action 七步配置流程：选 Renderer、填属性值、设 Apply 范围、Lock 测试、模拟器验证</h1>
+<p>VRCFury Material Property Action 的完整配置流程共 7 步：</p>
+<ol>
+<li>选择 Material Property Action。</li>
+<li>选择目标 Renderer。</li>
+<li>填 Property 字段：Poiyomi 用右键 Copy Animated Property Name；LilToon 手动输入 _MainTexHSVG 等 Vector4 属性名。</li>
+<li>填 Value 字段：Float 属性填 1 个值；Vector4（如 HSVG）填 4 个值（源文档注记 1,1,1,1 = 循环 Hue）。</li>
+<li>设置 Apply to all renderers：单一 mesh 单一材质关闭；Avatar 级效果（如 AudioLink）开启。</li>
+<li>测试前先对材质执行 Lock（锁定），以模拟实际上传后的行为。</li>
+<li>用 Gesture Manager 或 Av3 Emulator 在编辑器内验证动画效果。</li>
+</ol>
+<p>溯源：社区实测（经官方文档/知识库参考页转引）（官方文档未标注具体版本（持续更新））；证据级 community-tested。</p>
+<hr>
+<hr>
+<h1 id="vrcfury-automatic-fixes-avatar-层自动修复清单-26-项需-avatar-包含-vrcfury-组件才生效">VRCFury Automatic Fixes Avatar 层自动修复清单 26 项：需 Avatar 包含 VRCFury 组件才生效</h1>
+<p>VRCFury 的 Automatic Fixes 在项目存在时自动修复 60+ 个已知 VRChat/Unity bug；其中 Avatar 层修复（下表 26 项）的前提是 Avatar 上包含 VRCFury 组件，在构建/上传前自动执行。</p>
+<table>
+<thead>
+<tr>
+<th>问题</th>
+<th>修复方式</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Animator Override Controller 不支持</td>
+<td>自动展平为普通 Controller</td>
+</tr>
+<tr>
+<td>肌肉动画 Transition 时间在 Layer 0 被忽略</td>
+<td>插入空基础层</td>
+</tr>
+<tr>
+<td>FX 层被损坏（Generic 与 Humanoid 切换导致）</td>
+<td>保留正确 FX Controller，替换损坏的</td>
+</tr>
+<tr>
+<td>已删除层的资产仍包含在上传包中</td>
+<td>重建 Controller，仅包含实际使用的层和状态</td>
+</tr>
+<tr>
+<td>空 Controller 层仍消耗处理时间</td>
+<td>自动移除保证为空且无副作用的层</td>
+</tr>
+<tr>
+<td>目标无效对象的动画仍消耗处理时间</td>
+<td>自动移除无效动画属性</td>
+</tr>
+<tr>
+<td>Gesture/FX 层 Transform 冲突</td>
+<td>将非肌肉动画从 Gesture 移到 FX 顶部</td>
+</tr>
+<tr>
+<td>256 个唯一参数限制</td>
+<td>检测并显示有用错误消息</td>
+</tr>
+<tr>
+<td>256 个 Contact 限制</td>
+<td>检测并显示有用错误消息</td>
+</tr>
+<tr>
+<td>参数名空格/下划线冲突</td>
+<td>自动重命名冲突参数</td>
+</tr>
+<tr>
+<td>参数名包含 []</td>
+<td>自动重命名</td>
+</tr>
+<tr>
+<td>参数类型不匹配（Int 转 Bool）</td>
+<td>自动修正 Transition 条件</td>
+</tr>
+<tr>
+<td>None Controller 导致 AudioSource 每帧重启</td>
+<td>替换为空 Controller</td>
+</tr>
+<tr>
+<td>非移动材质仍包含在 Quest 上传包</td>
+<td>自动移除</td>
+</tr>
+<tr>
+<td>Tracking Control 过早执行被忽略</td>
+<td>缓冲并多次重复执行</td>
+</tr>
+<tr>
+<td>PhysBone 未标记 Animated 破坏全身动画</td>
+<td>自动标记所有 Humanoid 骨骼上的 PhysBone</td>
+</tr>
+<tr>
+<td>VR 视角小 Bounding Box 消失</td>
+<td>自动增大所有 Renderer Bounds（最多 1 米）</td>
+</tr>
+<tr>
+<td>VRCSDK 上传失败（Streaming Mip-Maps）</td>
+<td>自动克隆纹理并启用</td>
+</tr>
+<tr>
+<td>菜单图标过大/未压缩</td>
+<td>自动克隆并压缩/调整大小</td>
+</tr>
+<tr>
+<td>Audio Clip 未设置 Load in Background</td>
+<td>自动克隆并启用</td>
+</tr>
+<tr>
+<td>Unity Constraint 未升级</td>
+<td>上传时自动升级为 VRC Constraint</td>
+</tr>
+<tr>
+<td>粒子系统触发安全检查</td>
+<td>自动修正设置</td>
+</tr>
+<tr>
+<td>FX Controller 无效参数类型破坏镜像克隆</td>
+<td>自动移除</td>
+</tr>
+<tr>
+<td>跨平台参数顺序不一致</td>
+<td>自动对齐移动平台参数顺序</td>
+</tr>
+<tr>
+<td>菜单项无效类型</td>
+<td>转换为 Button</td>
+</tr>
+<tr>
+<td>材质属性默认值从错误 Material Slot 读取</td>
+<td>在顶部 Defaults 层强制记录</td>
+</tr>
+</tbody>
+</table>
+<p>溯源：VRCFury 官方文档（官方文档未标注具体版本（持续更新））；证据级 official。</p>
+<hr>
+<hr>
+<h1 id="vrcfury-automatic-fixes-vrcsdk-层自动修复清单-10-项android-验证误触发contact-playeridcollider-计算等">VRCFury Automatic Fixes VRCSDK 层自动修复清单 10 项：Android 验证误触发、Contact playerId、Collider 计算等</h1>
+<p>VRCFury 在项目存在时还会自动修复以下 10 项 VRCSDK 层的已知问题（无需手动配置）：</p>
+<table>
+<thead>
+<tr>
+<th>问题</th>
+<th>修复方式</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Android 验证在 Windows 模式错误触发</td>
+<td>自动同步回正确值</td>
+</tr>
+<tr>
+<td>Play Mode 下 Contact Self/Others 不区分</td>
+<td>自动调整 playerId</td>
+</tr>
+<tr>
+<td>无用 XR 文件夹</td>
+<td>移入临时 Package</td>
+</tr>
+<tr>
+<td>Animator 窗口无法关闭</td>
+<td>补丁修复</td>
+</tr>
+<tr>
+<td>脚本重载后切换回 Authentication 标签</td>
+<td>自动切换到 Builder</td>
+</tr>
+<tr>
+<td>Contact 相关 Animator 垃圾消息</td>
+<td>补丁修复</td>
+</tr>
+<tr>
+<td>AmplitudeAPI 错误（pihole/adguard 引起）</td>
+<td>隐藏非可操作消息</td>
+</tr>
+<tr>
+<td>Collider Transform 被编辑器覆盖</td>
+<td>Play Mode 时阻止</td>
+</tr>
+<tr>
+<td>Collider Transform 未正确计算</td>
+<td>每次 Build 开始强制重算</td>
+</tr>
+<tr>
+<td>Collider 镜像偏移不正确</td>
+<td>补丁修复镜像逻辑</td>
+</tr>
+</tbody>
+</table>
+<p>溯源：VRCFury 官方文档（官方文档未标注具体版本（持续更新））；证据级 official。</p>
+<hr>
+<hr>
+<h1 id="vrcfury-automatic-fixes-unity-编辑器行为修复清单-5-项mesh-data-optimization-耗时domain-reload-加速-play-mode-等">VRCFury Automatic Fixes Unity 编辑器行为修复清单 5 项：Mesh Data Optimization 耗时、Domain Reload 加速 Play Mode 等</h1>
+<p>VRCFury 在项目存在时还会自动调整以下 5 项 Unity 编辑器行为，用于避坑和加速：</p>
+<table>
+<thead>
+<tr>
+<th>问题</th>
+<th>处理方式</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Mesh Data Optimization 耗时极长</td>
+<td>自动禁用（不必要且极慢）</td>
+</tr>
+<tr>
+<td>Play Mode 脚本重载</td>
+<td>改为 Recompile After Finished Playing</td>
+</tr>
+<tr>
+<td>Play Mode Domain Reload</td>
+<td>自动禁用（大幅加速进入 Play Mode）</td>
+</tr>
+<tr>
+<td>Mono 非英语 locale 加 Harmony bug</td>
+<td>补丁修复 Assembly.GetName()</td>
+</tr>
+<tr>
+<td>Animator Controller 编辑器刷屏警告</td>
+<td>补丁修复</td>
+</tr>
+</tbody>
+</table>
+<p>溯源：VRCFury 官方文档（官方文档未标注具体版本（持续更新））；证据级 official。</p>
+<hr>
+<hr>
+<h1 id="vrcfury-toggle-组件-13-个核心选项说明menu-pathsaved-between-worldsexclusive-tagsglobal-parameter-等">VRCFury Toggle 组件 13 个核心选项说明：Menu Path、Saved Between Worlds、Exclusive Tags、Global Parameter 等</h1>
+<p>VRCFury Toggle 组件的核心选项一览（共 13 项）：</p>
+<table>
+<thead>
+<tr>
+<th>选项</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Menu Path</td>
+<td>菜单路径，用 / 创建子菜单</td>
+</tr>
+<tr>
+<td>Saved Between Worlds</td>
+<td>跨世界保存状态</td>
+</tr>
+<tr>
+<td>Use Slider Wheel</td>
+<td>转为 Radial 滑块</td>
+</tr>
+<tr>
+<td>Protect with Security</td>
+<td>PIN 码保护</td>
+</tr>
+<tr>
+<td>Default On</td>
+<td>默认开启（Rest Pose 可见）</td>
+</tr>
+<tr>
+<td>Show/Hide when animator disabled</td>
+<td>Animator 禁用时的显隐</td>
+</tr>
+<tr>
+<td>Exclusive Tags</td>
+<td>互斥标签，同时只能一个开启</td>
+</tr>
+<tr>
+<td>Exclusive Off State</td>
+<td>互斥组的全关默认选项</td>
+</tr>
+<tr>
+<td>Set Custom Menu Icon</td>
+<td>自定义菜单图标</td>
+</tr>
+<tr>
+<td>Separate Local State</td>
+<td>本地/远端分别动画</td>
+</tr>
+<tr>
+<td>Enable Transition State</td>
+<td>过渡动画（In/Out）</td>
+</tr>
+<tr>
+<td>Use a Global Parameter</td>
+<td>使用指定参数名（OSC 兼容）</td>
+</tr>
+<tr>
+<td>Hold Button</td>
+<td>按住按钮模式</td>
+</tr>
+</tbody>
+</table>
+<p>溯源：VRCFury 官方文档（官方文档未标注具体版本（持续更新））；证据级 official。</p>
+<hr>
+<hr>
+<h1 id="vrcfury-toggle-互斥组两种方案exclusive-tags-互斥标签支持多-tag-组合与-slider-wheel-滑块轮盘">VRCFury Toggle 互斥组两种方案：Exclusive Tags 互斥标签（支持多 Tag 组合）与 Slider Wheel 滑块轮盘</h1>
+<p>VRCFury 做一组互斥 Toggle（同时只能开一个）有两种方案：
+方案 1：Exclusive Tags——给每个 Toggle 设相同的 Tag，运行时同时只能有一个开启；支持逗号分隔的多 Tag，可实现复杂互斥逻辑。例：tops、bottoms、full-body 三个 Toggle，full-body 同时带 tops 和 bottoms 的 Tag，开启 full-body 时会一并关掉另外两个。
+方案 2：Slider Wheel——把整组选项做成单个 Radial 径向滑块轮盘来切换；配合 Flipbook Builder 可以做到每页对应一个预设造型。</p>
+<p>溯源：VRCFury 官方文档（官方文档未标注具体版本（持续更新））；证据级 official。</p>
+<hr>
+<hr>
+<h1 id="vrcfury-toggle-控制-sps-形变enable-sps-三步配置与-animated-toggle-关键帧高级控制">VRCFury Toggle 控制 SPS 形变：Enable SPS 三步配置与 Animated Toggle 关键帧高级控制</h1>
+<p>用 VRCFury Toggle 控制 SPS（SPS Plug 形变）的基础开关配置三步：</p>
+<table>
+<thead>
+<tr>
+<th>步骤</th>
+<th>操作</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>添加组件：VRCFury 的 Toggle，并启用 Enable SPS</td>
+</tr>
+<tr>
+<td>2</td>
+<td>绑定：把 SPS Plug 组件拖入 Toggle 的 Target 字段</td>
+</tr>
+<tr>
+<td>3</td>
+<td>验证：通过表情菜单开关，实时启用/禁用 Plug 形变</td>
+</tr>
+<tr>
+<td>高级动画控制：在 Animation Clip 中对 Plug 组件的 Animated Toggle 属性添加关键帧，可精确控制形变时机；适用场景包括仅在特定动作或时间轴区间激活形变，以及结合 Blendshape 实现多条件触发。</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>溯源：VRCFury 官方文档（官方文档未标注具体版本（持续更新））；证据级 official。</p>
+<hr>
+<hr>
+<h1 id="vrcfury-full-controller-六大核心特性动画路径自动重写vf-参数前缀wd-自动转换globalsmooth-parameters">VRCFury Full Controller 六大核心特性：动画路径自动重写、VF## 参数前缀、WD 自动转换、Global/Smooth Parameters</h1>
+<p>VRCFury Full Controller 组件的核心特性（共 6 项）：</p>
+<table>
+<thead>
+<tr>
+<th>特性</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>动画路径自动重写</td>
+<td>Prefab 根相对路径自动改写为 Avatar 绝对路径</td>
+</tr>
+<tr>
+<td>参数自动命名空间</td>
+<td>自动加 VF## 前缀，防止参数冲突</td>
+</tr>
+<tr>
+<td>WD 自动转换</td>
+<td>自动匹配 Avatar 的 Write Defaults 设置</td>
+</tr>
+<tr>
+<td>Global Parameters</td>
+<td>指定不加前缀的参数（OSC 兼容）</td>
+</tr>
+<tr>
+<td>Smooth Parameters</td>
+<td>指定参数的平滑时间（秒到 90%）</td>
+</tr>
+<tr>
+<td>Path Rewrite Rules</td>
+<td>手动定义路径重写规则</td>
+</tr>
+</tbody>
+</table>
+<p>溯源：VRCFury 官方文档（官方文档未标注具体版本（持续更新））；证据级 official。</p>
+<hr>
+<hr>
+<h1 id="vrcfury-quest-跨平台参数对齐七条规则先传-desktop参数同名不同序同版本同-pc-上传">VRCFury Quest 跨平台参数对齐七条规则：先传 Desktop、参数同名不同序、同版本同 PC 上传</h1>
+<p>VRCFury 自动辅助 Quest（Android）跨平台参数对齐，规则共 7 条：</p>
+<table>
+<thead>
+<tr>
+<th>规则</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>参数名必须完全相同</td>
+<td>顺序不再重要</td>
+</tr>
+<tr>
+<td>可以使用不同参数文件</td>
+<td>Desktop 与 Mobile 可分离</td>
+</tr>
+<tr>
+<td>可以删除整个资产/参数</td>
+<td>Mobile 版可减少内容</td>
+</tr>
+<tr>
+<td>必须先上传 Desktop</td>
+<td>然后才能上传 Mobile</td>
+</tr>
+<tr>
+<td>同项目须用同版本 VRCFury</td>
+<td>Desktop 与 Mobile 项目必须一致</td>
+</tr>
+<tr>
+<td>Desktop 改参数后须重传 Mobile</td>
+<td>保持两端同步</td>
+</tr>
+<tr>
+<td>必须从同一 PC 上传</td>
+<td>通过本地临时文件传递数据</td>
+</tr>
+</tbody>
+</table>
+<p>溯源：VRCFury 官方文档（官方文档未标注具体版本（持续更新））；证据级 official。</p>
+<hr>
+<hr>
+<h1 id="vrcfury-与-modular-avatar-功能重叠对照armature-link-对-merge-armature-等-4-组对应关系">VRCFury 与 Modular Avatar 功能重叠对照：Armature Link 对 Merge Armature 等 4 组对应关系</h1>
+<p>VRCFury 与 Modular Avatar（MA）在功能上有部分重叠，对应关系如下：</p>
+<table>
+<thead>
+<tr>
+<th>VRCFury</th>
+<th>Modular Avatar 对应</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Clothing Attacher（Armature Link）</td>
+<td>Merge Armature</td>
+</tr>
+<tr>
+<td>Modular Setup（Full Controller）</td>
+<td>整体思路相似</td>
+</tr>
+<tr>
+<td>Toggle Builder</td>
+<td>覆盖部分组件能力</td>
+</tr>
+<tr>
+<td>Gesture Manager</td>
+<td>无对应，需手动</td>
+</tr>
+</tbody>
+</table>
+<p>溯源：工程推断（多案例交叉验证）（官方文档未标注具体版本（持续更新））；证据级 inferred。</p>
+<hr>
+<hr>
+<h1 id="vrcfury-与-modular-avatar-十维关键差异vcc-安装上传前执行完全可逆parameter-compressor-参数压缩等">VRCFury 与 Modular Avatar 十维关键差异：VCC 安装、上传前执行、完全可逆、Parameter Compressor 参数压缩等</h1>
+<p>VRCFury 与 Modular Avatar 的关键差异对照（10 个维度）：</p>
+<table>
+<thead>
+<tr>
+<th>维度</th>
+<th>VRCFury</th>
+<th>Modular Avatar</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>分发方式</td>
+<td>VCC 仓库一键安装（<a href="https://vcc.vrcfury.com%EF%BC%89%EF%BC%8C%E5%85%BC%E5%AE%B9%E6%97%A7">https://vcc.vrcfury.com），兼容旧</a> .unitypackage</td>
+<td>VPM 一键安装</td>
+</tr>
+<tr>
+<td>执行时机</td>
+<td>上传前复制执行</td>
+<td>Apply On Play 加上传前</td>
+</tr>
+<tr>
+<td>可逆性</td>
+<td>完全可逆</td>
+<td>部分可逆</td>
+</tr>
+<tr>
+<td>文档</td>
+<td>官网加 Discord</td>
+<td>官方文档完善（tutorials/samples/reference）</td>
+</tr>
+<tr>
+<td>社区</td>
+<td>老牌 Avatar 圈</td>
+<td>现代 NDMF 生态</td>
+</tr>
+<tr>
+<td>与 AAO 协同</td>
+<td>自动（上传前管线）</td>
+<td>自动（NDMF 链）</td>
+</tr>
+<tr>
+<td>参数压缩</td>
+<td>Parameter Compressor（16 bit）</td>
+<td>Sync Parameter Sequence（仅排序）</td>
+</tr>
+<tr>
+<td>BlendShape 优化</td>
+<td>Blendshape Optimizer</td>
+<td>无内置，需 AAO Freeze BlendShape</td>
+</tr>
+<tr>
+<td>层数优化</td>
+<td>Direct Tree Optimizer</td>
+<td>需 MA2BT 插件补充</td>
+</tr>
+<tr>
+<td>WD 修复</td>
+<td>Fix Write Defaults</td>
+<td>无，需手动</td>
+</tr>
+</tbody>
+</table>
+<p>溯源：工程推断（多案例交叉验证）（官方文档未标注具体版本（持续更新））；证据级 inferred。</p>
+<hr>
+<hr>
+<h1 id="ma-与-vrcfury-共存警告与-ndmf-推荐执行顺序先-ma-后-fury-再优化工具parameter-compressor-不兼容-sync-parameter-sequence">MA 与 VRCFury 共存警告与 NDMF 推荐执行顺序：先 MA 后 Fury 再优化工具，Parameter Compressor 不兼容 Sync Parameter Sequence</h1>
+<p>共存警告：Modular Avatar 与 VRCFury 互相不知道对方做了什么，混用时容易出 bug，需要按固定顺序执行。
+推荐执行顺序（NDMF 管线）：</p>
+<ol>
+<li>MA 及其他负责新增内容的 NDMF 工具</li>
+<li>Fury</li>
+<li>所有 NDMF 最佳化（优化）工具
+已知不兼容项：VRCFury 的 Parameter Compressor 与 MA 的 Sync Parameter Sequence 冲突——两者都会重排参数槽位，不能同时依赖。</li>
+</ol>
+<p>溯源：VRCFury 官方文档（官方文档未标注具体版本（持续更新））；证据级 official。</p>
+<hr>
+<hr>
+<h1 id="vrcfury-与-d4rkavataroptimizer-共存callback-order-顺序表与-create-optimized-copy-被禁用的限制">VRCFury 与 d4rkAvatarOptimizer 共存：Callback Order 顺序表与 Create Optimized Copy 被禁用的限制</h1>
+<p>VRCFury 与 d4rkAvatarOptimizer 可以共存，回调顺序如下：</p>
+<table>
+<thead>
+<tr>
+<th>顺序</th>
+<th>工具</th>
+<th>Callback Order</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Modular Avatar</td>
+<td>-25</td>
+</tr>
+<tr>
+<td>2</td>
+<td>d4rkAvatarOptimizer</td>
+<td>-15</td>
+</tr>
+<tr>
+<td>3</td>
+<td>VRChat IEditorOnly</td>
+<td>-1024</td>
+</tr>
+<tr>
+<td>4</td>
+<td>VRCFury</td>
+<td>Various（不定）</td>
+</tr>
+<tr>
+<td>限制：d4rkAvatarOptimizer 检测到 VRCFury 时会禁用 Create Optimized Copy 功能，只能使用 Apply on Upload 模式。</td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>溯源：VRCFury 官方文档（官方文档未标注具体版本（持续更新））；证据级 official。</p>
+<hr>
+<hr>
+<h1 id="d4rkavataroptimizer-不支持-poiyomi-renamed-模式导致-vrcfury-动画失效冲突场景作者确认与三种解决方案">d4rkAvatarOptimizer 不支持 Poiyomi Renamed 模式导致 VRCFury 动画失效：冲突场景、作者确认与三种解决方案</h1>
+<p>工具链冲突（P1-6）：d4rkAvatarOptimizer 不支持 Poiyomi 的 Renamed (when locked) 模式，会导致 VRCFury 材质属性动画失效。
+冲突场景四要素：Poiyomi 材质标记为 Renamed (when locked)；VRCFury Toggle 使用 Material Property Action 并通过 Copy Animated Property Name 取属性名；d4rkAvatarOptimizer 使用 Full preset；上传时 Renamed 属性的值被 d4rkAO 删除或烘焙，VRCFury 动画随之失效。
+d4rk 作者回复原话：Yeah my optimizer doesn’t support RA. I recently added a warning that should show up when anything is marked RA in a material used in the avatar the optimizer component is on.
+解决方案三选一：</p>
+<table>
+<thead>
+<tr>
+<th>方案</th>
+<th>操作</th>
+<th>适用场景</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>手动 Lock 材质</td>
+<td>Right-click Avatar → Thry → Materials → Lock All</td>
+<td>不用 d4rkAO 优化时</td>
+</tr>
+<tr>
+<td>不用 Renamed</td>
+<td>改用普通 Animated (when locked)</td>
+<td>单一 mesh 单一材质</td>
+</tr>
+<tr>
+<td>Mesh 拆分</td>
+<td>让 d4rkAO 自己处理</td>
+<td>复杂 Avatar（依赖 d4rk 内部逻辑）</td>
+</tr>
+<tr>
+<td>状态：GitHub issue d4rkc0d3r/d4rkAvatarOptimizer#182，2026-04-01 报告，截至 2026-07-04 仍为 Open 未解决。</td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>溯源：社区实测（经官方文档/知识库参考页转引）（issue 状态截至 2026-07-04（Open），2026-04-01 报告）；证据级 community-tested。</p>
+<hr>
+<hr>
+<h1 id="avatar-优化能力对比矩阵vrcfurymodular-avataraaomeshiad4rk-在-12-个优化方向的分工">Avatar 优化能力对比矩阵：VRCFury/Modular Avatar/AAO/Meshia/d4rk 在 12 个优化方向的分工</h1>
+<p>针对 Avatar 优化（压参数、降 Draw Call、省 VRAM 等），VRCFury、Modular Avatar（MA）、Avatar Optimizer（AAO）、Meshia、d4rkAvatarOptimizer（d4rk）在 12 个优化方向上的支持情况如下。
+压缩同步参数：仅 VRCFury 支持，Parameter Compressor 可把同步参数压到 16 bit；MA 的 Sync Parameter Sequence 只做排序不算压缩；AAO、Meshia、d4rk 均不支持。
+合并 Animator 层：VRCFury 用 Direct Tree Optimizer；MA 需借助 MA2BT 插件；AAO 有 Animator Optimizer；d4rk 有 Optimize FX Layer；Meshia 不支持。
+烘焙 BlendShape：VRCFury 的 Blendshape Optimizer 与 AAO 的 Freeze BlendShape 支持，其余不支持。
+合并 Mesh：VRCFury 只能通过 Toggle 间接达成；MA 仅能手动；AAO 提供 Merge Skinned Mesh；d4rk 提供 NaNimation；Meshia 不做合并、主打减面。
+合并 Material：VRCFury、AAO（Merge Material）、d4rk 支持；MA、Meshia 不支持。
+减少 Draw Call：VRCFury 自动完成；AAO 经 Trace And Optimize 实现；d4rk 支持；MA 需手动；Meshia 不支持。
+删除空动画状态：VRCFury 自动；AAO 由 Animator Optimizer 完成；d4rk 经 Optimize FX Layer；其余不支持。
+PhysBone 优化：仅 AAO 提供 Merge PhysBone 自动方案；VRCFury 与 MA 均需手动；Meshia、d4rk 不支持。
+Mesh 减面：仅 Meshia 支持，基于 Burst+Job 加速。
+纹理压缩（Max Texture Size）：仅 AAO 支持。
+修复 Write Defaults：仅 VRCFury 提供 Fix Write Defaults。
+自动 Bug 修复：仅 VRCFury 提供，覆盖 60+ 项。</p>
+<p>溯源：工程推断（多案例交叉验证）（版本未标注，工具持续更新）；证据级 inferred。</p>
+<hr>
+<hr>
+<h1 id="avatar-优化工具选型规则压参选-vrcfury深度优化选-aaomeshia组件装配选-ma">Avatar 优化工具选型规则：压参选 VRCFury、深度优化选 AAO+Meshia、组件装配选 MA</h1>
+<p>按优化目标选择工具组合：目标是『参数压缩 + 自动修复 + 上传可逆』时选 VRCFury；目标是『几何级 + 深度优化』（合并 Mesh、减面、纹理压缩等）时选 AAO + Meshia；目标是『组件级装配』工作流时选 Modular Avatar。
+三种体系并不互斥，可以在同一项目中组合使用，但共存时有执行顺序要求：特别是 VRCFury 的参数压缩能力与 Modular Avatar 共存时，需要谨慎安排组件执行顺序并注意两者在参数处理上的冲突。
+该选型规则来自 12 维能力矩阵的横向对比：Parameter Compressor 参数压缩（至 16 bit）、Fix Write Defaults、60+ 项自动 Bug 修复为 VRCFury 独占能力；Merge Skinned Mesh、Burst+Job 减面、Max Texture Size 纹理压缩等几何级能力由 AAO 与 Meshia 提供；组件级装配流程则是 Modular Avatar 的核心定位。</p>
+<p>溯源：工程推断（多案例交叉验证）（版本未标注，工具持续更新）；证据级 inferred。</p>
+<hr>
+<hr>
+<h1 id="何时选择-vrcfury10-类场景决策表压参数减层级修-wd新装工具链">何时选择 VRCFury：10 类场景决策表（压参数、减层级、修 WD、新装工具链）</h1>
+<p>是否选用 VRCFury 按场景对号入座：
+新建 Avatar 且想用现代工具链 → 推荐 Modular Avatar（VPM 分发、文档完善、NDMF 生态）。
+已有 VRCFury 工作流且想保持可逆 → 继续使用 VRCFury。
+需要自动合并 Mesh（多 Skinned Mesh 合为单个 SMR）→ VRCFury Optimized Toggle（间接方案）。
+需要压缩 Expression Parameter 数量 → 首选 VRCFury Parameter Compressor，该方向最强。
+需要减少 Animator 层数 → VRCFury Direct Tree Optimizer，或 MA2BT 插件。
+需要减少 BlendShape 占用的 VRAM → VRCFury Blendshape Optimizer，零配置。
+Write Defaults 问题频繁出现 → VRCFury Fix Write Defaults。
+与 Modular Avatar 共存 → 谨慎：注意执行顺序与参数压缩冲突。
+想要最深度的性能优化 → AAO + Meshia（更现代、文档完善）。
+从零新装工具 → 优先 Modular Avatar + AAO + Meshia，VPM 一键安装。</p>
+<p>溯源：工程推断（多案例交叉验证）（版本未标注，工具持续更新）；证据级 inferred。</p>
+<hr>
+<hr>
+<h1 id="vrcfury-安装教程vcc-仓库一键安装推荐与-installeropenupm-旧法兼容">VRCFury 安装教程：VCC 仓库一键安装（推荐）与 Installer/OpenUPM 旧法兼容</h1>
+<p>推荐用 VRChat Creator Companion（VCC）一键安装 VRCFury：自 v1.1341.0（2026-06-16）起 VRCFury 已上架 VCC 官方仓库。
+方式 A（一键 Add，优先）：点击 vcc://vpm/addRepo?url=https%3A%2F%2Fvcc.vrcfury.com 链接，或访问 vrcfury.com/download 页面点击 “Click here to add VRCFury to the VRChat Creator Companion”。
+方式 B（手动添加仓库）：① 打开 VCC → Settings → Packages → Add Repository；② 输入仓库 URL：<a href="https://vcc.vrcfury.com%EF%BC%9B%E2%91%A2">https://vcc.vrcfury.com；③</a> 在仓库列表勾选 “VRCFury Repo”；④ 选择目标项目 → Manage Project → 添加 VRCFury 到项目；⑤ 后续升级同样在该项目的 Manage Project 页面操作。
+legacy 安装方式（不推荐，官方明确声明只支持 VCC 安装）：Method 2 为 VRCFury Installer——访问 vrcfury.com/installer 下载并导入 .unitypackage，之后经 Tools > VRCFury > Update VRCFury 更新；Method 3 为 OpenUPM——仓库地址 openupm.com/packages/com.vrcfury.vrcfury。</p>
+<p>溯源：VRCFury 官方文档（v1.1341.0+（VCC 仓库，2026-06-16））；证据级 official。</p>
+<hr>
+<hr>
+<h1 id="avatar-工具链-vpmvcc-仓库地址对照vrcfurymodular-avataraaomeshia-及包名">Avatar 工具链 VPM/VCC 仓库地址对照：VRCFury/Modular Avatar/AAO/Meshia 及包名</h1>
+<p>主流 VRChat Avatar 工具均通过 VCC/VPM 仓库分发，添加仓库后可在项目的 Manage Project 页面完成安装与升级。各工具仓库地址如下：
+VRCFury：VCC 仓库 <a href="https://vcc.vrcfury.com%E3%80%82">https://vcc.vrcfury.com。</a>
+Modular Avatar：VPM 仓库 modular-avatar.nadena.dev。
+Avatar Optimizer（AAO）：VPM 仓库 anatawa12.github.io/vpm。
+Meshia：VPM 仓库 package.hai-vr.dev。
+VRCFury 的官方仓库 ID 为 com.vrcfury.vcc，包名为 com.vrcfury.vrcfury——排查依赖、manifest 或 packages 列表问题时可用包名精确定位 VRCFury 包本体。</p>
+<p>溯源：VRCFury 官方文档（版本未标注，工具持续更新）；证据级 official。</p>
+<hr>
+<hr>
+<h1 id="vrcfury-上传前复制机制all-reversible非破坏性构建原理与-modular-avatar-对比">VRCFury 上传前复制机制（All Reversible）：非破坏性构建原理与 Modular Avatar 对比</h1>
+<p>VRCFury 采用『上传前复制』的非破坏性机制：Avatar 上传时，VRCFury 先复制一份当前状态，在副本上完成全部功能注入后再提交上传，原始动画 Controller 等源文件永远不会被修改。
+由此带来三大优势：① 移除 VRCFury 组件后 Avatar 立即恢复原状，天然可逆；② 不影响 TPS、VRCLens 等其他工具已生成的产物；③ 原始动画 Controller 文件永远不被触碰。
+实践意义是可以放心试错：不满意就直接删组件回滚，无需提前备份资产，也能在保留原始资产的前提下反复迭代功能配置。
+与 Modular Avatar 的对比：MA 直接在 Avatar 上构建 ApplyOnPlay 逻辑，移除 MA 组件后需要手动恢复被改动的内容，没有 VRCFury 这种天然可逆性。</p>
+<p>溯源：VRCFury 官方文档（版本未标注，工具持续更新）；证据级 official。</p>
+<hr>
+<hr>
+<h1 id="vrcfury-常见故障排除toggle-粘住blendshape-限-0-100preprocess-callback-failed-等六问">VRCFury 常见故障排除：Toggle 粘住、BlendShape 限 0-100、Preprocess Callback Failed 等六问</h1>
+<p>VRCFury 六类常见问题的原因与解决方案如下。
+① Toggle『粘住』或不工作：原因是 Write Defaults 混合问题；解决：把 Fix Write Defaults 设为 Auto。
+② BlendShape 被限制在 0-100：原因是 VRChat 平台限制；解决：调整 Player Settings 中的 Clamp BlendShapes 设置。
+③ VRCFury 不显示或安装失败：原因是项目中存在其他脚本错误；解决：先修复那些脚本错误。
+④ 报 Preprocess Callback Failed：这是构建失败的通用包装错误；解决：查看控制台中位于其之前的具体错误消息，那才是根因。
+⑤ Synced Layers 消失：原因是 Unity bug；解决：不使用 Synced Layers。
+⑥ 报 Extra Field can’t be serialized：原因是 Unity 升级后的缓存问题；解决：卸载 VRCFury → 重启 Unity → 重新安装。</p>
+<p>溯源：VRCFury 官方文档（版本未标注，工具持续更新）；证据级 official。</p>
+<hr>
+<hr>
+<h1 id="vrcfury-sps-故障排除游戏内不变形对他人-socket-失效无深度动画形变不停">VRCFury SPS 故障排除：游戏内不变形、对他人 socket 失效、无深度动画、形变不停</h1>
+<p>SPS 四类常见问题的原因与解决方案如下。
+① Plug 在编辑器中变形正常，进游戏后不变形：原因是未启用 Avatar Self Interact；解决：在 VRChat 设置菜单中启用该选项。
+② Plug 对自己的 socket 正常、对其他玩家的 socket 失效：原因是对方未允许与你交互；解决：等待对方名片上显示『黄色手』（交互许可标记）。
+③ 变形有效但深度动画/声音无效：原因是缺少触点（contacts）；解决：升级 DPS 以添加 contacts；若 plug/socket 位于世界（World）对象中则无解。
+④ Plug 持续形变不停止：原因是编辑器 Bug，不影响游戏内表现；可忽略，或退出 Play Mode。</p>
+<p>溯源：VRCFury 官方文档（版本未标注，工具持续更新）；证据级 official。</p>
+<hr>
+<hr>
+<h1 id="sps-触点contacts机制深度动画与声音的触发条件及-world-存储的无解限制">SPS 触点（contacts）机制：深度动画与声音的触发条件及 World 存储的无解限制</h1>
+<p>SPS 的『触点（contacts）』是触发深度动画和声音两类效果的必要条件：没有触点，plug/socket 只有形态变化，不会播放深度动画或声音。
+组件差异：SPS Socket/Plug 自动内置触点，开箱即得全部效果；未经升级的传统 DPS 不包含触点，需要升级 DPS 补充 contacts 后才能获得深度动画与声音。
+存储位置限制：存放在 World（世界/场景）中的 plug/socket 无法包含触点，这种情况没有任何解决方案；需要深度动画与声音的 SPS 配置必须随 Avatar 携带。
+排障提示：遇到『有形变、无动画/声音』时，先确认用的是带触点的 SPS 组件而非旧版 DPS；跨玩家场景还要确认对方已开放交互许可。</p>
+<p>溯源：VRCFury 官方文档（版本未标注，工具持续更新）；证据级 official。</p>
+<hr>
+<hr>
+<h1 id="vrcfury-维护状态当前版本-v113410-与-vcc-仓库一键安装方式2026-年">VRCFury 维护状态、当前版本 v1.1341.0+ 与 VCC 仓库一键安装方式（2026 年）</h1>
+<p>VRCFury 截至 2026 年仍在积极维护，并且已经支持通过 VCC 仓库一键安装。
+维护状态：2026-05-02 复核确认 VRCFury 项目仍在持续维护，没有停止开发。
+当前版本：截至 2026-06-16，最新版本为 v1.1341.0 及以上，版本号取自 VPM 目录与仓库元数据双重来源。
+安装方式：在 VRChat Creator Companion（VCC）中添加 VRCFury 官方 VPM 仓库 <a href="https://vcc.vrcfury.com">https://vcc.vrcfury.com</a> ，之后即可在工程管理界面一键安装或升级 VRCFury，无需手动导入包文件。由于 VRCFury 以 VPM 包形式分发，后续更新也走同一条 VCC 仓库通道完成。
+配套资源：官方文档站为 <a href="https://vrcfury.com">https://vrcfury.com</a> ，源代码托管在 GitHub 的 VRCFury/VRCFury 仓库。</p>
+<p>溯源：VRCFury 官方文档（v1.1341.0+（2026-06-16 复核；维护状态 2026-05-02 复核））；证据级 official。</p>
+<hr>
+<hr>
+<h1 id="vrcfury-与-modular-avatar-共存有冲突应二选一避免混用">VRCFury 与 Modular Avatar 共存有冲突，应二选一避免混用</h1>
+<p>不要在同一套 Avatar 制作流程中同时依赖 VRCFury 与 Modular Avatar（MA）：二者共存存在冲突，官方口径与教学材料都建议二选一使用。
+冲突背景：VRCFury 与 MA 都是非破坏性工具，都会在构建阶段对 Animator、菜单与参数做改写。当同一个 Avatar 同时挂载两套工具的组件时，构建管线会互相干扰，产生难以排查的异常。
+选型参考：以快速搭建为主的简单 Avatar（Toggle、手势、完整控制器合并）优先考虑 VRCFury；以复杂装备换装系统为主的 Avatar（Merge Armature、Merge Animator、骨骼合并）优先考虑 Modular Avatar，详细对比见专门的对比候选。
+若历史工程里已经混用两者，应先把其中一方的组件移除或禁用，再逐项验证构建结果。</p>
+<p>溯源：VRCFury 官方文档（2026-05-02 复核（VRCFury v1.1341.0 时期））；证据级 official。</p>
+<hr>
+<hr>
+<h1 id="vrcfury-上传时在-avatar-副本上执行三大优化器且全部可逆all-reversible">VRCFury 上传时在 Avatar 副本上执行三大优化器且全部可逆（All Reversible）</h1>
+<p>VRCFury 的所有优化都发生在上传前的 Avatar 副本上，官方明确这一机制为 All Reversible（全部可逆）：你的源工程文件不会被改动，随时可以调整设置后重新生成。
+上传时 VRCFury 主要执行三类自动优化：</p>
+<ol>
+<li>Parameter Compressor（参数压缩器）：把所有 Float/Int 类型的同步参数压缩到 16 bit，大幅降低参数位占用。</li>
+<li>Direct Tree Optimizer（直树优化器）：把满足条件的动画层合并成 Direct Blend Tree（直接混合树），减少运行时动画层数量。</li>
+<li>Blendshape Optimizer（混合形状优化器）：把没有被动画引用的 BlendShape 直接烘焙进网格，去除闲置混合形状的开销。
+因为这三步都只作用于副本，删除组件或关闭对应选项即可回到原始状态，不需要手工还原任何被优化的数据。</li>
+</ol>
+<p>溯源：VRCFury 官方文档（v1.1341.0 时期（2026-05/06 复核））；证据级 official。</p>
+<hr>
+<hr>
+<h1 id="parameter-compressor-基于-pointer-based-float-sync-把-floatint-参数压到-16-bit实测-253125-bit">Parameter Compressor 基于 Pointer-Based Float Sync 把 Float/Int 参数压到 16 bit，实测 253→125 bit</h1>
+<p>Parameter Compressor 的核心技术是 Pointer-Based Float Sync（基于指针的浮点同步）：它把 Avatar 全部 Float/Int 参数统一压缩为 16 bit 表示，从而把参数位占用削减过半。该技术由 sentfromspacevr 在 PR#238 中实现，实现细节见 <a href="https://github.com/VRCFury/VRCFury/pull/238">https://github.com/VRCFury/VRCFury/pull/238</a> 。
+压缩收益有社区实测佐证：有 VRChat 论坛用户报告，一个原本占用 253 bit 参数的 Avatar，经 Parameter Compressor 压缩后降到 125 bit，接近减半。
+适用范围说明：官方口径是该压缩器处理所有 Float/Int 参数，这正是 VRChat Avatar 中占比最大的两类同步参数（表情开关、滑块等），因此整体收益面很宽。</p>
+<p>溯源：VRCFury 官方文档（v1.1341.0 时期（2026-05/06 复核））；证据级 official。</p>
+<hr>
+<hr>
+<h1 id="vrcfury-自动修复-60-个-vrchatunity-已知-bug清单在-fixes-页面逐项可查">VRCFury 自动修复 60+ 个 VRChat/Unity 已知 Bug，清单在 fixes 页面逐项可查</h1>
+<p>VRCFury 在构建时会自动修复超过 60 个 VRChat/Unity 平台的已知 Bug，这是它的核心能力之一。
+清单透明可查：官方在网站 fixes 页面把每一项自动修复逐条列举出来，想知道某个历史遗留问题是否已被覆盖，直接翻 fixes 页面对条目即可，不用凭印象猜测。
+对创作者的价值在于：许多过去需要手动改动画、改材质、改骨骼来绕过的平台老毛病，现在装上 VRCFury 构建时就自动绕开，可以省掉大量手工补丁工作；这些修复覆盖 VRChat 行为与 Unity 行为两侧的问题。
+修复在构建阶段静默生效，属于上传前副本处理的一部分，不影响源工程。</p>
+<p>溯源：VRCFury 官方文档（v1.1341.0 时期（2026-05 复核））；证据级 official。</p>
+<hr>
+<hr>
+<h1 id="modular-avatar-的-sync-parameter-sequence-与-vrcfury-parameter-compressor-不兼容">Modular Avatar 的 Sync Parameter Sequence 与 VRCFury Parameter Compressor 不兼容</h1>
+<p>Modular Avatar 的 Sync Parameter Sequence 与 VRCFury 的 Parameter Compressor 互不兼容，不能在同一 Avatar 上同时启用，该结论由多份文档交叉验证得出。
+机制层面的理解（推断）：Sync Parameter Sequence 依赖参数在序列中的排布方式，而 Parameter Compressor 会把 Float/Int 参数重写为 16 bit 的压缩表示，两者对参数布局的假设相互冲突，因此叠加后会破坏对方的处理结果。
+实践决策：同一 Avatar 只能二选一——要么用 MA 的 Sync Parameter Sequence 做参数同步优化，要么用 VRCFury 的 Parameter Compressor 做位宽压缩。若已经混用并出现表情同步异常，应优先关闭其中一方再验证。</p>
+<p>溯源：VRCFury 官方文档（2026-05 复核）；证据级 official。</p>
+<hr>
+<hr>
+<h1 id="vrcfury-在-d4rkavataroptimizer-之后运行的执行顺序约定">VRCFury 在 d4rkAvatarOptimizer 之后运行的执行顺序约定</h1>
+<p>当 d4rkAvatarOptimizer 与 VRCFury 同时存在于一个工程时，两者的执行顺序是：VRCFury 在 d4rkAvatarOptimizer 之后运行。
+顺序含义：d4rkAvatarOptimizer 先完成它那一轮网格级优化，VRCFury 再基于其结果继续执行参数压缩等后续处理；理解这一先后关系有助于判断两个优化器的输出谁覆盖谁。
+证据强度说明：该结论来自第三方 deepwiki 整理的兼容性文档，VRCFury 官方文档没有单独强调这一点。NDMFD 工具链的构建顺序由各工具注册的阶段决定，插件升级可能改变注册顺序，所以当出现两个优化器输出互相覆盖、优化结果时有时无的诡异现象时，应首先怀疑这条顺序假设已经过时，并用最小工程做二分验证。</p>
+<p>溯源：工程推断（多案例交叉验证）（2026-05 复核）；证据级 inferred。</p>
+<hr>
+<hr>
+<h1 id="sps-不要与-constraints-混用会导致-ogb-检测失败contacts-抖动菜单功能失效">SPS 不要与 Constraints 混用：会导致 OGB 检测失败、contacts 抖动、菜单功能失效</h1>
+<p>不要把 SPS（一套基于 plug/socket 接触检测的形变交互组件标准）与 Constraints（Unity 约束）混用在同一条交互链路上，这是 VRCFury 官方专题文档明确给出的警告。
+混用的典型后果有三类：OGB 检测失败、contacts 出现抖动、菜单功能失效。
+排查指引：如果一个同时带 SPS 与 Constraints 的模型出现接触判定失灵、接触信号抖动或菜单项点击无效，应优先检查是否把两套系统叠在了同一批骨骼或对象上，并把约束的作用对象与 SPS 的作用对象分开后重新测试。
+官方文档给出了症状清单与禁用建议，但没有公开更底层的冲突机理，遇到必须同时使用约束的造型需求时，只能靠结构分离加实测来规避。</p>
+<p>溯源：VRCFury 官方文档（v1.1341.0 时期（2026-05 复核））；证据级 official。</p>
+<hr>
+<hr>
+<h1 id="单个-sps-socket-含-2-个-lights-会直接把-avatar-性能等级顶到-very-poor">单个 SPS Socket 含 2 个 lights 会直接把 Avatar 性能等级顶到 Very Poor</h1>
+<p>只要一个 SPS Socket 里包含了 2 个 lights（灯光），就足以把整个 Avatar 的性能等级直接顶到 Very Poor——这是 VRCFury 官方文档确认的行为，不是性能面板误报。
+背景理解：VRChat 的性能评级对灯光数量极其敏感，少量额外光源就可能跨过 Excellent/Good/Poor 各档的扣分阈值；而 SPS Socket 可能自带 lights，很容易在制作者不知情的情况下把整体等级拉爆。
+自查方法：给模型添加 SPS 组件后，在 SDK 构建面板观察性能等级变化。如果等级从 Good/Poor 直接跳到 Very Poor，第一步先数清 SPS Socket 引入的 lights 数量，再去排查其他优化项。</p>
+<p>溯源：VRCFury 官方文档（v1.1341.0 时期（2026-05 复核））；证据级 official。</p>
+<hr>
+<hr>
+<h1 id="sps-plug-编辑器中必须完全伸直展开fully-extended作为形变基准方向">SPS Plug 编辑器中必须完全伸直展开（fully extended）作为形变基准方向</h1>
+<p>制作或配置 SPS Plug 时，必须先在编辑器里把它调整成完全伸直展开（fully extended）的姿态，并以这个姿态作为游戏内形变的基准方向——这是 VRCFury 官方文档的硬性要求。
+操作要点：</p>
+<ol>
+<li>在建模或摆姿势阶段，把 Plug 沿其主轴完全拉直到最长状态，不要带弯曲或收缩。</li>
+<li>以该 fully extended 状态为基准，去配置后续的形变与动画映射。</li>
+<li>如果基准状态下 Plug 就是弯曲或半收缩的，游戏内的形变方向和幅度判断都会失去正确参照。
+一句话记忆：先摆直，再谈形变；基准姿态决定游戏里的形变质量。</li>
+</ol>
+<p>溯源：VRCFury 官方文档（v1.1341.0 时期（2026-05 复核））；证据级 official。</p>
+<hr>
+<hr>
+<h1 id="sps-plug-游戏内不变形优先检查是否启用-avatar-self-interact-设置">SPS Plug 游戏内不变形：优先检查是否启用 Avatar Self Interact 设置</h1>
+<p>SPS Plug 在编辑器里一切正常、进了游戏却完全不变形时，第一嫌疑是 VRChat 的 Avatar Self Interact（自我交互）设置没有打开——这是 VRCFury 官方与 VRChat 官方共同确认的最常见原因。
+原理：Avatar Self Interact 决定你自己的 Contact 发送器能否触发你自己身上的接收器；该选项关闭时，SPS 依赖的本地接触信号根本不会送达 Plug，自然看不到任何形变，这也解释了为什么可能出现『别人的模型有反应、自己的没反应』的不对称现象。
+处置步骤：进入 VRChat 设置菜单，找到 Avatar Self Interact 相关开关并启用（不同版本菜单位置可能有差异，可直接在设置里搜索 self interact 字样），然后回到世界测试 Plug 是否恢复形变。
+若开启后仍然无效，再回头排查 SPS 组件本身的配置以及是否与 Constraints 混用。</p>
+<p>溯源：VRCFury 官方文档（v1.1341.0 时期（2026-05 复核））；证据级 official。</p>
+<hr>
+<hr>
+<h1 id="存放在-world-中的-sps-plugsocket-无法触发深度动画平台限制无解决方案">存放在 World 中的 SPS plug/socket 无法触发深度动画（平台限制，无解决方案）</h1>
+<p>放置在世界（World）侧的 SPS plug/socket 无法触发玩家 Avatar 上的深度动画——这是 VRCFury 官方文档明确记载的平台级限制，而且目前没有解决方案。
+含义拆解：SPS 的深度动画依赖 Avatar 侧的接触检测与动画驱动链路；一旦 plug/socket 不是挂在 Avatar 上而是固定在世界场景里，这条链路就不成立，表现为世界里看似配置完成的 SPS 装置对玩家毫无深度反馈。
+边界提醒：该限制不影响挂在 Avatar 上的常规 SPS 用法，受影响的只是把交互端放进世界场景的装置方案。
+设计建议：规划世界互动装置时，不要按『世界侧 SPS 能驱动玩家 Avatar 动画』的假设来设计交互。</p>
+<p>溯源：VRCFury 官方文档（v1.1341.0 时期（2026-05 复核））；证据级 official。</p>
+<hr>
+<hr>
+<h1 id="vrcfury-官方资源入口github-仓库官网文档站文档源码仓库与技术支持-discord">VRCFury 官方资源入口：GitHub 仓库、官网文档站、文档源码仓库与技术支持 Discord</h1>
+<p>VRCFury 的权威资源入口共四处，查找与求助时按此优先级使用：</p>
+<ol>
+<li>代码仓库：<a href="https://github.com/VRCFury/VRCFury">https://github.com/VRCFury/VRCFury</a> ，用于查看源码、提交记录与 Issue。</li>
+<li>官网文档：<a href="https://vrcfury.com">https://vrcfury.com</a> ，内容覆盖五大板块——核心功能、组件说明、自动修复清单（fixes）、SPS 专题、故障排除。</li>
+<li>文档源码仓库：<a href="https://github.com/VRCFury/vrcfury.com">https://github.com/VRCFury/vrcfury.com</a> ，以 MDX 格式存放完整组件文档源文件，想核对原文措辞或引用原文时来这里看。</li>
+<li>技术支持：官方 Discord 频道，适合文档没有覆盖到的具体报错求助。
+另外，Pointer-Based Float Sync 技术的实现见 PR#238：<a href="https://github.com/VRCFury/VRCFury/pull/238">https://github.com/VRCFury/VRCFury/pull/238</a> 。</li>
+</ol>
+<p>溯源：VRCFury 官方文档（版本未标注，工具持续更新）；证据级 official。</p>
+<hr>
+<hr>
+<h1 id="vrcfury-与-modular-avatar-定位对比组件配置快速构建-vs-菜单式复杂装配二选一使用">VRCFury 与 Modular Avatar 定位对比：组件配置快速构建 vs 菜单式复杂装配，二选一使用</h1>
+<p>VRCFury 与 Modular Avatar（MA）同为非破坏性 Avatar 工具，但工作范式不同，选型时按场景二选一。
+逐维度对比：
+核心理念：两者都是非破坏式——VRCFury 强调非破坏性 Avatar 构建，MA 强调非破坏性 Avatar 装配。
+工作流：VRCFury 通过在对象上挂组件来配置行为；MA 通过菜单式操作把物体合并进 Avatar。
+主要功能：VRCFury 主打 Toggle、Gestures（手势动画）、Full Controller（完整控制器合并）；MA 主打 Merge Armature、Merge Animator、Bone Merge。
+适合场景：VRCFury 适合简单 Avatar 的快速构建；MA 适合复杂 Avatar 的装备系统。
+兼容性：两者都与 VRChat SDK 兼容，不存在平台层面的差异。
+使用纪律：推荐二选一、避免混用，这与『VRCFury 与 MA 共存有冲突』的关键事实相互印证。</p>
+<p>溯源：VRCFury 官方文档（2026-07-04 验证（VRCFury v1.1341.0+ 时期））；证据级 official。</p>
+<hr>
+<hr>
+<h1 id="不要在多个-playable-layers-中复用同一个-animator-controller">不要在多个 Playable Layers 中复用同一个 Animator Controller</h1>
+<p>不要在多个 Playable Layers 中复用同一个 Animator Controller，这是 VRChat Avatar 制作中一条重要的防坑规则，出自 VRC School 工具链教学并标注为重点警告。
+问题的发展轨迹：短期内某些设置看起来一切正常，动画也能正常播放；但随着 Avatar 功能不断扩展——层数增多、参数变多、状态机变复杂——共享的 controller 会让不同 Playable Layer 之间的状态与写入配置互相污染，最终演变成难以定位的重大问题。
+正确做法：为每一个 Playable Layer（FX、Action、Gesture 等）准备各自独立的 controller 文件，即使初始内容相似也不要共用一份资产。在使用 VRCFury 的 Full Controller 这类合并完整控制器的组件时尤其要注意合并目标不要与其他层共用。
+该警告未指明针对哪些具体组件，与 Full Controller 的关联为上下文推断。</p>
+<p>溯源：VRCFury 官方文档（2026-07-04 验证）；证据级 official。</p>
+<hr>
+<hr>
+<h1 id="vrcfury-cross-eye-fix-斗鸡眼修复用-rotation-constraints-消除眼睛骨骼滚动">VRCFury Cross-Eye Fix 斗鸡眼修复：用 rotation constraints 消除眼睛骨骼滚动</h1>
+<p>VRCFury 提供 Cross-Eye Fix（斗鸡眼修复）能力，专门对付 VRChat 引入的眼睛骨骼滚动问题：模型上传后双眼不自然地内旋、呈现斗鸡眼状时可用它修复。
+工作机制：通过给眼骨添加 rotation constraints（旋转约束），消除眼睛骨骼上多余的滚动（roll）分量，让视线回到正常朝向；整个过程自动完成，不需要手工逐帧修正眼骨朝向。
+概念区分：这里的 rotation constraints 用在眼骨上是官方推荐的正确用法，它与『SPS 不要与 Constraints 混用』的警告并不矛盾——两者作用在不同的子系统上，前者是眼骨姿态修正，后者是接触检测驱动的形变交互。</p>
+<p>溯源：VRCFury 官方文档（2026-07-04 验证）；证据级 official。</p>
+<hr>
+<hr>
+<h1 id="vrcfury-常用组件速查armature-link--full-controller--gestures--global-collider--toggle--other">VRCFury 常用组件速查：Armature Link / Full Controller / Gestures / Global Collider / Toggle / Other</h1>
+<p>VRCFury 的常用组件可以按用途直接对号入座，速查清单如下：
+Armature Link（骨架链接）：把服装、道具附加到 Avatar 的骨骼上，换装类需求的核心组件。
+Full Controller（完整控制器）：合并完整的 animator、expression menu 与 parameters，一次接入整套控制器资产。
+Gestures（手势）：基于手部手势创建并驱动动画，常用于手势触发的表情动作。
+Global Collider（全局碰撞体）：提供全局 PhysBone collider 与 Contact sender，让指定物体参与物理碰撞与接触检测。
+Toggle（开关）：负责菜单切换、按钮与滑块的创建，是做功能开关的主力组件。
+Other（其他）：收纳上述之外的高级功能入口。
+选型记忆法：接衣物找 Armature Link，搬控制器找 Full Controller，做手势找 Gestures，开菜单开关找 Toggle。</p>
+<p>溯源：VRCFury 官方文档（2026-07-04 验证）；证据级 official。</p>
+<hr>
+<hr>
+<h1 id="vrclens-是侵入式相机工具直接修改-fx-控制器菜单参数重新-apply-后-prefab-消失">VRCLens 是侵入式相机工具：直接修改 FX 控制器/菜单/参数，重新 Apply 后 Prefab 消失</h1>
+<p>VRCLens 是相机工具里非破坏原则的反面教材：它会直接修改 Avatar 的 FX 控制器、菜单与参数，属于侵入式（Invasive）设计。
+VRCLens-Addons 维护者文档原话直译：『VRCLens 直接修改你的 Avatar 的 FX 控制器、菜单和参数，使得共享、或维护带/不带 VRCLens 的不同 Avatar 版本变得困难』『如果你重新 Apply VRCLens，prefab 会消失，你不得不重来一遍』。
+实际影响有三条：一是共享困难——Avatar 场景被绑死在单一版本上；二是回退代价高——重新 Apply 即丢失既有配置；三是团队协作风险大——多人维护同一模型时修改互相踩踏。
+规避方式：社区提供的 VRCLens-Addons 方案把 VRCLens 用 VRCFury Prefab 包装起来（提供 16 个以上的增强 Prefab），借非破坏外壳隔离其对源资产的修改；项目地址 <a href="https://github.com/gummidot/VRCLens-Addons">https://github.com/gummidot/VRCLens-Addons</a> 。</p>
+<p>溯源：社区实测（经官方文档/知识库参考页转引）（2026-07-04 收录）；证据级 community-tested。</p>
+<hr>
+<hr>
+<h1 id="拍摄类工具非破坏性选型对比vrcfurymodular-avatarvirtuallens2-非破坏-vs-vrclens-侵入式">拍摄类工具非破坏性选型对比：VRCFury/Modular Avatar/VirtualLens2 非破坏 vs VRCLens 侵入式</h1>
+<p>相机与拍摄类工具的选型本质是『破坏性与否』的取舍，四个代表工具分成两大阵营。
+非破坏阵营（编译期注入、不动源文件）：VRCFury 通过 Pre-Dynamic 阶段注入；Modular Avatar 通过合并 Animator 注入；VirtualLens2 通过 MA + NDMF 管线注入。三者都不影响源 Avatar，重新 Apply 无副作用，对共享 Avatar 与多版本变体友好。
+侵入阵营（直接改源）：VRCLens 直接修改 FX 控制器、菜单与参数，重新 Apply 后 prefab 消失、配置丢失，Avatar 被绑死在单一版本上。
+场景建议：共享 Avatar 创作者（需要多个版本变体）选 VRCFury / MA / VirtualLens2；个人 Avatar 追求一站式、不想配置复杂工具链的可选 VRCLens；团队合作多人维护同一 Avatar 时避免 VRCLens。
+折中方案：确实想用 VRCLens 时，可通过 VRCLens-Addons 提供的 VRCFury Prefab 包装（项目地址 <a href="https://github.com/gummidot/VRCLens-Addons">https://github.com/gummidot/VRCLens-Addons</a> ）来隔离其对源的直接修改。</p>
+<p>溯源：工程推断（多案例交叉验证）（2026-07-04 收录）；证据级 inferred。</p>
+<hr> </div> <p class="kb-source-note" data-astro-cid-lvjzyg5v>
+本文由 VRChat 开发知识库自动整理（社区整理  · 可信度 high ），
+          遇到与手写教程冲突的地方，以官方文档为最高优先级。
+</p> <section class="comments" id="comments" data-astro-cid-lvjzyg5v> <h2 class="comments__title" data-astro-cid-lvjzyg5v>✦ 旅人留言（0）</h2> <p class="comments__empty" id="commentsEmpty" data-astro-cid-lvjzyg5v>
+还没有旅人留言 —— 有疑问就写在下面，站长都会回复。
+</p> <form class="comment-form" id="commentForm" data-target="kb-avatar-vrcfury-reference" data-astro-cid-lvjzyg5v> <p class="comment-form__title" data-astro-cid-lvjzyg5v>写下你的留言</p> <input id="cAuthor" maxlength="20" placeholder="昵称（留空则为「旅人」）" data-astro-cid-lvjzyg5v> <textarea id="cBody" maxlength="1000" required placeholder="想问的问题、想说的感谢都可以（最多 1000 字）" data-astro-cid-lvjzyg5v></textarea> <div class="comment-form__actions" data-astro-cid-lvjzyg5v> <button class="btn btn--primary" type="submit" data-astro-cid-lvjzyg5v>发布留言</button> <span class="form-hint" data-astro-cid-lvjzyg5v>留言保存在本站，站长在写作台里能看到</span> <span class="form-msg" id="cMsg" data-astro-cid-lvjzyg5v></span> </div> </form> </section> <nav class="station-nav" aria-label="站间导航" data-astro-cid-lvjzyg5v> <a href="/STELLASTOPVRC/posts/kb-avatar-vrc-constraints/" data-astro-cid-lvjzyg5v> <span class="dir" data-astro-cid-lvjzyg5v>← 上一站 · 更新的星光</span> <span class="to" data-astro-cid-lvjzyg5v>VRChat Constraints 知识库— 系统概述、版本时序与六种约束类型</span> </a> <a href="/STELLASTOPVRC/posts/kb-avatar-zh-translation-glossary/" data-astro-cid-lvjzyg5v> <span class="dir" data-astro-cid-lvjzyg5v>下一站 · 更早的星光 →</span> <span class="to" data-astro-cid-lvjzyg5v>VRChat Avatar 中英术语对照表（全量）——英文原名、常见中文代称与欠标准译名警示</span> </a> </nav> </div> <aside class="toc" id="toc" hidden> <p class="toc__title">✦ 本页星图</p> <nav id="tocNav" aria-label="文章目录"></nav> </aside> <script type="module">const i=document.querySelector(".prose"),d=document.getElementById("toc"),u=document.getElementById("tocNav"),l=[];if(i&&d&&u){const c=[...i.querySelectorAll("h1, h2, h3")];if(c.length>=3){d.hidden=!1,c.forEach((o,e)=>{o.id||(o.id=`sec-${e}`);const n=document.createElement("a");n.href=`#${o.id}`;const s=(o.textContent??"").replace(/\s+/g," ").trim(),r=s.search(/[：:]/),a=r>=4?s.slice(0,r):s;n.textContent=a.length>40?`${a.slice(0,40)}…`:a,n.title=s,u.appendChild(n),l.push({a:n,h:o})});const t=()=>{let o=l[0];for(const e of l)e.h.getBoundingClientRect().top<=130&&(o=e);for(const e of l)e.a.classList.toggle("is-active",e===o)};addEventListener("scroll",t,{passive:!0}),t()}}document.querySelectorAll(".prose pre").forEach(c=>{const t=document.createElement("button");t.className="code-copy",t.type="button",t.textContent="复制",t.addEventListener("click",async()=>{const o=c.querySelector("code")?.innerText??c.innerText;try{await navigator.clipboard.writeText(o)}catch{const e=document.createElement("textarea");e.value=o,document.body.appendChild(e),e.select(),document.execCommand("copy"),e.remove()}t.textContent="已复制 ✓",t.classList.add("is-ok"),setTimeout(()=>{t.textContent="复制",t.classList.remove("is-ok")},1500)}),c.appendChild(t)});</script> </article>  </main> <footer class="site-footer"> <div class="wrap"> <p class="star-line" aria-hidden="true"> <svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> <svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> </p> <p>星之驿站 StellaStop —— 在虚拟宇宙中，为你保留一座驿站</p> <p class="site-footer__disclaimer">
+该网页目前是测试阶段，仅用于测试，所有内容仅供参考；内容全部为引用互联网当中的信息。
+</p> <p>© 2026 星之驿站 · 由 <a href="https://astro.build">Astro</a> 与星光驱动</p> <p> <a data-desk-login hidden title="写作台：登录 / 注册">登录 / 注册</a> ·
+<a href="/STELLASTOPVRC/announcements/">官方公告</a> ·
+<a href="/STELLASTOPVRC/ai/">问星 AI</a> ·
+<a href="/STELLASTOPVRC/feedback/">旅人留言板</a> </p> </div> </footer> <button class="to-top" id="toTop" aria-label="回到顶部"> <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"> <path d="M12 20V5"></path> <path d="M5.5 11.5 12 5l6.5 6.5"></path> </svg> </button> <script type="module">const e=document.getElementById("toTop");if(e){const t=()=>e.classList.toggle("is-visible",scrollY>480);addEventListener("scroll",t,{passive:!0}),t(),e.addEventListener("click",()=>{const o=matchMedia("(prefers-reduced-motion: reduce)").matches;scrollTo({top:0,behavior:o?"auto":"smooth"})})}</script> <script>(function(){const deskConfigured = "";
+
+      /* 写作台探测（页面尾部执行，DOM 已就绪）：
+         1. 计算写作台地址：站点配置 deskUrl（公网部署时填）> 本机默认 localhost:4322 > 同主机 4322
+         2. 探测 /api/gate/status —— 在线才点亮「登录 / 注册」入口，并复用给验证门横幅
+         3. 不在线则保持隐藏，绝不会把访客拽进内网地址；同时给出一次性「镜像模式」提示 */
+      (function () {
+        var host = location.hostname;
+        var isLocal = host === 'localhost' || host === '127.0.0.1' || host === '[::1]';
+        var desk = deskConfigured ||
+          (isLocal ? 'http://localhost:4322' : location.protocol + '//' + host + ':4322');
+        window.STELLA_DESK = desk;
+
+        function revealLogin() {
+          document.querySelectorAll('[data-desk-login]').forEach(function (a) {
+            a.href = desk + '/admin';
+            a.removeAttribute('hidden');
+          });
+        }
+        function showBanner(css, html, shiftHeader) {
+          var bar = document.createElement('div');
+          bar.style.cssText = css;
+          bar.innerHTML = html;
+          document.body.prepend(bar);
+          if (shiftHeader) {
+            var header = document.querySelector('.site-header');
+            if (header) header.style.marginTop = '42px';
+          }
+        }
+        function hintMirrorMode() {
+          try {
+            if (sessionStorage.getItem('stella-desk-hint')) return;
+            sessionStorage.setItem('stella-desk-hint', '1');
+          } catch (e) { /* 无痕模式等：忽略 */ }
+          var tip = document.createElement('div');
+          tip.style.cssText = 'position:fixed;left:14px;bottom:14px;z-index:9998;max-width:min(92vw,430px);padding:.65rem .9rem;border-radius:12px;background:rgba(18,20,44,.92);border:1px solid rgba(150,142,255,.35);color:#e8e6ff;font-size:.82rem;line-height:1.6;font-family:system-ui,sans-serif;box-shadow:0 8px 30px rgba(0,0,0,.35)';
+          tip.innerHTML = 'ℹ️ 静态镜像模式：登录 / 评论 / AI 等互动功能需要站长写作台在线，当前不可用。' +
+            '<span id="stellaDeskHintClose" style="float:right;cursor:pointer;opacity:.75;font-weight:700;margin-left:.6rem" title="关闭">×</span>';
+          document.body.appendChild(tip);
+          var close = function () { tip.remove(); };
+          tip.querySelector('#stellaDeskHintClose').addEventListener('click', close);
+          setTimeout(close, 9000);
+        }
+
+        try {
+          var ctrl = new AbortController();
+          var timer = setTimeout(function () { ctrl.abort(); }, 2500);
+          fetch(desk + '/api/gate/status', { credentials: 'include', signal: ctrl.signal })
+            .then(function (r) { return r.ok ? r.json() : null; })
+            .then(function (d) {
+              clearTimeout(timer);
+              if (!d) throw new Error('desk-offline');
+              window.STELLA_DESK_OK = true;
+              revealLogin();
+              if (d.regionBlocked) {
+                showBanner(
+                  'position:fixed;top:0;left:0;right:0;z-index:9999;padding:1.2rem;text-align:center;background:#1a0a0a;color:#ff9ed2;font-size:.95rem;border-bottom:2px solid #ff4d6d;font-family:system-ui,sans-serif',
+                  '⛔ 你所在的地区（' + (d.regionCountry || '未知') + '）暂不开放访问。',
+                  false
+                );
+                return;
+              }
+              if (d.enabled && !d.passed) {
+                showBanner(
+                  'position:fixed;top:0;left:0;right:0;z-index:9999;padding:0.7rem;text-align:center;background:linear-gradient(94deg,rgba(143,127,247,.25),rgba(98,200,245,.18));border-bottom:1px solid rgba(150,142,255,.3);color:#f0efff;font-size:.88rem;font-family:system-ui,sans-serif',
+                  '🔒 本站启用了安全验证 —— <a href="' + desk + '/gate?next=' + encodeURIComponent(location.href) + '" style="color:#ffd98e;font-weight:700;text-decoration:underline">点击完成验证</a>，通过后即可使用全部功能（30 天免验）。',
+                  true
+                );
+              }
+            })
+            .catch(function () {
+              clearTimeout(timer);
+              window.STELLA_DESK_OK = false;
+              hintMirrorMode();
+            });
+        } catch (e) { /* 忽略 */ }
+      })();
+    })();</script> </body> </html> <script type="module">const m=document.getElementById("commentForm"),s=document.getElementById("cMsg"),u=`${location.protocol}//${location.hostname}:4322/api/message`;function r(e,t=!1){s&&(s.textContent=e,s.classList.toggle("is-err",t),s.classList.toggle("is-ok",!t))}function y(){const e=new Date,t=n=>String(n).padStart(2,"0");return`${e.getFullYear()}-${t(e.getMonth()+1)}-${t(e.getDate())}`}function f(e){let t=7;for(const n of e)t=(t*31+n.charCodeAt(0))%360;return t}function g(e,t){const n=document.createElement("li");n.className="comment",n.innerHTML=`
+      <span class="comment__avatar"></span>
+      <div class="comment__bubble">
+        <div class="comment__head">
+          <span class="comment__name"></span>
+          <time class="comment__date">${y()}</time>
+        </div>
+        <p class="comment__body"></p>
+      </div>`;const o=n.querySelector(".comment__avatar");return o.style.setProperty("--h",String(f(e))),o.textContent=e.slice(0,1),n.querySelector(".comment__name").textContent=e,n.querySelector(".comment__body").textContent=t,n}m?.addEventListener("submit",async e=>{e.preventDefault();const t=document.getElementById("cBody").value.trim();if(!t)return r("留言内容不能为空哦",!0);const n=document.getElementById("cAuthor").value.trim()||"旅人",o=m.querySelector("button");o&&(o.disabled=!0);try{const c=await fetch(u,{credentials:"include",method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({target:m.dataset.target,kind:"comment",author:n,body:t})}),d=await c.json().catch(()=>({}));if(!c.ok)throw new Error(d.error||`发送失败（${c.status}）`);const l=document.querySelector(".comment-list");l&&l.appendChild(g(n,t)),document.getElementById("commentsEmpty")?.remove(),document.getElementById("cBody").value="",r("留言已发布，感谢支持 ✦");const a=document.querySelector(".comments__title"),i=a?.textContent?.match(/（(\d+)）/);a&&i&&(a.textContent=a.textContent.replace(/（\d+）/,`（${Number(i[1])+1}）`))}catch(c){r(c instanceof TypeError?"写作台没在运行，暂时收不到留言 —— 双击「启动博客.bat」就好":c.message,!0)}finally{o&&(o.disabled=!1)}});</script> 

@@ -1,0 +1,460 @@
+<!DOCTYPE html><html lang="zh-CN"> <head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="generator" content="Astro v5.18.2"><meta name="description" content="lilycalInventory（下称 LCI） 由 lilxyzw（lilToon 的作者）出品，是一个非破坏性&#34;衣柜 / 衣装切换&#34;生成式工具。它不在编辑期直接改模型，而是通过组件声明&#34;要怎么做&#34;，在上传 / 构建时"><meta name="theme-color" content="#070a1c"><meta property="og:title" content="lilycalInventory (lilycal 衣装切换/衣柜) · 星之驿站 StellaStop"><meta property="og:description" content="lilycalInventory（下称 LCI） 由 lilxyzw（lilToon 的作者）出品，是一个非破坏性&#34;衣柜 / 衣装切换&#34;生成式工具。它不在编辑期直接改模型，而是通过组件声明&#34;要怎么做&#34;，在上传 / 构建时"><meta property="og:type" content="website"><meta name="twitter:card" content="summary"><link rel="icon" type="image/svg+xml" href="/STELLASTOPVRC/favicon.svg"><script>
+      // 在渲染前恢复主题与特效档位，避免闪一下默认状态
+      try {
+        document.documentElement.dataset.theme =
+          localStorage.getItem('stella-theme') || 'nebula';
+        document.documentElement.dataset.fx =
+          localStorage.getItem('stella-fx') || 'standard';
+      } catch {
+        /* 隐私模式读不到就算了 */
+      }
+    </script><link rel="stylesheet" href="/STELLASTOPVRC/custom-vars.css"><title>lilycalInventory (lilycal 衣装切换/衣柜) · 星之驿站 StellaStop</title><link rel="stylesheet" href="/STELLASTOPVRC/_astro/about.Bgh6wcGl.css">
+<style>.post-head__meta[data-astro-cid-lvjzyg5v]{color:var(--ink-faint);font-family:var(--font-mono);font-size:.82rem}.post-head[data-astro-cid-lvjzyg5v] .chip-row[data-astro-cid-lvjzyg5v]{margin-top:1rem}.kb-source-note[data-astro-cid-lvjzyg5v]{max-width:760px;margin:2.2rem auto 0;font-size:.82rem;color:var(--ink-faint);border-top:1px dashed var(--line);padding-top:1rem}
+</style></head> <body> <div class="site-notice" id="siteNotice"> <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> <span class="site-notice__text">欢迎来到星之驿站！</span> <button class="site-notice__close" id="noticeClose" type="button" aria-label="关闭公告">
+×
+</button> </div> <a class="skip-link" href="#main">跳到主要内容</a> <canvas id="starfield" aria-hidden="true" data-astro-cid-ra7sfcwn></canvas> <div class="fx-aurora fx-aurora--a" aria-hidden="true" data-astro-cid-ra7sfcwn></div> <div class="fx-aurora fx-aurora--b" aria-hidden="true" data-astro-cid-ra7sfcwn></div>  <script type="module">const u=document.getElementById("starfield");if(u){let F=function(){const n=Math.random();return n<.1?"gold":n<.42?"blue":"white"},v=function(){const n=Math.min(window.devicePixelRatio||1,2);s=window.innerWidth,d=window.innerHeight,u.width=s*n,u.height=d*n,u.style.width=`${s}px`,u.style.height=`${d}px`,t.setTransform(n,0,0,n,0,0);const e=Math.min(190,Math.round(s*d/8500));l=Array.from({length:e},()=>({x:Math.random()*s,y:Math.random()*d,r:r(.4,1.7),base:r(.25,.8),amp:r(.12,.4),speed:r(6e-4,.0022),phase:r(0,Math.PI*2),c:F()})),C=Array.from({length:26},()=>({x:Math.random()*s,y:Math.random()*d,r:r(.9,2.4),vx:r(-.006,.006),vy:r(-.02,-.006),base:r(.2,.5),speed:r(8e-4,.002),phase:r(0,Math.PI*2),c:Math.random()<.5?"gold":"violet"})),c==="off"&&m(0,!0)},D=function(n){const e=Math.random()<.5?1:-1,o=r(Math.PI/7,Math.PI/5),a=r(.45,.75);y.push({x:r(s*.15,s*.85),y:r(-20,d*.3),vx:Math.cos(o)*a*e,vy:Math.sin(o)*a,born:n,life:r(750,1050),len:r(100,170)})},S=function(n){y=y.filter(e=>n-e.born<e.life);for(const e of y){const o=(n-e.born)/e.life,a=e.x+e.vx*(n-e.born),i=e.y+e.vy*(n-e.born),f=o<.15?o/.15:o>.7?(1-o)/.3:1,h=Math.hypot(e.vx,e.vy),x=e.vx/h,g=e.vy/h,b=t.createLinearGradient(a,i,a-x*e.len,i-g*e.len);b.addColorStop(0,`rgba(236,242,255,${(.85*f).toFixed(3)})`),b.addColorStop(1,"rgba(236,242,255,0)"),t.strokeStyle=b,t.lineWidth=1.6,t.lineCap="round",t.beginPath(),t.moveTo(a,i),t.lineTo(a-x*e.len,i-g*e.len),t.stroke()}},B=function(){let o=0;t.lineWidth=.7;for(let a=0;a<l.length&&o<26;a++)for(let i=a+1;i<l.length&&o<26;i++){const f=l[a].x-l[i].x,h=l[a].y-l[i].y,x=f*f+h*h;if(x<16900){const g=(1-Math.sqrt(x)/130)*.17;t.strokeStyle=`rgba(178,170,255,${g.toFixed(3)})`,t.beginPath(),t.moveTo(l[a].x,l[a].y),t.lineTo(l[i].x,l[i].y),t.stroke(),o++}}},X=function(n){for(const e of C){e.x+=e.vx*16,e.y+=e.vy*16,e.y<-12&&(e.y=d+10),e.x<-12&&(e.x=s+10),e.x>s+12&&(e.x=-10);const o=Math.max(.05,e.base+.25*Math.sin(n*e.speed+e.phase)),[a,i,f]=A[e.c];t.beginPath(),t.arc(e.x,e.y,e.r,0,7),t.shadowBlur=9,t.shadowColor=`rgba(${a},${i},${f},0.9)`,t.fillStyle=`rgba(${a},${i},${f},${o.toFixed(3)})`,t.fill()}t.shadowBlur=0},m=function(n,e=!1){t.clearRect(0,0,s,d);for(const o of l){const a=c==="off"?o.base:Math.max(.05,o.base+o.amp*Math.sin(n*o.speed+o.phase)),[i,f,h]=A[o.c];t.beginPath(),t.arc(o.x,o.y,o.r,0,7),o.r>1.25?(t.shadowBlur=7,t.shadowColor=`rgba(${i},${f},${h},0.85)`):t.shadowBlur=0,t.fillStyle=`rgba(${i},${f},${h},${a.toFixed(3)})`,t.fill()}if(t.shadowBlur=0,c!=="off"&&!e){c==="fancy"&&(B(),X(n));const o=c==="fancy"?r(2600,6e3):r(4200,9500);n>P&&(D(n),P=n+o),S(n)}},$=function(n){m(n),M=requestAnimationFrame($)},p=function(){if(c==="off"){m(0,!0);return}cancelAnimationFrame(M),M=requestAnimationFrame($)},w=function(){cancelAnimationFrame(M),t.clearRect(0,0,s,d),m(0,!0)};const t=u.getContext("2d"),k=matchMedia("(prefers-reduced-motion: reduce)").matches,A={white:[240,240,255],blue:[150,215,250],gold:[255,218,150],violet:[178,170,255]};let s=0,d=0,l=[],C=[],y=[],P=2500,M=0,c=document.documentElement.dataset.fx||"standard";k&&(c="off");const r=(n,e)=>n+Math.random()*(e-n);v(),addEventListener("resize",v),document.addEventListener("stella-fx-change",n=>{c=n.detail,c==="off"?w():p()}),c==="off"?m(0,!0):(p(),document.addEventListener("visibilitychange",()=>{document.hidden?w():p()}))}</script> <header class="site-header"> <div class="wrap site-header__inner"> <a class="logo" href="/STELLASTOPVRC/"> <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> <span>星之驿站</span> <span class="logo__romaji">StellaStop</span> </a> <div class="header-right"> <nav class="site-nav" aria-label="站内导航"> <a href="/STELLASTOPVRC/"> 首页 </a><a href="/STELLASTOPVRC/start/"> 新手 </a><a href="/STELLASTOPVRC/posts/"> 教程 </a><a href="/STELLASTOPVRC/videos/"> 视频 </a><a href="/STELLASTOPVRC/resources/"> 资源 </a><a href="/STELLASTOPVRC/booth/"> Booth </a><a href="/STELLASTOPVRC/announcements/"> 公告 </a><a href="/STELLASTOPVRC/ai/"> 问星 </a><a href="/STELLASTOPVRC/changelog/"> 更新日志 </a><a href="/STELLASTOPVRC/about/"> 关于 </a> </nav> <a class="login-link" data-desk-login hidden title="写作台：登录 / 注册后可发教程、传资源">
+登录 / 注册
+</a> <div class="theme-switch"> <button class="theme-switch__btn" id="themeBtn" type="button" aria-haspopup="listbox" aria-expanded="false" aria-label="切换主题配色" title="切换主题配色"> <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"> <path d="M12 3a9 9 0 1 0 9 9c0-1.2-1-2-2.2-2H17a2 2 0 0 1-2-2V6.2C15 5 14.2 4 13 4.4A9 9 0 0 0 12 3Z"></path> <circle cx="7.5" cy="11.5" r="1" fill="currentColor" stroke="none"></circle> <circle cx="10" cy="7.5" r="1" fill="currentColor" stroke="none"></circle> <circle cx="15" cy="7" r="1" fill="currentColor" stroke="none"></circle> </svg> </button> <div class="theme-pop" id="themePop" role="listbox" aria-label="选择主题" hidden> <button class="theme-opt" type="button" role="option" data-theme-value="nebula" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#8f7ff7"></span><span class="dot" style="background:#62c8f5"></span><span class="dot" style="background:#ffd98e"></span> </span> <span class="theme-opt__name">星云 · 蓝紫</span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt" type="button" role="option" data-theme-value="sakura" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#ff8fc7"></span><span class="dot" style="background:#c79bff"></span><span class="dot" style="background:#ffd08e"></span> </span> <span class="theme-opt__name">樱语 · 粉紫</span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt" type="button" role="option" data-theme-value="miku" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#2ed3c2"></span><span class="dot" style="background:#6ea8ff"></span><span class="dot" style="background:#ffe08e"></span> </span> <span class="theme-opt__name">葱色 · 青绿</span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt" type="button" role="option" data-theme-value="ember" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#ffb35c"></span><span class="dot" style="background:#ff7e6b"></span><span class="dot" style="background:#ffd98e"></span> </span> <span class="theme-opt__name">暮金 · 暖橙</span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt" type="button" role="option" data-theme-value="dawn" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#6a5ce8"></span><span class="dot" style="background:#e0568f"></span><span class="dot" style="background:#b8821e"></span> </span> <span class="theme-opt__name">晨星 · 浅色</span> <span class="theme-opt__mark">✦</span> </button> </div> </div> <script type="module">const a=document.getElementById("themeBtn"),n=document.getElementById("themePop");function s(c){document.documentElement.dataset.theme=c;try{localStorage.setItem("stella-theme",c)}catch{}const e=getComputedStyle(document.documentElement).getPropertyValue("--bg-deep").trim();document.querySelector('meta[name="theme-color"]')?.setAttribute("content",e||"#070a1c"),document.querySelectorAll(".theme-opt").forEach(t=>{const d=t.dataset.themeValue===c;t.classList.toggle("is-active",d),t.setAttribute("aria-selected",String(d))})}if(a&&n){const c=document.documentElement.dataset.theme||"nebula";document.querySelectorAll(".theme-opt").forEach(e=>{const t=e.dataset.themeValue===c;e.classList.toggle("is-active",t),e.setAttribute("aria-selected",String(t))}),a.addEventListener("click",e=>{e.stopPropagation();const t=n.hidden;n.hidden=!t,a.setAttribute("aria-expanded",String(t))}),document.addEventListener("click",e=>{!n.hidden&&!e.target.closest(".theme-switch")&&(n.hidden=!0,a.setAttribute("aria-expanded","false"))}),document.addEventListener("keydown",e=>{e.key==="Escape"&&!n.hidden&&(n.hidden=!0,a.setAttribute("aria-expanded","false"),a.focus())}),n.addEventListener("click",e=>{const t=e.target.closest(".theme-opt");t&&(s(t.dataset.themeValue??"nebula"),n.hidden=!0,a.setAttribute("aria-expanded","false"))})}</script> <div class="theme-switch fx-switch"> <button class="theme-switch__btn" id="fxBtn" type="button" aria-haspopup="listbox" aria-expanded="false" aria-label="背景特效设置" title="背景特效设置"> <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"> <path d="M5 3v4M3 5h4M6.5 17.5v3M5 19h3"></path> <path d="M14.5 4.5 16 9l4.5 1.5L16 12l-1.5 4.5L13 12l-4.5-1.5L13 9l1.5-4.5Z"></path> </svg> </button> <div class="theme-pop" id="fxPop" role="listbox" aria-label="背景特效" hidden> <button class="theme-opt fx-opt" type="button" role="option" data-fx-value="off" aria-selected="false"> <span class="fx-opt__body"> <span class="fx-opt__name">关闭特效</span> <span class="fx-opt__hint">最省电</span> </span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt fx-opt" type="button" role="option" data-fx-value="standard" aria-selected="false"> <span class="fx-opt__body"> <span class="fx-opt__name">标准</span> <span class="fx-opt__hint">闪烁星空 + 流星</span> </span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt fx-opt" type="button" role="option" data-fx-value="fancy" aria-selected="false"> <span class="fx-opt__body"> <span class="fx-opt__name">华丽</span> <span class="fx-opt__hint">追加极光 / 星座 / 光尘</span> </span> <span class="theme-opt__mark">✦</span> </button> </div> </div> <script type="module">const n=document.getElementById("fxBtn"),a=document.getElementById("fxPop");function s(d){document.documentElement.dataset.fx=d;try{localStorage.setItem("stella-fx",d)}catch{}document.querySelectorAll("#fxPop .fx-opt").forEach(t=>{const e=t.dataset.fxValue===d;t.classList.toggle("is-active",e),t.setAttribute("aria-selected",String(e))}),document.dispatchEvent(new CustomEvent("stella-fx-change",{detail:d}))}if(n&&a){const d=document.documentElement.dataset.fx||"standard";document.querySelectorAll("#fxPop .fx-opt").forEach(t=>{const e=t.dataset.fxValue===d;t.classList.toggle("is-active",e),t.setAttribute("aria-selected",String(e))}),n.addEventListener("click",t=>{t.stopPropagation();const e=a.hidden;a.hidden=!e,n.setAttribute("aria-expanded",String(e))}),document.addEventListener("click",t=>{!a.hidden&&!t.target.closest(".fx-switch")&&(a.hidden=!0,n.setAttribute("aria-expanded","false"))}),document.addEventListener("keydown",t=>{t.key==="Escape"&&!a.hidden&&(a.hidden=!0,n.setAttribute("aria-expanded","false"),n.focus())}),a.addEventListener("click",t=>{const e=t.target.closest(".fx-opt");e&&(s(e.dataset.fxValue??"standard"),a.hidden=!0,n.setAttribute("aria-expanded","false"))})}</script> </div> </div> </header> <main id="main">  <article class="wrap post-layout" data-astro-cid-lvjzyg5v> <div class="post-main page-fade" data-astro-cid-lvjzyg5v> <header class="post-head" data-astro-cid-lvjzyg5v> <a class="crumb" href="/STELLASTOPVRC/posts/" data-astro-cid-lvjzyg5v>← 返回教程档案</a> <div class="post-head__meta" style="--accent:var(--ink-dim)" data-astro-cid-lvjzyg5v> <span class="badge" data-cat="Avatar 虚拟形象" data-astro-cid-lvjzyg5v>Avatar 虚拟形象</span> <time datetime="2026-08-19" data-astro-cid-lvjzyg5v>2026-08-19</time> <span class="post-head__reading" data-astro-cid-lvjzyg5v>⏱ 约 15 分钟</span>  </div> <h1 class="post-head__title" data-astro-cid-lvjzyg5v>lilycalInventory (lilycal 衣装切换/衣柜)</h1> <p class="post-head__lead" data-astro-cid-lvjzyg5v>lilycalInventory（下称 LCI） 由 lilxyzw（lilToon 的作者）出品，是一个非破坏性&quot;衣柜 / 衣装切换&quot;生成式工具。它不在编辑期直接改模型，而是通过组件声明&quot;要怎么做&quot;，在上传 / 构建时</p> <div class="chip-row" data-astro-cid-lvjzyg5v> <a class="chip" href="/STELLASTOPVRC/posts/?tag=%E7%9F%A5%E8%AF%86%E5%BA%93" data-astro-cid-lvjzyg5v> 知识库 </a><a class="chip" href="/STELLASTOPVRC/posts/?tag=avatar" data-astro-cid-lvjzyg5v> avatar </a> </div> </header> <div class="prose" data-astro-cid-lvjzyg5v> <h1 id="lilycalinventory--非破坏性衣装切换衣柜工具">lilycalInventory — 非破坏性衣装切换/衣柜工具</h1>
+<blockquote>
+<p>来源: lilxyzw/lilycalInventory 官方仓库 + 官方文档（检索日期 2026-08-19）
+置信度: High（核心机制为官方可核实事实，边界为推断并标注）
+官方一句话: “<strong>Modify avatar at build time.</strong>”（构建时修改 Avatar）
+GitHub: <a href="https://github.com/lilxyzw/lilycalInventory">https://github.com/lilxyzw/lilycalInventory</a>
+文档: <a href="https://lilxyzw.github.io/lilycalInventory/">https://lilxyzw.github.io/lilycalInventory/</a>
+VPM 仓库: <a href="https://lilxyzw.github.io/vpm-repos/vpm.json">https://lilxyzw.github.io/vpm-repos/vpm.json</a></p>
+</blockquote>
+<hr>
+<h2 id="1-工具定位">1. 工具定位</h2>
+<p><strong>lilycalInventory（下称 LCI）</strong> 由 lilxyzw（lilToon 的作者）出品，是一个<strong>非破坏性”衣柜 / 衣装切换”生成式工具</strong>。它不在编辑期直接改模型，而是通过组件声明”要怎么做”，在<strong>上传 / 构建时</strong>自动完成动画、菜单、参数的生成。官方将其定义为一句话 “<strong>Modify avatar at build time.</strong>” [FACT, github.com/lilxyzw/lilycalInventory, 2026-08-19]。</p>
+<table>
+<thead>
+<tr>
+<th>维度</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>设计目标</strong></td>
+<td>让制作者用组件配置”衣装开/关、多衣装排他切换、无级调节”，构建时自动产出菜单 + Animator + 参数</td>
+</tr>
+<tr>
+<td><strong>核心哲学</strong></td>
+<td><strong>不生成资产（アセットを生成しない）</strong>——构建时生成的东西是输出，不是可编辑源 [FACT, 2026-08-19]</td>
+</tr>
+<tr>
+<td><strong>同步事故防范</strong></td>
+<td>当所有参数全关时，生成结果的外观与 prefab 源状态保持一致（避免”关掉所有开关后模型消失/残留”的经典事故）[FACT, 2026-08-19]</td>
+</tr>
+<tr>
+<td><strong>非目标</strong></td>
+<td>骨骼装配 / 合并不在其职责内（推断边界，见 §5）</td>
+</tr>
+<tr>
+<td><strong>所属生态</strong></td>
+<td>NDMF 插件（有 NDMF 时作为 NDMF 插件运行），也可独立运行</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>💡 LCI 与 lilToon <strong>没有依赖关系</strong>：lilToon 只是同一作者的另一套独立资产；LCI 只关心”衣装怎么切换”，不关心 shader。</p>
+</blockquote>
+<hr>
+<h2 id="2-核心组件与机制">2. 核心组件与机制</h2>
+<h3 id="21-组件表前缀-li">2.1 组件表（前缀 <code>LI</code>）</h3>
+<table>
+<thead>
+<tr>
+<th>组件</th>
+<th>类型</th>
+<th>生成内容</th>
+<th>参数类型</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>LI MenuFolder</strong></td>
+<td>菜单容器</td>
+<td>菜单分组的文件夹</td>
+<td>不生成参数</td>
+</tr>
+<tr>
+<td><strong>LI ItemToggler</strong></td>
+<td>对象开关</td>
+<td>对象开关 + BlendShape + 材质替换</td>
+<td>Bool</td>
+</tr>
+<tr>
+<td><strong>LI CostumeChanger</strong></td>
+<td>衣装切换</td>
+<td>多衣装排他切换，构建时转 AnimationClip + AnimatorController State</td>
+<td>Int</td>
+</tr>
+<tr>
+<td><strong>LI AutoDresser</strong></td>
+<td>换装根部</td>
+<td>构建时转成 CostumeChanger，统一管理多件衣装</td>
+<td>Int</td>
+</tr>
+<tr>
+<td><strong>LI AutoDresserSettings</strong></td>
+<td>换装设置</td>
+<td>每 Avatar 0/1 个，配置 AutoDresser 行为</td>
+<td>—</td>
+</tr>
+<tr>
+<td><strong>LI SmoothChanger</strong></td>
+<td>无级调节</td>
+<td>Float 参数驱动的连续值切换</td>
+<td>Float</td>
+</tr>
+<tr>
+<td><strong>LI Preset</strong></td>
+<td>预设</td>
+<td>一组衣装/对象的组合</td>
+<td>—</td>
+</tr>
+<tr>
+<td><strong>LI Prop</strong></td>
+<td>道具</td>
+<td>道具放置/切换</td>
+<td>—</td>
+</tr>
+<tr>
+<td><strong>LI MaterialModifier</strong></td>
+<td>材质修改</td>
+<td>构建时改写材质</td>
+<td>—</td>
+</tr>
+<tr>
+<td><strong>LI MaterialOptimizer</strong></td>
+<td>材质优化</td>
+<td>可选（协作者可装）</td>
+<td>—</td>
+</tr>
+<tr>
+<td><strong>LI Comment</strong></td>
+<td>注释</td>
+<td>无运行时效果，纯说明</td>
+<td>—</td>
+</tr>
+<tr>
+<td><strong>LI AutoFixMeshSettings</strong></td>
+<td>网格修复</td>
+<td>自动修正 Mesh 设置</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>⚠️ 组件名与语义以<strong>实际安装版本</strong>为准，升级后会变化；排查前先经 Unity MCP 确认识别到的具体字段名（见 §7 方法论）。</p>
+</blockquote>
+<h3 id="22-li-costumechanger-构建机制">2.2 LI CostumeChanger 构建机制</h3>
+<p>构建时对每套衣装执行（官方机制，[FACT, 2026-08-19]）：</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>1. 为每套衣装生成 AnimationClip</span></span>
+<span class="line"><span>   └ 组件设定值 + prefab 初始值「合成」为一个 Clip</span></span>
+<span class="line"><span>2. 注入同名 Int 参数</span></span>
+<span class="line"><span>   └ 同时写入 AnimatorController 与 ExpressionParameters</span></span>
+<span class="line"><span>3. 复制「有効状態を保存 / ローカルのみ」语义</span></span>
+<span class="line"><span>   └ 决定换 Avatar / 换世界时是否保留、是否仅本机生效</span></span>
+<span class="line"><span>4. 新增 Animator 层 / State / Clip / Transition</span></span>
+<span class="line"><span>5. Toggle 菜单写 Int 值</span></span></code></pre>
+<blockquote>
+<p>关键点：生成 Clip 是「组件设定 + prefab 初始值」的合成结果。若 prefab 初始状态与组件设定冲突，最终以合成结果为准——排查”为什么生成的默认状态不对”时应同时核对源 prefab 活性与组件设定。</p>
+</blockquote>
+<h3 id="23-菜单项参数语义">2.3 菜单项参数语义</h3>
+<p>LCI 生成的菜单项包含（[FACT, 2026-08-19]）：</p>
+<table>
+<thead>
+<tr>
+<th>概念</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>图标</td>
+<td>菜单按钮显示的图标</td>
+</tr>
+<tr>
+<td>菜单・参数名</td>
+<td>生成到菜单/参数系统的名称</td>
+</tr>
+<tr>
+<td><strong>有効状態を保存</strong></td>
+<td>换 Avatar / 换 World 后该开关是否被保留</td>
+</tr>
+<tr>
+<td><strong>ローカルのみ</strong></td>
+<td>仅本地生效（不上传/不参与网络同步）</td>
+</tr>
+<tr>
+<td>默认值</td>
+<td>首次进入时的参数初值</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>⚠️ <strong>有効状態を保存 / ローカルのみ</strong> 是”已保存/同步”语义，必须在生成结果里核对，不能只看菜单按钮能不能按。</p>
+</blockquote>
+<hr>
+<h2 id="3-体积参数与成本">3. 体积/参数与成本</h2>
+<ul>
+<li>LCI 本身是<strong>运行时 + 编辑器</strong>包，构建时产物是菜单/控制器/参数/动画（不占 Avatar 运行时脚本开销，机制在构建期完成）[FACT, 2026-08-19]。</li>
+<li><strong>参数预算</strong>：每个 ItemToggler 占用 1 个 Bool；每个 CostumeChanger / AutoDresser / SmoothChanger 占用 1 个 Int（或多个值）。参数数量与衣装数量成正比，<strong>多衣装 Avatar 尤需关注 256 位参数预算</strong>。</li>
+<li><strong>疯狂装衣装的后果</strong>：参数接近或溢出预算。排查”SDK 提示参数超预算”时，先核对 LCI 生成的参数清单与服务商贡献，不要靠数参数名估算（见 §6 故障）。</li>
+<li>[UNKNOWN] LCI 生成物对最终 SDK 体积的具体增量未逐一量化，需授权构建比对后才下结论（【coverage: low】）。</li>
+</ul>
+<hr>
+<h2 id="4-与-mandmf其他工具关系">4. 与 MA・NDMF・其他工具关系</h2>
+<table>
+<thead>
+<tr>
+<th>关系</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>独立运行</strong></td>
+<td>无 NDMF 时也能工作（自生成菜单/控制器/参数）[FACT, 2026-08-19]</td>
+</tr>
+<tr>
+<td><strong>NDMF 插件</strong></td>
+<td>有 NDMF 时作为 NDMF 插件运行，遵循 NDMF 运行顺序预设 [FACT, 2026-08-19]</td>
+</tr>
+<tr>
+<td><strong>Modular Avatar 集成</strong></td>
+<td>组件可设 <strong>MA Menu Item 覆盖</strong>；纳入 <strong>MA Menu Group</strong> 时自动生成 MA Menu Item，菜单并入 MA 体系 [FACT, 2026-08-19]</td>
+</tr>
+<tr>
+<td><strong>lilToon</strong></td>
+<td>非依赖，可有可无</td>
+</tr>
+<tr>
+<td><strong>VPM manifest</strong></td>
+<td><strong>无 <code>vpmDependencies</code></strong>：NDMF / lilToon / MA 均为<strong>可选集成、非硬依赖</strong> [FACT, 2026-08-19]</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>💡 与 <code>[dressing-tools.md](/posts/kb-avatar-dressing-tools/)</code> 同为”衣柜”工具，但定位不同：LCI 是”基于预置组件 + 构建时生成”，DressingTools2 是”自动装配 wearable 的 cabinet 系统”。选择取决于资产作者支持的工作流与团队既有工具链。</p>
+</blockquote>
+<hr>
+<h2 id="5-常见故障changelog-修复项">5. 常见故障（CHANGELOG 修复项）</h2>
+<table>
+<thead>
+<tr>
+<th>故障现象</th>
+<th>说明 / 处理</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>旧 VRCSDK / 空处理对象 / 文件夹循环引用</td>
+<td>CHANGELOG 修复项：检查 VRCSDK 版本、清理空对象、避免文件夹循环引用</td>
+</tr>
+<tr>
+<td>MA 未装时 AnimatorController 克隆问题</td>
+<td>无 MA 场景下控制器克隆异常；装 MA 或按官方依赖指引补齐</td>
+</tr>
+<tr>
+<td>参数重复错误报告</td>
+<td>参数名冲突/重复 → 有超预算风险；核对生成的参数清单并去重</td>
+</tr>
+<tr>
+<td>被引用文件夹组件关闭时不显示</td>
+<td>组件被关但被别处引用时表现异常，检查引用链</td>
+</tr>
+<tr>
+<td>VRCAnimatorPlayAudio 报错</td>
+<td>音频动画节点相关错误，检查相关播放对象</td>
+</tr>
+<tr>
+<td>子菜单为空报错</td>
+<td>生成的子菜单无内容，核对菜单放置定义</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>[UNKNOWN] 官方<strong>无独立中文/英文排障页</strong>【未确认】（官方文档以日文为主，英文化覆盖有限）。排查仍以 CHANGELOG + GitHub Issues + 官方仓库为准。【coverage: low】</p>
+</blockquote>
+<hr>
+<h2 id="6-安装与版本">6. 安装与版本</h2>
+<table>
+<thead>
+<tr>
+<th>项目</th>
+<th>值</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>最新版本</strong></td>
+<td><strong>1.5.2</strong>（Unity 2022.3）[FACT, 2026-08-19]</td>
+</tr>
+<tr>
+<td><strong>许可证</strong></td>
+<td>MIT</td>
+</tr>
+<tr>
+<td><strong>VCC 仓库</strong></td>
+<td><code>https://lilxyzw.github.io/vpm-repos/vpm.json</code></td>
+</tr>
+<tr>
+<td>安装方式</td>
+<td>VCC / ALCOM（仓库添加）、vrc-get、.unitypackage、UPM Git</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>⚠️ 版本升级（尤其破坏性版本）可能要求迁移既有 <code>LI</code> 组件，升级前备份 Avatar / 记录组件版本。</p>
+</blockquote>
+<hr>
+<h2 id="7-所有权与质量责任方法论提炼">7. 所有权与质量责任（方法论提炼）</h2>
+<p>此节来自本地 playbook（<code>lilycal-inventory-playbook.md</code> / <code>generated-and-shared-assets.md</code>）的<strong>所有权映射语言</strong>，标注为方法论而非官方功能陈述。</p>
+<h3 id="71-可编辑源-vs-生成输出">7.1 可编辑源 vs 生成输出</h3>
+<table>
+<thead>
+<tr>
+<th>边界</th>
+<th>内容</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>可编辑源（源）</strong></td>
+<td>可穿戴源 / provider 组件 / Inventory / AutoDresser 配置 / 菜单放置 / 参数映射</td>
+</tr>
+<tr>
+<td><strong>生成输出（不得直接改）</strong></td>
+<td>生成的菜单 / 控制器 / 参数 / 构建克隆 / NDMF 结果</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>⚠️ 官方声明构建时<strong>不产生持久资产</strong>；但 NDMF 构建过程会产生生成物。这些生成物<strong>不是编辑入口</strong>——要改就改源组件，再走 provider 预览/NDMF 重算，不要手改生成控制器/菜单。</p>
+</blockquote>
+<h3 id="72-质量责任边界">7.2 质量责任边界</h3>
+<ul>
+<li><strong>LCI 会负责</strong>：对象开关、BlendShape 表达、材质替换、菜单/参数/动画的生成（能表达”穿模/体型变化”这类依赖 Bool/BlendShape 的结果）。</li>
+<li><strong>[INFERENCE] LCI 不负责</strong>：骨骼装配/骨骼合并（armature merge、bone proxy）。这类责任归 <code>[modular-avatar.md](/posts/kb-avatar-modular-avatar/)</code>（MA Bone Proxy / Merge Armature）或其他装配工具。这个边界是<strong>推断</strong>，不是官方功能陈述，需按具体组件确认。</li>
+<li><strong>一个可见菜单按钮 ≠ 衣装正确</strong>：菜单可达只证明”能打开”，不证明 fit（合身）、穿模、动作、已保存状态、同步、物理正确。最终要以构建克隆 + 授权运行层验证。</li>
+</ul>
+<hr>
+<h2 id="8-使用流程方法论建议">8. 使用流程（方法论建议）</h2>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>1. 记录目标 Avatar / 衣装层级、LCI 版本、组件清单（经 Unity MCP/本地证据）</span></span>
+<span class="line"><span>2. 建立责任映射：入口/参数/可见性/贴体/网格/物理/预设/生成结果 各找唯一 owner</span></span>
+<span class="line"><span>3. 添加最小 provider 支持的源组件（LI ItemToggler / CostumeChanger / AutoDresser）</span></span>
+<span class="line"><span>4. 谨慎选择 参数/默认值/保存/同步 语义，不复制兄弟项的值</span></span>
+<span class="line"><span>5. 走 provider / NDMF 路径重新生成</span></span>
+<span class="line"><span>6. 核对生成菜单、参数、Animator、层级与责任映射的差异</span></span>
+<span class="line"><span>7. 只在授权运行层验证合身/可见/运行时行为，再判完成</span></span></code></pre>
+<blockquote>
+<p>💡 LCI 的”衣装”与 MA 的”Avatar 参数/菜单体系”协同最稳的姿势：LCI 管衣装切换生成，MA 管菜单体系/骨骼/合并，二者按 NDMF 顺序协同。</p>
+</blockquote>
+<hr>
+<h2 id="9-相关文档">9. 相关文档</h2>
+<ul>
+<li><a href="/STELLASTOPVRC/posts/kb-avatar-dressing-tools/">dressing-tools.md</a>（姊妹页，另一衣柜系统）</li>
+<li><a href="/STELLASTOPVRC/posts/kb-avatar-modular-avatar/">modular-avatar.md</a>（菜单/骨骼/装配协作）</li>
+<li><a href="/STELLASTOPVRC/posts/kb-avatar-ndmf-tools/">ndmf-tools.md</a>（NDMF 生态与执行顺序）</li>
+<li><a href="/STELLASTOPVRC/posts/kb-avatar-expression-menu/">expression-menu.md</a>（菜单体系）</li>
+<li><a href="/STELLASTOPVRC/posts/kb-avatar-unity-mcp/">unity-mcp.md</a>（Unity 内核对组件字段的方法）</li>
+<li><a href="/STELLASTOPVRC/posts/kb-avatar-avatar-audit-methodology/">avatar-audit-methodology.md</a>（责任映射与审计方法）</li>
+</ul> </div> <p class="kb-source-note" data-astro-cid-lvjzyg5v>
+本文由 VRChat 开发知识库自动整理（社区整理  · 可信度 High  · 最后校对 2026-08-19），
+          遇到与手写教程冲突的地方，以官方文档为最高优先级。
+</p> <section class="comments" id="comments" data-astro-cid-lvjzyg5v> <h2 class="comments__title" data-astro-cid-lvjzyg5v>✦ 旅人留言（0）</h2> <p class="comments__empty" id="commentsEmpty" data-astro-cid-lvjzyg5v>
+还没有旅人留言 —— 有疑问就写在下面，站长都会回复。
+</p> <form class="comment-form" id="commentForm" data-target="kb-avatar-lilycal-inventory" data-astro-cid-lvjzyg5v> <p class="comment-form__title" data-astro-cid-lvjzyg5v>写下你的留言</p> <input id="cAuthor" maxlength="20" placeholder="昵称（留空则为「旅人」）" data-astro-cid-lvjzyg5v> <textarea id="cBody" maxlength="1000" required placeholder="想问的问题、想说的感谢都可以（最多 1000 字）" data-astro-cid-lvjzyg5v></textarea> <div class="comment-form__actions" data-astro-cid-lvjzyg5v> <button class="btn btn--primary" type="submit" data-astro-cid-lvjzyg5v>发布留言</button> <span class="form-hint" data-astro-cid-lvjzyg5v>留言保存在本站，站长在写作台里能看到</span> <span class="form-msg" id="cMsg" data-astro-cid-lvjzyg5v></span> </div> </form> </section> <nav class="station-nav" aria-label="站间导航" data-astro-cid-lvjzyg5v> <a href="/STELLASTOPVRC/posts/kb-avatar-gesture-manager/" data-astro-cid-lvjzyg5v> <span class="dir" data-astro-cid-lvjzyg5v>← 上一站 · 更新的星光</span> <span class="to" data-astro-cid-lvjzyg5v>Gesture Manager — VRChat 化身动画预览与调试工具</span> </a> <a href="/STELLASTOPVRC/posts/kb-world-scene-components-index/" data-astro-cid-lvjzyg5v> <span class="dir" data-astro-cid-lvjzyg5v>下一站 · 更早的星光 →</span> <span class="to" data-astro-cid-lvjzyg5v>Scene Components 总览</span> </a> </nav> </div> <aside class="toc" id="toc" hidden> <p class="toc__title">✦ 本页星图</p> <nav id="tocNav" aria-label="文章目录"></nav> </aside> <script type="module">const i=document.querySelector(".prose"),d=document.getElementById("toc"),u=document.getElementById("tocNav"),l=[];if(i&&d&&u){const c=[...i.querySelectorAll("h1, h2, h3")];if(c.length>=3){d.hidden=!1,c.forEach((o,e)=>{o.id||(o.id=`sec-${e}`);const n=document.createElement("a");n.href=`#${o.id}`;const s=(o.textContent??"").replace(/\s+/g," ").trim(),r=s.search(/[：:]/),a=r>=4?s.slice(0,r):s;n.textContent=a.length>40?`${a.slice(0,40)}…`:a,n.title=s,u.appendChild(n),l.push({a:n,h:o})});const t=()=>{let o=l[0];for(const e of l)e.h.getBoundingClientRect().top<=130&&(o=e);for(const e of l)e.a.classList.toggle("is-active",e===o)};addEventListener("scroll",t,{passive:!0}),t()}}document.querySelectorAll(".prose pre").forEach(c=>{const t=document.createElement("button");t.className="code-copy",t.type="button",t.textContent="复制",t.addEventListener("click",async()=>{const o=c.querySelector("code")?.innerText??c.innerText;try{await navigator.clipboard.writeText(o)}catch{const e=document.createElement("textarea");e.value=o,document.body.appendChild(e),e.select(),document.execCommand("copy"),e.remove()}t.textContent="已复制 ✓",t.classList.add("is-ok"),setTimeout(()=>{t.textContent="复制",t.classList.remove("is-ok")},1500)}),c.appendChild(t)});</script> </article>  </main> <footer class="site-footer"> <div class="wrap"> <p class="star-line" aria-hidden="true"> <svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> <svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> </p> <p>星之驿站 StellaStop —— 在虚拟宇宙中，为你保留一座驿站</p> <p class="site-footer__disclaimer">
+该网页目前是测试阶段，仅用于测试，所有内容仅供参考；内容全部为引用互联网当中的信息。
+</p> <p>© 2026 星之驿站 · 由 <a href="https://astro.build">Astro</a> 与星光驱动</p> <p> <a data-desk-login hidden title="写作台：登录 / 注册">登录 / 注册</a> ·
+<a href="/STELLASTOPVRC/announcements/">官方公告</a> ·
+<a href="/STELLASTOPVRC/ai/">问星 AI</a> ·
+<a href="/STELLASTOPVRC/feedback/">旅人留言板</a> </p> </div> </footer> <button class="to-top" id="toTop" aria-label="回到顶部"> <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"> <path d="M12 20V5"></path> <path d="M5.5 11.5 12 5l6.5 6.5"></path> </svg> </button> <script type="module">const e=document.getElementById("toTop");if(e){const t=()=>e.classList.toggle("is-visible",scrollY>480);addEventListener("scroll",t,{passive:!0}),t(),e.addEventListener("click",()=>{const o=matchMedia("(prefers-reduced-motion: reduce)").matches;scrollTo({top:0,behavior:o?"auto":"smooth"})})}</script> <script>(function(){const deskConfigured = "";
+
+      /* 写作台探测（页面尾部执行，DOM 已就绪）：
+         1. 计算写作台地址：站点配置 deskUrl（公网部署时填）> 本机默认 localhost:4322 > 同主机 4322
+         2. 探测 /api/gate/status —— 在线才点亮「登录 / 注册」入口，并复用给验证门横幅
+         3. 不在线则保持隐藏，绝不会把访客拽进内网地址；同时给出一次性「镜像模式」提示 */
+      (function () {
+        var host = location.hostname;
+        var isLocal = host === 'localhost' || host === '127.0.0.1' || host === '[::1]';
+        var desk = deskConfigured ||
+          (isLocal ? 'http://localhost:4322' : location.protocol + '//' + host + ':4322');
+        window.STELLA_DESK = desk;
+
+        function revealLogin() {
+          document.querySelectorAll('[data-desk-login]').forEach(function (a) {
+            a.href = desk + '/admin';
+            a.removeAttribute('hidden');
+          });
+        }
+        function showBanner(css, html, shiftHeader) {
+          var bar = document.createElement('div');
+          bar.style.cssText = css;
+          bar.innerHTML = html;
+          document.body.prepend(bar);
+          if (shiftHeader) {
+            var header = document.querySelector('.site-header');
+            if (header) header.style.marginTop = '42px';
+          }
+        }
+        function hintMirrorMode() {
+          try {
+            if (sessionStorage.getItem('stella-desk-hint')) return;
+            sessionStorage.setItem('stella-desk-hint', '1');
+          } catch (e) { /* 无痕模式等：忽略 */ }
+          var tip = document.createElement('div');
+          tip.style.cssText = 'position:fixed;left:14px;bottom:14px;z-index:9998;max-width:min(92vw,430px);padding:.65rem .9rem;border-radius:12px;background:rgba(18,20,44,.92);border:1px solid rgba(150,142,255,.35);color:#e8e6ff;font-size:.82rem;line-height:1.6;font-family:system-ui,sans-serif;box-shadow:0 8px 30px rgba(0,0,0,.35)';
+          tip.innerHTML = 'ℹ️ 静态镜像模式：登录 / 评论 / AI 等互动功能需要站长写作台在线，当前不可用。' +
+            '<span id="stellaDeskHintClose" style="float:right;cursor:pointer;opacity:.75;font-weight:700;margin-left:.6rem" title="关闭">×</span>';
+          document.body.appendChild(tip);
+          var close = function () { tip.remove(); };
+          tip.querySelector('#stellaDeskHintClose').addEventListener('click', close);
+          setTimeout(close, 9000);
+        }
+
+        try {
+          var ctrl = new AbortController();
+          var timer = setTimeout(function () { ctrl.abort(); }, 2500);
+          fetch(desk + '/api/gate/status', { credentials: 'include', signal: ctrl.signal })
+            .then(function (r) { return r.ok ? r.json() : null; })
+            .then(function (d) {
+              clearTimeout(timer);
+              if (!d) throw new Error('desk-offline');
+              window.STELLA_DESK_OK = true;
+              revealLogin();
+              if (d.regionBlocked) {
+                showBanner(
+                  'position:fixed;top:0;left:0;right:0;z-index:9999;padding:1.2rem;text-align:center;background:#1a0a0a;color:#ff9ed2;font-size:.95rem;border-bottom:2px solid #ff4d6d;font-family:system-ui,sans-serif',
+                  '⛔ 你所在的地区（' + (d.regionCountry || '未知') + '）暂不开放访问。',
+                  false
+                );
+                return;
+              }
+              if (d.enabled && !d.passed) {
+                showBanner(
+                  'position:fixed;top:0;left:0;right:0;z-index:9999;padding:0.7rem;text-align:center;background:linear-gradient(94deg,rgba(143,127,247,.25),rgba(98,200,245,.18));border-bottom:1px solid rgba(150,142,255,.3);color:#f0efff;font-size:.88rem;font-family:system-ui,sans-serif',
+                  '🔒 本站启用了安全验证 —— <a href="' + desk + '/gate?next=' + encodeURIComponent(location.href) + '" style="color:#ffd98e;font-weight:700;text-decoration:underline">点击完成验证</a>，通过后即可使用全部功能（30 天免验）。',
+                  true
+                );
+              }
+            })
+            .catch(function () {
+              clearTimeout(timer);
+              window.STELLA_DESK_OK = false;
+              hintMirrorMode();
+            });
+        } catch (e) { /* 忽略 */ }
+      })();
+    })();</script> </body> </html> <script type="module">const m=document.getElementById("commentForm"),s=document.getElementById("cMsg"),u=`${location.protocol}//${location.hostname}:4322/api/message`;function r(e,t=!1){s&&(s.textContent=e,s.classList.toggle("is-err",t),s.classList.toggle("is-ok",!t))}function y(){const e=new Date,t=n=>String(n).padStart(2,"0");return`${e.getFullYear()}-${t(e.getMonth()+1)}-${t(e.getDate())}`}function f(e){let t=7;for(const n of e)t=(t*31+n.charCodeAt(0))%360;return t}function g(e,t){const n=document.createElement("li");n.className="comment",n.innerHTML=`
+      <span class="comment__avatar"></span>
+      <div class="comment__bubble">
+        <div class="comment__head">
+          <span class="comment__name"></span>
+          <time class="comment__date">${y()}</time>
+        </div>
+        <p class="comment__body"></p>
+      </div>`;const o=n.querySelector(".comment__avatar");return o.style.setProperty("--h",String(f(e))),o.textContent=e.slice(0,1),n.querySelector(".comment__name").textContent=e,n.querySelector(".comment__body").textContent=t,n}m?.addEventListener("submit",async e=>{e.preventDefault();const t=document.getElementById("cBody").value.trim();if(!t)return r("留言内容不能为空哦",!0);const n=document.getElementById("cAuthor").value.trim()||"旅人",o=m.querySelector("button");o&&(o.disabled=!0);try{const c=await fetch(u,{credentials:"include",method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({target:m.dataset.target,kind:"comment",author:n,body:t})}),d=await c.json().catch(()=>({}));if(!c.ok)throw new Error(d.error||`发送失败（${c.status}）`);const l=document.querySelector(".comment-list");l&&l.appendChild(g(n,t)),document.getElementById("commentsEmpty")?.remove(),document.getElementById("cBody").value="",r("留言已发布，感谢支持 ✦");const a=document.querySelector(".comments__title"),i=a?.textContent?.match(/（(\d+)）/);a&&i&&(a.textContent=a.textContent.replace(/（\d+）/,`（${Number(i[1])+1}）`))}catch(c){r(c instanceof TypeError?"写作台没在运行，暂时收不到留言 —— 双击「启动博客.bat」就好":c.message,!0)}finally{o&&(o.disabled=!1)}});</script> 

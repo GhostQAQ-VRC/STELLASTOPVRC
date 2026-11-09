@@ -1,0 +1,473 @@
+<!DOCTYPE html><html lang="zh-CN"> <head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="generator" content="Astro v5.18.2"><meta name="description" content="PlayerData 是 键值数据库(Key-Value Store),与每个玩家关联。任何 Udon 脚本 可访问它,无需 Prefab 设置。任何 UdonBehaviour 的同步设置不影响 PlayerData("><meta name="theme-color" content="#070a1c"><meta property="og:title" content="PlayerData 实战 · 星之驿站 StellaStop"><meta property="og:description" content="PlayerData 是 键值数据库(Key-Value Store),与每个玩家关联。任何 Udon 脚本 可访问它,无需 Prefab 设置。任何 UdonBehaviour 的同步设置不影响 PlayerData("><meta property="og:type" content="website"><meta name="twitter:card" content="summary"><link rel="icon" type="image/svg+xml" href="/STELLASTOPVRC/favicon.svg"><script>
+      // 在渲染前恢复主题与特效档位，避免闪一下默认状态
+      try {
+        document.documentElement.dataset.theme =
+          localStorage.getItem('stella-theme') || 'nebula';
+        document.documentElement.dataset.fx =
+          localStorage.getItem('stella-fx') || 'standard';
+      } catch {
+        /* 隐私模式读不到就算了 */
+      }
+    </script><link rel="stylesheet" href="/STELLASTOPVRC/custom-vars.css"><title>PlayerData 实战 · 星之驿站 StellaStop</title><link rel="stylesheet" href="/STELLASTOPVRC/_astro/about.Bgh6wcGl.css">
+<style>.post-head__meta[data-astro-cid-lvjzyg5v]{color:var(--ink-faint);font-family:var(--font-mono);font-size:.82rem}.post-head[data-astro-cid-lvjzyg5v] .chip-row[data-astro-cid-lvjzyg5v]{margin-top:1rem}.kb-source-note[data-astro-cid-lvjzyg5v]{max-width:760px;margin:2.2rem auto 0;font-size:.82rem;color:var(--ink-faint);border-top:1px dashed var(--line);padding-top:1rem}
+</style></head> <body> <div class="site-notice" id="siteNotice"> <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> <span class="site-notice__text">欢迎来到星之驿站！</span> <button class="site-notice__close" id="noticeClose" type="button" aria-label="关闭公告">
+×
+</button> </div> <a class="skip-link" href="#main">跳到主要内容</a> <canvas id="starfield" aria-hidden="true" data-astro-cid-ra7sfcwn></canvas> <div class="fx-aurora fx-aurora--a" aria-hidden="true" data-astro-cid-ra7sfcwn></div> <div class="fx-aurora fx-aurora--b" aria-hidden="true" data-astro-cid-ra7sfcwn></div>  <script type="module">const u=document.getElementById("starfield");if(u){let F=function(){const n=Math.random();return n<.1?"gold":n<.42?"blue":"white"},v=function(){const n=Math.min(window.devicePixelRatio||1,2);s=window.innerWidth,d=window.innerHeight,u.width=s*n,u.height=d*n,u.style.width=`${s}px`,u.style.height=`${d}px`,t.setTransform(n,0,0,n,0,0);const e=Math.min(190,Math.round(s*d/8500));l=Array.from({length:e},()=>({x:Math.random()*s,y:Math.random()*d,r:r(.4,1.7),base:r(.25,.8),amp:r(.12,.4),speed:r(6e-4,.0022),phase:r(0,Math.PI*2),c:F()})),C=Array.from({length:26},()=>({x:Math.random()*s,y:Math.random()*d,r:r(.9,2.4),vx:r(-.006,.006),vy:r(-.02,-.006),base:r(.2,.5),speed:r(8e-4,.002),phase:r(0,Math.PI*2),c:Math.random()<.5?"gold":"violet"})),c==="off"&&m(0,!0)},D=function(n){const e=Math.random()<.5?1:-1,o=r(Math.PI/7,Math.PI/5),a=r(.45,.75);y.push({x:r(s*.15,s*.85),y:r(-20,d*.3),vx:Math.cos(o)*a*e,vy:Math.sin(o)*a,born:n,life:r(750,1050),len:r(100,170)})},S=function(n){y=y.filter(e=>n-e.born<e.life);for(const e of y){const o=(n-e.born)/e.life,a=e.x+e.vx*(n-e.born),i=e.y+e.vy*(n-e.born),f=o<.15?o/.15:o>.7?(1-o)/.3:1,h=Math.hypot(e.vx,e.vy),x=e.vx/h,g=e.vy/h,b=t.createLinearGradient(a,i,a-x*e.len,i-g*e.len);b.addColorStop(0,`rgba(236,242,255,${(.85*f).toFixed(3)})`),b.addColorStop(1,"rgba(236,242,255,0)"),t.strokeStyle=b,t.lineWidth=1.6,t.lineCap="round",t.beginPath(),t.moveTo(a,i),t.lineTo(a-x*e.len,i-g*e.len),t.stroke()}},B=function(){let o=0;t.lineWidth=.7;for(let a=0;a<l.length&&o<26;a++)for(let i=a+1;i<l.length&&o<26;i++){const f=l[a].x-l[i].x,h=l[a].y-l[i].y,x=f*f+h*h;if(x<16900){const g=(1-Math.sqrt(x)/130)*.17;t.strokeStyle=`rgba(178,170,255,${g.toFixed(3)})`,t.beginPath(),t.moveTo(l[a].x,l[a].y),t.lineTo(l[i].x,l[i].y),t.stroke(),o++}}},X=function(n){for(const e of C){e.x+=e.vx*16,e.y+=e.vy*16,e.y<-12&&(e.y=d+10),e.x<-12&&(e.x=s+10),e.x>s+12&&(e.x=-10);const o=Math.max(.05,e.base+.25*Math.sin(n*e.speed+e.phase)),[a,i,f]=A[e.c];t.beginPath(),t.arc(e.x,e.y,e.r,0,7),t.shadowBlur=9,t.shadowColor=`rgba(${a},${i},${f},0.9)`,t.fillStyle=`rgba(${a},${i},${f},${o.toFixed(3)})`,t.fill()}t.shadowBlur=0},m=function(n,e=!1){t.clearRect(0,0,s,d);for(const o of l){const a=c==="off"?o.base:Math.max(.05,o.base+o.amp*Math.sin(n*o.speed+o.phase)),[i,f,h]=A[o.c];t.beginPath(),t.arc(o.x,o.y,o.r,0,7),o.r>1.25?(t.shadowBlur=7,t.shadowColor=`rgba(${i},${f},${h},0.85)`):t.shadowBlur=0,t.fillStyle=`rgba(${i},${f},${h},${a.toFixed(3)})`,t.fill()}if(t.shadowBlur=0,c!=="off"&&!e){c==="fancy"&&(B(),X(n));const o=c==="fancy"?r(2600,6e3):r(4200,9500);n>P&&(D(n),P=n+o),S(n)}},$=function(n){m(n),M=requestAnimationFrame($)},p=function(){if(c==="off"){m(0,!0);return}cancelAnimationFrame(M),M=requestAnimationFrame($)},w=function(){cancelAnimationFrame(M),t.clearRect(0,0,s,d),m(0,!0)};const t=u.getContext("2d"),k=matchMedia("(prefers-reduced-motion: reduce)").matches,A={white:[240,240,255],blue:[150,215,250],gold:[255,218,150],violet:[178,170,255]};let s=0,d=0,l=[],C=[],y=[],P=2500,M=0,c=document.documentElement.dataset.fx||"standard";k&&(c="off");const r=(n,e)=>n+Math.random()*(e-n);v(),addEventListener("resize",v),document.addEventListener("stella-fx-change",n=>{c=n.detail,c==="off"?w():p()}),c==="off"?m(0,!0):(p(),document.addEventListener("visibilitychange",()=>{document.hidden?w():p()}))}</script> <header class="site-header"> <div class="wrap site-header__inner"> <a class="logo" href="/STELLASTOPVRC/"> <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> <span>星之驿站</span> <span class="logo__romaji">StellaStop</span> </a> <div class="header-right"> <nav class="site-nav" aria-label="站内导航"> <a href="/STELLASTOPVRC/"> 首页 </a><a href="/STELLASTOPVRC/start/"> 新手 </a><a href="/STELLASTOPVRC/posts/"> 教程 </a><a href="/STELLASTOPVRC/videos/"> 视频 </a><a href="/STELLASTOPVRC/resources/"> 资源 </a><a href="/STELLASTOPVRC/booth/"> Booth </a><a href="/STELLASTOPVRC/announcements/"> 公告 </a><a href="/STELLASTOPVRC/ai/"> 问星 </a><a href="/STELLASTOPVRC/changelog/"> 更新日志 </a><a href="/STELLASTOPVRC/about/"> 关于 </a> </nav> <a class="login-link" data-desk-login hidden title="写作台：登录 / 注册后可发教程、传资源">
+登录 / 注册
+</a> <div class="theme-switch"> <button class="theme-switch__btn" id="themeBtn" type="button" aria-haspopup="listbox" aria-expanded="false" aria-label="切换主题配色" title="切换主题配色"> <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"> <path d="M12 3a9 9 0 1 0 9 9c0-1.2-1-2-2.2-2H17a2 2 0 0 1-2-2V6.2C15 5 14.2 4 13 4.4A9 9 0 0 0 12 3Z"></path> <circle cx="7.5" cy="11.5" r="1" fill="currentColor" stroke="none"></circle> <circle cx="10" cy="7.5" r="1" fill="currentColor" stroke="none"></circle> <circle cx="15" cy="7" r="1" fill="currentColor" stroke="none"></circle> </svg> </button> <div class="theme-pop" id="themePop" role="listbox" aria-label="选择主题" hidden> <button class="theme-opt" type="button" role="option" data-theme-value="nebula" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#8f7ff7"></span><span class="dot" style="background:#62c8f5"></span><span class="dot" style="background:#ffd98e"></span> </span> <span class="theme-opt__name">星云 · 蓝紫</span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt" type="button" role="option" data-theme-value="sakura" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#ff8fc7"></span><span class="dot" style="background:#c79bff"></span><span class="dot" style="background:#ffd08e"></span> </span> <span class="theme-opt__name">樱语 · 粉紫</span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt" type="button" role="option" data-theme-value="miku" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#2ed3c2"></span><span class="dot" style="background:#6ea8ff"></span><span class="dot" style="background:#ffe08e"></span> </span> <span class="theme-opt__name">葱色 · 青绿</span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt" type="button" role="option" data-theme-value="ember" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#ffb35c"></span><span class="dot" style="background:#ff7e6b"></span><span class="dot" style="background:#ffd98e"></span> </span> <span class="theme-opt__name">暮金 · 暖橙</span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt" type="button" role="option" data-theme-value="dawn" aria-selected="false"> <span class="dots"> <span class="dot" style="background:#6a5ce8"></span><span class="dot" style="background:#e0568f"></span><span class="dot" style="background:#b8821e"></span> </span> <span class="theme-opt__name">晨星 · 浅色</span> <span class="theme-opt__mark">✦</span> </button> </div> </div> <script type="module">const a=document.getElementById("themeBtn"),n=document.getElementById("themePop");function s(c){document.documentElement.dataset.theme=c;try{localStorage.setItem("stella-theme",c)}catch{}const e=getComputedStyle(document.documentElement).getPropertyValue("--bg-deep").trim();document.querySelector('meta[name="theme-color"]')?.setAttribute("content",e||"#070a1c"),document.querySelectorAll(".theme-opt").forEach(t=>{const d=t.dataset.themeValue===c;t.classList.toggle("is-active",d),t.setAttribute("aria-selected",String(d))})}if(a&&n){const c=document.documentElement.dataset.theme||"nebula";document.querySelectorAll(".theme-opt").forEach(e=>{const t=e.dataset.themeValue===c;e.classList.toggle("is-active",t),e.setAttribute("aria-selected",String(t))}),a.addEventListener("click",e=>{e.stopPropagation();const t=n.hidden;n.hidden=!t,a.setAttribute("aria-expanded",String(t))}),document.addEventListener("click",e=>{!n.hidden&&!e.target.closest(".theme-switch")&&(n.hidden=!0,a.setAttribute("aria-expanded","false"))}),document.addEventListener("keydown",e=>{e.key==="Escape"&&!n.hidden&&(n.hidden=!0,a.setAttribute("aria-expanded","false"),a.focus())}),n.addEventListener("click",e=>{const t=e.target.closest(".theme-opt");t&&(s(t.dataset.themeValue??"nebula"),n.hidden=!0,a.setAttribute("aria-expanded","false"))})}</script> <div class="theme-switch fx-switch"> <button class="theme-switch__btn" id="fxBtn" type="button" aria-haspopup="listbox" aria-expanded="false" aria-label="背景特效设置" title="背景特效设置"> <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"> <path d="M5 3v4M3 5h4M6.5 17.5v3M5 19h3"></path> <path d="M14.5 4.5 16 9l4.5 1.5L16 12l-1.5 4.5L13 12l-4.5-1.5L13 9l1.5-4.5Z"></path> </svg> </button> <div class="theme-pop" id="fxPop" role="listbox" aria-label="背景特效" hidden> <button class="theme-opt fx-opt" type="button" role="option" data-fx-value="off" aria-selected="false"> <span class="fx-opt__body"> <span class="fx-opt__name">关闭特效</span> <span class="fx-opt__hint">最省电</span> </span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt fx-opt" type="button" role="option" data-fx-value="standard" aria-selected="false"> <span class="fx-opt__body"> <span class="fx-opt__name">标准</span> <span class="fx-opt__hint">闪烁星空 + 流星</span> </span> <span class="theme-opt__mark">✦</span> </button><button class="theme-opt fx-opt" type="button" role="option" data-fx-value="fancy" aria-selected="false"> <span class="fx-opt__body"> <span class="fx-opt__name">华丽</span> <span class="fx-opt__hint">追加极光 / 星座 / 光尘</span> </span> <span class="theme-opt__mark">✦</span> </button> </div> </div> <script type="module">const n=document.getElementById("fxBtn"),a=document.getElementById("fxPop");function s(d){document.documentElement.dataset.fx=d;try{localStorage.setItem("stella-fx",d)}catch{}document.querySelectorAll("#fxPop .fx-opt").forEach(t=>{const e=t.dataset.fxValue===d;t.classList.toggle("is-active",e),t.setAttribute("aria-selected",String(e))}),document.dispatchEvent(new CustomEvent("stella-fx-change",{detail:d}))}if(n&&a){const d=document.documentElement.dataset.fx||"standard";document.querySelectorAll("#fxPop .fx-opt").forEach(t=>{const e=t.dataset.fxValue===d;t.classList.toggle("is-active",e),t.setAttribute("aria-selected",String(e))}),n.addEventListener("click",t=>{t.stopPropagation();const e=a.hidden;a.hidden=!e,n.setAttribute("aria-expanded",String(e))}),document.addEventListener("click",t=>{!a.hidden&&!t.target.closest(".fx-switch")&&(a.hidden=!0,n.setAttribute("aria-expanded","false"))}),document.addEventListener("keydown",t=>{t.key==="Escape"&&!a.hidden&&(a.hidden=!0,n.setAttribute("aria-expanded","false"),n.focus())}),a.addEventListener("click",t=>{const e=t.target.closest(".fx-opt");e&&(s(e.dataset.fxValue??"standard"),a.hidden=!0,n.setAttribute("aria-expanded","false"))})}</script> </div> </div> </header> <main id="main">  <article class="wrap post-layout" data-astro-cid-lvjzyg5v> <div class="post-main page-fade" data-astro-cid-lvjzyg5v> <header class="post-head" data-astro-cid-lvjzyg5v> <a class="crumb" href="/STELLASTOPVRC/posts/" data-astro-cid-lvjzyg5v>← 返回教程档案</a> <div class="post-head__meta" style="--accent:var(--ink-dim)" data-astro-cid-lvjzyg5v> <span class="badge" data-cat="Udon 世界编程" data-astro-cid-lvjzyg5v>Udon 世界编程</span> <time datetime="2026-11-09" data-astro-cid-lvjzyg5v>2026-11-09</time> <span class="post-head__reading" data-astro-cid-lvjzyg5v>⏱ 约 21 分钟</span>  </div> <h1 class="post-head__title" data-astro-cid-lvjzyg5v>PlayerData 实战</h1> <p class="post-head__lead" data-astro-cid-lvjzyg5v>PlayerData 是 键值数据库(Key-Value Store),与每个玩家关联。任何 Udon 脚本 可访问它,无需 Prefab 设置。任何 UdonBehaviour 的同步设置不影响 PlayerData(</p> <div class="chip-row" data-astro-cid-lvjzyg5v> <a class="chip" href="/STELLASTOPVRC/posts/?tag=%E7%9F%A5%E8%AF%86%E5%BA%93" data-astro-cid-lvjzyg5v> 知识库 </a><a class="chip" href="/STELLASTOPVRC/posts/?tag=world" data-astro-cid-lvjzyg5v> world </a> </div> </header> <div class="prose" data-astro-cid-lvjzyg5v> <hr>
+<h1 id="playerdata-实战">PlayerData 实战</h1>
+<p>PlayerData 是 <strong>键值数据库(Key-Value Store)</strong>,与每个玩家关联。<strong>任何 Udon 脚本</strong> 可访问它,无需 Prefab 设置。<strong>任何 UdonBehaviour 的同步设置不影响</strong> PlayerData(设为 None 也能用)。</p>
+<p>支持的类型:</p>
+<ul>
+<li>整数家族(sbyte/byte/short/ushort/int/uint/long/ulong)</li>
+<li>浮点(float/double)</li>
+<li>向量(Vector2/Vector3/Vector4)</li>
+<li>颜色(Color/Color32)</li>
+<li>Quaternion</li>
+<li>String</li>
+<li>bool</li>
+<li><strong>byte[]</strong>(原始字节,用于自定义序列化)</li>
+</ul>
+<hr>
+<hr>
+<h1 id="playerdata-实战设置setup">PlayerData 实战：设置(Setup)</h1>
+<blockquote>
+<p>极其简单:用就完事了。无需在 Inspector 勾选任何东西,无需 Prefab。</p>
+</blockquote>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="csharp"><code><span class="line"><span style="color:#F97583">using</span><span style="color:#B392F0"> VRC</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">SDK3</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">Persistence</span><span style="color:#E1E4E8">;  </span><span style="color:#6A737D">// 核心 API</span></span>
+<span class="line"><span style="color:#F97583">using</span><span style="color:#B392F0"> VRC</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">SDKBase</span><span style="color:#E1E4E8">;          </span><span style="color:#6A737D">// VRCPlayerApi + Storage Info API</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">public</span><span style="color:#F97583"> class</span><span style="color:#B392F0"> MyPlayerData</span><span style="color:#E1E4E8"> : </span><span style="color:#B392F0">UdonSharpBehaviour</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#F97583">    public</span><span style="color:#F97583"> override</span><span style="color:#F97583"> void</span><span style="color:#B392F0"> OnPlayerRestored</span><span style="color:#E1E4E8">(</span><span style="color:#B392F0">VRCPlayerApi</span><span style="color:#B392F0"> player</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#6A737D">        // 等到 OnPlayerRestored 才能安全读写</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<h3 id="时序警告必读">时序警告(必读)</h3>
+<blockquote>
+<p>🔴 <strong>不要在 <code>OnPlayerJoined</code> 中读写 PlayerData</strong></p>
+</blockquote>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="csharp"><code><span class="line"><span style="color:#6A737D">// ❌ 错误:可能读到空数据,或被服务器拉来的数据覆盖</span></span>
+<span class="line"><span style="color:#F97583">public</span><span style="color:#F97583"> override</span><span style="color:#F97583"> void</span><span style="color:#B392F0"> OnPlayerJoined</span><span style="color:#E1E4E8">(</span><span style="color:#B392F0">VRCPlayerApi</span><span style="color:#B392F0"> player</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#E1E4E8">    PlayerData.</span><span style="color:#B392F0">SetInt</span><span style="color:#E1E4E8">(player, </span><span style="color:#9ECBFF">"score"</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">0</span><span style="color:#E1E4E8">);  </span><span style="color:#6A737D">// 静默失败 / 被覆盖</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// ✅ 正确:OnPlayerRestored 触发后读写</span></span>
+<span class="line"><span style="color:#F97583">private</span><span style="color:#F97583"> bool</span><span style="color:#B392F0"> _dataReady</span><span style="color:#F97583"> =</span><span style="color:#79B8FF"> false</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">public</span><span style="color:#F97583"> override</span><span style="color:#F97583"> void</span><span style="color:#B392F0"> OnPlayerRestored</span><span style="color:#E1E4E8">(</span><span style="color:#B392F0">VRCPlayerApi</span><span style="color:#B392F0"> player</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#F97583">    if</span><span style="color:#E1E4E8"> (player </span><span style="color:#F97583">!=</span><span style="color:#E1E4E8"> Networking.LocalPlayer) </span><span style="color:#F97583">return</span><span style="color:#E1E4E8">;  </span><span style="color:#6A737D">// 只处理本地玩家</span></span>
+<span class="line"><span style="color:#E1E4E8">    _dataReady </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> true</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#B392F0">    LoadData</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<blockquote>
+<p><strong>为什么</strong>:<code>OnPlayerJoined</code> 触发时,数据可能还在从 VRChat 服务器下载。<code>OnPlayerRestored</code> 表示该玩家的全部持久化数据已就绪。</p>
+</blockquote>
+<hr>
+<hr>
+<h1 id="playerdata-实战写入mutators完整列表">PlayerData 实战：写入(Mutators)完整列表</h1>
+<blockquote>
+<p>17 种 Set 方法。<strong>只能写本地玩家</strong>。写入是即时生效(走 Manual Sync 模式)。</p>
+</blockquote>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="csharp"><code><span class="line"><span style="color:#F97583">using</span><span style="color:#B392F0"> VRC</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">SDK3</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">Persistence</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// 整数家族</span></span>
+<span class="line"><span style="color:#E1E4E8">PlayerData.</span><span style="color:#B392F0">SetSByte</span><span style="color:#E1E4E8">(player, </span><span style="color:#9ECBFF">"key"</span><span style="color:#E1E4E8">, (</span><span style="color:#F97583">sbyte</span><span style="color:#E1E4E8">)</span><span style="color:#F97583">-</span><span style="color:#79B8FF">1</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#E1E4E8">PlayerData.</span><span style="color:#B392F0">SetByte</span><span style="color:#E1E4E8">(player, </span><span style="color:#9ECBFF">"key"</span><span style="color:#E1E4E8">, (</span><span style="color:#F97583">byte</span><span style="color:#E1E4E8">)</span><span style="color:#79B8FF">255</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#E1E4E8">PlayerData.</span><span style="color:#B392F0">SetShort</span><span style="color:#E1E4E8">(player, </span><span style="color:#9ECBFF">"key"</span><span style="color:#E1E4E8">, (</span><span style="color:#F97583">short</span><span style="color:#E1E4E8">)</span><span style="color:#F97583">-</span><span style="color:#79B8FF">1000</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#E1E4E8">PlayerData.</span><span style="color:#B392F0">SetUShort</span><span style="color:#E1E4E8">(player, </span><span style="color:#9ECBFF">"key"</span><span style="color:#E1E4E8">, (</span><span style="color:#F97583">ushort</span><span style="color:#E1E4E8">)</span><span style="color:#79B8FF">1000</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#E1E4E8">PlayerData.</span><span style="color:#B392F0">SetInt</span><span style="color:#E1E4E8">(player, </span><span style="color:#9ECBFF">"key"</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">42</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#E1E4E8">PlayerData.</span><span style="color:#B392F0">SetUInt</span><span style="color:#E1E4E8">(player, </span><span style="color:#9ECBFF">"key"</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">42u</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#E1E4E8">PlayerData.</span><span style="color:#B392F0">SetLong</span><span style="color:#E1E4E8">(player, </span><span style="color:#9ECBFF">"key"</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">42L</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#E1E4E8">PlayerData.</span><span style="color:#B392F0">SetULong</span><span style="color:#E1E4E8">(player, </span><span style="color:#9ECBFF">"key"</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">42ul</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// 浮点</span></span>
+<span class="line"><span style="color:#E1E4E8">PlayerData.</span><span style="color:#B392F0">SetFloat</span><span style="color:#E1E4E8">(player, </span><span style="color:#9ECBFF">"key"</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">3.14f</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#E1E4E8">PlayerData.</span><span style="color:#B392F0">SetDouble</span><span style="color:#E1E4E8">(player, </span><span style="color:#9ECBFF">"key"</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">3.14159</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// 向量 / 颜色 / 旋转</span></span>
+<span class="line"><span style="color:#E1E4E8">PlayerData.</span><span style="color:#B392F0">SetVector2</span><span style="color:#E1E4E8">(player, </span><span style="color:#9ECBFF">"key"</span><span style="color:#E1E4E8">, </span><span style="color:#F97583">new</span><span style="color:#B392F0"> Vector2</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">1</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">2</span><span style="color:#E1E4E8">));</span></span>
+<span class="line"><span style="color:#E1E4E8">PlayerData.</span><span style="color:#B392F0">SetVector3</span><span style="color:#E1E4E8">(player, </span><span style="color:#9ECBFF">"key"</span><span style="color:#E1E4E8">, </span><span style="color:#F97583">new</span><span style="color:#B392F0"> Vector3</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">1</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">2</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">3</span><span style="color:#E1E4E8">));</span></span>
+<span class="line"><span style="color:#E1E4E8">PlayerData.</span><span style="color:#B392F0">SetVector4</span><span style="color:#E1E4E8">(player, </span><span style="color:#9ECBFF">"key"</span><span style="color:#E1E4E8">, </span><span style="color:#F97583">new</span><span style="color:#B392F0"> Vector4</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">1</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">2</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">3</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">4</span><span style="color:#E1E4E8">));</span></span>
+<span class="line"><span style="color:#E1E4E8">PlayerData.</span><span style="color:#B392F0">SetQuaternion</span><span style="color:#E1E4E8">(player, </span><span style="color:#9ECBFF">"key"</span><span style="color:#E1E4E8">, Quaternion.identity);</span></span>
+<span class="line"><span style="color:#E1E4E8">PlayerData.</span><span style="color:#B392F0">SetColor</span><span style="color:#E1E4E8">(player, </span><span style="color:#9ECBFF">"key"</span><span style="color:#E1E4E8">, Color.red);</span></span>
+<span class="line"><span style="color:#E1E4E8">PlayerData.</span><span style="color:#B392F0">SetColor32</span><span style="color:#E1E4E8">(player, </span><span style="color:#9ECBFF">"key"</span><span style="color:#E1E4E8">, </span><span style="color:#F97583">new</span><span style="color:#B392F0"> Color32</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">255</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">0</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">0</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">255</span><span style="color:#E1E4E8">));</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// 字符串 / 布尔</span></span>
+<span class="line"><span style="color:#E1E4E8">PlayerData.</span><span style="color:#B392F0">SetString</span><span style="color:#E1E4E8">(player, </span><span style="color:#9ECBFF">"key"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"hello"</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#E1E4E8">PlayerData.</span><span style="color:#B392F0">SetBool</span><span style="color:#E1E4E8">(player, </span><span style="color:#9ECBFF">"key"</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">true</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// 字节数组(自定义序列化)</span></span>
+<span class="line"><span style="color:#E1E4E8">PlayerData.</span><span style="color:#B392F0">SetBytes</span><span style="color:#E1E4E8">(player, </span><span style="color:#9ECBFF">"key"</span><span style="color:#E1E4E8">, </span><span style="color:#F97583">new</span><span style="color:#F97583"> byte</span><span style="color:#E1E4E8">[] { </span><span style="color:#79B8FF">0x01</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">0x02</span><span style="color:#E1E4E8"> });</span></span></code></pre>
+<h3 id="写入的-5-个关键事实">写入的 5 个关键事实</h3>
+<ol>
+<li><strong>类型可变</strong>:同 key 可以从 int 改为 string(覆盖即可)</li>
+<li><strong>不能删除 key</strong>:只能 Set 一个新值(可为空字符串或 0)</li>
+<li><strong>只能写本地玩家</strong>:<code>player</code> 参数必须是 <code>Networking.LocalPlayer</code></li>
+<li><strong>批量写入合并</strong>:一帧内多次 Set → 一起发送(类似 Manual Sync)</li>
+<li><strong>写入即同步</strong>:远程玩家会通过 <code>OnPlayerDataUpdated</code> 收到通知</li>
+</ol>
+<hr>
+<hr>
+<h1 id="playerdata-实战读取accessors完整列表">PlayerData 实战：读取(Accessors)完整列表</h1>
+<blockquote>
+<p>17 对 <code>Get*</code> / <code>TryGet*</code>。<code>Get*</code> 返回默认值,<code>TryGet*</code> 返回是否存在的 bool。</p>
+</blockquote>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="csharp"><code><span class="line"><span style="color:#6A737D">// 读取:使用 TryGet 区分"默认值"和"key 不存在"</span></span>
+<span class="line"><span style="color:#F97583">bool</span><span style="color:#B392F0"> exists</span><span style="color:#F97583"> =</span><span style="color:#E1E4E8"> PlayerData.</span><span style="color:#B392F0">TryGetInt</span><span style="color:#E1E4E8">(Networking.LocalPlayer, </span><span style="color:#9ECBFF">"score"</span><span style="color:#E1E4E8">, </span><span style="color:#F97583">out</span><span style="color:#F97583"> int</span><span style="color:#B392F0"> score</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#F97583">if</span><span style="color:#E1E4E8"> (</span><span style="color:#F97583">!</span><span style="color:#E1E4E8">exists) {</span></span>
+<span class="line"><span style="color:#E1E4E8">    score </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> 0</span><span style="color:#E1E4E8">;  </span><span style="color:#6A737D">// key 不存在</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// ❌ Get* 在 key 不存在时返回默认值(无法区分"未设置"和"显式设为 0")</span></span>
+<span class="line"><span style="color:#F97583">int</span><span style="color:#B392F0"> value</span><span style="color:#F97583"> =</span><span style="color:#E1E4E8"> PlayerData.</span><span style="color:#B392F0">GetInt</span><span style="color:#E1E4E8">(player, </span><span style="color:#9ECBFF">"score"</span><span style="color:#E1E4E8">);  </span><span style="color:#6A737D">// key 不存在 → 返回 0</span></span></code></pre>
+<h3 id="跨玩家读取">跨玩家读取</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="csharp"><code><span class="line"><span style="color:#6A737D">// 任何 Udon 脚本可读任何玩家的 PlayerData(只要该玩家已 OnPlayerRestored)</span></span>
+<span class="line"><span style="color:#F97583">public</span><span style="color:#F97583"> override</span><span style="color:#F97583"> void</span><span style="color:#B392F0"> OnPlayerDataUpdated</span><span style="color:#E1E4E8">(</span><span style="color:#B392F0">VRCPlayerApi</span><span style="color:#B392F0"> player</span><span style="color:#E1E4E8">, </span><span style="color:#B392F0">PlayerData</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">Info</span><span style="color:#E1E4E8">[] </span><span style="color:#B392F0">infos</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#F97583">    if</span><span style="color:#E1E4E8"> (player </span><span style="color:#F97583">==</span><span style="color:#E1E4E8"> Networking.LocalPlayer) {</span></span>
+<span class="line"><span style="color:#6A737D">        // 本地玩家的数据变化 - 处理 UI 更新</span></span>
+<span class="line"><span style="color:#B392F0">        UpdateLocalUI</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#E1E4E8">    } </span><span style="color:#F97583">else</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#6A737D">        // 远程玩家数据变化 - 排行榜/成就系统</span></span>
+<span class="line"><span style="color:#B392F0">        UpdateLeaderboardSlot</span><span style="color:#E1E4E8">(player);</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<hr>
+<hr>
+<h1 id="playerdata-实战查询queries">PlayerData 实战：查询(Queries)</h1>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="csharp"><code><span class="line"><span style="color:#6A737D">// HasKey - 检查 key 是否存在</span></span>
+<span class="line"><span style="color:#F97583">if</span><span style="color:#E1E4E8"> (PlayerData.</span><span style="color:#B392F0">HasKey</span><span style="color:#E1E4E8">(player, </span><span style="color:#9ECBFF">"score"</span><span style="color:#E1E4E8">)) {</span></span>
+<span class="line"><span style="color:#6A737D">    // ...</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// GetType - 获取 key 的类型(Type 对象)</span></span>
+<span class="line"><span style="color:#B392F0">System</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">Type</span><span style="color:#B392F0"> t</span><span style="color:#F97583"> =</span><span style="color:#E1E4E8"> PlayerData.</span><span style="color:#B392F0">GetType</span><span style="color:#E1E4E8">(player, </span><span style="color:#9ECBFF">"score"</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#F97583">if</span><span style="color:#E1E4E8"> (t </span><span style="color:#F97583">==</span><span style="color:#F97583"> typeof</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">int</span><span style="color:#E1E4E8">)) { </span><span style="color:#6A737D">/* ... */</span><span style="color:#E1E4E8"> }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// TryGetType - 安全的类型查询</span></span>
+<span class="line"><span style="color:#F97583">if</span><span style="color:#E1E4E8"> (PlayerData.</span><span style="color:#B392F0">TryGetType</span><span style="color:#E1E4E8">(player, </span><span style="color:#9ECBFF">"score"</span><span style="color:#E1E4E8">, </span><span style="color:#F97583">out</span><span style="color:#B392F0"> System</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">Type</span><span style="color:#B392F0"> t</span><span style="color:#E1E4E8">, </span><span style="color:#F97583">out</span><span style="color:#F97583"> bool</span><span style="color:#B392F0"> success</span><span style="color:#E1E4E8">)) {</span></span>
+<span class="line"><span style="color:#E1E4E8">    Debug.</span><span style="color:#B392F0">Log</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">$"score 类型: </span><span style="color:#9ECBFF">{</span><span style="color:#E1E4E8">t</span><span style="color:#9ECBFF">}</span><span style="color:#9ECBFF">"</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<hr>
+<hr>
+<h1 id="playerdata-实战18-个事件">PlayerData 实战：18 个事件</h1>
+<blockquote>
+<p>完整事件列表见 <code>../index.md#5-个-persistence-事件速查</code>。最常用 3 个:</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>事件</th>
+<th>用途</th>
+<th>重要参数</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>OnPlayerRestored(VRCPlayerApi player)</code></td>
+<td>数据加载完成</td>
+<td>必须在所有读写前等待</td>
+</tr>
+<tr>
+<td><code>OnPlayerDataUpdated(VRCPlayerApi, PlayerData.Info[])</code></td>
+<td>帧末数据更新</td>
+<td><code>infos[i].State</code> 描述变更类型</td>
+</tr>
+<tr>
+<td><code>OnPlayerDataStorageExceeded(VRCPlayerApi)</code></td>
+<td>超出配额</td>
+<td>数据未保存,提示用户</td>
+</tr>
+</tbody>
+</table>
+<h3 id="onplayerdataupdated-的-infostate-5-状态"><code>OnPlayerDataUpdated</code> 的 <code>Info.State</code> 5 状态</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="csharp"><code><span class="line"><span style="color:#F97583">public</span><span style="color:#F97583"> override</span><span style="color:#F97583"> void</span><span style="color:#B392F0"> OnPlayerDataUpdated</span><span style="color:#E1E4E8">(</span><span style="color:#B392F0">VRCPlayerApi</span><span style="color:#B392F0"> player</span><span style="color:#E1E4E8">, </span><span style="color:#B392F0">PlayerData</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">Info</span><span style="color:#E1E4E8">[] </span><span style="color:#B392F0">infos</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#F97583">    foreach</span><span style="color:#E1E4E8"> (</span><span style="color:#F97583">var</span><span style="color:#B392F0"> info</span><span style="color:#F97583"> in</span><span style="color:#E1E4E8"> infos) {</span></span>
+<span class="line"><span style="color:#F97583">        switch</span><span style="color:#E1E4E8"> ((</span><span style="color:#F97583">int</span><span style="color:#E1E4E8">)info.State) {</span></span>
+<span class="line"><span style="color:#F97583">            case</span><span style="color:#79B8FF"> 0</span><span style="color:#E1E4E8">:  </span><span style="color:#6A737D">// Unchanged - 未变化</span></span>
+<span class="line"><span style="color:#F97583">                break</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">            case</span><span style="color:#79B8FF"> 1</span><span style="color:#E1E4E8">:  </span><span style="color:#6A737D">// Added - 新增 key</span></span>
+<span class="line"><span style="color:#F97583">                break</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">            case</span><span style="color:#79B8FF"> 2</span><span style="color:#E1E4E8">:  </span><span style="color:#6A737D">// Removed - key 被删除(当前 API 不支持删除,预留)</span></span>
+<span class="line"><span style="color:#F97583">                break</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">            case</span><span style="color:#79B8FF"> 3</span><span style="color:#E1E4E8">:  </span><span style="color:#6A737D">// Changed - 值变化</span></span>
+<span class="line"><span style="color:#B392F0">                HandleChange</span><span style="color:#E1E4E8">(player, info.Key);</span></span>
+<span class="line"><span style="color:#F97583">                break</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">            case</span><span style="color:#79B8FF"> 4</span><span style="color:#E1E4E8">:  </span><span style="color:#6A737D">// Restored - 从服务器恢复(玩家重新加入)</span></span>
+<span class="line"><span style="color:#B392F0">                HandleRestore</span><span style="color:#E1E4E8">(player, info.Key);</span></span>
+<span class="line"><span style="color:#F97583">                break</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">        }</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<blockquote>
+<p><strong>Iterating 慢</strong>:如果超过 10 个 key,直接用 <code>TryGet*</code> 检查目标 key(避免遍历)</p>
+</blockquote>
+<hr>
+<hr>
+<h1 id="playerdata-实战存储信息sdk-310">PlayerData 实战：存储信息(SDK 3.10+)</h1>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="csharp"><code><span class="line"><span style="color:#F97583">using</span><span style="color:#B392F0"> VRC</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">SDKBase</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// 常量查询</span></span>
+<span class="line"><span style="color:#F97583">int</span><span style="color:#B392F0"> dataLimit</span><span style="color:#F97583"> =</span><span style="color:#E1E4E8"> player.</span><span style="color:#B392F0">GetPlayerDataStorageLimit</span><span style="color:#E1E4E8">();  </span><span style="color:#6A737D">// 100 * 1024 = 102400</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// 当前用量(可能过期)</span></span>
+<span class="line"><span style="color:#F97583">int</span><span style="color:#B392F0"> used</span><span style="color:#F97583"> =</span><span style="color:#E1E4E8"> player.</span><span style="color:#B392F0">GetPlayerDataStorageUsage</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// 异步更新</span></span>
+<span class="line"><span style="color:#E1E4E8">player.</span><span style="color:#B392F0">RequestStorageUsageUpdate</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#6A737D">// 结果在 OnPersistenceUsageUpdated 中获取</span></span>
+<span class="line"><span style="color:#F97583">public</span><span style="color:#F97583"> override</span><span style="color:#F97583"> void</span><span style="color:#B392F0"> OnPersistenceUsageUpdated</span><span style="color:#E1E4E8">(</span><span style="color:#B392F0">VRCPlayerApi</span><span style="color:#B392F0"> player</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#F97583">    int</span><span style="color:#B392F0"> newUsed</span><span style="color:#F97583"> =</span><span style="color:#E1E4E8"> player.</span><span style="color:#B392F0">GetPlayerDataStorageUsage</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#F97583">    int</span><span style="color:#B392F0"> limit</span><span style="color:#F97583"> =</span><span style="color:#E1E4E8"> player.</span><span style="color:#B392F0">GetPlayerDataStorageLimit</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#F97583">    if</span><span style="color:#E1E4E8"> (newUsed </span><span style="color:#F97583">></span><span style="color:#E1E4E8"> limit </span><span style="color:#F97583">*</span><span style="color:#79B8FF"> 0.9f</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#E1E4E8">        Debug.</span><span style="color:#B392F0">LogWarning</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"PlayerData 用量超过 90%"</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<hr>
+<hr>
+<h1 id="playerdata-实战完整实战模板master-写入--所有人读取">PlayerData 实战：完整实战模板(Master 写入 + 所有人读取)</h1>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="csharp"><code><span class="line"><span style="color:#F97583">using</span><span style="color:#B392F0"> UdonSharp</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">using</span><span style="color:#B392F0"> UnityEngine</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">using</span><span style="color:#B392F0"> VRC</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">SDKBase</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">using</span><span style="color:#B392F0"> VRC</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">SDK3</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">Persistence</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">[</span><span style="color:#B392F0">UdonBehaviourSyncMode</span><span style="color:#E1E4E8">(BehaviourSyncMode.Manual)]</span></span>
+<span class="line"><span style="color:#F97583">public</span><span style="color:#F97583"> class</span><span style="color:#B392F0"> PlayerDataManager</span><span style="color:#E1E4E8"> : </span><span style="color:#B392F0">UdonSharpBehaviour</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#E1E4E8">    [</span><span style="color:#B392F0">UdonSynced</span><span style="color:#E1E4E8">] </span><span style="color:#F97583">private</span><span style="color:#F97583"> bool</span><span style="color:#B392F0"> _dataReady</span><span style="color:#F97583"> =</span><span style="color:#79B8FF"> false</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">    [</span><span style="color:#B392F0">UdonSynced</span><span style="color:#E1E4E8">] </span><span style="color:#F97583">private</span><span style="color:#F97583"> int</span><span style="color:#B392F0"> _score</span><span style="color:#F97583"> =</span><span style="color:#79B8FF"> 0</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span></span>
+<span class="line"><span style="color:#6A737D">    // 1. 本地玩家数据加载完成后</span></span>
+<span class="line"><span style="color:#F97583">    public</span><span style="color:#F97583"> override</span><span style="color:#F97583"> void</span><span style="color:#B392F0"> OnPlayerRestored</span><span style="color:#E1E4E8">(</span><span style="color:#B392F0">VRCPlayerApi</span><span style="color:#B392F0"> player</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#F97583">        if</span><span style="color:#E1E4E8"> (player </span><span style="color:#F97583">!=</span><span style="color:#E1E4E8"> Networking.LocalPlayer) </span><span style="color:#F97583">return</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#6A737D">        // 读本地数据</span></span>
+<span class="line"><span style="color:#F97583">        if</span><span style="color:#E1E4E8"> (PlayerData.</span><span style="color:#B392F0">TryGetInt</span><span style="color:#E1E4E8">(Networking.LocalPlayer, </span><span style="color:#9ECBFF">"score"</span><span style="color:#E1E4E8">, </span><span style="color:#F97583">out</span><span style="color:#F97583"> int</span><span style="color:#B392F0"> saved</span><span style="color:#E1E4E8">)) {</span></span>
+<span class="line"><span style="color:#E1E4E8">            _score </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> saved;</span></span>
+<span class="line"><span style="color:#E1E4E8">        } </span><span style="color:#F97583">else</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#E1E4E8">            _score </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> 0</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">        }</span></span>
+<span class="line"><span style="color:#E1E4E8">        _dataReady </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> true</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span></span>
+<span class="line"><span style="color:#6A737D">    // 2. 写本地数据(本地玩家触发,例如跳跃加分)</span></span>
+<span class="line"><span style="color:#F97583">    public</span><span style="color:#F97583"> void</span><span style="color:#B392F0"> AddScore</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">int</span><span style="color:#B392F0"> amount</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#F97583">        if</span><span style="color:#E1E4E8"> (</span><span style="color:#F97583">!</span><span style="color:#E1E4E8">_dataReady) </span><span style="color:#F97583">return</span><span style="color:#E1E4E8">;  </span><span style="color:#6A737D">// 守卫</span></span>
+<span class="line"><span style="color:#E1E4E8">        _score </span><span style="color:#F97583">+=</span><span style="color:#E1E4E8"> amount;</span></span>
+<span class="line"><span style="color:#E1E4E8">        PlayerData.</span><span style="color:#B392F0">SetInt</span><span style="color:#E1E4E8">(Networking.LocalPlayer, </span><span style="color:#9ECBFF">"score"</span><span style="color:#E1E4E8">, _score);</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span></span>
+<span class="line"><span style="color:#6A737D">    // 3. 所有人接收 OnPlayerDataUpdated(框架末尾统一触发)</span></span>
+<span class="line"><span style="color:#F97583">    public</span><span style="color:#F97583"> override</span><span style="color:#F97583"> void</span><span style="color:#B392F0"> OnPlayerDataUpdated</span><span style="color:#E1E4E8">(</span><span style="color:#B392F0">VRCPlayerApi</span><span style="color:#B392F0"> player</span><span style="color:#E1E4E8">, </span><span style="color:#B392F0">PlayerData</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">Info</span><span style="color:#E1E4E8">[] </span><span style="color:#B392F0">infos</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#6A737D">        // 更新 UI</span></span>
+<span class="line"><span style="color:#F97583">        if</span><span style="color:#E1E4E8"> (player </span><span style="color:#F97583">==</span><span style="color:#E1E4E8"> Networking.LocalPlayer) {</span></span>
+<span class="line"><span style="color:#6A737D">            // 本地 UI</span></span>
+<span class="line"><span style="color:#B392F0">            UpdateLocalScoreUI</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#E1E4E8">        } </span><span style="color:#F97583">else</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#6A737D">            // 排行榜槽位</span></span>
+<span class="line"><span style="color:#B392F0">            UpdateLeaderboardSlot</span><span style="color:#E1E4E8">(player);</span></span>
+<span class="line"><span style="color:#E1E4E8">        }</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<hr>
+<hr>
+<h1 id="playerdata-实战playerdatainfo-完整结构">PlayerData 实战：PlayerData.Info 完整结构</h1>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="csharp"><code><span class="line"><span style="color:#F97583">public</span><span style="color:#F97583"> class</span><span style="color:#B392F0"> PlayerData</span><span style="color:#E1E4E8">.Info {</span></span>
+<span class="line"><span style="color:#F97583">    public</span><span style="color:#F97583"> string</span><span style="color:#B392F0"> Key</span><span style="color:#E1E4E8"> { </span><span style="color:#F97583">get</span><span style="color:#E1E4E8">; }   </span><span style="color:#6A737D">// key 名</span></span>
+<span class="line"><span style="color:#F97583">    public</span><span style="color:#B392F0"> State</span><span style="color:#B392F0"> State</span><span style="color:#E1E4E8"> { </span><span style="color:#F97583">get</span><span style="color:#E1E4E8">; }  </span><span style="color:#6A737D">// 状态枚举(Unchanged/Added/Removed/Changed/Restored)</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<hr>
+<hr>
+<h1 id="playerdata-实战4-个常见陷阱">PlayerData 实战：4 个常见陷阱</h1>
+<table>
+<thead>
+<tr>
+<th>陷阱</th>
+<th>症状</th>
+<th>修复</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>OnPlayerJoined</code> 写数据</td>
+<td>写入”成功”但被服务器拉来的数据覆盖</td>
+<td>改用 <code>OnPlayerRestored</code> 守卫</td>
+</tr>
+<tr>
+<td>用 <code>Get*</code> 读取稀疏 key</td>
+<td>无法区分”未设置”和”显式设为默认值”</td>
+<td>改用 <code>TryGet*</code></td>
+</tr>
+<tr>
+<td>高频 Set(每帧 60 次)</td>
+<td><code>IsClogged = true</code>,全局网络拥塞</td>
+<td>走 PlayerObject 或降频</td>
+</tr>
+<tr>
+<td>多个 Prefab 共享 key 名</td>
+<td>数据互相覆盖</td>
+<td>用 <code>&#x3C;Prefab名>-&#x3C;功能></code> 前缀</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<hr>
+<h1 id="playerdata-实战关键-api-vs-限制速查">PlayerData 实战：关键 API vs 限制速查</h1>
+<table>
+<thead>
+<tr>
+<th>维度</th>
+<th>限制</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>配额</td>
+<td>100 KB / 玩家 / World(压缩后)</td>
+</tr>
+<tr>
+<td>原始数据</td>
+<td>~300 KB(高度可压缩时)</td>
+</tr>
+<tr>
+<td>Key 长度</td>
+<td>128 字符(建议值)</td>
+</tr>
+<tr>
+<td>String 值</td>
+<td>~50 字符(建议值)</td>
+</tr>
+<tr>
+<td>Key 删除</td>
+<td>❌ 不支持(只能 Set 覆盖)</td>
+</tr>
+<tr>
+<td>写入目标</td>
+<td>只能写本地玩家</td>
+</tr>
+<tr>
+<td>同步开销</td>
+<td>写一次 = 发全部 PlayerData(类似 Manual Sync)</td>
+</tr>
+<tr>
+<td>Late Joiner</td>
+<td>自动获取最新值</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<hr>
+<h1 id="playerdata-实战实战示例本目录内">PlayerData 实战：实战示例(本目录内)</h1>
+<ul>
+<li>patterns/leaderboard.md - 排行榜</li>
+<li>patterns/unlock-items.md - 解锁物品/成就</li>
+<li>patterns/persistent-pen.md - 持久画笔(用 PlayerObject)</li>
+</ul>
+<hr>
+<hr>
+<h1 id="playerdata-实战相关知识库">PlayerData 实战：相关知识库</h1>
+<ul>
+<li>entities/api/persistence - 完整 API 速查</li>
+<li>entities/world/examples/persistence/leaderboard - 排行榜 Example Central 笔记</li>
+<li>entities/world/examples/persistence/persistent-idle-game - Idle Game 笔记</li>
+<li>entities/world/examples/persistence/unlock-items - 解锁物品笔记</li>
+<li>concepts/patterns/late-joiner-state-restore - Late Joiner 状态恢复模式</li>
+<li>concepts/rules/networking-rules - 网络同步规则</li>
+</ul>
+<hr>
+<hr>
+<h1 id="playerdata-实战相关页面">PlayerData 实战：相关页面</h1>
+<p>../../../api/persistence.md · ../index.md · player-object.md · serialization.md · limits-and-quirks.md · patterns/leaderboard.md · patterns/unlock-items.md</p>
+<hr> </div> <p class="kb-source-note" data-astro-cid-lvjzyg5v>
+本文由 VRChat 开发知识库自动整理（社区整理  · 可信度 medium ），
+          遇到与手写教程冲突的地方，以官方文档为最高优先级。
+</p> <section class="comments" id="comments" data-astro-cid-lvjzyg5v> <h2 class="comments__title" data-astro-cid-lvjzyg5v>✦ 旅人留言（0）</h2> <p class="comments__empty" id="commentsEmpty" data-astro-cid-lvjzyg5v>
+还没有旅人留言 —— 有疑问就写在下面，站长都会回复。
+</p> <form class="comment-form" id="commentForm" data-target="kb-world-udon-persistence-player-data" data-astro-cid-lvjzyg5v> <p class="comment-form__title" data-astro-cid-lvjzyg5v>写下你的留言</p> <input id="cAuthor" maxlength="20" placeholder="昵称（留空则为「旅人」）" data-astro-cid-lvjzyg5v> <textarea id="cBody" maxlength="1000" required placeholder="想问的问题、想说的感谢都可以（最多 1000 字）" data-astro-cid-lvjzyg5v></textarea> <div class="comment-form__actions" data-astro-cid-lvjzyg5v> <button class="btn btn--primary" type="submit" data-astro-cid-lvjzyg5v>发布留言</button> <span class="form-hint" data-astro-cid-lvjzyg5v>留言保存在本站，站长在写作台里能看到</span> <span class="form-msg" id="cMsg" data-astro-cid-lvjzyg5v></span> </div> </form> </section> <nav class="station-nav" aria-label="站间导航" data-astro-cid-lvjzyg5v> <a href="/STELLASTOPVRC/posts/kb-world-udon-persistence-patterns-leaderboard/" data-astro-cid-lvjzyg5v> <span class="dir" data-astro-cid-lvjzyg5v>← 上一站 · 更新的星光</span> <span class="to" data-astro-cid-lvjzyg5v>排行榜实现(Pattern)</span> </a> <a href="/STELLASTOPVRC/posts/kb-world-udon-persistence-patterns-persistent-pen/" data-astro-cid-lvjzyg5v> <span class="dir" data-astro-cid-lvjzyg5v>下一站 · 更早的星光 →</span> <span class="to" data-astro-cid-lvjzyg5v>持久画笔实现(Pattern)</span> </a> </nav> </div> <aside class="toc" id="toc" hidden> <p class="toc__title">✦ 本页星图</p> <nav id="tocNav" aria-label="文章目录"></nav> </aside> <script type="module">const i=document.querySelector(".prose"),d=document.getElementById("toc"),u=document.getElementById("tocNav"),l=[];if(i&&d&&u){const c=[...i.querySelectorAll("h1, h2, h3")];if(c.length>=3){d.hidden=!1,c.forEach((o,e)=>{o.id||(o.id=`sec-${e}`);const n=document.createElement("a");n.href=`#${o.id}`;const s=(o.textContent??"").replace(/\s+/g," ").trim(),r=s.search(/[：:]/),a=r>=4?s.slice(0,r):s;n.textContent=a.length>40?`${a.slice(0,40)}…`:a,n.title=s,u.appendChild(n),l.push({a:n,h:o})});const t=()=>{let o=l[0];for(const e of l)e.h.getBoundingClientRect().top<=130&&(o=e);for(const e of l)e.a.classList.toggle("is-active",e===o)};addEventListener("scroll",t,{passive:!0}),t()}}document.querySelectorAll(".prose pre").forEach(c=>{const t=document.createElement("button");t.className="code-copy",t.type="button",t.textContent="复制",t.addEventListener("click",async()=>{const o=c.querySelector("code")?.innerText??c.innerText;try{await navigator.clipboard.writeText(o)}catch{const e=document.createElement("textarea");e.value=o,document.body.appendChild(e),e.select(),document.execCommand("copy"),e.remove()}t.textContent="已复制 ✓",t.classList.add("is-ok"),setTimeout(()=>{t.textContent="复制",t.classList.remove("is-ok")},1500)}),c.appendChild(t)});</script> </article>  </main> <footer class="site-footer"> <div class="wrap"> <p class="star-line" aria-hidden="true"> <svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> <svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"> <path d="M12 1C13.2 7.4 16.6 10.8 23 12 16.6 13.2 13.2 16.6 12 23 10.8 16.6 7.4 13.2 1 12 7.4 10.8 10.8 7.4 12 1Z"></path> </svg> </p> <p>星之驿站 StellaStop —— 在虚拟宇宙中，为你保留一座驿站</p> <p class="site-footer__disclaimer">
+该网页目前是测试阶段，仅用于测试，所有内容仅供参考；内容全部为引用互联网当中的信息。
+</p> <p>© 2026 星之驿站 · 由 <a href="https://astro.build">Astro</a> 与星光驱动</p> <p> <a data-desk-login hidden title="写作台：登录 / 注册">登录 / 注册</a> ·
+<a href="/STELLASTOPVRC/announcements/">官方公告</a> ·
+<a href="/STELLASTOPVRC/ai/">问星 AI</a> ·
+<a href="/STELLASTOPVRC/feedback/">旅人留言板</a> </p> </div> </footer> <button class="to-top" id="toTop" aria-label="回到顶部"> <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"> <path d="M12 20V5"></path> <path d="M5.5 11.5 12 5l6.5 6.5"></path> </svg> </button> <script type="module">const e=document.getElementById("toTop");if(e){const t=()=>e.classList.toggle("is-visible",scrollY>480);addEventListener("scroll",t,{passive:!0}),t(),e.addEventListener("click",()=>{const o=matchMedia("(prefers-reduced-motion: reduce)").matches;scrollTo({top:0,behavior:o?"auto":"smooth"})})}</script> <script>(function(){const deskConfigured = "";
+
+      /* 写作台探测（页面尾部执行，DOM 已就绪）：
+         1. 计算写作台地址：站点配置 deskUrl（公网部署时填）> 本机默认 localhost:4322 > 同主机 4322
+         2. 探测 /api/gate/status —— 在线才点亮「登录 / 注册」入口，并复用给验证门横幅
+         3. 不在线则保持隐藏，绝不会把访客拽进内网地址；同时给出一次性「镜像模式」提示 */
+      (function () {
+        var host = location.hostname;
+        var isLocal = host === 'localhost' || host === '127.0.0.1' || host === '[::1]';
+        var desk = deskConfigured ||
+          (isLocal ? 'http://localhost:4322' : location.protocol + '//' + host + ':4322');
+        window.STELLA_DESK = desk;
+
+        function revealLogin() {
+          document.querySelectorAll('[data-desk-login]').forEach(function (a) {
+            a.href = desk + '/admin';
+            a.removeAttribute('hidden');
+          });
+        }
+        function showBanner(css, html, shiftHeader) {
+          var bar = document.createElement('div');
+          bar.style.cssText = css;
+          bar.innerHTML = html;
+          document.body.prepend(bar);
+          if (shiftHeader) {
+            var header = document.querySelector('.site-header');
+            if (header) header.style.marginTop = '42px';
+          }
+        }
+        function hintMirrorMode() {
+          try {
+            if (sessionStorage.getItem('stella-desk-hint')) return;
+            sessionStorage.setItem('stella-desk-hint', '1');
+          } catch (e) { /* 无痕模式等：忽略 */ }
+          var tip = document.createElement('div');
+          tip.style.cssText = 'position:fixed;left:14px;bottom:14px;z-index:9998;max-width:min(92vw,430px);padding:.65rem .9rem;border-radius:12px;background:rgba(18,20,44,.92);border:1px solid rgba(150,142,255,.35);color:#e8e6ff;font-size:.82rem;line-height:1.6;font-family:system-ui,sans-serif;box-shadow:0 8px 30px rgba(0,0,0,.35)';
+          tip.innerHTML = 'ℹ️ 静态镜像模式：登录 / 评论 / AI 等互动功能需要站长写作台在线，当前不可用。' +
+            '<span id="stellaDeskHintClose" style="float:right;cursor:pointer;opacity:.75;font-weight:700;margin-left:.6rem" title="关闭">×</span>';
+          document.body.appendChild(tip);
+          var close = function () { tip.remove(); };
+          tip.querySelector('#stellaDeskHintClose').addEventListener('click', close);
+          setTimeout(close, 9000);
+        }
+
+        try {
+          var ctrl = new AbortController();
+          var timer = setTimeout(function () { ctrl.abort(); }, 2500);
+          fetch(desk + '/api/gate/status', { credentials: 'include', signal: ctrl.signal })
+            .then(function (r) { return r.ok ? r.json() : null; })
+            .then(function (d) {
+              clearTimeout(timer);
+              if (!d) throw new Error('desk-offline');
+              window.STELLA_DESK_OK = true;
+              revealLogin();
+              if (d.regionBlocked) {
+                showBanner(
+                  'position:fixed;top:0;left:0;right:0;z-index:9999;padding:1.2rem;text-align:center;background:#1a0a0a;color:#ff9ed2;font-size:.95rem;border-bottom:2px solid #ff4d6d;font-family:system-ui,sans-serif',
+                  '⛔ 你所在的地区（' + (d.regionCountry || '未知') + '）暂不开放访问。',
+                  false
+                );
+                return;
+              }
+              if (d.enabled && !d.passed) {
+                showBanner(
+                  'position:fixed;top:0;left:0;right:0;z-index:9999;padding:0.7rem;text-align:center;background:linear-gradient(94deg,rgba(143,127,247,.25),rgba(98,200,245,.18));border-bottom:1px solid rgba(150,142,255,.3);color:#f0efff;font-size:.88rem;font-family:system-ui,sans-serif',
+                  '🔒 本站启用了安全验证 —— <a href="' + desk + '/gate?next=' + encodeURIComponent(location.href) + '" style="color:#ffd98e;font-weight:700;text-decoration:underline">点击完成验证</a>，通过后即可使用全部功能（30 天免验）。',
+                  true
+                );
+              }
+            })
+            .catch(function () {
+              clearTimeout(timer);
+              window.STELLA_DESK_OK = false;
+              hintMirrorMode();
+            });
+        } catch (e) { /* 忽略 */ }
+      })();
+    })();</script> </body> </html> <script type="module">const m=document.getElementById("commentForm"),s=document.getElementById("cMsg"),u=`${location.protocol}//${location.hostname}:4322/api/message`;function r(e,t=!1){s&&(s.textContent=e,s.classList.toggle("is-err",t),s.classList.toggle("is-ok",!t))}function y(){const e=new Date,t=n=>String(n).padStart(2,"0");return`${e.getFullYear()}-${t(e.getMonth()+1)}-${t(e.getDate())}`}function f(e){let t=7;for(const n of e)t=(t*31+n.charCodeAt(0))%360;return t}function g(e,t){const n=document.createElement("li");n.className="comment",n.innerHTML=`
+      <span class="comment__avatar"></span>
+      <div class="comment__bubble">
+        <div class="comment__head">
+          <span class="comment__name"></span>
+          <time class="comment__date">${y()}</time>
+        </div>
+        <p class="comment__body"></p>
+      </div>`;const o=n.querySelector(".comment__avatar");return o.style.setProperty("--h",String(f(e))),o.textContent=e.slice(0,1),n.querySelector(".comment__name").textContent=e,n.querySelector(".comment__body").textContent=t,n}m?.addEventListener("submit",async e=>{e.preventDefault();const t=document.getElementById("cBody").value.trim();if(!t)return r("留言内容不能为空哦",!0);const n=document.getElementById("cAuthor").value.trim()||"旅人",o=m.querySelector("button");o&&(o.disabled=!0);try{const c=await fetch(u,{credentials:"include",method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({target:m.dataset.target,kind:"comment",author:n,body:t})}),d=await c.json().catch(()=>({}));if(!c.ok)throw new Error(d.error||`发送失败（${c.status}）`);const l=document.querySelector(".comment-list");l&&l.appendChild(g(n,t)),document.getElementById("commentsEmpty")?.remove(),document.getElementById("cBody").value="",r("留言已发布，感谢支持 ✦");const a=document.querySelector(".comments__title"),i=a?.textContent?.match(/（(\d+)）/);a&&i&&(a.textContent=a.textContent.replace(/（\d+）/,`（${Number(i[1])+1}）`))}catch(c){r(c instanceof TypeError?"写作台没在运行，暂时收不到留言 —— 双击「启动博客.bat」就好":c.message,!0)}finally{o&&(o.disabled=!1)}});</script> 
